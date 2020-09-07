@@ -1,16 +1,25 @@
 <template>
-  <div class="container">
-    <ul>
-      <li>
-        <!-- <v&#45;link href="/">Home</v&#45;link> -->
-        <!-- <v&#45;link href="/about">About</v&#45;link> -->
-      </li>
-    </ul>
+  <div>
+    <a-row>
+      <a-col :span="3">
+        LOGO
+      </a-col>
+      <a-col :span="21">
+        col-12
+      </a-col>
+    </a-row>
+
+    <Breadcrumb></Breadcrumb>
 
     <slot></slot>
   </div>
 </template>
 
 <script>
-export default {}
+import Breadcrumb from '../components/Breadcrumb.vue'
+export default {
+  components: {
+    Breadcrumb,
+  }
+}
 </script>
