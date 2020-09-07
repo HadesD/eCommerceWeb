@@ -13,4 +13,7 @@ yarn-error.log
 
 # Add by developers
 /bin
+/public/js/dashboard
+/public/css/dashboard
+/public/mix-manifest.json
 

@@ -58,7 +58,7 @@ class User extends Authenticatable implements Permissions
     {
         foreach ($perms as $perm)
         {
-            if (!($this->permissions & $perm))
+            if (($this->permissions & $perm) !== $perm)
             {
                 return false;
             }
@@ -75,6 +75,11 @@ class User extends Authenticatable implements Permissions
     public function removePermission(int $perm)
     {
         $this->permissions &= ~$perm;
+    }
+
+    static public function allPermissions()
+    {
+        return (new \ReflectionClass(Permissions::class))->getConstants();
     }
 }
 

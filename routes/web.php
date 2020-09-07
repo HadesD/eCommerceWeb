@@ -11,6 +11,5 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/dashboard{any?}', 'Dashboard\DashboardController@index')->where('any', '.*');
+
