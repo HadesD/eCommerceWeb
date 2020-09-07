@@ -11,5 +11,7 @@
 |
 */
 
-Route::get('/dashboard{any?}', 'Dashboard\DashboardController@index')->where('any', '.*');
+Route::namespace('Dashboard')->prefix('dashboard')->name('dashboard.')->group(function(){
+    Route::get('{any?}', 'DashboardController@index')->where('any', '.*');
+});
 
