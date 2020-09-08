@@ -16,4 +16,5 @@ yarn-error.log
 /public/js/dashboard
 /public/css/dashboard
 /public/mix-manifest.json
+/public/*.js
 

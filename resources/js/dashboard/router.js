@@ -1,9 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Index from './pages/Index.vue'
-import Error404 from './pages/Error404.vue'
-
 Vue.use(Router);
 
 export default new Router({
@@ -12,8 +9,14 @@ export default new Router({
     routes: [
         {
             path: '/',
-            component: Index,
+            component: () => import('./pages/Index.vue'),
         },
+
+        // Must be the last end
+        {
+            path: '*',
+            component: () => import('./pages/404.vue'),
+        }
     ],
 })
 

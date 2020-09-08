@@ -1,14 +1,14 @@
 <template>
-  <a-layout-sider :style="{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0  }">
+  <a-layout-sider v-model="collapsed" collapsible id="slider_sidebar" :style="{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0  }">
     <a-menu
       theme="dark"
       mode="inline"
       :default-selected-keys="['1']"
       :default-open-keys="['sub1']"
-      :style="{ height: '100%', borderRight: 0 }"
+      :style="{ height: '100%', borderRight: 0, backgroundColor: '#9800ab' }"
       >
       <a-sub-menu key="sub1">
-        <span slot="title"><a-icon type="user" />subnav 1</span>
+        <span slot="title"><a-icon type="user" /><span>subnav 1</span></span>
         <a-menu-item key="1">
           option1
         </a-menu-item>
@@ -23,7 +23,7 @@
         </a-menu-item>
       </a-sub-menu>
       <a-sub-menu key="sub2">
-        <span slot="title"><a-icon type="laptop" />subnav 2</span>
+        <span slot="title"><a-icon type="user" /><span>subnav 1</span></span>
         <a-menu-item key="5">
           option5
         </a-menu-item>
@@ -38,7 +38,7 @@
         </a-menu-item>
       </a-sub-menu>
       <a-sub-menu key="sub3">
-        <span slot="title"><a-icon type="notification" />subnav 3</span>
+        <span slot="title"><a-icon type="user" /><span>subnav 1</span></span>
         <a-menu-item key="9">
           option9
         </a-menu-item>
@@ -64,3 +64,15 @@ export default {
   },
 }
 </script>
+<style>
+#slider_sidebar {
+
+}
+#slider_sidebar .ant-menu-dark .ant-menu-inline.ant-menu-sub{
+  background-color: #9800ab;
+}
+#slider_sidebar .ant-menu.ant-menu-dark .ant-menu-item-selected,
+#slider_sidebar .ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected {
+  background-color: #bd1dff;
+}
+</style>
