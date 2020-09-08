@@ -1,5 +1,5 @@
 <template>
-  <a-breadcrumb style="margin: 16px 0">
+  <a-breadcrumb style="margin-bottom: 16px">
     <a-breadcrumb-item>
       <router-link to="/">Dashboard</router-link>
     </a-breadcrumb-item>
