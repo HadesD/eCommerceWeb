@@ -13,7 +13,7 @@ class UserTest extends TestCase
      */
     public function testExample()
     {
-        var_dump(\App\User::allPermissions());
-        $this->assertTrue(in_array(pow(2, 0), \App\User::allPermissions()));
+        var_dump(\App\User::allRoles());
+        $this->assertTrue(is_array(\App\User::allRoles()));
     }
 }

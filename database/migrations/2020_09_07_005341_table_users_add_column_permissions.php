@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 use App\User;
 
-class TableUsersAddColumnPermissions extends Migration
+class TableUsersAddColumnRole extends Migration
 {
     /**
      * Run the migrations.
@@ -16,7 +16,7 @@ class TableUsersAddColumnPermissions extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('permission')->default(User::PERM_HOME_ACCESS | User::PERM_HOME_BUY);
+            $table->tinyInteger('role')->default(User::ROLE_USER_NORMAL);
         });
     }
 

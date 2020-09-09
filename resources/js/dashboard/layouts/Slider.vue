@@ -1,5 +1,8 @@
 <template>
-  <a-layout-sider v-model="collapsed" collapsible id="slider_sidebar" :style="{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0  }">
+  <a-layout-sider v-model="collapsed" collapsible id="slider_sidebar">
+    <div class="logo" v-lazy-container="{ selector: 'img' }">
+      <img data-src="/images/logo.png" />
+    </div>
     <a-menu
       theme="dark"
       mode="inline"
@@ -66,13 +69,25 @@ export default {
 </script>
 <style>
 #slider_sidebar {
+  overflow: auto;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  -webkit-box-shadow: 2px 0 6px rgba(0,21,41,.35);
+  box-shadow: 2px 0 6px rgba(0,21,41,.35);
+}
 
+#slider_sidebar .logo {
+  padding: 5px;
+  text-align: center;
 }
+
+#slider_sidebar .logo img{
+  max-width: 100%;
+}
+
 #slider_sidebar .ant-menu-dark .ant-menu-inline.ant-menu-sub{
-  background-color: #9800ab;
-}
-#slider_sidebar .ant-menu.ant-menu-dark .ant-menu-item-selected,
-#slider_sidebar .ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected {
-  background-color: #bd1dff;
+  background-color: #680075;
 }
 </style>

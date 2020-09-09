@@ -6,19 +6,19 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-interface Permissions
+/**
+ * Greater is better
+ */
+interface Role
 {
-    const PERM_HOME_ACCESS = 1;
-    const PERM_DASHBOARD_ACCESS = 2;
-    const PERM_HOME_BUY = 4;
-    const PERM_ = 8;
-
-    public function hasPermissions(...$perms) : bool;
-    public function addPermission(int $perm);
-    public function removePermission(int $perm);
+    const ROLE_USER_BLOCKED = -100;
+    const ROLE_USER_UNACTIVE = 0;
+    const ROLE_USER_NORMAL = 10;
+    const ROLE_ADMIN_MANAGER = 50;
+    const ROLE_ADMIN_MASTER = 100;
 }
 
-class User extends Authenticatable implements Permissions
+class User extends Authenticatable implements Role
 {
     use Notifiable;
 
@@ -49,37 +49,14 @@ class User extends Authenticatable implements Permissions
         'email_verified_at' => 'datetime',
     ];
 
-    /**
-     * Check if user has permssions
-     *
-     * @var int
-     */
-    public function hasPermissions(...$perms) : bool
+    public function hasPermission(int $perm) : bool
     {
-        foreach ($perms as $perm)
-        {
-            if (($this->permissions & $perm) !== $perm)
-            {
-                return false;
-            }
-        }
-
-        return true;
+        return ($this->role >= $perm);
     }
 
-    public function addPermission(int $perm)
+    static public function allRoles()
     {
-        $this->permissions |= $perm;
-    }
-
-    public function removePermission(int $perm)
-    {
-        $this->permissions &= ~$perm;
-    }
-
-    static public function allPermissions()
-    {
-        return (new \ReflectionClass(Permissions::class))->getConstants();
+        return (new \ReflectionClass(Role::class))->getConstants();
     }
 }
 
