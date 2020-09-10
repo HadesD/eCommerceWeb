@@ -14,7 +14,7 @@
       >
       <a-sub-menu key="/products">
         <span slot="title">
-          <a-icon type="user" /><span>Sản phẩm</span>
+          <a-icon type="shopping-cart" /><span>Sản phẩm</span>
         </span>
         <a-menu-item key="/products/">
           <router-link to="/products/">
@@ -29,7 +29,7 @@
       </a-sub-menu>
       <a-sub-menu key="/stocks">
         <span slot="title">
-          <a-icon type="user" /><span>Kho hàng</span>
+          <a-icon type="bank" /><span>Kho hàng</span>
         </span>
         <a-menu-item key="/stocks/">
           <router-link to="/stocks/">
@@ -41,7 +41,7 @@
             Nhập hàng
           </router-link>
         </a-menu-item>
-        <a-menu-item key="/stocks/new">
+        <a-menu-item key="/stocks/edit">
           Xuất kho
         </a-menu-item>
       </a-sub-menu>
