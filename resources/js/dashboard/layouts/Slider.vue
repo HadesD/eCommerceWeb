@@ -1,7 +1,9 @@
 <template>
   <a-layout-sider v-model="collapsed" collapsible id="slider_sidebar">
-    <div class="logo" v-lazy-container="{ selector: 'img' }">
-      <img data-src="/images/logo.png" />
+    <div class="logo">
+      <router-link to="/">
+        <img src="/favicon.ico" /><span v-if="!collapsed" style="color:#FFF;font-size:25px;font-weight:bold;vertical-align: bottom;">inPhone.vn</span>
+      </router-link>
     </div>
     <a-menu
       theme="dark"
