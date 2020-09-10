@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateInventoryProductsTable extends Migration
+class CreateTransactionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,11 @@ class CreateInventoryProductsTable extends Migration
      */
     public function up()
     {
-        Schema::create('stocks', function (Blueprint $table) {
+        Schema::create('transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('idi'); // idividual id, imei
-            $table->smallInteger('status');
-            $table->integer('cost_price');
-            $table->bigInteger('updated_user_id');
+            $table->integer('amount');
+            $table->text('description');
+            $table->unsignedBigInteger('cashier_id'); // users.id
             $table->timestamps();
         });
     }
@@ -30,6 +29,6 @@ class CreateInventoryProductsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('inventory_products');
+        Schema::dropIfExists('transactions');
     }
 }
