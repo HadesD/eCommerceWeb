@@ -1,7 +1,14 @@
 <template>
-  <a-table :columns="columns" :data-source="data">
-    <a slot="name" slot-scope="text">{{ text }}</a>
-  </a-table>
+  <div>
+    <router-link to="/stocks/new">
+      <a-button type="primary">
+        Nhập hàng
+      </a-button>
+    </router-link>
+    <a-table :columns="columns" :data-source="data">
+      <a slot="name" slot-scope="text">{{ text }}</a>
+    </a-table>
+  </div>
 </template>
 
 <script>
