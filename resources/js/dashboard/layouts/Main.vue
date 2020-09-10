@@ -5,7 +5,7 @@
       <Header />
         <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
           <Breadcrumb></Breadcrumb>
-          <div :style="{ padding: '24px', background: '#fff', minHeight: '360px' }">
+          <div :style="{ padding: '24px', background: '#fff', minHeight: '80vh' }">
             <slot></slot>
           </div>
         </a-layout-content>

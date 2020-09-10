@@ -17,7 +17,7 @@ class StockController extends Controller
      */
     public function index()
     {
-        return new StockResource(Stock::all());
+        return new StockResource(Stock::paginate());
     }
 
     /**
