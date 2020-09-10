@@ -13,7 +13,6 @@ Vue.use(VueLazyload);
 const app = new Vue({
     el: '#app',
     router,
-    components: { MainApp },
     render (h) {
         return h(MainApp, {
 

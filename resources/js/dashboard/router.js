@@ -13,8 +13,26 @@ let routes = [
         component: () => import('./pages/products/Index.vue'),
         children: [
             {
+                path: '/new',
+                component: () => import('./pages/products/Edit.vue'),
+            },
+            {
                 path: '/edit',
                 component: () => import('./pages/products/Edit.vue'),
+            },
+        ]
+    },
+    {
+        path: '/stocks',
+        component: () => import('./pages/stocks/Index.vue'),
+        children: [
+            {
+                path: '/new',
+                component: () => import('./pages/stocks/Edit.vue'),
+            },
+            {
+                path: '/edit',
+                component: () => import('./pages/stocks/Edit.vue'),
             },
         ]
     },

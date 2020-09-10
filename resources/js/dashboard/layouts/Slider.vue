@@ -8,53 +8,41 @@
     <a-menu
       theme="dark"
       mode="inline"
-      :default-selected-keys="['1']"
-      :default-open-keys="['sub1']"
+      :default-selected-keys="[this.$router.currentRoute.path]"
+      :default-open-keys="['/products']"
       :style="{ height: '100%', borderRight: 0, backgroundColor: '#9800ab' }"
       >
-      <a-sub-menu key="sub1">
-        <span slot="title"><a-icon type="user" /><span>subnav 1</span></span>
-        <a-menu-item key="1">
-          option1
+      <a-sub-menu key="/products">
+        <span slot="title">
+          <a-icon type="user" /><span>Sản phẩm</span>
+        </span>
+        <a-menu-item key="/products/">
+          <router-link to="/products/">
+            Danh sách
+          </router-link>
         </a-menu-item>
-        <a-menu-item key="2">
-          option2
-        </a-menu-item>
-        <a-menu-item key="3">
-          option3
-        </a-menu-item>
-        <a-menu-item key="4">
-          option4
-        </a-menu-item>
-      </a-sub-menu>
-      <a-sub-menu key="sub2">
-        <span slot="title"><a-icon type="user" /><span>subnav 1</span></span>
-        <a-menu-item key="5">
-          option5
-        </a-menu-item>
-        <a-menu-item key="6">
-          option6
-        </a-menu-item>
-        <a-menu-item key="7">
-          option7
-        </a-menu-item>
-        <a-menu-item key="8">
-          option8
+        <a-menu-item key="/products/new">
+          <router-link to="/products/new">
+            Đăng bán
+          </router-link>
         </a-menu-item>
       </a-sub-menu>
-      <a-sub-menu key="sub3">
-        <span slot="title"><a-icon type="user" /><span>subnav 1</span></span>
-        <a-menu-item key="9">
-          option9
+      <a-sub-menu key="/stocks">
+        <span slot="title">
+          <a-icon type="user" /><span>Kho hàng</span>
+        </span>
+        <a-menu-item key="/stocks/">
+          <router-link to="/stocks/">
+            Danh sách
+          </router-link>
         </a-menu-item>
-        <a-menu-item key="10">
-          option10
+        <a-menu-item key="/stocks/new">
+          <router-link to="/stocks/new">
+            Nhập hàng
+          </router-link>
         </a-menu-item>
-        <a-menu-item key="11">
-          option11
-        </a-menu-item>
-        <a-menu-item key="12">
-          option12
+        <a-menu-item key="/stocks/new">
+          Xuất kho
         </a-menu-item>
       </a-sub-menu>
     </a-menu>
@@ -63,6 +51,7 @@
 <script>
 export default {
   data() {
+    console.log(this.$router.currentRoute);
     return {
       collapsed: false,
     };
