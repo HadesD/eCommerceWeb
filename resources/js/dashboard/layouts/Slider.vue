@@ -8,8 +8,8 @@
     <a-menu
       theme="dark"
       mode="inline"
-      :default-selected-keys="[this.$router.currentRoute.path]"
-      :default-open-keys="['/products']"
+      :default-open-keys="['/products','/stocks']"
+      :default-selected-keys="['/products/']"
       :style="{ height: '100%', borderRight: 0, backgroundColor: '#9800ab' }"
       >
       <a-sub-menu key="/products">
