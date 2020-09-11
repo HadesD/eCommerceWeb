@@ -9,15 +9,15 @@
       theme="dark"
       mode="inline"
       :default-open-keys="['/products','/stocks']"
-      :default-selected-keys="['/products/']"
+      :default-selected-keys="['/products/index']"
       :style="{ height: '100%', borderRight: 0, backgroundColor: '#9800ab' }"
       >
       <a-sub-menu key="/products">
         <span slot="title">
           <a-icon type="shopping-cart" /><span>Sản phẩm</span>
         </span>
-        <a-menu-item key="/products/">
-          <router-link to="/products/">
+        <a-menu-item key="/products/index">
+          <router-link to="/products/index">
             Danh sách
           </router-link>
         </a-menu-item>
@@ -31,8 +31,8 @@
         <span slot="title">
           <a-icon type="bank" /><span>Kho hàng</span>
         </span>
-        <a-menu-item key="/stocks/">
-          <router-link to="/stocks/">
+        <a-menu-item key="/stocks/index">
+          <router-link to="/stocks/index">
             Danh sách
           </router-link>
         </a-menu-item>

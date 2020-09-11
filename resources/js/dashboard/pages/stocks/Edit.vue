@@ -1,6 +1,6 @@
 <template>
   <div>
-    new
+    Edit
   </div>
 </template>
 

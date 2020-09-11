@@ -11,42 +11,42 @@ let routes = [
     {
         path: '/',
         component: () => import('./pages/Index.vue'),
+    },
+    {
+        path: '/products',
+        redirect: '/products/index',
+        component: RouteView,
         children: [
             {
-                path: '/products',
-                component: RouteView,
-                children: [
-                    {
-                        path: '/',
-                        component: () => import('./pages/products/Index.vue'),
-                    },
-                    {
-                        path: '/new',
-                        component: () => import('./pages/products/Edit.vue'),
-                    },
-                    {
-                        path: '/edit',
-                        component: () => import('./pages/products/Edit.vue'),
-                    },
-                ]
+                path: 'index',
+                component: () => import('./pages/products/Index.vue'),
             },
             {
-                path: '/stocks',
-                component: RouteView,
-                children: [
-                    {
-                        path: '/',
-                        component: () => import('./pages/stocks/Index.vue'),
-                    },
-                    {
-                        path: '/new',
-                        component: () => import('./pages/stocks/New.vue'),
-                    },
-                    {
-                        path: '/edit',
-                        component: () => import('./pages/stocks/Edit.vue'),
-                    },
-                ]
+                path: 'new',
+                component: () => import('./pages/products/Edit.vue'),
+            },
+            {
+                path: 'edit',
+                component: () => import('./pages/products/Edit.vue'),
+            },
+        ],
+    },
+    {
+        path: '/stocks',
+        redirect: '/stocks/index',
+        component: RouteView,
+        children: [
+            {
+                path: 'index',
+                component: () => import('./pages/stocks/Index.vue'),
+            },
+            {
+                path: 'new',
+                component: () => import('./pages/stocks/New.vue'),
+            },
+            {
+                path: 'edit',
+                component: () => import('./pages/stocks/Edit.vue'),
             },
         ],
     },
