@@ -50,6 +50,17 @@ let routes = [
             },
         ],
     },
+    {
+        path: '/categories',
+        redirect: '/categories/index',
+        component: RouteView,
+        children: [
+            {
+                path: 'index',
+                component: () => import('./pages/categories/Index.vue'),
+            },
+        ],
+    }
 ];
 
 routes.push({

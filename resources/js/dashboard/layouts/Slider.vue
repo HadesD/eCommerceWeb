@@ -45,16 +45,20 @@
           Xuất kho
         </a-menu-item>
       </a-sub-menu>
+      <a-menu-item key="/categories/index">
+        <router-link to="/categories/index">
+          <a-icon type="bars" /><span>Chuyên mục</span>
+        </router-link>
+      </a-menu-item>
     </a-menu>
   </a-layout-sider>
 </template>
 <script>
 export default {
   data() {
-    console.log(this.$router.currentRoute);
     return {
       collapsed: false,
-    };
+    }
   },
 }
 </script>
