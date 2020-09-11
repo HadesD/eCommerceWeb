@@ -24,6 +24,7 @@ class CreateProductsTable extends Migration
             $table->string('specification');
             $table->unsignedBigInteger('image_variant_id');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

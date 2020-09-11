@@ -18,6 +18,7 @@ class CreateOrdersTable extends Migration
             $table->unsignedBigInteger('customer_id'); // users.id
             $table->text('note')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

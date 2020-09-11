@@ -20,6 +20,7 @@ class CreateInventoryProductsTable extends Migration
             $table->integer('cost_price');
             $table->bigInteger('updated_user_id');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -30,6 +31,6 @@ class CreateInventoryProductsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('inventory_products');
+        Schema::dropIfExists('stocks');
     }
 }

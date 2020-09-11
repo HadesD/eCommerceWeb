@@ -20,6 +20,7 @@ class CreateOrderProductsTable extends Migration
             $table->unsignedTinyInteger('quantity');
             $table->unsignedTinyInteger('payment_method');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
