@@ -137,6 +137,7 @@ export default {
         detail: '',
         specification: '',
         price: undefined,
+        status: undefined,
       },
       rules: {
         name: [
