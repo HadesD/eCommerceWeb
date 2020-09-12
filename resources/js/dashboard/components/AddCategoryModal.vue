@@ -3,6 +3,8 @@
     title="Thêm chuyên mục mới"
     :visible="visible"
     :confirm-loading="confirmLoading"
+    cancelText="Hủy"
+    okText="Tạo"
     @ok="ok"
     @cancel="cancel"
     >
@@ -48,12 +50,13 @@
   </a-modal>
 </template>
 <script>
-import vietnameseNormalize from '../../stringNormalize.js'
+import {vietnameseNormalize} from '../../stringNormalize.js'
 
 export default {
   props: {
     visible: Boolean,
     categories: Array,
+    categoriesTreeLoading: Boolean,
   },
   data() {
     return {
@@ -64,7 +67,6 @@ export default {
         slug: '',
         description: '',
       },
-      categoriesTreeLoading: false,
     };
   },
   computed:{
@@ -88,20 +90,7 @@ export default {
       this.formData.slug = vietnameseNormalize(e.target.value);
     },
     reloadCategoriesTree(){
-      this.categoriesTreeLoading = true;
-      axios
-        .get('/api/categories')
-        .then(res => {
-          this.$emit('updateCategories', res.data.data || []);
-        })
-        .catch(err => {
-          console.log(err);
-
-          this.$message.error('Thất bại');
-        })
-        .then(()=>{
-          this.categoriesTreeLoading = false;
-        });
+      this.$emit('updateCategories');
     },
     ok(e) {
       this.confirmLoading = true;
@@ -120,6 +109,10 @@ export default {
           if (this.formData.parent_id)
           {
             this.reloadCategoriesTree();
+          }
+          else
+          {
+            this.$emit('updateCategories', res.data.data || []);
           }
         })
         .catch(err => {

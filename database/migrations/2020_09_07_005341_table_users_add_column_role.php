@@ -29,7 +29,7 @@ class TableUsersAddColumnRole extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumns([
+            $table->dropColumn([
                 'role'
             ]);
             $table->dropSoftDeletes();

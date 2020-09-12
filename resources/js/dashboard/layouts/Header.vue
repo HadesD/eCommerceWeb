@@ -3,19 +3,13 @@
     <div class="logo"></div>
     <a-menu
       mode="horizontal"
-      :default-selected-keys="['1']"
+      :selectedKeys="[$route.path]"
       :style="{ lineHeight: '64px' }"
       >
-      <a-menu-item key="1">
+      <a-menu-item key="/">
         <router-link to="/">
-          Dashboard
+          Trang quản lý
         </router-link>
-      </a-menu-item>
-      <a-menu-item key="2">
-        nav 2
-      </a-menu-item>
-      <a-menu-item key="3">
-        nav 3
       </a-menu-item>
     </a-menu>
   </a-layout-header>

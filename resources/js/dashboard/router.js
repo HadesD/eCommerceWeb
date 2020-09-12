@@ -26,7 +26,7 @@ let routes = [
                 component: () => import('./pages/products/Edit.vue'),
             },
             {
-                path: 'edit',
+                path: ':id/edit',
                 component: () => import('./pages/products/Edit.vue'),
             },
         ],

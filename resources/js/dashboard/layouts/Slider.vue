@@ -8,10 +8,15 @@
     <a-menu
       theme="dark"
       mode="inline"
-      :default-open-keys="['/products','/stocks']"
-      :default-selected-keys="['/products/index']"
+      :defaultOpenKeys="['/products','/stocks']"
+      :selectedKeys="[$route.path]"
       :style="{ height: '100%', borderRight: 0, backgroundColor: '#9800ab' }"
       >
+      <a-menu-item key="/">
+        <router-link to="/">
+          <a-icon type="home" /><span>Trang quản lý</span>
+        </router-link>
+      </a-menu-item>
       <a-sub-menu key="/products">
         <span slot="title">
           <a-icon type="shopping-cart" /><span>Sản phẩm</span>

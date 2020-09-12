@@ -7,10 +7,11 @@
       </h2>
       <AddCategoryModal
         :visible="modalVisible"
+        :categories="categories"
+        :categoriesTreeLoading="categoriesTreeLoading"
         @handleOk="addCategoryModalHandleOk"
         @handleCancel="addCategoryModalHandleCancel"
         @updateCategories="updateCategories"
-        :categories="categories"
         />
       <a-spin :spinning="categoriesTreeLoading">
         <a-tree
@@ -81,14 +82,10 @@ export default {
         };
 
         let parent = getParent(cur.parent_id, data);
-        if (!parent)
-        {
-          data.push(newData);
-        }
-        else
-        {
-          parent.children.push(newData);
-        }
+        let toNode = parent ? parent.children : data;
+        toNode.push(newData);
+
+        toNode = toNode.sort((a,b) => a.title.toUpperCase() > b.title.toUpperCase() ? 1 : -1);
       }
 
       return data;

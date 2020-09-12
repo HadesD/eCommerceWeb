@@ -16,6 +16,8 @@ function vietnameseNormalize(str, toUpperCase = false) {
     return toUpperCase ? str.toUpperCase() : str;
 }
 
-export default vietnameseNormalize
+export {
+    vietnameseNormalize,
+}
 
 
