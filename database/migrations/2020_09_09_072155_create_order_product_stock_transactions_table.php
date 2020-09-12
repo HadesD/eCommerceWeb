@@ -18,7 +18,7 @@ class CreateOrderProductStockTransactionsTable extends Migration
             $table->unsignedBigInteger('order_product_stock_id');
             $table->unsignedBigInteger('transaction_id');
             // $table->timestamps();
-            $table->unique(['order_product_stock_id', 'transaction_id']);
+            $table->unique(['order_product_stock_id', 'transaction_id'], 'opst_id_unique');
         });
     }
 

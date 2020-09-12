@@ -20,7 +20,7 @@ interface Role
 
 class User extends Authenticatable implements Role
 {
-    use Notifiable, HasFactory;
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.

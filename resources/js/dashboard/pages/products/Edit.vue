@@ -129,13 +129,14 @@ export default {
       categories: [],
 
       formData: {
+        id: undefined,
         name: '',
         slug: '',
         categories_id: [],
         description: '',
         detail: '',
         specification: '',
-        price: 0,
+        price: undefined,
       },
       rules: {
         name: [
@@ -215,7 +216,38 @@ export default {
           return false;
         }
 
-        alert('submit!');
+        this.productInfoLoading = true;
+
+        const productId = this.$route.params.id;
+        if (productId)
+        {
+          axios.put(`/api/products/${productId}`)
+            .then(res => {
+            })
+            .catch(err => {
+              console.log(err);
+
+              this.$message.error('Thất bại');
+            })
+            .then(()=>{
+              this.productInfoLoading = false;
+            });
+        }
+        else
+        {
+          axios.post('/api/products')
+            .then(res => {
+              this.categories = res.data.data || [];
+            })
+            .catch(err => {
+              console.log(err);
+
+              this.$message.error('Thất bại');
+            })
+            .then(()=>{
+              this.productInfoLoading = false;
+            });
+        }
       });
     },
     resetForm() {
