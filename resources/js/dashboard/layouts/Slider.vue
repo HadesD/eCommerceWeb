@@ -45,11 +45,11 @@
           Xuất kho
         </a-menu-item>
       </a-sub-menu>
-      <a-menu-item key="/categories/index">
-        <router-link to="/categories/index">
-          <a-icon type="bars" /><span>Chuyên mục</span>
-        </router-link>
-      </a-menu-item>
+      <!-- <a&#45;menu&#45;item key="/categories/index"> -->
+      <!--   <router&#45;link to="/categories/index"> -->
+      <!--     <a&#45;icon type="bars" /><span>Chuyên mục</span> -->
+      <!--   </router&#45;link> -->
+      <!-- </a&#45;menu&#45;item> -->
     </a-menu>
   </a-layout-sider>
 </template>
