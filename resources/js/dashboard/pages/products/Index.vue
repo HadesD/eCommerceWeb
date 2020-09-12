@@ -1,18 +1,18 @@
 <template>
   <a-row :gutter="16">
+    <AddCategoryModal
+      :visible="addCategoryModalVisible"
+      :categories="categories"
+      :categoriesTreeLoading="categoriesTreeLoading"
+      @handleOk="addCategoryModalHandleOk"
+      @handleCancel="addCategoryModalHandleCancel"
+      @updateCategories="updateCategories"
+      />
     <a-col :span="4" style="border-right:1px solid #CCC;">
       <h2>
         Chuyên mục
         <a-button type="primary" icon="plus" @click="showAddCategoryModal" style="float:right;" />
       </h2>
-      <AddCategoryModal
-        :visible="modalVisible"
-        :categories="categories"
-        :categoriesTreeLoading="categoriesTreeLoading"
-        @handleOk="addCategoryModalHandleOk"
-        @handleCancel="addCategoryModalHandleCancel"
-        @updateCategories="updateCategories"
-        />
       <a-spin :spinning="categoriesTreeLoading">
         <a-tree
           default-expand-all show-line
@@ -41,7 +41,7 @@ export default {
   data() {
     return {
       categories: [],
-      modalVisible: false,
+      addCategoryModalVisible: false,
       categoriesTreeLoading: false,
     };
   },
@@ -117,13 +117,13 @@ export default {
       console.log('Trigger Expand');
     },
     showAddCategoryModal() {
-      this.modalVisible = true;
+      this.addCategoryModalVisible = true;
     },
     addCategoryModalHandleOk(e){
-      // this.modalVisible = false;
+      // this.addCategoryModalVisible = false;
     },
     addCategoryModalHandleCancel(e){
-      this.modalVisible = false;
+      this.addCategoryModalVisible = false;
     },
   },
 }

@@ -3,7 +3,6 @@
     title="Thêm chuyên mục mới"
     :visible="visible"
     :confirm-loading="confirmLoading"
-    cancelText="Hủy"
     okText="Tạo"
     @ok="ok"
     @cancel="cancel"
@@ -125,7 +124,7 @@ export default {
           .then(res => {
             this.$emit('handleOk');
 
-            this.$message.success('Tạo chuyên mục mới thành công');
+            this.$message.success(`Tạo chuyên mục [${res.data.data.name}] thành công`);
 
             this.formData.name = '';
             this.formData.slug = '';
