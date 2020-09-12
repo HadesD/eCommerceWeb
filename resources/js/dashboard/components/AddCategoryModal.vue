@@ -8,12 +8,23 @@
     @ok="ok"
     @cancel="cancel"
     >
-    <a-form-model :model="formData">
-      <a-form-model-item label="Tên chuyên mục">
-        <a-input v-model="formData.name" @change="onNameChanged" />
+    <a-form-model
+      ref="ruleForm"
+      :model="formData"
+      :rules="rules"
+      >
+      <a-form-model-item label="Tên chuyên mục" ref="name" prop="name">
+        <a-input
+          v-model="formData.name"
+          @change="onNameChanged"
+          @blur="() => {$refs.name.onFieldBlur();$refs.slug.onFieldBlur()}"
+          />
       </a-form-model-item>
-      <a-form-model-item label="Đường dẫn URL (Slug)">
-        <a-input v-model="formData.slug" />
+      <a-form-model-item label="Đường dẫn URL (Slug)" ref="slug" prop="slug">
+        <a-input
+          v-model="formData.slug"
+          @blur="() => $refs.slug.onFieldBlur"
+          />
       </a-form-model-item>
       <a-form-model-item label="Mô tả ngắn">
         <a-textarea
@@ -67,6 +78,14 @@ export default {
         slug: '',
         description: '',
       },
+      rules: {
+        name: [
+          { required: true, trigger: 'blur' },
+        ],
+        slug: [
+          { required: true, trigger: 'blur' },
+        ],
+      },
     };
   },
   computed:{
@@ -93,36 +112,43 @@ export default {
       this.$emit('updateCategories');
     },
     ok(e) {
-      this.confirmLoading = true;
+      this.$refs.ruleForm.validate(valid => {
+        if (!valid)
+        {
+          return false;
+        }
 
-      axios
-        .post('/api/categories', this.formData)
-        .then(res => {
-          this.$emit('handleOk');
+        this.confirmLoading = true;
 
-          this.$message.success('Tạo chuyên mục mới thành công');
+        axios
+          .post('/api/categories', this.formData)
+          .then(res => {
+            this.$emit('handleOk');
 
-          this.formData.name = '';
-          this.formData.slug = '';
-          this.formData.description = '';
+            this.$message.success('Tạo chuyên mục mới thành công');
 
-          if (this.formData.parent_id)
-          {
-            this.reloadCategoriesTree();
-          }
-          else
-          {
-            this.$emit('updateCategories', res.data.data || []);
-          }
-        })
-        .catch(err => {
-          console.log(err);
+            this.formData.name = '';
+            this.formData.slug = '';
+            this.formData.description = '';
 
-          this.$message.error('Tạo chuyên mục thất bại');
-        })
-        .then(()=>{
-          this.confirmLoading = false;
-        });
+            if (this.formData.parent_id)
+            {
+              this.reloadCategoriesTree();
+            }
+            else
+            {
+              this.$emit('updateCategories', res.data.data || []);
+            }
+          })
+          .catch(err => {
+            console.log(err);
+
+            this.$message.error('Tạo chuyên mục thất bại');
+          })
+          .then(()=>{
+            this.confirmLoading = false;
+          });
+      });
     },
     cancel(e) {
       this.$emit('handleCancel');
