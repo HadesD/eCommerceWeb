@@ -17,8 +17,9 @@
       :label-col="labelCol"
       :wrapper-col="wrapperCol"
       >
-      <a-form-model-item @change="onNameChanged" ref="name" label="Tên sản phẩm" prop="name">
+      <a-form-model-item label="Tên sản phẩm" ref="name" prop="name">
         <a-input
+          @change="onNameChanged"
           v-model="formData.name"
           @blur="() => {$refs.name.onFieldBlur();$refs.slug.onFieldBlur()}"
           />
@@ -28,6 +29,15 @@
           v-model="formData.slug"
           @blur="() => $refs.slug.onFieldBlur"
           />
+      </a-form-model-item>
+      <a-form-model-item label="Giá bán" ref="price" prop="price">
+        <a-input
+          v-model="formData.price"
+          @blur="() => $refs.price.onFieldBlur"
+          type="number"
+          >
+        </a-input>
+        Xem trước: {{ new Intl.NumberFormat().format(formData.price) }} VND
       </a-form-model-item>
       <a-form-model-item label="Chuyên mục cha" ref="categories_id" prop="categories_id">
         <a-form-model-item
@@ -125,12 +135,16 @@ export default {
         description: '',
         detail: '',
         specification: '',
+        price: 0,
       },
       rules: {
         name: [
           { required: true, trigger: 'blur' },
         ],
         slug: [
+          { required: true, trigger: 'blur' },
+        ],
+        price: [
           { required: true, trigger: 'blur' },
         ],
         categories_id: [

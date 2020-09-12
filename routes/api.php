@@ -18,7 +18,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::namespace('Api')->group(function(){
-    Route::resource('/stocks', StockController::class);
-    Route::resource('/categories', CategoryController::class);
+    Route::apiResources([
+        'stocks' => StockController::class,
+        'categories' => CategoryController::class,
+        'products' => ProductController::class,
+    ]);
 });
 

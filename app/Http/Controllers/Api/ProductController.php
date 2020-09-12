@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Http\Resources\Category as CategoryResource;
-use App\Models\Category;
+use App\Http\Resources\Product as ProductResource;
+use App\Models\Product;
 
-class CategoryController extends Controller
+class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,17 +17,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return new CategoryResource(Category::all());
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return new ProductResource(Product::paginate());
     }
 
     /**
@@ -38,11 +28,14 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        return new CategoryResource(Category::create([
+        return new ProductResource(Product::create([
             'name' => $request->name,
             'slug' => $request->slug,
+            'price' => $request->price,
             'description' => $request->description,
-            'parent_id' => $request->parent_id,
+            'detail' => $request->detail,
+            'specification' => $request->specification,
+            // 'parent_id' => $request->parent_id,
         ]));
     }
 
@@ -54,18 +47,7 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        return new ProductResource(Product::find($id));
     }
 
     /**
