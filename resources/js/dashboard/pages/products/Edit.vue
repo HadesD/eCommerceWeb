@@ -9,7 +9,7 @@
       @updateCategories="updateCategories"
       />
     <a-spin :spinning="productInfoLoading">
-    <h1>{{ $route.params.id ? `Sửa sản phẩm #${$route.params.id}` : 'Đăng bán sản phẩm mới' }}</h1>
+    <h2>{{ $route.params.id ? `Sửa sản phẩm #${$route.params.id}` : 'Đăng bán sản phẩm mới' }}</h2>
     <a-form-model
       ref="ruleForm"
       :model="formData"
@@ -39,6 +39,7 @@
               allow-clear
               multiple
               tree-data-simple-mode
+              treeNodeFilterProp="title"
               v-model="formData.categories_id"
               style="width: 100%"
               :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
