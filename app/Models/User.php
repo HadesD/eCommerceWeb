@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -18,9 +19,10 @@ interface Role
     const ROLE_ADMIN_MASTER = 100;
 }
 
-class User extends Authenticatable implements Role
+class User extends Authenticatable
+	implements Role
 {
-    use Notifiable;
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -28,7 +30,8 @@ class User extends Authenticatable implements Role
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'permissions',
+        'name', 'email', 'password',
+        'role',
     ];
 
     /**
@@ -59,4 +62,3 @@ class User extends Authenticatable implements Role
         return (new \ReflectionClass(Role::class))->getConstants();
     }
 }
-

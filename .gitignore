@@ -17,4 +17,5 @@ yarn-error.log
 /public/css/dashboard
 /public/mix-manifest.json
 /public/*.js
+*.bak
 
