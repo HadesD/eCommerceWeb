@@ -1,1 +1,18 @@
 @import '../../../node_modules/ant-design-vue/dist/antd.css';
+.ant-btn-primary {
+    background-color: #bb18ff;
+    border-color: #d118ff;
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus{
+    background-color: #f118ff;
+    border-color: #f118ff;
+}
+
+.ant-btn-primary.active,
+ .ant-btn-primary:active {
+     background-color: #9240ff;
+     border-color: #9240ff;
+}
+

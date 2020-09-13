@@ -120,7 +120,7 @@ export default {
 
         this.confirmLoading = true;
 
-        this.formData.parent_id = this.formData.parent_id || 0;
+        this.formData.parent_id = this.formData.parent_id || '0';
 
         axios
           .post('/api/categories', this.formData)
@@ -149,7 +149,7 @@ export default {
           })
           .then(()=>{
             this.confirmLoading = false;
-            if (this.formData.parent_id === 0)
+            if (this.formData.parent_id === '0')
             {
               this.formData.parent_id = undefined;
             }

@@ -39,6 +39,22 @@
         </a-input>
         Xem trước: {{ new Intl.NumberFormat().format(formData.price) }} VND
       </a-form-model-item>
+      <a-form-model-item label="Trạng thái" ref="status" prop="status">
+        <a-select
+          v-model="formData.status"
+          @blur="() => $refs.status.onFieldBlur"
+          >
+          <a-select-option value="0">
+            Bản nháp
+          </a-select-option>
+          <a-select-option value="1">
+            Đang bán
+          </a-select-option>
+          <a-select-option value="2">
+            Hết hàng
+          </a-select-option>
+        </a-select>
+      </a-form-model-item>
       <a-form-model-item label="Chuyên mục cha" ref="categories_id" prop="categories_id">
         <a-form-model-item
           :style="{ display: 'inline-block', width: 'calc(100% - 80px)' }"
@@ -137,7 +153,7 @@ export default {
         detail: '',
         specification: '',
         price: undefined,
-        status: undefined,
+        status: '0',
       },
       rules: {
         name: [
@@ -147,6 +163,9 @@ export default {
           { required: true, trigger: 'blur' },
         ],
         price: [
+          { required: true, trigger: 'blur' },
+        ],
+        status: [
           { required: true, trigger: 'blur' },
         ],
         categories_id: [
@@ -168,10 +187,10 @@ export default {
     },
   },
   mounted(){
-    const productId = this.$route.params.id;
-    if (productId)
+    this.formData.id = this.$route.params.id;
+    if (this.formData.id)
     {
-      // this.productInfoLoading = true;
+	  // this.productInfoLoading = true;
     }
 
     this.reloadCategoriesTree();
@@ -222,7 +241,7 @@ export default {
         const productId = this.$route.params.id;
         if (productId)
         {
-          axios.put(`/api/products/${productId}`)
+          axios.put(`/api/products/${productId}`, this.formData)
             .then(res => {
             })
             .catch(err => {
@@ -236,9 +255,18 @@ export default {
         }
         else
         {
-          axios.post('/api/products')
+          axios.post('/api/products', this.formData)
             .then(res => {
-              this.categories = res.data.data || [];
+              this.formData.id = res.data.data.id;
+
+              if (!this.formData.id)
+              {
+                throw res;
+                return;
+              }
+
+              this.$message.success('Đã thêm sản phẩm thành công');
+              this.$router.push({ path: `/products/${this.formData.id}/edit` });
             })
             .catch(err => {
               console.log(err);
