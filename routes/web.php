@@ -13,11 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::namespace('Dashboard')->prefix('dashboard')->name('dashboard.')->group(function(){
-    Route::get('{any?}', 'DashboardController@index')->where('any', '.*');
+Route::prefix('dashboard')->name('dashboard.')->group(function(){
+    Route::get('{any?}', [App\Http\Controllers\Dashboard\DashboardController::class, 'index'])->where('any', '.*');
 });
 
-Route::namespace('Web')->name('web.')->group(function(){
+Route::name('web.')->group(function(){
     // Route::get('{any?}', 'DashboardController@index')->where('any', '.*');
 });
 

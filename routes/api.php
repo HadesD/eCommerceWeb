@@ -18,11 +18,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::namespace('Api')->group(function(){
-    Route::apiResources([
-        'stocks' => StockController::class,
-        'categories' => CategoryController::class,
-        'products' => ProductController::class,
-    ]);
-});
+Route::apiResources([
+    'stocks' => App\Http\Controllers\Api\StockController::class,
+    'categories' => App\Http\Controllers\Api\CategoryController::class,
+    'products' => App\Http\Controllers\Api\ProductController::class,
+]);
 
