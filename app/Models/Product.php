@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 interface Status
 {
@@ -15,11 +16,9 @@ interface Status
 class Product extends Model
     implements Status
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = ['name', 'description', 'detail', 'specification', 'slug', 'price'];
-
-    public $categories = [];
 
     static public function allStatus()
     {

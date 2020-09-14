@@ -58,8 +58,6 @@ class ProductController extends Controller
             // EAV
             foreach ($request->categories_id as $category_id)
             {
-                // $product->categories[] = Category::find($category_id);
-
                 $product_category = new ProductCategory;
                 $product_category->product_id = $product->id;
                 $product_category->category_id = $category_id;
@@ -114,15 +112,25 @@ class ProductController extends Controller
             $product->save();
 
             // EAV
-            // foreach ($request->categories_id as $category_id)
-            // {
-                // $product->categories[] = Category::find($category_id);
+            foreach ($request->categories_id as $category_id)
+            {
+                $product_category = ProductCategory::where('product_id', $product->id)
+                    ->where('category_id', $category_id)
+                    ->first();
+                if ($product_category)
+                {
+                    continue;
+                }
 
-            //     $product_category = new ProductCategory;
-            //     $product_category->product_id = $product->id;
-            //     $product_category->category_id = $category_id;
-            //     $product_category->save();
-            // }
+                $product_category = new ProductCategory;
+                $product_category->product_id = $product->id;
+                $product_category->category_id = $category_id;
+                $product_category->save();
+            }
+
+            ProductCategory::where('product_id', $product->id)
+                ->whereNotIn('category_id', $request->categories_id)
+                ->delete();
 
             \DB::commit();
         }
@@ -133,7 +141,7 @@ class ProductController extends Controller
             throw new \RuntimeException($e);
         }
 
-        return new ProductResource($product ?? []);
+        return new ProductResource($product);
     }
 
     /**

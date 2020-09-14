@@ -43,7 +43,7 @@
         </a-menu-item>
         <a-menu-item key="/stocks/new">
           <router-link to="/stocks/new">
-            Nhập hàng
+            Nhập kho
           </router-link>
         </a-menu-item>
         <a-menu-item key="/stocks/edit">

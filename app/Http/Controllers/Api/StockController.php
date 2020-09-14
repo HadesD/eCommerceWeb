@@ -21,16 +21,6 @@ class StockController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -38,7 +28,30 @@ class StockController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try
+        {
+            \DB::beginTransaction();
+
+            $stock = new Stock;
+            $stock->name = $request->name;
+            $stock->idi = $request->idi;
+            $stock->status = $request->status;
+            $stock->cost_price = $request->cost_price;
+            $stock->updated_user_id = 0;
+            $stock->save();
+
+            \DB::commit();
+        }
+        catch(\Throwable $e)
+        {
+            \DB::rollback();
+
+            Log::error($e);
+
+            throw new \RuntimeException($e);
+        }
+
+        return new StockResource($stock);
     }
 
     /**
@@ -49,18 +62,7 @@ class StockController extends Controller
      */
     public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        return new StockResource(Stock::find($id));
     }
 
     /**
@@ -72,7 +74,28 @@ class StockController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try
+        {
+            \DB::beginTransaction();
+
+            $stock = Stock::find($id);
+            $stock->name = $request->name;
+            $stock->idi = $request->idi;
+            $stock->status = $request->status;
+            $stock->cost_price = $request->cost_price;
+            $stock->updated_user_id = 0;
+            $stock->save();
+
+            \DB::commit();
+        }
+        catch(\Throwable $e)
+        {
+            \DB::rollback();
+
+            throw new \RuntimeException($e);
+        }
+
+        return new StockResource($stock);
     }
 
     /**
@@ -83,6 +106,8 @@ class StockController extends Controller
      */
     public function destroy($id)
     {
-        //
+        return new StockResource(Stock::find($id)->delete() ? [
+            'error_code' => 0,
+        ] : []);
     }
 }

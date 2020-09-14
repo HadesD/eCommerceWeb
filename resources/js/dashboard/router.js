@@ -42,10 +42,10 @@ let routes = [
             },
             {
                 path: 'new',
-                component: () => import('./pages/stocks/New.vue'),
+                component: () => import('./pages/stocks/Edit.vue'),
             },
             {
-                path: 'edit',
+                path: ':id/edit',
                 component: () => import('./pages/stocks/Edit.vue'),
             },
         ],

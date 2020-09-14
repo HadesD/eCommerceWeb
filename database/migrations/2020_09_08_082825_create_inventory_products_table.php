@@ -14,8 +14,9 @@ class CreateInventoryProductsTable extends Migration
     public function up()
     {
         Schema::create('stocks', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
             $table->string('idi'); // idividual id, imei
+            $table->string('name')->nullable();
             $table->smallInteger('status');
             $table->integer('cost_price');
             $table->bigInteger('updated_user_id');

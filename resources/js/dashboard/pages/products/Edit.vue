@@ -9,126 +9,126 @@
       @updateCategories="updateCategories"
       />
     <a-spin :spinning="productInfoLoading">
-    <h2>{{ $route.params.id ? `Sửa sản phẩm #${$route.params.id}` : 'Đăng bán sản phẩm mới' }}</h2>
-    <a-form-model
-      ref="ruleForm"
-      :model="formData"
-      :rules="rules"
-      :label-col="labelCol"
-      :wrapper-col="wrapperCol"
-      >
-      <a-form-model-item label="Tên sản phẩm" ref="name" prop="name">
-        <a-input
-          @change="onNameChanged"
-          v-model="formData.name"
-          @blur="() => {$refs.name.onFieldBlur();$refs.slug.onFieldBlur()}"
-          />
-      </a-form-model-item>
-      <a-form-model-item label="Đường dẫn URL (Slug)" ref="slug" prop="slug">
-        <a-input
-          v-model="formData.slug"
-          @blur="() => $refs.slug.onFieldBlur()"
-          />
-      </a-form-model-item>
-      <a-form-model-item label="Giá bán" ref="price" prop="price">
-        <a-input
-          v-model="formData.price"
-          @blur="() => $refs.price.onFieldBlur()"
-          type="number"
-          >
-        </a-input>
-        Xem trước: {{ new Intl.NumberFormat().format(formData.price) }} VND
-      </a-form-model-item>
-      <a-form-model-item label="Trạng thái" ref="status" prop="status">
-        <a-select
-          v-model="formData.status"
-          @blur="() => $refs.status.onFieldBlur()"
-          >
-          <a-select-option :value="0">
-            Bản nháp
-          </a-select-option>
-          <a-select-option :value="1">
-            Đang bán
-          </a-select-option>
-          <a-select-option :value="2">
-            Hết hàng
-          </a-select-option>
-        </a-select>
-      </a-form-model-item>
-      <a-form-model-item label="Chuyên mục cha" ref="categories_id" prop="categories_id">
-        <a-form-model-item
-          style="display: inline-block; margin-right: 5px;"
-          >
-          <a-button type="primary" icon="plus" @click="showAddCategoryModal" />
+      <h2>{{ $route.params.id ? `Sửa sản phẩm #${$route.params.id}` : 'Đăng bán sản phẩm mới' }}</h2>
+      <a-form-model
+        ref="ruleForm"
+        :model="formData"
+        :rules="rules"
+        :label-col="labelCol"
+        :wrapper-col="wrapperCol"
+        >
+        <a-form-model-item label="Tên sản phẩm" ref="name" prop="name">
+          <a-input
+            @change="onNameChanged"
+            v-model="formData.name"
+            @blur="() => {$refs.name.onFieldBlur();$refs.slug.onFieldBlur()}"
+            />
         </a-form-model-item>
-        <a-form-model-item
-          :style="{ display: 'inline-block', width: 'calc(100% - 80px)' }"
-          >
-          <a-spin :spinning="categoriesTreeLoading">
-            <a-tree-select
-              show-search
-              allow-clear
-              multiple
-              tree-data-simple-mode
-              treeNodeFilterProp="title"
-              v-model="formData.categories_id"
-              style="width: 100%"
-              :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-              :tree-data="categoriesTreeData"
-              placeholder="Chuyên mục"
-              :replaceFields="{ pId:'parent_id',title:'name',value:'id' }"
-              @blur="() => $refs.categories_id.onFieldBlur()"
-              @change="() => $refs.categories_id.onFieldBlur()"
-              />
-          </a-spin>
+        <a-form-model-item label="Đường dẫn URL (Slug)" ref="slug" prop="slug">
+          <a-input
+            v-model="formData.slug"
+            @blur="() => $refs.slug.onFieldBlur()"
+            />
         </a-form-model-item>
-        <a-form-model-item
-          style="display: inline-block; margin-left: 5px;"
-          >
-          <a-button type="primary" icon="reload" @click="reloadCategoriesTree" :loading="categoriesTreeLoading" />
+        <a-form-model-item label="Giá bán" ref="price" prop="price">
+          <a-input
+            v-model="formData.price"
+            @blur="() => $refs.price.onFieldBlur()"
+            type="number"
+            >
+          </a-input>
+          Xem trước: {{ new Intl.NumberFormat().format(formData.price) }} VND
         </a-form-model-item>
-      </a-form-model-item>
-      <a-tabs default-active-key="description" @change="(k) => $refs[k] && $refs[k].focus()">
-        <a-tab-pane key="description" tab="Mô tả ngắn">
-          <a-form-model-item label="Mô tả ngắn">
-            <a-textarea
-              v-model="formData.description"
-              ref="description"
-              placeholder="Nhập mô tả"
-              :auto-size="{ minRows: 3, maxRows: 10 }"
-              />
+        <a-form-model-item label="Trạng thái" ref="status" prop="status">
+          <a-select
+            v-model="formData.status"
+            @blur="() => $refs.status.onFieldBlur()"
+            >
+            <a-select-option :value="0">
+              Bản nháp
+            </a-select-option>
+            <a-select-option :value="1">
+              Đang bán
+            </a-select-option>
+            <a-select-option :value="2">
+              Hết hàng
+            </a-select-option>
+          </a-select>
+        </a-form-model-item>
+        <a-form-model-item label="Chuyên mục cha" ref="categories_id" prop="categories_id">
+          <a-form-model-item
+            style="display: inline-block; margin-right: 5px;"
+            >
+            <a-button type="primary" icon="plus" @click="showAddCategoryModal" />
           </a-form-model-item>
-        </a-tab-pane>
-        <a-tab-pane key="detail" tab="Chi tiết sản phẩm">
-          <a-form-model-item label="Mô tả ngắn">
-            <a-textarea
-              v-model="formData.detail"
-              ref="detail"
-              placeholder="Nhập mô tả"
-              :auto-size="{ minRows: 3, maxRows: 10 }"
-              />
+          <a-form-model-item
+            :style="{ display: 'inline-block', width: 'calc(100% - 80px)' }"
+            >
+            <a-spin :spinning="categoriesTreeLoading">
+              <a-tree-select
+                show-search
+                allow-clear
+                multiple
+                tree-data-simple-mode
+                treeNodeFilterProp="title"
+                v-model="formData.categories_id"
+                style="width: 100%"
+                :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                :tree-data="categoriesTreeData"
+                placeholder="Chuyên mục"
+                :replaceFields="{ pId:'parent_id',title:'name',value:'id' }"
+                @blur="() => $refs.categories_id.onFieldBlur()"
+                @change="() => $refs.categories_id.onFieldBlur()"
+                />
+            </a-spin>
           </a-form-model-item>
-        </a-tab-pane>
-        <a-tab-pane key="specification" tab="Thông số sản phẩm">
-          <a-form-model-item label="Mô tả ngắn">
-            <a-textarea
-              v-model="formData.specification"
-              ref="specification"
-              placeholder="Nhập mô tả"
-              :auto-size="{ minRows: 3, maxRows: 10 }"
-              />
+          <a-form-model-item
+            style="display: inline-block; margin-left: 5px;"
+            >
+            <a-button type="primary" icon="reload" @click="reloadCategoriesTree" :loading="categoriesTreeLoading" />
           </a-form-model-item>
-        </a-tab-pane>
-      </a-tabs>
-      <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
-        <a-button type="primary" @click="onSubmit">
-          {{ $route.params.id ? 'Sửa' : 'Đăng bán' }}
-        </a-button>
-        <a-button style="margin-left: 10px;" @click="resetForm">
-          Reset
-        </a-button>
-      </a-form-model-item>
-    </a-form-model>
+        </a-form-model-item>
+        <a-tabs default-active-key="description" @change="(k) => $refs[k] && $refs[k].focus()">
+          <a-tab-pane key="description" tab="Mô tả ngắn">
+            <a-form-model-item label="Mô tả ngắn">
+              <a-textarea
+                v-model="formData.description"
+                ref="description"
+                placeholder="Nhập mô tả"
+                :auto-size="{ minRows: 3, maxRows: 10 }"
+                />
+            </a-form-model-item>
+          </a-tab-pane>
+          <a-tab-pane key="detail" tab="Chi tiết sản phẩm">
+            <a-form-model-item label="Mô tả ngắn">
+              <a-textarea
+                v-model="formData.detail"
+                ref="detail"
+                placeholder="Nhập mô tả"
+                :auto-size="{ minRows: 3, maxRows: 10 }"
+                />
+            </a-form-model-item>
+          </a-tab-pane>
+          <a-tab-pane key="specification" tab="Thông số sản phẩm">
+            <a-form-model-item label="Mô tả ngắn">
+              <a-textarea
+                v-model="formData.specification"
+                ref="specification"
+                placeholder="Nhập mô tả"
+                :auto-size="{ minRows: 3, maxRows: 10 }"
+                />
+            </a-form-model-item>
+          </a-tab-pane>
+        </a-tabs>
+        <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
+          <a-button type="primary" @click="onSubmit">
+            {{ $route.params.id ? 'Sửa' : 'Đăng bán' }}
+          </a-button>
+          <a-button style="margin-left: 10px;" @click="resetForm">
+            Reset
+          </a-button>
+        </a-form-model-item>
+      </a-form-model>
     </a-spin>
   </div>
 </template>
@@ -232,8 +232,7 @@ export default {
       this.addCategoryModalVisible = false;
     },
 
-    loadProduct(id)
-    {
+    loadProduct(id){
       this.productInfoLoading = true;
       axios.get(`/api/products/${id}`)
         .then(res => {

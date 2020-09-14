@@ -1,10 +1,16 @@
 <template>
   <div>
-    <router-link to="/stocks/new">
-      <a-button type="primary">
-        Nhập hàng
-      </a-button>
-    </router-link>
+    <h2>
+      Kho hàng
+      <a-tooltip title="Làm mới">
+        <a-button type="primary" icon="reload" :loading="false" @click="() => {}" />
+      </a-tooltip>
+      <router-link to="/stocks/new">
+        <a-tooltip title="Nhập kho">
+          <a-button type="primary" icon="plus" style="float:right;" />
+        </a-tooltip>
+      </router-link>
+    </h2>
     <a-table :columns="columns" :data-source="data">
       <a slot="name" slot-scope="text">{{ text }}</a>
     </a-table>

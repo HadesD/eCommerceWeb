@@ -27,15 +27,15 @@
     <a-col :span="20" style="border-left:1px solid #CCC;">
       <h2>
         Sản phẩm
+        <a-tooltip title="Làm mới">
+          <a-button type="primary" icon="reload" :loading="productsTableLoading" @click="() => {loadProducts(currentCategoryId, productsTablePagination.current)}" />
+        </a-tooltip>
         <router-link to="/products/new">
 		  <a-tooltip title="Thêm sản phẩm">
             <a-button type="primary" icon="plus" style="float:right;" />
           </a-tooltip>
         </router-link>
       </h2>
-      <a-tooltip title="Làm mới">
-        <a-button type="primary" icon="reload" :loading="productsTableLoading" @click="() => {loadProducts(currentCategoryId, productsTablePagination.current)}" />
-      </a-tooltip>
       <a-table
         :columns="productsTableColumns"
         :data-source="productsTableData"
