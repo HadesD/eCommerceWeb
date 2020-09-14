@@ -3,7 +3,7 @@
     <h2>
       Kho hàng
       <a-tooltip title="Làm mới">
-        <a-button type="primary" icon="reload" :loading="false" @click="() => {}" />
+        <a-button type="primary" icon="reload" :loading="false" @click="() => {loadStocks(stocksTablePagination.current)}" />
       </a-tooltip>
       <router-link to="/stocks/new">
         <a-tooltip title="Nhập kho">
@@ -11,66 +11,129 @@
         </a-tooltip>
       </router-link>
     </h2>
-    <a-table :columns="columns" :data-source="data">
-      <a slot="name" slot-scope="text">{{ text }}</a>
+    <a-table
+      :columns="stocksTableColumns"
+      :data-source="stocksTableData"
+      :loading="stocksTableLoading"
+      :row-key="record => record.id"
+      :pagination="stocksTablePagination"
+      @change="onStocksTablePaginationChanged"
+      >
+      <span slot="time" slot-scope="record">
+        Ngày tạo: {{ record.created_at }}<br />
+        Ngày update: {{ record.updated_at }}
+      </span>
+      <span slot="cost_price" slot-scope="record" style="display:block;text-align:right;">
+        {{ new Intl.NumberFormat().format(record.cost_price) }}
+      </span>
+      <span slot="action" slot-scope="record">
+        <router-link :to="`/stocks/${record.id}/edit`">
+          <a-icon type="edit" /> Sửa
+        </router-link>
+        <a-divider type="vertical"></a-divider>
+        <a-popconfirm title="Chắc chưa?" @confirm="()=>{onDeleteConfirmed(record)}">
+          <a-icon slot="icon" type="question-circle-o" style="color: red" />
+            <a href="#"><a-icon type="delete" /> Xóa</a>
+        </a-popconfirm>
+      </span>
     </a-table>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+const stocksTableColumns = [
+  {
+    title: '#',
+    dataIndex: 'id',
+    key: 'id',
+  },
+  {
+    title: 'Tên',
+    dataIndex: 'name',
+    key: 'name',
+  },
+  {
+    title: 'Id/Imei',
+    dataIndex: 'idi',
+    key: 'idi',
+  },
+  {
+    title: 'Giá lúc nhập (VND)',
+    key: 'cost_price',
+    scopedSlots: { customRender: 'cost_price' },
+  },
+  {
+    title: 'Thời gian',
+    key: 'time',
+    scopedSlots: { customRender: 'time' },
+  },
+  {
+    title: 'Người update',
+    key: 'update_user_id',
+    scopedSlots: { customRender: 'update_user' },
+  },
+  {
+    title: 'Hành động',
+    key: 'action',
+    scopedSlots: { customRender: 'action' },
+  },
+];
 
 export default {
   data() {
     return {
-      columns: [
-        {
-          title: 'Name',
-          dataIndex: 'name',
-          key: 'name',
-          scopedSlots: { customRender: 'name' },
-        },
-        {
-          title: 'Age',
-          dataIndex: 'age',
-          key: 'age',
-          width: 80,
-        },
-        {
-          title: 'Address',
-          dataIndex: 'address',
-          key: 'address 1',
-          ellipsis: true,
-        },
-        {
-          title: 'Long Column Long Column Long Column',
-          dataIndex: 'address',
-          key: 'address 2',
-          ellipsis: true,
-        },
-        {
-          title: 'Long Column Long Column',
-          dataIndex: 'address',
-          key: 'address 3',
-          ellipsis: true,
-        },
-        {
-          title: 'Long Column',
-          dataIndex: 'address',
-          key: 'address 4',
-          ellipsis: true,
-        },
-      ],
-      data: [],
+      stocks: [],
+      stocksTableLoading: false,
+      stocksTableColumns,
+      stocksTablePagination: {
+        position: 'both',
+      },
     }
   },
   mounted() {
-    axios.get('/api/stocks')
-      .then((res) => {
-        console.log(res.data);
+    this.loadStocks(this.stocksTablePagination.current);
+  },
+  computed: {
+    stocksTableData(){
+      return this.stocks;
+    },
+  },
+  methods: {
+    loadStocks(page){
+      this.stocksTableLoading = true;
+      axios.get('/api/stocks')
+        .then(res => {
+          this.stocks = res.data.data || [];
+        })
+        .catch(err => {
+          console.log(err);
 
-        this.data = res.data.data || [];
-      });
+          this.$message.error('Thất bại');
+        })
+        .then(()=>{
+          this.stocksTableLoading = false;
+        });
+    },
+
+    onStocksTablePaginationChanged(pagination){
+      this.loadStocks(pagination.current);
+    },
+
+    onDeleteConfirmed(record){
+      axios.delete(`/api/stocks/${record.id}`)
+        .then(res => {
+          this.$message.success('Xóa thành công');
+
+          this.loadStocks(this.stocksTablePagination.current);
+        })
+        .catch(err => {
+          console.log(err);
+
+          this.$message.error('Xóa thất bại');
+        })
+        .then(()=>{
+        });
+    },
   },
 }
 </script>

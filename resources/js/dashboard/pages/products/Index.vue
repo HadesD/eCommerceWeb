@@ -31,7 +31,7 @@
           <a-button type="primary" icon="reload" :loading="productsTableLoading" @click="() => {loadProducts(currentCategoryId, productsTablePagination.current)}" />
         </a-tooltip>
         <router-link to="/products/new">
-		  <a-tooltip title="Thêm sản phẩm">
+          <a-tooltip title="Thêm sản phẩm">
             <a-button type="primary" icon="plus" style="float:right;" />
           </a-tooltip>
         </router-link>
@@ -49,11 +49,11 @@
           <a-tag>{{ record.slug }}</a-tag>
         </span>
         <span slot="time" slot-scope="record">
-            Ngày tạo: {{ record.created_at }}<br />
-            Ngày update: {{ record.updated_at }}
+          Ngày tạo: {{ record.created_at }}<br />
+          Ngày update: {{ record.updated_at }}
         </span>
         <span slot="status" slot-scope="record">
-            {{ configProductStatus[record.status] }}<br />
+          {{ configProductStatus[record.status] }}<br />
         </span>
         <span slot="price" slot-scope="record" style="display:block;text-align:right;">
           {{ new Intl.NumberFormat().format(record.price) }}
@@ -65,9 +65,7 @@
           <a-divider type="vertical"></a-divider>
           <a-popconfirm title="Chắc chưa?" @confirm="()=>{onDeleteConfirmed(record)}">
             <a-icon slot="icon" type="question-circle-o" style="color: red" />
-            <a href="#">
-              <a-icon type="delete" /> Xóa
-            </a>
+              <a href="#"><a-icon type="delete" /> Xóa</a>
           </a-popconfirm>
         </span>
       </a-table>
