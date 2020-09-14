@@ -87,13 +87,14 @@
           <a-button type="primary" icon="plus" @click="showAddCategoryModal" style="float:right;" />
         </a-form-model-item>
       </a-form-model-item>
-      <a-tabs default-active-key="description">
+      <a-tabs default-active-key="description" @change="(k) => $refs[k] && $refs[k].focus()">
         <a-tab-pane key="description" tab="Mô tả ngắn">
           <a-form-model-item label="Mô tả ngắn">
             <a-textarea
               v-model="formData.description"
+              ref="description"
               placeholder="Nhập mô tả"
-              :auto-size="{ minRows: 3, maxRows: 10  }"
+              :auto-size="{ minRows: 3, maxRows: 10 }"
               />
           </a-form-model-item>
         </a-tab-pane>
@@ -101,8 +102,9 @@
           <a-form-model-item label="Mô tả ngắn">
             <a-textarea
               v-model="formData.detail"
+              ref="detail"
               placeholder="Nhập mô tả"
-              :auto-size="{ minRows: 3, maxRows: 10  }"
+              :auto-size="{ minRows: 3, maxRows: 10 }"
               />
           </a-form-model-item>
         </a-tab-pane>
@@ -110,8 +112,9 @@
           <a-form-model-item label="Mô tả ngắn">
             <a-textarea
               v-model="formData.specification"
+              ref="specification"
               placeholder="Nhập mô tả"
-              :auto-size="{ minRows: 3, maxRows: 10  }"
+              :auto-size="{ minRows: 3, maxRows: 10 }"
               />
           </a-form-model-item>
         </a-tab-pane>

@@ -63,6 +63,9 @@
 <script>
 import {vietnameseNormalize} from '../../stringNormalize.js'
 
+const TREE_ROOT_ID = 0;
+const TREE_NONE_PARENT_ID = -1;
+
 export default {
   props: {
     visible: Boolean,
@@ -74,7 +77,7 @@ export default {
       confirmLoading: false,
       formData: {
         name: '',
-        parent_id: undefined,
+        parent_id: TREE_ROOT_ID,
         slug: '',
         description: '',
       },
@@ -90,19 +93,22 @@ export default {
   },
   computed:{
     categoriesTreeData(){
-      let data = this.categories;
+      let data = [{
+        id: TREE_ROOT_ID, parent_id: TREE_NONE_PARENT_ID, name: 'Không có'
+      }].concat(this.categories);
 
       for (let i = 0; i < data.length; i++)
       {
-        data[i].pId = data[i].parent_id;
+        let cur = data[i];
+        if (cur.parent_id === TREE_ROOT_ID)
+        {
+          cur.parent_id = TREE_NONE_PARENT_ID;
+        }
+        cur.pId = cur.parent_id;
       }
 
       return data;
     },
-  },
-  mounted(){
-    // console.log(this.categories);
-    // this.categoriesTreeData = this.categories;
   },
   methods: {
     onNameChanged(e){
@@ -120,8 +126,6 @@ export default {
 
         this.confirmLoading = true;
 
-        this.formData.parent_id = this.formData.parent_id || '0';
-
         axios
           .post('/api/categories', this.formData)
           .then(res => {
@@ -133,14 +137,7 @@ export default {
             this.formData.slug = '';
             this.formData.description = '';
 
-            if (this.formData.parent_id)
-            {
-              this.reloadCategoriesTree();
-            }
-            else
-            {
-              this.$emit('updateCategories', res.data.data || []);
-            }
+            this.reloadCategoriesTree();
           })
           .catch(err => {
             console.log(err);
@@ -149,10 +146,6 @@ export default {
           })
           .then(()=>{
             this.confirmLoading = false;
-            if (this.formData.parent_id === '0')
-            {
-              this.formData.parent_id = undefined;
-            }
           });
       });
     },

@@ -29,11 +29,63 @@
           <a-button type="primary" icon="plus" style="float:right;" />
         </router-link>
       </h2>
+      <a-table
+        :columns="productsTableColumns"
+        :data-source="productsTableData"
+        :loading="productsTableLoading"
+        :row-key="record => record.id"
+        :pagination="productsTablePagination"
+        @change="onProductsTablePaginationChanged"
+        >
+        <span slot="customTitle"><a-icon type="smile-o" /> Name</span>
+        <span slot="time" slot-scope="record">
+            Ngày tạo: {{ record.created_at }}<br />
+            Ngày update: {{ record.updated_at }}
+        </span>
+        <span slot="action" slot-scope="record">
+          <router-link :to="`/products/${record.id}/edit`">Sửa</router-link>
+          <a-divider type="vertical"></a-divider>
+          <a>Delete</a>
+        </span>
+      </a-table>
     </a-col>
   </a-row>
 </template>
 
 <script>
+const productsTableColumns = [
+  {
+    title: '#',
+    dataIndex: 'id',
+    key: 'id',
+  },
+  {
+    title: 'Tên',
+    dataIndex: 'name',
+    key: 'name',
+  },
+  {
+    title: 'Trạng thái',
+    dataIndex: 'status',
+    key: 'status',
+  },
+  {
+    title: 'Giá',
+    dataIndex: 'price',
+    key: 'price',
+  },
+  {
+    title: 'Thời gian',
+    key: 'time',
+    scopedSlots: { customRender: 'time' },
+  },
+  {
+    title: 'Hành động',
+    key: 'action',
+    scopedSlots: { customRender: 'action' },
+  },
+];
+
 export default {
   components: {
     AddCategoryModal: () => import('../../components/AddCategoryModal.vue'),
@@ -43,10 +95,19 @@ export default {
       categories: [],
       addCategoryModalVisible: false,
       categoriesTreeLoading: false,
+
+      products: [],
+      productsTableLoading: false,
+      productsTableColumns,
+      productsTablePagination: {
+        position: 'both',
+      },
     };
   },
   mounted(){
     this.loadCategoriesTree();
+
+    this.loadProducts(0, 0);
   },
   computed: {
     categoriesTreeData(){
@@ -90,8 +151,12 @@ export default {
 
       return data;
     },
+    productsTableData(){
+      return this.products;
+    },
   },
   methods: {
+    // CategoriesTree
     loadCategoriesTree(){
       this.categoriesTreeLoading = true;
       axios.get('/api/categories')
@@ -111,11 +176,13 @@ export default {
       this.loadCategoriesTree();
     },
     onCategoriesTreeSelect(keys, event) {
-      console.log('Trigger Select', keys, event);
+      this.loadProducts(keys, 1);
     },
     onCategoriesTreeExpand() {
       console.log('Trigger Expand');
     },
+
+    // Modal
     showAddCategoryModal() {
       this.addCategoryModalVisible = true;
     },
@@ -124,6 +191,36 @@ export default {
     },
     addCategoryModalHandleCancel(e){
       this.addCategoryModalVisible = false;
+    },
+
+    // Product
+    loadProducts(category_id, page){
+      this.productsTableLoading = true;
+
+      axios.get(`/api/products?category_id=${category_id}&page=${page}`)
+        .then(res => {
+          const resData = res.data;
+          this.products = resData.data || [];
+
+          const newPagi = {
+            total: resData.total,
+            current: resData.current_page,
+            pageSize: resData.per_page,
+          };
+          this.productsTablePagination = {...newPagi};
+        })
+        .catch(err => {
+          console.log(err);
+
+          this.$message.error('Thất bại');
+        })
+        .then(()=>{
+          this.productsTableLoading = false;
+        });
+    },
+    onProductsTablePaginationChanged(pagination){
+      console.log(pagination);
+      this.loadProducts(0, pagination.current);
     },
   },
 }

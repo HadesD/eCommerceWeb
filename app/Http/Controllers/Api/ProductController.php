@@ -50,7 +50,7 @@ class ProductController extends Controller
             // EAV
             foreach ($request->categories_id as $category_id)
             {
-                $product->categories[] = Category::find($category_id);
+                // $product->categories[] = Category::find($category_id);
 
                 $product_category = new ProductCategory;
                 $product_category->product_id = $product->id;
