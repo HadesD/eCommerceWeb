@@ -195,19 +195,7 @@ export default {
 
     if (this.formData.id)
     {
-      this.productInfoLoading = true;
-      axios.get(`/api/products/${this.formData.id}`)
-        .then(res => {
-          this.formData = {...res.data.data};
-        })
-        .catch(err => {
-          console.log(err);
-
-          this.$message.error('Thất bại');
-        })
-        .then(()=>{
-          this.productInfoLoading = false;
-        });
+      this.loadProduct(this.formData.id)
     }
 
     this.reloadCategoriesTree();
@@ -243,6 +231,29 @@ export default {
     addCategoryModalHandleCancel(e){
       this.addCategoryModalVisible = false;
     },
+
+    loadProduct(id)
+    {
+      this.productInfoLoading = true;
+      axios.get(`/api/products/${id}`)
+        .then(res => {
+          if (!res.data.data.id)
+          {
+            throw res;
+            return;
+          }
+          this.formData = {...res.data.data};
+          this.productInfoLoading = false;
+        })
+        .catch(err => {
+          console.log(err);
+
+          this.$message.error('Thất bại');
+        })
+        .then(()=>{
+        });
+    },
+
     onNameChanged(e){
       this.formData.slug = vietnameseNormalize(e.target.value);
     },
@@ -260,6 +271,7 @@ export default {
         {
           axios.put(`/api/products/${productId}`, this.formData)
             .then(res => {
+              this.$message.success('Đã sửa sản phẩm thành công');
             })
             .catch(err => {
               console.log(err);

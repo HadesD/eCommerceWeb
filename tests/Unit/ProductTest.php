@@ -15,10 +15,8 @@ class ProductTest extends TestCase
      */
     public function testExample()
     {
-        parent::setUp();
-        // $this->assertTrue(true);
         print_r(Product::allStatus());
 
-        print_r(Product::find(1));
+        $this->get('/api/products?category_id=4');
     }
 }

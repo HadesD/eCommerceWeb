@@ -8,10 +8,12 @@
       @handleCancel="addCategoryModalHandleCancel"
       @updateCategories="updateCategories"
       />
-    <a-col :span="4" style="border-right:1px solid #CCC;">
+    <a-col :span="4">
       <h2>
         Chuyên mục
-        <a-button type="primary" icon="plus" @click="showAddCategoryModal" style="float:right;" />
+        <a-tooltip title="Thêm chuyên mục">
+          <a-button type="primary" icon="plus" @click="showAddCategoryModal" style="float:right;" />
+        </a-tooltip>
       </h2>
       <a-spin :spinning="categoriesTreeLoading">
         <a-tree
@@ -22,13 +24,18 @@
         </a-tree>
       </a-spin>
     </a-col>
-    <a-col :span="20">
+    <a-col :span="20" style="border-left:1px solid #CCC;">
       <h2>
         Sản phẩm
         <router-link to="/products/new">
-          <a-button type="primary" icon="plus" style="float:right;" />
+		  <a-tooltip title="Thêm sản phẩm">
+            <a-button type="primary" icon="plus" style="float:right;" />
+          </a-tooltip>
         </router-link>
       </h2>
+      <a-tooltip title="Làm mới">
+        <a-button type="primary" icon="reload" :loading="productsTableLoading" @click="() => {loadProducts(currentCategoryId, productsTablePagination.current)}" />
+      </a-tooltip>
       <a-table
         :columns="productsTableColumns"
         :data-source="productsTableData"
@@ -48,10 +55,20 @@
         <span slot="status" slot-scope="record">
             {{ configProductStatus[record.status] }}<br />
         </span>
+        <span slot="price" slot-scope="record" style="display:block;text-align:right;">
+          {{ new Intl.NumberFormat().format(record.price) }}
+        </span>
         <span slot="action" slot-scope="record">
-          <router-link :to="`/products/${record.id}/edit`">Sửa</router-link>
+          <router-link :to="`/products/${record.id}/edit`">
+            <a-icon type="edit" /> Sửa
+          </router-link>
           <a-divider type="vertical"></a-divider>
-          <a>Delete</a>
+          <a-popconfirm title="Chắc chưa?" @confirm="()=>{onDeleteConfirmed(record)}">
+            <a-icon slot="icon" type="question-circle-o" style="color: red" />
+            <a href="#">
+              <a-icon type="delete" /> Xóa
+            </a>
+          </a-popconfirm>
         </span>
       </a-table>
     </a-col>
@@ -76,9 +93,9 @@ const productsTableColumns = [
     scopedSlots: { customRender: 'status' },
   },
   {
-    title: 'Giá',
-    dataIndex: 'price',
+    title: 'Giá (VND)',
     key: 'price',
+    scopedSlots: { customRender: 'price' },
   },
   {
     title: 'Thời gian',
@@ -101,6 +118,7 @@ export default {
       categories: [],
       addCategoryModalVisible: false,
       categoriesTreeLoading: false,
+      currentCategoryId: 0,
 
       products: [],
       productsTableLoading: false,
@@ -113,7 +131,7 @@ export default {
   mounted(){
     this.loadCategoriesTree();
 
-    this.loadProducts(0, 0);
+    this.loadProducts(this.currentCategoryId, 0);
   },
   computed: {
     categoriesTreeData(){
@@ -190,7 +208,9 @@ export default {
       this.loadCategoriesTree();
     },
     onCategoriesTreeSelect(keys, event) {
-      this.loadProducts(keys, 1);
+      this.currentCategoryId = keys;
+
+      this.loadProducts(this.currentCategoryId, 1);
     },
     onCategoriesTreeExpand() {
       console.log('Trigger Expand');
@@ -226,15 +246,30 @@ export default {
         .catch(err => {
           console.log(err);
 
-          this.$message.error('Thất bại');
+          this.$message.error('Load thất bại');
         })
         .then(()=>{
           this.productsTableLoading = false;
         });
     },
     onProductsTablePaginationChanged(pagination){
-      console.log(pagination);
-      this.loadProducts(0, pagination.current);
+      this.loadProducts(this.currentCategoryId, pagination.current);
+    },
+
+    onDeleteConfirmed(record){
+      axios.delete(`/api/products/${record.id}`)
+        .then(res => {
+          this.$message.success('Xóa thành công');
+
+          this.loadProducts(this.currentCategoryId, this.productsTablePagination.current);
+        })
+        .catch(err => {
+          console.log(err);
+
+          this.$message.error('Xóa thất bại');
+        })
+        .then(()=>{
+        });
     },
   },
 }

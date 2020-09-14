@@ -21,6 +21,14 @@ class ProductController extends Controller
      */
     public function index()
     {
+        $query = \Request::all();
+
+        $category_id = $query['category_id'] ?? 0;
+        if ($category_id)
+        {
+
+        }
+
         return new ProductResource(Product::paginate());
     }
 
@@ -136,6 +144,8 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        //
+        return new ProductResource(Product::find($id)->delete() ? [
+            'error_code' => 0,
+        ] : []);
     }
 }
