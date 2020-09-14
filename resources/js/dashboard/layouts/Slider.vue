@@ -8,7 +8,7 @@
     <a-menu
       theme="dark"
       mode="inline"
-      :defaultOpenKeys="['/products','/stocks']"
+      :defaultOpenKeys="['/products', '/stocks', '/orders']"
       :selectedKeys="[$route.path]"
       :style="{ height: '100%', borderRight: 0, backgroundColor: '#9800ab' }"
       >
@@ -50,11 +50,24 @@
           Xuất kho
         </a-menu-item>
       </a-sub-menu>
-      <!-- <a&#45;menu&#45;item key="/categories/index"> -->
-      <!--   <router&#45;link to="/categories/index"> -->
-      <!--     <a&#45;icon type="bars" /><span>Chuyên mục</span> -->
-      <!--   </router&#45;link> -->
-      <!-- </a&#45;menu&#45;item> -->
+      <a-sub-menu key="/orders">
+        <span slot="title">
+          <a-icon type="shopping-cart" /><span>Đơn hàng</span>
+        </span>
+        <a-menu-item key="/orders/index">
+          <router-link to="/orders/index">
+            Danh sách
+          </router-link>
+        </a-menu-item>
+        <a-menu-item key="/orders/new">
+          <router-link to="/orders/new">
+            Nhập kho
+          </router-link>
+        </a-menu-item>
+        <a-menu-item key="/orders/edit">
+          Xuất kho
+        </a-menu-item>
+      </a-sub-menu>
     </a-menu>
   </a-layout-sider>
 </template>
