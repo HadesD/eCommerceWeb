@@ -37,10 +37,16 @@
         :pagination="productsTablePagination"
         @change="onProductsTablePaginationChanged"
         >
-        <span slot="customTitle"><a-icon type="smile-o" /> Name</span>
+        <span slot="name" slot-scope="record">
+          {{ record.name }}<br />
+          <a-tag>{{ record.slug }}</a-tag>
+        </span>
         <span slot="time" slot-scope="record">
             Ngày tạo: {{ record.created_at }}<br />
             Ngày update: {{ record.updated_at }}
+        </span>
+        <span slot="status" slot-scope="record">
+            {{ configProductStatus[record.status] }}<br />
         </span>
         <span slot="action" slot-scope="record">
           <router-link :to="`/products/${record.id}/edit`">Sửa</router-link>
@@ -61,13 +67,13 @@ const productsTableColumns = [
   },
   {
     title: 'Tên',
-    dataIndex: 'name',
     key: 'name',
+    scopedSlots: { customRender: 'name' },
   },
   {
     title: 'Trạng thái',
-    dataIndex: 'status',
     key: 'status',
+    scopedSlots: { customRender: 'status' },
   },
   {
     title: 'Giá',
@@ -153,6 +159,14 @@ export default {
     },
     productsTableData(){
       return this.products;
+    },
+
+    configProductStatus(){
+      return {
+        0: 'Bản nháp',
+        1: 'Đang bán',
+        2: 'Hết hàng',
+      }
     },
   },
   methods: {

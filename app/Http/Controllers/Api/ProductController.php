@@ -90,7 +90,42 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try
+        {
+            \DB::beginTransaction();
+
+            $product = Product::find($id);
+            $product->name = $request->name;
+            $product->slug = $request->slug;
+            $product->price = $request->price;
+            $product->status = (int)$request->status;
+            $product->description = $request->description;
+            $product->detail = $request->detail;
+            $product->specification = $request->specification;
+            $product->image_variant_id = 0;
+            $product->save();
+
+            // EAV
+            // foreach ($request->categories_id as $category_id)
+            // {
+                // $product->categories[] = Category::find($category_id);
+
+            //     $product_category = new ProductCategory;
+            //     $product_category->product_id = $product->id;
+            //     $product_category->category_id = $category_id;
+            //     $product_category->save();
+            // }
+
+            \DB::commit();
+        }
+        catch(\Throwable $e)
+        {
+            \DB::rollback();
+
+            throw new \RuntimeException($e);
+        }
+
+        return new ProductResource($product ?? []);
     }
 
     /**

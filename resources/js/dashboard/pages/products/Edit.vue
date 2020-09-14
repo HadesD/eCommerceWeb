@@ -27,13 +27,13 @@
       <a-form-model-item label="Đường dẫn URL (Slug)" ref="slug" prop="slug">
         <a-input
           v-model="formData.slug"
-          @blur="() => $refs.slug.onFieldBlur"
+          @blur="() => $refs.slug.onFieldBlur()"
           />
       </a-form-model-item>
       <a-form-model-item label="Giá bán" ref="price" prop="price">
         <a-input
           v-model="formData.price"
-          @blur="() => $refs.price.onFieldBlur"
+          @blur="() => $refs.price.onFieldBlur()"
           type="number"
           >
         </a-input>
@@ -42,20 +42,25 @@
       <a-form-model-item label="Trạng thái" ref="status" prop="status">
         <a-select
           v-model="formData.status"
-          @blur="() => $refs.status.onFieldBlur"
+          @blur="() => $refs.status.onFieldBlur()"
           >
-          <a-select-option value="0">
+          <a-select-option :value="0">
             Bản nháp
           </a-select-option>
-          <a-select-option value="1">
+          <a-select-option :value="1">
             Đang bán
           </a-select-option>
-          <a-select-option value="2">
+          <a-select-option :value="2">
             Hết hàng
           </a-select-option>
         </a-select>
       </a-form-model-item>
       <a-form-model-item label="Chuyên mục cha" ref="categories_id" prop="categories_id">
+        <a-form-model-item
+          style="display: inline-block; margin-right: 5px;"
+          >
+          <a-button type="primary" icon="plus" @click="showAddCategoryModal" />
+        </a-form-model-item>
         <a-form-model-item
           :style="{ display: 'inline-block', width: 'calc(100% - 80px)' }"
           >
@@ -72,19 +77,15 @@
               :tree-data="categoriesTreeData"
               placeholder="Chuyên mục"
               :replaceFields="{ pId:'parent_id',title:'name',value:'id' }"
-              @blur="() => $refs.categories_id.onFieldBlur"
+              @blur="() => $refs.categories_id.onFieldBlur()"
+              @change="() => $refs.categories_id.onFieldBlur()"
               />
           </a-spin>
         </a-form-model-item>
         <a-form-model-item
-          :style="{ display: 'inline-block' }"
+          style="display: inline-block; margin-left: 5px;"
           >
           <a-button type="primary" icon="reload" @click="reloadCategoriesTree" :loading="categoriesTreeLoading" />
-        </a-form-model-item>
-        <a-form-model-item
-          :style="{ display: 'inline-block', float:'right' }"
-          >
-          <a-button type="primary" icon="plus" @click="showAddCategoryModal" style="float:right;" />
         </a-form-model-item>
       </a-form-model-item>
       <a-tabs default-active-key="description" @change="(k) => $refs[k] && $refs[k].focus()">
@@ -156,7 +157,7 @@ export default {
         detail: '',
         specification: '',
         price: undefined,
-        status: '0',
+        status: 0,
       },
       rules: {
         name: [
@@ -191,9 +192,22 @@ export default {
   },
   mounted(){
     this.formData.id = this.$route.params.id;
+
     if (this.formData.id)
     {
-	  // this.productInfoLoading = true;
+      this.productInfoLoading = true;
+      axios.get(`/api/products/${this.formData.id}`)
+        .then(res => {
+          this.formData = {...res.data.data};
+        })
+        .catch(err => {
+          console.log(err);
+
+          this.$message.error('Thất bại');
+        })
+        .then(()=>{
+          this.productInfoLoading = false;
+        });
     }
 
     this.reloadCategoriesTree();
