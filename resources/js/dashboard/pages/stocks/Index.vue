@@ -3,7 +3,7 @@
     <h2>
       Kho hàng
       <a-tooltip title="Làm mới">
-        <a-button type="primary" icon="reload" :loading="false" @click="() => {loadStocks(stocksTablePagination.current)}" />
+        <a-button type="primary" icon="reload" :loading="stocksTableLoading" @click="() => {loadStocks(stocksTablePagination.current)}" />
       </a-tooltip>
       <router-link to="/stocks/new">
         <a-tooltip title="Nhập kho">
@@ -19,12 +19,15 @@
       :pagination="stocksTablePagination"
       @change="onStocksTablePaginationChanged"
       >
-      <span slot="time" slot-scope="record">
-        Ngày tạo: {{ record.created_at }}<br />
-        Ngày update: {{ record.updated_at }}
+      <span slot="status" slot-scope="record">
+        {{ configStockStatus[record.status] }}<br />
       </span>
       <span slot="cost_price" slot-scope="record" style="display:block;text-align:right;">
         {{ new Intl.NumberFormat().format(record.cost_price) }}
+      </span>
+      <span slot="time" slot-scope="record">
+        Ngày tạo: {{ record.created_at }}<br />
+        Ngày update: {{ record.updated_at }}
       </span>
       <span slot="action" slot-scope="record">
         <router-link :to="`/stocks/${record.id}/edit`">
@@ -56,6 +59,11 @@ const stocksTableColumns = [
     title: 'Id/Imei',
     dataIndex: 'idi',
     key: 'idi',
+  },
+  {
+    title: 'Trạng thái',
+    key: 'status',
+    scopedSlots: { customRender: 'status' },
   },
   {
     title: 'Giá lúc nhập (VND)',
@@ -96,6 +104,13 @@ export default {
   computed: {
     stocksTableData(){
       return this.stocks;
+    },
+    configStockStatus(){
+      return {
+        0: 'Có sẵn',
+        1: 'Đã bán',
+        2: 'Hỏng / Lỗi',
+      }
     },
   },
   methods: {

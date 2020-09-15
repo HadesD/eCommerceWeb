@@ -48,15 +48,15 @@
           {{ record.name }}<br />
           <a-tag>{{ record.slug }}</a-tag>
         </span>
-        <span slot="time" slot-scope="record">
-          Ngày tạo: {{ record.created_at }}<br />
-          Ngày update: {{ record.updated_at }}
-        </span>
         <span slot="status" slot-scope="record">
           {{ configProductStatus[record.status] }}<br />
         </span>
         <span slot="price" slot-scope="record" style="display:block;text-align:right;">
           {{ new Intl.NumberFormat().format(record.price) }}
+        </span>
+        <span slot="time" slot-scope="record">
+          Ngày tạo: {{ record.created_at }}<br />
+          Ngày update: {{ record.updated_at }}
         </span>
         <span slot="action" slot-scope="record">
           <router-link :to="`/products/${record.id}/edit`">

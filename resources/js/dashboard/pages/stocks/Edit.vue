@@ -14,7 +14,7 @@
             v-model="formData.name"
             />
         </a-form-model-item>
-        <a-form-model-item label="ID/imei/mã phân biệt" ref="idi" prop="idi">
+        <a-form-model-item label="Id/imei/mã phân biệt" ref="idi" prop="idi">
           <a-input
             v-model="formData.idi"
             @blur="() => $refs.idi.onFieldBlur()"
@@ -35,13 +35,13 @@
             @blur="() => $refs.status.onFieldBlur()"
             >
             <a-select-option :value="0">
-              Bản nháp
+              Có sẵn
             </a-select-option>
             <a-select-option :value="1">
-              Đang bán
+              Đã bán
             </a-select-option>
             <a-select-option :value="2">
-              Hết hàng
+              Hỏng / Lỗi
             </a-select-option>
           </a-select>
         </a-form-model-item>

@@ -16,7 +16,7 @@ class TableUsersAddColumnRole extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->tinyInteger('role')->default(User::ROLE_USER_NORMAL);
+            $table->unsignedTinyInteger('role')->default(User::ROLE_USER_NORMAL);
             $table->softDeletes();
         });
     }

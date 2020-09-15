@@ -6,13 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-interface Status
+interface StockStatus
 {
-    const STS_ = 1;
+    const STS_AVAILABLE = 0;
+    const STS_SOLD = 1;
+    const STS_BROKEN = 2;
 }
 
 class Stock extends Model
-    implements Status
+    implements StockStatus
 {
     use HasFactory, SoftDeletes;
 }

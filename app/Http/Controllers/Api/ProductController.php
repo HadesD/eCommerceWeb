@@ -52,7 +52,7 @@ class ProductController extends Controller
             $product->description = $request->description;
             $product->detail = $request->detail;
             $product->specification = $request->specification;
-            $product->image_variant_id = 0;
+            // $product->image_variant_id = 0;
             $product->save();
 
             // EAV
@@ -108,7 +108,7 @@ class ProductController extends Controller
             $product->description = $request->description;
             $product->detail = $request->detail;
             $product->specification = $request->specification;
-            $product->image_variant_id = 0;
+            // $product->image_variant_id = 0;
             $product->save();
 
             // EAV

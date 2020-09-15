@@ -18,7 +18,7 @@ class CreateTransactionsTable extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->integer('amount');
-            $table->tinyInteger('status')->default(Transaction::STS_PENDING);
+            $table->unsignedTinyInteger('status')->default(Transaction::STS_PENDING);
             $table->text('description');
             $table->unsignedBigInteger('cashier_id')->nullable(); // users.id
             $table->timestamps();

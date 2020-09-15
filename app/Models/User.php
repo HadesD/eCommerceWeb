@@ -12,11 +12,11 @@ use Illuminate\Notifications\Notifiable;
  */
 interface Role
 {
-    const ROLE_USER_BLOCKED = -100;
-    const ROLE_USER_UNACTIVE = 0;
-    const ROLE_USER_NORMAL = 10;
-    const ROLE_ADMIN_MANAGER = 50;
-    const ROLE_ADMIN_MASTER = 100;
+    const ROLE_USER_BLOCKED = 0;
+    const ROLE_USER_UNACTIVE = 10;
+    const ROLE_USER_NORMAL = 50;
+    const ROLE_ADMIN_MANAGER = 100;
+    const ROLE_ADMIN_MASTER = 200;
 }
 
 class User extends Authenticatable

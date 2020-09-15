@@ -4,6 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+use App\Models\Product;
+
 class CreateProductsTable extends Migration
 {
     /**
@@ -17,12 +19,11 @@ class CreateProductsTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->tinyInteger('status');
+            $table->unsignedTinyInteger('status')->default(Product::STS_DRAFT);
             $table->integer('price');
             $table->text('description')->nullable();
             $table->text('detail')->nullable();
             $table->string('specification')->nullable();
-            $table->unsignedBigInteger('image_variant_id');
             $table->timestamps();
             $table->softDeletes();
         });
