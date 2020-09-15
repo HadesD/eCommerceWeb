@@ -51,6 +51,8 @@ export default {
             .post('/api/logout')
             .then(res => {
 			  self.$message.success('Đăng xuất thành công');
+
+              self.$router.push({ path: '/auth/login' });
             })
             .catch(res => {
               self.$message.error('Đăng xuất thất bại');
