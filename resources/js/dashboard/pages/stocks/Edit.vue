@@ -49,9 +49,7 @@
           <a-button type="primary" @click="onSubmit">
             {{ $route.params.id ? 'Sửa' : 'Nhập kho' }}
           </a-button>
-          <a-button style="margin-left: 10px;" @click="resetForm">
-            Reset
-          </a-button>
+          <a-button style="margin-left: 10px;" @click="resetForm">Reset</a-button>
         </a-form-model-item>
       </a-form-model>
     </a-spin>
