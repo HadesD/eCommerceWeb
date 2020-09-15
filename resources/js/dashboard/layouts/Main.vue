@@ -6,7 +6,7 @@
         <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
           <!-- <Breadcrumb></Breadcrumb> -->
           <div :style="{ padding: '24px', background: '#fff', minHeight: '80vh' }">
-            <slot></slot>
+            <router-view />
           </div>
         </a-layout-content>
         <a-layout-footer :style="{ textAlign: 'center' }">

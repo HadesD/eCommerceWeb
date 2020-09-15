@@ -12,7 +12,7 @@
       :selectedKeys="[$route.path]"
       :style="{ height: '100%', borderRight: 0, backgroundColor: '#9800ab' }"
       >
-      <a-menu-item key="/">
+      <a-menu-item key="/index">
         <router-link to="/">
           <a-icon type="home" /><span>Trang quản lý</span>
         </router-link>
