@@ -42,7 +42,25 @@ export default {
       this.$emit('onSetSidebarCollapsed', !this.sideBarCollapsed);
     },
     logout(){
-      console.log(1);
+      const self = this;
+      const modal = this.$confirm({
+        title: 'Chú ý',
+        content: 'Chắc chắn muốn đăng xuất chứ?',
+        onOk() {
+          return axios
+            .post('/api/logout')
+            .then(res => {
+			  self.$message.success('Đăng xuất thành công');
+            })
+            .catch(res => {
+              self.$message.error('Đăng xuất thất bại');
+            })
+            .then(res => {
+              modal.destroy();
+            });
+        },
+        onCancel() {},
+      });
     },
   },
 }
