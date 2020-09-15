@@ -9,3 +9,4 @@ class OrderProductStockTransaction extends Model
 {
     use HasFactory;
 }
+

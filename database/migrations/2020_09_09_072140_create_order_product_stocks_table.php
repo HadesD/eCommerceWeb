@@ -19,6 +19,7 @@ class CreateOrderProductStocksTable extends Migration
             $table->unsignedBigInteger('stock_id');
             $table->integer('amount');
             $table->timestamps();
+            $table->softDeletes();
 
             $table->unique(['order_product_id', 'stock_id']);
         });

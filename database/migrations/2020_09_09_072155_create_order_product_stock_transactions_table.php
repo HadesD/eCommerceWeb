@@ -16,7 +16,6 @@ class CreateOrderProductStockTransactionsTable extends Migration
         Schema::create('order_product_stock_transactions', function (Blueprint $table) {
             $table->unsignedBigInteger('order_product_stock_id');
             $table->unsignedBigInteger('transaction_id');
-            // $table->timestamps();
             $table->primary(['order_product_stock_id', 'transaction_id'], 'PK_opst_id_unique');
         });
     }

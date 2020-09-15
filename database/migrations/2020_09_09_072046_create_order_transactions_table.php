@@ -16,7 +16,6 @@ class CreateOrderTransactionsTable extends Migration
         Schema::create('order_transactions', function (Blueprint $table) {
             $table->unsignedBigInteger('order_id');
             $table->unsignedBigInteger('transaction_id');
-            // $table->timestamps();
             $table->primary(['order_id', 'transaction_id']);
         });
     }
