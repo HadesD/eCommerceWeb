@@ -1,10 +1,5 @@
 <template>
-  <a-layout-sider v-model="collapsed" collapsible id="slider_sidebar">
-    <div class="logo">
-      <router-link to="/">
-        <img src="/favicon.ico" /><span v-if="!collapsed" style="color:#FFF;font-size:25px;font-weight:bold;vertical-align: bottom;">inPhone.vn</span>
-      </router-link>
-    </div>
+  <a-layout-sider v-model="collapsed" id="slider_sidebar">
     <a-menu
       theme="dark"
       mode="inline"
@@ -12,10 +7,12 @@
       :selectedKeys="[$route.path]"
       :style="{ height: '100%', borderRight: 0, backgroundColor: '#9800ab' }"
       >
-      <a-menu-item key="/index">
-        <router-link to="/">
-          <a-icon type="home" /><span>Trang quản lý</span>
-        </router-link>
+      <a-menu-item key="-" style="padding:0;">
+        <div class="logo">
+          <router-link to="/">
+            <img src="/favicon.ico" /><span v-if="!collapsed" style="color:#FFF;font-size:25px;font-weight:bold;vertical-align: bottom;">inPhone.vn</span>
+          </router-link>
+        </div>
       </a-menu-item>
       <a-sub-menu key="/products">
         <span slot="title">
@@ -67,9 +64,14 @@
 </template>
 <script>
 export default {
+  props: {
+    collapsed: {
+      type: Boolean,
+      default: false,
+    }
+  },
   data() {
     return {
-      collapsed: false,
     }
   },
 }
@@ -86,7 +88,6 @@ export default {
 }
 
 #slider_sidebar .logo {
-  padding: 5px;
   text-align: center;
 }
 

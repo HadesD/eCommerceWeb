@@ -1,20 +1,49 @@
 <template>
   <a-layout-header :style="{ background: '#fff', padding: 0  }">
-    <div class="logo"></div>
     <a-menu
       mode="horizontal"
       :selectedKeys="[$route.path]"
       :style="{ lineHeight: '64px' }"
       >
-      <a-menu-item key="/">
-        <router-link to="/">
-          Trang quản lý
-        </router-link>
+      <a-menu-item key="-" @click="sideBarCollapse">
+        <a-icon :type="sideBarCollapsed ? 'menu-unfold' : 'menu-fold'" style="font-size: 25px;vertical-align: middle;" />
+      </a-menu-item>
+      <a-menu-item key="--" style="float:right;">
+        <a-dropdown>
+          <a @click="e => e.preventDefault()">
+            <a-icon type="user" /> Admin <a-icon type="down" />
+            </a>
+            <a-menu slot="overlay">
+              <a-menu-item>
+                <a @click="logout">
+                  <a-icon type="logout" /> Đăng xuất
+                </a>
+              </a-menu-item>
+            </a-menu>
+        </a-dropdown>
       </a-menu-item>
     </a-menu>
   </a-layout-header>
 </template>
 <script>
 export default {
+  props: {
+    sideBarCollapsed: {
+      type: Boolean,
+    }
+  },
+  data() {
+    return {
+
+    }
+  },
+  methods: {
+    sideBarCollapse(){
+      this.$emit('onSetSidebarCollapsed', !this.sideBarCollapsed);
+    },
+    logout(){
+      console.log(1);
+    },
+  },
 }
 </script>
