@@ -32,6 +32,21 @@
           </router-link>
         </a-menu-item>
       </a-sub-menu>
+      <a-sub-menu key="/orders">
+        <span slot="title">
+          <a-icon type="shopping-cart" /><span>Đơn đặt hàng</span>
+        </span>
+        <a-menu-item key="/orders/index">
+          <router-link to="/orders/index">
+            Danh sách
+          </router-link>
+        </a-menu-item>
+        <a-menu-item key="/orders/new">
+          <router-link to="/orders/new">
+            Tạo đơn đặt hàng
+          </router-link>
+        </a-menu-item>
+      </a-sub-menu>
       <a-sub-menu key="/stocks">
         <span slot="title">
           <a-icon type="bank" /><span>Kho hàng</span>
@@ -45,27 +60,6 @@
           <router-link to="/stocks/new">
             Nhập kho
           </router-link>
-        </a-menu-item>
-        <a-menu-item key="/stocks/edit">
-          Xuất kho
-        </a-menu-item>
-      </a-sub-menu>
-      <a-sub-menu key="/orders">
-        <span slot="title">
-          <a-icon type="shopping-cart" /><span>Đơn hàng</span>
-        </span>
-        <a-menu-item key="/orders/index">
-          <router-link to="/orders/index">
-            Danh sách
-          </router-link>
-        </a-menu-item>
-        <a-menu-item key="/orders/new">
-          <router-link to="/orders/new">
-            Nhập kho
-          </router-link>
-        </a-menu-item>
-        <a-menu-item key="/orders/edit">
-          Xuất kho
         </a-menu-item>
       </a-sub-menu>
     </a-menu>
