@@ -195,6 +195,7 @@ export default {
     },
   },
   mounted(){
+    console.log(this.$route);
     this.formData.id = this.$route.params.id;
 
     if (this.formData.id)

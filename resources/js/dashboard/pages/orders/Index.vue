@@ -1,26 +1,26 @@
 <template>
   <div>
     <h2>
-      Kho hàng
+      Đơn đặt hàng
       <a-tooltip title="Làm mới">
-        <a-button type="primary" icon="reload" :loading="stocksTableLoading" @click="() => {loadStocks(stocksTablePagination.current)}" />
+        <a-button type="primary" icon="reload" :loading="ordersTableLoading" @click="() => {loadOrders(ordersTablePagination.current)}" />
       </a-tooltip>
-      <router-link to="/stocks/new">
+      <router-link to="/orders/new">
         <a-tooltip title="Nhập kho">
           <a-button type="primary" icon="plus" style="float:right;" />
         </a-tooltip>
       </router-link>
     </h2>
     <a-table
-      :columns="stocksTableColumns"
-      :data-source="stocksTableData"
-      :loading="stocksTableLoading"
+      :columns="ordersTableColumns"
+      :data-source="ordersTableData"
+      :loading="ordersTableLoading"
       :row-key="record => record.id"
-      :pagination="stocksTablePagination"
-      @change="onStocksTablePaginationChanged"
+      :pagination="ordersTablePagination"
+      @change="onOrdersTablePaginationChanged"
       >
       <span slot="status" slot-scope="record">
-        {{ configStockStatus[record.status] }}
+        {{ configOrderStatus[record.status] }}
       </span>
       <span slot="cost_price" slot-scope="record" style="display:block;text-align:right;">
         {{ new Intl.NumberFormat().format(record.cost_price) }}
@@ -30,7 +30,7 @@
         Ngày update: {{ record.updated_at }}
       </span>
       <span slot="action" slot-scope="record">
-        <router-link :to="`/stocks/${record.id}/edit`">
+        <router-link :to="`/orders/${record.id}/edit`">
           <a-icon type="edit" /> Sửa
         </router-link>
         <a-divider type="vertical"></a-divider>
@@ -44,7 +44,7 @@
 </template>
 
 <script>
-const stocksTableColumns = [
+const ordersTableColumns = [
   {
     title: '#',
     dataIndex: 'id',
@@ -90,22 +90,22 @@ const stocksTableColumns = [
 export default {
   data() {
     return {
-      stocks: [],
-      stocksTableLoading: false,
-      stocksTableColumns,
-      stocksTablePagination: {
+      orders: [],
+      ordersTableLoading: false,
+      ordersTableColumns,
+      ordersTablePagination: {
         position: 'both',
       },
     }
   },
   mounted() {
-    this.loadStocks(this.stocksTablePagination.current);
+    this.loadOrders(this.ordersTablePagination.current);
   },
   computed: {
-    stocksTableData(){
-      return this.stocks;
+    ordersTableData(){
+      return this.orders;
     },
-    configStockStatus(){
+    configOrderStatus(){
       return {
         0: 'Có sẵn',
         1: 'Đã bán',
@@ -114,11 +114,11 @@ export default {
     },
   },
   methods: {
-    loadStocks(page){
-      this.stocksTableLoading = true;
-      axios.get('/api/stocks')
+    loadOrders(page){
+      this.ordersTableLoading = true;
+      axios.get('/api/orders')
         .then(res => {
-          this.stocks = res.data.data || [];
+          this.orders = res.data.data || [];
         })
         .catch(err => {
           console.log(err);
@@ -126,20 +126,20 @@ export default {
           this.$message.error('Thất bại');
         })
         .then(()=>{
-          this.stocksTableLoading = false;
+          this.ordersTableLoading = false;
         });
     },
 
-    onStocksTablePaginationChanged(pagination){
-      this.loadStocks(pagination.current);
+    onOrdersTablePaginationChanged(pagination){
+      this.loadOrders(pagination.current);
     },
 
     onDeleteConfirmed(record){
-      axios.delete(`/api/stocks/${record.id}`)
+      axios.delete(`/api/orders/${record.id}`)
         .then(res => {
           this.$message.success('Xóa thành công');
 
-          this.loadStocks(this.stocksTablePagination.current);
+          this.loadOrders(this.ordersTablePagination.current);
         })
         .catch(err => {
           console.log(err);
