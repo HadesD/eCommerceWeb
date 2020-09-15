@@ -11,15 +11,15 @@
       <a-menu-item key="--" style="float:right;">
         <a-dropdown>
           <a @click="e => e.preventDefault()">
-            <a-icon type="user" /> Admin <a-icon type="down" />
-            </a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a @click="logout">
-                  <a-icon type="logout" /> Đăng xuất
-                </a>
-              </a-menu-item>
-            </a-menu>
+            <a-icon type="user"></a-icon> Admin <a-icon type="down"></a-icon>
+          </a>
+          <a-menu slot="overlay">
+            <a-menu-item>
+              <a @click="logout">
+                <a-icon type="logout"></a-icon> Đăng xuất
+              </a>
+            </a-menu-item>
+          </a-menu>
         </a-dropdown>
       </a-menu-item>
     </a-menu>
@@ -50,7 +50,7 @@ export default {
           return axios
             .post('/api/logout')
             .then(res => {
-			  self.$message.success('Đăng xuất thành công');
+              self.$message.success('Đăng xuất thành công');
 
               self.$router.push({ path: '/auth/login' });
             })
