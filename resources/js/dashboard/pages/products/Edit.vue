@@ -50,7 +50,7 @@
             <a-select-option :value="1">
               Đang bán
             </a-select-option>
-            <a-select-option :value="2">
+            <a-select-option :value="2" :disabled="$route.params.id ? false : true">
               Hết hàng
             </a-select-option>
           </a-select>
@@ -59,7 +59,9 @@
           <a-form-model-item
             style="display: inline-block; margin-right: 5px;"
             >
-            <a-button type="primary" icon="plus" @click="showAddCategoryModal" />
+            <a-tooltip title="Thêm chuyên mục">
+              <a-button type="primary" icon="plus" @click="showAddCategoryModal" />
+            </a-tooltip>
           </a-form-model-item>
           <a-form-model-item
             :style="{ display: 'inline-block', width: 'calc(100% - 80px)' }"
@@ -85,7 +87,9 @@
           <a-form-model-item
             style="display: inline-block; margin-left: 5px;"
             >
-            <a-button type="primary" icon="reload" @click="reloadCategoriesTree" :loading="categoriesTreeLoading" />
+            <a-tooltip title="Làm mới">
+              <a-button type="primary" icon="reload" @click="reloadCategoriesTree" :loading="categoriesTreeLoading" />
+            </a-tooltip>
           </a-form-model-item>
         </a-form-model-item>
         <a-tabs default-active-key="description" @change="(k) => $refs[k] && $refs[k].focus()">

@@ -9,6 +9,9 @@ class ProductCategory extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = ['product_id', 'category_id'];
+    public $incrementing = false;
+
     protected $fillable = ['product_id', 'category_id'];
     public $timestamps = false;
 }

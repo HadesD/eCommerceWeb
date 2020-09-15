@@ -20,7 +20,7 @@
       @change="onStocksTablePaginationChanged"
       >
       <span slot="status" slot-scope="record">
-        {{ configStockStatus[record.status] }}<br />
+        {{ configStockStatus[record.status] }}
       </span>
       <span slot="cost_price" slot-scope="record" style="display:block;text-align:right;">
         {{ new Intl.NumberFormat().format(record.cost_price) }}

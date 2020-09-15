@@ -49,7 +49,7 @@
           <a-tag>{{ record.slug }}</a-tag>
         </span>
         <span slot="status" slot-scope="record">
-          {{ configProductStatus[record.status] }}<br />
+          {{ configProductStatus[record.status] }}
         </span>
         <span slot="price" slot-scope="record" style="display:block;text-align:right;">
           {{ new Intl.NumberFormat().format(record.price) }}
