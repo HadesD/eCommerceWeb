@@ -14,11 +14,10 @@ class CreateOrderTransactionsTable extends Migration
     public function up()
     {
         Schema::create('order_transactions', function (Blueprint $table) {
-            $table->bigIncrements('id');
             $table->unsignedBigInteger('order_id');
             $table->unsignedBigInteger('transaction_id');
             // $table->timestamps();
-            $table->unique(['order_id', 'transaction_id']);
+            $table->primary(['order_id', 'transaction_id']);
         });
     }
 

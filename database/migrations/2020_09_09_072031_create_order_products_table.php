@@ -14,13 +14,15 @@ class CreateOrderProductsTable extends Migration
     public function up()
     {
         Schema::create('order_products', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
             $table->unsignedBigInteger('order_id');
             $table->unsignedBigInteger('product_id');
             $table->unsignedTinyInteger('quantity');
             $table->unsignedTinyInteger('payment_method');
             $table->timestamps();
             $table->softDeletes();
+
+            $table->unique(['order_id', 'product_id']);
         });
     }
 

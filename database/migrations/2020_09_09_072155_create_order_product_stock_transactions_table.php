@@ -14,11 +14,10 @@ class CreateOrderProductStockTransactionsTable extends Migration
     public function up()
     {
         Schema::create('order_product_stock_transactions', function (Blueprint $table) {
-            $table->bigIncrements('id');
             $table->unsignedBigInteger('order_product_stock_id');
             $table->unsignedBigInteger('transaction_id');
             // $table->timestamps();
-            $table->unique(['order_product_stock_id', 'transaction_id'], 'opst_id_unique');
+            $table->primary(['order_product_stock_id', 'transaction_id'], 'PK_opst_id_unique');
         });
     }
 

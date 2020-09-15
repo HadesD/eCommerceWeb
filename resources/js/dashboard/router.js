@@ -51,13 +51,21 @@ let routes = [
         ],
     },
     {
-        path: '/categories',
-        redirect: '/categories/index',
+        path: '/orders',
+        redirect: '/orders/index',
         component: RouteView,
         children: [
             {
                 path: 'index',
-                component: () => import('./pages/categories/Index.vue'),
+                component: () => import('./pages/orders/Index.vue'),
+            },
+            {
+                path: 'new',
+                component: () => import('./pages/orders/Edit.vue'),
+            },
+            {
+                path: ':id/edit',
+                component: () => import('./pages/orders/Edit.vue'),
             },
         ],
     }
