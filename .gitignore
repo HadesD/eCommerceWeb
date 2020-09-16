@@ -12,10 +12,11 @@ npm-debug.log
 yarn-error.log
 
 # Add by developers
+*.bak
 /bin
 /public/js/dashboard
 /public/css/dashboard
 /public/mix-manifest.json
 /public/js/chunks/*.js
-*.bak
+/public/public.zip
 
