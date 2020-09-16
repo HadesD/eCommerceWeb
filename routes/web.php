@@ -18,7 +18,7 @@ Route::prefix('dashboard')->name('dashboard.')->group(function(){
 });
 
 Route::name('web.')->group(function(){
-    Route::get('{any?}', [App\Http\Controllers\Web\WebController::class, 'index'])->where('any', '.*')->name('index');
+    Route::get('{any?}', [App\Http\Controllers\Web\WebController::class, 'index'])->where('any', '^(?!api).*$')->name('index');
 });
 
 // Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
