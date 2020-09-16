@@ -1,4 +1,18 @@
 <template>
+  <div>
+  </div>
 </template>
-<style>
-</style>
+<script>
+export default {
+  data(){
+    return {
+
+    }
+  },
+  mounted(){
+    axios.get('/sanctum/csrf-cookie').then(response => {
+      // Login...
+    });
+  },
+}
+</script>
