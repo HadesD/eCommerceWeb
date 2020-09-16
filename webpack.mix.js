@@ -19,7 +19,7 @@ const mix = require('laravel-mix');
 
 mix.webpackConfig({
     output: {
-        chunkFilename: 'js/chunks/[name].js',
+        chunkFilename: process.env.NODE_ENV === 'development' ? 'js/chunks/[name].js' : 'js/chunks/[name].[chunkhash].js',
     },
 });
 
