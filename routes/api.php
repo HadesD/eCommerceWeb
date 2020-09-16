@@ -14,13 +14,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
-Route::apiResources([
-    'stocks' => App\Http\Controllers\Api\StockController::class,
-    'categories' => App\Http\Controllers\Api\CategoryController::class,
-    'products' => App\Http\Controllers\Api\ProductController::class,
-]);
+Route::middleware('auth:sanctum')->group(function(){
+    Route::apiResources([
+        'stocks' => App\Http\Controllers\Api\StockController::class,
+        'categories' => App\Http\Controllers\Api\CategoryController::class,
+        'products' => App\Http\Controllers\Api\ProductController::class,
+    ]);
+});
 
