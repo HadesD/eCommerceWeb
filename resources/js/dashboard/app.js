@@ -15,7 +15,6 @@ const app = new Vue({
     router,
     render (h) {
         return h(MainApp, {
-
         });
     },
 });

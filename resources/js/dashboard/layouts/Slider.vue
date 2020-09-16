@@ -76,26 +76,3 @@ export default {
   },
 }
 </script>
-<style>
-#slider_sidebar {
-  overflow: auto;
-  height: 100vh;
-  position: fixed;
-  left: 0;
-  top: 0;
-  -webkit-box-shadow: 2px 0 6px rgba(0,21,41,.35);
-  box-shadow: 2px 0 6px rgba(0,21,41,.35);
-}
-
-#slider_sidebar .logo {
-  text-align: center;
-}
-
-#slider_sidebar .logo img{
-  max-width: 100%;
-}
-
-#slider_sidebar .ant-menu-dark .ant-menu-inline.ant-menu-sub{
-  background-color: #680075;
-}
-</style>

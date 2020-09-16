@@ -10,6 +10,6 @@
     </head>
     <body>
         <div id="app"></div>
-        <script src="{{ mix('js/dashboard/app.js') }}?v=1.0.0"></script>
+        <script src="{{ mix('js/dashboard/app.js') }}?v=2.0.0"></script>
     </body>
 </html>
