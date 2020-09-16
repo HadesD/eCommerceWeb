@@ -48,7 +48,7 @@ export default {
         content: 'Chắc chắn muốn đăng xuất chứ?',
         onOk() {
           return axios
-            .post('/api/logout')
+            .post('/logout')
             .then(res => {
               self.$message.success('Đăng xuất thành công');
 

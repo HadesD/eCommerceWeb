@@ -21,3 +21,6 @@ Route::name('web.')->group(function(){
     // Route::get('{any?}', 'DashboardController@index')->where('any', '.*');
 });
 
+// Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
+//     return Inertia\Inertia::render('Dashboard');
+// })->name('dashboard');
