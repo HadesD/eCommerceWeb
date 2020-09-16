@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('dashboard')->name('dashboard.')->group(function(){
-    Route::get('{any?}', [App\Http\Controllers\Dashboard\DashboardController::class, 'index'])->where('any', '.*');
+    Route::get('{any?}', [App\Http\Controllers\Dashboard\DashboardController::class, 'index'])->where('any', '.*')->name('index');
 });
 
 Route::name('web.')->group(function(){

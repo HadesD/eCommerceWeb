@@ -15,7 +15,6 @@ class UserTest extends TestCase
      */
     public function testExample()
     {
-        var_dump(User::allRoles());
-        $this->assertTrue(is_array(User::allRoles()));
+        dd(bcrypt('123456'));
     }
 }
