@@ -17,5 +17,7 @@ class Stock extends Model
     implements StockStatus
 {
     use HasFactory, SoftDeletes;
+
+    protected $fillable = ['name', 'idi', 'status', 'cost_price', 'updated_user_id', 'in_date'];
 }
 

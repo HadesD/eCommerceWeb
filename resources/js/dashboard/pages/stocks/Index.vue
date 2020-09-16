@@ -71,6 +71,11 @@ const stocksTableColumns = [
     scopedSlots: { customRender: 'cost_price' },
   },
   {
+    title: 'Ngày nhập',
+    dataIndex: 'in_date',
+    key: 'in_date',
+  },
+  {
     title: 'Thời gian',
     key: 'time',
     scopedSlots: { customRender: 'time' },

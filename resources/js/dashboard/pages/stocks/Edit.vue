@@ -45,6 +45,19 @@
             </a-select-option>
           </a-select>
         </a-form-model-item>
+        <a-form-model-item label="Ghi chú">
+          <a-textarea
+            v-model="formData.note"
+            />
+        </a-form-model-item>
+        <a-form-model-item label="Ngày nhập" ref="in_date" prop="in_date">
+          <a-date-picker
+            v-model="formData.in_date"
+            show-time
+            type="date"
+            @blur="() => $refs.in_date.onFieldBlur()"
+            />
+        </a-form-model-item>
         <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
           <a-button type="primary" @click="onSubmit">
             {{ $route.params.id ? 'Sửa' : 'Nhập kho' }}
@@ -72,6 +85,8 @@ export default {
         idi: '',
         cost_price: undefined,
         status: 0,
+        in_date: '',
+        note: '',
       },
       rules: {
         idi: [

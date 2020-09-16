@@ -19,6 +19,6 @@ class UserTest extends TestCase
 
         // $response->assertStatus(200);
 
-        dd(bcrypt('123456'));
+        dd(bcrypt('huydeptrai'));
     }
 }

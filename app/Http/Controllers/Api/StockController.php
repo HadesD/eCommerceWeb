@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Http\Resources\Stock as StockResource;
 use App\Models\Stock;
 
+use Illuminate\Support\Facades\Log;
+
 class StockController extends Controller
 {
     /**
@@ -37,7 +39,9 @@ class StockController extends Controller
             $stock->idi = $request->idi;
             $stock->status = $request->status;
             $stock->cost_price = $request->cost_price;
-            $stock->updated_user_id = 0;
+            $stock->updated_user_id = \Auth::user()->id;
+            $stock->in_date = \Carbon\Carbon::parse($request->in_date)->format('Y-m-d H:i:s');
+            $stock->note = $request->note;
             $stock->save();
 
             \DB::commit();
@@ -83,7 +87,9 @@ class StockController extends Controller
             $stock->idi = $request->idi;
             $stock->status = $request->status;
             $stock->cost_price = $request->cost_price;
-            $stock->updated_user_id = 0;
+            $stock->updated_user_id = \Auth::user()->id;
+            $stock->in_date = \Carbon\Carbon::parse($request->in_date)->format('Y-m-d H:i:s');
+            $stock->note = $request->note;
             $stock->save();
 
             \DB::commit();
@@ -91,6 +97,8 @@ class StockController extends Controller
         catch(\Throwable $e)
         {
             \DB::rollback();
+
+            Log::error($e);
 
             throw new \RuntimeException($e);
         }
