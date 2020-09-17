@@ -11,6 +11,7 @@
       >
       <a-form-model-item ref="email" prop="email">
         <a-input
+          autoFocus
           size="large"
           type="text"
           placeholder="E-mail"
