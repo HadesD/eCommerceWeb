@@ -23,6 +23,7 @@ Route::middleware(['auth:sanctum', 'role.manager'])->group(function(){
         'stocks' => App\Http\Controllers\Api\StockController::class,
         'categories' => App\Http\Controllers\Api\CategoryController::class,
         'products' => App\Http\Controllers\Api\ProductController::class,
+        'users' => App\Http\Controllers\Api\UserController::class,
     ]);
 });
 

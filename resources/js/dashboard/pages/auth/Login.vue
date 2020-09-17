@@ -98,6 +98,7 @@ export default {
               const userData = userRes.data;
               if (userData.role >= 100)
               {
+                this.$user.setInfo(userData);
                 this.$router.push({path: '/index'});
               }
               else

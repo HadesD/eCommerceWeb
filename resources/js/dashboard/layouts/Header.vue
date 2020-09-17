@@ -11,7 +11,7 @@
       <a-menu-item key="--" style="float:right;">
         <a-dropdown>
           <a @click="e => e.preventDefault()">
-            <a-icon type="user"></a-icon> Admin <a-icon type="down"></a-icon>
+            <a-icon type="user"></a-icon> {{ userName }} <a-icon type="down"></a-icon>
           </a>
           <a-menu slot="overlay">
             <a-menu-item>
@@ -37,6 +37,11 @@ export default {
 
     }
   },
+  computed: {
+    userName(){
+      return this.$user.info().name || 'Admin'
+    },
+  },
   methods: {
     sideBarCollapse(){
       this.$emit('onSetSidebarCollapsed', !this.sideBarCollapsed);
@@ -52,9 +57,12 @@ export default {
             .then(res => {
               self.$message.success('Đăng xuất thành công');
 
+              self.$user.clear();
+
               self.$router.push({ path: '/auth/login' });
             })
             .catch(res => {
+              console.log(res);
               self.$message.error('Đăng xuất thất bại');
             })
             .then(res => {
