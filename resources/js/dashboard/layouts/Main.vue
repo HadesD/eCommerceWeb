@@ -1,7 +1,7 @@
 <template>
   <a-layout>
-    <Slider :collapsed="sideBarCollapsed"></Slider>
-    <a-layout :style="{ marginLeft: sideBarCollapsed ? '80px' : '200px'  }">
+    <SiderMenu :collapsed="sideBarCollapsed" :width="sideBarWidth" :collapsedWidth="sideBarCollapsedWidth"></SiderMenu>
+    <a-layout :style="{ marginLeft: (sideBarCollapsed ? sideBarCollapsedWidth : sideBarWidth) + 'px'  }">
       <Header :sideBarCollapsed="sideBarCollapsed" @onSetSidebarCollapsed="setSidebarCollapsed"></Header>
       <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
         <!-- <Breadcrumb></Breadcrumb> -->
@@ -18,17 +18,19 @@
 
 <script>
 import Breadcrumb from '../components/Breadcrumb.vue'
-import Slider from '../layouts/Slider.vue'
+import SiderMenu from '../layouts/SiderMenu.vue'
 import Header from '../layouts/Header.vue'
 
 export default {
   data() {
     return {
       sideBarCollapsed: false,
+      sideBarWidth: 200,
+      sideBarCollapsedWidth: 0,
     }
   },
   components: {
-    Header, Breadcrumb, Slider
+    Header, Breadcrumb, SiderMenu
   },
   methods: {
     setSidebarCollapsed(sts){

@@ -1,11 +1,11 @@
 <template>
-  <a-layout-sider v-model="collapsed" id="slider_sidebar">
+  <a-layout-sider v-model="collapsed" id="slider_sidebar" :width="width" :collapsedWidth="collapsedWidth">
     <a-menu
       theme="dark"
       mode="inline"
       :defaultOpenKeys="['/products', '/stocks', '/orders']"
       :selectedKeys="[$route.path]"
-      :style="{ height: '100%', borderRight: 0, backgroundColor: '#9800ab' }"
+      :style="{ height: '100%', borderRight: 0 }"
       >
       <a-menu-item key="-" style="padding:0;">
         <div class="logo">
@@ -65,6 +65,12 @@
 <script>
 export default {
   props: {
+    width: {
+      type: Number,
+    },
+    collapsedWidth: {
+      type: Number,
+    },
     collapsed: {
       type: Boolean,
       default: false,
