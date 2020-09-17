@@ -1,13 +1,13 @@
 <template>
   <div>
     <a-spin :spinning="stockInfoLoading">
-      <h2>{{ $route.params.id ? `Sửa hàng trong kho #${$route.params.id}` : 'Nhập hàng mới vào kho' }}</h2>
+      <h2>{{ $route.params.id ? `Chỉnh sửa hóa đơn #${$route.params.id}` : 'Tạo hóa đơn đặt hàng' }}</h2>
       <a-form-model
         ref="ruleForm"
         :model="formData"
         :rules="rules"
-        :label-col="labelCol"
-        :wrapper-col="wrapperCol"
+        :label-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? labelCol : 0"
+        :wrapper-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? wrapperCol : 0"
         >
         <a-form-model-item label="Tên sản phẩm" ref="name" prop="name">
           <a-input

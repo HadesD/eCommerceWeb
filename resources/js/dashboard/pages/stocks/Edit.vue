@@ -6,8 +6,8 @@
         ref="ruleForm"
         :model="formData"
         :rules="rules"
-        :label-col="labelCol"
-        :wrapper-col="wrapperCol"
+        :label-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? labelCol : 0"
+        :wrapper-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? wrapperCol : 0"
         >
         <a-form-model-item label="Tên sản phẩm" ref="name" prop="name">
           <a-input
