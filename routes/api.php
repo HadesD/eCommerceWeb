@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::middleware('auth:sanctum')->group(function(){
+Route::middleware(['auth:sanctum', 'role.manager'])->group(function(){
     Route::apiResources([
         'stocks' => App\Http\Controllers\Api\StockController::class,
         'categories' => App\Http\Controllers\Api\CategoryController::class,
