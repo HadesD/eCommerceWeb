@@ -26,14 +26,21 @@ export default {
     return {
       sideBarCollapsed: false,
       sideBarWidth: 200,
-      sideBarCollapsedWidth: 0,
     }
   },
   components: {
     Header, Breadcrumb, SiderMenu
   },
+  computed:{
+    sideBarCollapsedWidth(){
+      return this.isMobileSize ? 0 : 80;
+    },
+    isMobileSize(){
+      return ['xs', 'sm', 'md'].indexOf(this.$mq) !== -1;
+    },
+  },
   mounted(){
-    if (['xs', 'sm', 'md'].indexOf(this.$mq) !== -1)
+    if (this.isMobileSize)
     {
       this.sideBarCollapsed = true;
     }

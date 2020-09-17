@@ -14,7 +14,7 @@ export default {
                         }
                         catch(e)
                         {
-                            localStorage.removeItem(k);
+                            this.clear();
                         }
                     }
 

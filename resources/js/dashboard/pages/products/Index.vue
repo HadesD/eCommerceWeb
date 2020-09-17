@@ -130,7 +130,6 @@ export default {
     this.loadCategoriesTree();
 
     this.loadProducts(this.currentCategoryId, 0);
-    console.log(this.$mq)
   },
   computed: {
     categoriesTreeData(){
