@@ -8,7 +8,7 @@
       @handleCancel="addCategoryModalHandleCancel"
       @updateCategories="updateCategories"
       />
-    <a-col :span="4" :md="4" :sm="24" :xs="24">
+    <a-col :span="4" :lg="4" :md="24" :sm="24" :xs="24">
       <h2>
         Chuyên mục
         <a-tooltip title="Thêm chuyên mục">
@@ -24,7 +24,7 @@
         </a-tree>
       </a-spin>
     </a-col>
-    <a-col :span="20" :md="20" :sm="24" :xs="24" style="border-left:1px solid #CCC;">
+    <a-col :span="20" :lg="20" :md="24" :sm="24" :xs="24" :style="{borderLeft: (['xs','sm','md'].indexOf($mq) !== -1) ?  'none' : '1px solid #CCC'}">
       <h2>
         Sản phẩm
         <a-tooltip title="Làm mới">
@@ -130,6 +130,7 @@ export default {
     this.loadCategoriesTree();
 
     this.loadProducts(this.currentCategoryId, 0);
+    console.log(this.$mq)
   },
   computed: {
     categoriesTreeData(){

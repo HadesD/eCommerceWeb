@@ -32,6 +32,12 @@ export default {
   components: {
     Header, Breadcrumb, SiderMenu
   },
+  mounted(){
+    if (['xs', 'sm', 'md'].indexOf(this.$mq) !== -1)
+    {
+      this.sideBarCollapsed = true;
+    }
+  },
   methods: {
     setSidebarCollapsed(sts){
       this.sideBarCollapsed = sts;
