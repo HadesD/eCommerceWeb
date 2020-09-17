@@ -92,9 +92,22 @@ export default {
         axios.get('/sanctum/csrf-cookie').then(response => {
           this.loggingIn = true;
           axios.post('/login', this.formData).then(res => {
-            console.log(res)
-
-            this.$router.push({path: '/index'});
+            this.loggingIn = true;
+            axios.get('/api/user').then(userRes => {
+              const userData = userRes.data;
+              if (userData.role >= 100)
+              {
+                this.$router.push({path: '/index'});
+              }
+              else
+              {
+                this.$message.error('Bạn không có quyền hạn truy cập trang này');
+              }
+            }).catch(res => {
+              this.$message.error('Login thất bại:' + res.message);
+            }).then(()=> {
+              this.loggingIn = false;
+            });
           }).catch(res => {
             this.$message.error('Login thất bại:' + res.message);
           }).then(()=> {
