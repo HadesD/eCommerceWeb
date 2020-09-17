@@ -21,12 +21,11 @@
             />
         </a-form-model-item>
         <a-form-model-item label="Giá lúc nhập" ref="cost_price" prop="cost_price">
-          <a-input
+          <a-input-number
             v-model="formData.cost_price"
             @blur="() => $refs.cost_price.onFieldBlur()"
-            type="number"
             >
-          </a-input>
+          </a-input-number>
           Xem trước: {{ new Intl.NumberFormat().format(formData.cost_price) }} VND
         </a-form-model-item>
         <a-form-model-item label="Trạng thái" ref="status" prop="status">

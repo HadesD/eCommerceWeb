@@ -31,13 +31,14 @@
             />
         </a-form-model-item>
         <a-form-model-item label="Giá bán" ref="price" prop="price">
-          <a-input
+          <a-input-number
             v-model="formData.price"
             @blur="() => $refs.price.onFieldBlur()"
-            type="number"
+            :formatter="value => new Intl.NumberFormat().format(value)"
+            :parser="value => value.replace(/\$\s?|(\.*)/g, '')"
+            style="width: 100%;"
             >
-          </a-input>
-          Xem trước: {{ new Intl.NumberFormat().format(formData.price) }} VND
+          </a-input-number>
         </a-form-model-item>
         <a-form-model-item label="Trạng thái" ref="status" prop="status">
           <a-select
