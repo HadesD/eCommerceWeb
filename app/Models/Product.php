@@ -20,16 +20,22 @@ class Product extends Model
 
     protected $fillable = ['name', 'description', 'detail', 'specification', 'slug', 'price'];
 
+    protected $appends = [
+        'categories',
+    ];
+
     static public function allStatus()
     {
         return (new \ReflectionClass(ProductStatus::class))->getConstants();
     }
 
-    // public function categories()
-    // {
-    //     return Category::whereHas('product_categories', function($query) {
-    //         $query->where('product_id', $this->id);
-    //     })->get();
-    // }
+    public function getCategoriesAttribute()
+    {
+        return Category::whereIn('id', function($query){
+            $query->select('category_id')
+                  ->from(with(new ProductCategory)->getTable())
+                  ->where('product_id', $this->id);
+        })->get();
+    }
 }
 

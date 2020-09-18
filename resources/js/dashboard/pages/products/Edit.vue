@@ -196,15 +196,14 @@ export default {
     },
   },
   mounted(){
-    console.log(this.$route);
     this.formData.id = this.$route.params.id;
+
+    this.reloadCategoriesTree();
 
     if (this.formData.id)
     {
       this.loadProduct(this.formData.id)
     }
-
-    this.reloadCategoriesTree();
   },
   methods: {
     loadCategoriesTree(){
@@ -242,12 +241,16 @@ export default {
       this.productInfoLoading = true;
       axios.get(`/api/products/${id}`)
         .then(res => {
-          if (!res.data.data.id)
+          const pData = res.data.data;
+          if (!pData.id)
           {
             throw res;
             return;
           }
-          this.formData = {...res.data.data};
+
+          _.assign(this.formData, _.pick(res.data.data, _.keys(this.formData)));
+          this.formData.categories_id = res.data.data.categories.map((item) => item.id);
+
           this.productInfoLoading = false;
         })
         .catch(err => {

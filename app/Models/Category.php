@@ -11,5 +11,14 @@ class Category extends Model
 
     protected $fillable = ['name', 'description', 'parent_id', 'slug'];
     public $timestamps = false;
+
+    public function getProductsAttribute()
+    {
+        return Product::whereIn('id', function($query){
+            $query->select('product_id')
+                  ->from(with(new ProductCategory)->getTable())
+                  ->where('category_id', $this->id);
+        })->get();
+    }
 }
 

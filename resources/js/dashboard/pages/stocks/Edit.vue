@@ -122,7 +122,9 @@ export default {
             throw res;
             return;
           }
-          this.formData = {...res.data.data};
+
+          _.assign(this.formData, _.pick(res.data.data, _.keys(this.formData)));
+
           this.stockInfoLoading = false;
         })
         .catch(err => {
