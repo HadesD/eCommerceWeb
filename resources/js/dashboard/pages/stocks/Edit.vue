@@ -36,6 +36,7 @@
           <a-select
             v-model="formData.status"
             @blur="() => $refs.status.onFieldBlur()"
+            :disabled="statusDisabled"
             >
             <a-select-option :value="0">
               Có sẵn
@@ -82,6 +83,7 @@ export default {
       wrapperCol: { span: 14 },
 
       stockInfoLoading: false,
+      stockInfo: {},
       formData: {
         id: undefined,
         name: '',
@@ -104,6 +106,11 @@ export default {
       },
     }
   },
+  computed: {
+    statusDisabled(){
+      return this.$route.params.id && this.stockInfo.product;
+    },
+  },
   mounted() {
     this.formData.id = this.$route.params.id;
 
@@ -117,13 +124,16 @@ export default {
       this.stockInfoLoading = true;
       axios.get(`/api/stocks/${id}`)
         .then(res => {
-          if (!res.data.data.id)
+          const stockData = res.data.data;
+          if (!stockData.id)
           {
             throw res;
             return;
           }
 
-          _.assign(this.formData, _.pick(res.data.data, _.keys(this.formData)));
+          this.stockInfo = stockData;
+
+          _.assign(this.formData, _.pick(stockData, _.keys(this.formData)));
 
           this.stockInfoLoading = false;
         })

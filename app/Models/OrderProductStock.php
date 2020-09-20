@@ -9,4 +9,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class OrderProductStock extends Model
 {
     use HasFactory, SoftDeletes;
+
+    protected $appends = [
+        'transactions',
+    ];
+
+    public function getTransactionsAttribute()
+    {
+        return Transaction::where('id', function($query){
+            $query->select('transaction_id')
+                ->from((new OrderProductStockTransaction)->getTable())
+                ->where('order_product_stock_id', $this->id);
+        })->get();
+    }
 }

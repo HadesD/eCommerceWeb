@@ -19,5 +19,21 @@ class Stock extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = ['name', 'idi', 'status', 'cost_price', 'updated_user_id', 'in_date'];
+
+    protected $appends = [
+        'product',
+    ];
+
+    public function getProductAttribute(){
+        return Product::where('id', function($query){
+            $query->select('product_id')
+                  ->from(with(new OrderProduct)->getTable())
+                  ->where('id', function($q1){
+                      $q1->select('order_product_id')
+                         ->from(with(new OrderProductStock)->getTable())
+                         ->where('stock_id', $this->id);
+                  });
+        })->first();
+    }
 }
 
