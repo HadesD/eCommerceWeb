@@ -42,6 +42,7 @@
               allow-clear
               v-model="formData.parent_id"
               tree-data-simple-mode
+              treeDefaultExpandAll
               treeNodeFilterProp="title"
               style="width: 100%"
               :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"

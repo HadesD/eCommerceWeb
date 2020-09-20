@@ -17,9 +17,11 @@
       </h2>
       <a-spin :spinning="categoriesTreeLoading">
         <a-tree
-          default-expand-all show-line
-          @select="onCategoriesTreeSelect" @expand="onCategoriesTreeExpand"
+          show-line
+          :expandedKeys="categoriesTreeExpandedKeys"
           :tree-data="categoriesTreeData"
+          @select="onCategoriesTreeSelect"
+          @expand="onCategoriesTreeExpand"
           >
         </a-tree>
       </a-spin>
@@ -128,6 +130,7 @@ export default {
       addCategoryModalVisible: false,
       categoriesTreeLoading: false,
       currentCategoryId: 0,
+      categoriesTreeExpandedKeys: [],
 
       stocks: [],
       stocksTableLoading: false,
@@ -180,6 +183,9 @@ export default {
         toNode.push(newData);
 
         toNode = toNode.sort((a,b) => a.title.toUpperCase() > b.title.toUpperCase() ? 1 : -1);
+
+        // Update key
+        this.categoriesTreeExpandedKeys.push(newData.key);
       }
 
       return data;

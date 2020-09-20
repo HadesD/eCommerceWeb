@@ -75,6 +75,7 @@
                 allow-clear
                 multiple
                 tree-data-simple-mode
+                treeDefaultExpandAll
                 treeNodeFilterProp="title"
                 v-model="formData.categories_id"
                 style="width: 100%"
