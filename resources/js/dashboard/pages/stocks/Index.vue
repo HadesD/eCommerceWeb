@@ -123,7 +123,15 @@ export default {
       this.stocksTableLoading = true;
       axios.get(`/api/stocks?page=${page}`)
         .then(res => {
-          this.stocks = res.data.data || [];
+          const resData = res.data;
+          this.stocks = resData.data || [];
+
+          const newPagi = {
+            total: resData.total,
+            current: resData.current_page,
+            pageSize: resData.per_page,
+          };
+          this.stocksTablePagination = {...newPagi};
         })
         .catch(err => {
           console.log(err);
