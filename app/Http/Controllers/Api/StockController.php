@@ -34,15 +34,20 @@ class StockController extends Controller
         {
             \DB::beginTransaction();
 
-            $stock = new Stock;
-            $stock->name = $request->name;
-            $stock->idi = $request->idi;
-            $stock->status = $request->status;
-            $stock->cost_price = $request->cost_price;
-            $stock->updated_user_id = \Auth::user()->id;
-            $stock->in_date = \Carbon\Carbon::parse($request->in_date)->format('Y-m-d H:i:s');
-            $stock->note = $request->note;
-            $stock->save();
+            $num = $request->num ?? 1;
+
+            for ($i = 0; $i < $num; $i++)
+            {
+                $stock = new Stock;
+                $stock->name = $request->name;
+                $stock->idi = $request->idi;
+                $stock->status = $request->status;
+                $stock->cost_price = $request->cost_price;
+                $stock->updated_user_id = \Auth::user()->id;
+                $stock->in_date = \Carbon\Carbon::parse($request->in_date)->format('Y-m-d H:i:s');
+                $stock->note = $request->note;
+                $stock->save();
+            }
 
             \DB::commit();
         }
