@@ -121,7 +121,7 @@ export default {
   methods: {
     loadStocks(page){
       this.stocksTableLoading = true;
-      axios.get('/api/stocks')
+      axios.get(`/api/stocks?page=${page}`)
         .then(res => {
           this.stocks = res.data.data || [];
         })

@@ -86,12 +86,11 @@ export default {
       stockInfo: {},
       formData: {
         id: undefined,
-        name: '',
-        idi: '',
-        cost_price: undefined,
-        status: 0,
-        in_date: undefined,
         note: '',
+        customer_id: 0, // TODO: config this
+        tax: 0.0,
+        addon_transactions: [],
+        order_products: [],
       },
       rules: {
         idi: [
