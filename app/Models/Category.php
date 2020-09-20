@@ -18,7 +18,7 @@ class Category extends Model
             $query->select('product_id')
                   ->from(with(new ProductCategory)->getTable())
                   ->where('category_id', $this->id);
-        })->get();
+        });
     }
 }
 

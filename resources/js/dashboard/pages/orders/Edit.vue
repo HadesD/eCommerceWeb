@@ -67,10 +67,6 @@ export default {
       stockInfoLoading: false,
       formData: {
         id: undefined,
-        name: '',
-        idi: '',
-        cost_price: undefined,
-        status: 0,
       },
       rules: {
         idi: [

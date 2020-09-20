@@ -24,12 +24,8 @@ class ProductController extends Controller
         $query = \Request::all();
 
         $category_id = $query['category_id'] ?? 0;
-        if ($category_id)
-        {
 
-        }
-
-        return new ProductResource(Product::paginate());
+        return new ProductResource($category_id ? Category::find($category_id)->products->paginate() : Product::paginate());
     }
 
     /**
