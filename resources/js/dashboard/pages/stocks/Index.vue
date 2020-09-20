@@ -30,7 +30,7 @@
       <h2>
         Kho hàng
         <a-tooltip title="Làm mới">
-          <a-button type="primary" icon="reload" :loading="stocksTableLoading" @click="() => {loadStocks(stocksTablePagination.current)}" />
+          <a-button type="primary" icon="reload" :loading="stocksTableLoading" @click="() => {loadStocks(currentCategoryId, stocksTablePagination.current)}" />
         </a-tooltip>
         <router-link to="/stocks/new">
           <a-tooltip title="Nhập kho">
