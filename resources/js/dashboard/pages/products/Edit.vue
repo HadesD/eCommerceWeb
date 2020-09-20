@@ -248,8 +248,9 @@ export default {
             return;
           }
 
-          _.assign(this.formData, _.pick(res.data.data, _.keys(this.formData)));
-          this.formData.categories_id = res.data.data.categories.map((item) => item.id);
+          _.assign(this.formData, _.pick(pData, _.keys(this.formData)));
+
+          this.formData.categories_id = pData.categories.map((item) => item.id);
 
           this.productInfoLoading = false;
         })

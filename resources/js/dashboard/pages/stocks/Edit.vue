@@ -96,10 +96,15 @@ export default {
       stockInfo: {},
       formData: {
         id: undefined,
+        name: '',
+        idi: '',
+        cost_price: 0,
         num: 1,
         note: '',
         customer_id: 0, // TODO: config this
         tax: 0.0,
+        in_date: undefined,
+        status: 0,
         addon_transactions: [],
         order_products: [],
       },
@@ -121,7 +126,7 @@ export default {
       return this.$route.params.id && this.stockInfo.product;
     },
     numDisabled(){
-      return this.$route.params.id;
+      return this.$route.params.id ? true : false;
     },
   },
   mounted() {
@@ -144,9 +149,9 @@ export default {
             return;
           }
 
-          this.stockInfo = stockData;
-
           _.assign(this.formData, _.pick(stockData, _.keys(this.formData)));
+
+          this.stockInfo = stockData;
 
           this.stockInfoLoading = false;
         })
