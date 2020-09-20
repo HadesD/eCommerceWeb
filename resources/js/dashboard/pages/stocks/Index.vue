@@ -104,7 +104,7 @@ export default {
     }
   },
   mounted() {
-    this.loadStocks(this.stocksTablePagination.current);
+    this.loadStocks(0);
   },
   computed: {
     stocksTableData(){
