@@ -21,9 +21,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $query = \Request::all();
-
-        $category_id = $query['category_id'] ?? 0;
+        $category_id = \Request::all()['category_id'] ?? 0;
 
         return new ProductResource($category_id ? Category::find($category_id)->products->paginate() : Product::paginate());
     }

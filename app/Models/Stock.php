@@ -22,6 +22,7 @@ class Stock extends Model
 
     protected $appends = [
         'product',
+        'categories',
     ];
 
     public function getProductAttribute(){
@@ -34,6 +35,15 @@ class Stock extends Model
                          ->where('stock_id', $this->id);
                   });
         })->first();
+    }
+
+    public function getCategoriesAttribute()
+    {
+        return Category::whereIn('id', function($query){
+            $query->select('category_id')
+                  ->from(with(new StockCategory)->getTable())
+                  ->where('stock_id', $this->id);
+        })->get();
     }
 }
 

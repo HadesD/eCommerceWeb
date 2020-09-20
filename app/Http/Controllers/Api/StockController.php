@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 use App\Http\Resources\Stock as StockResource;
 use App\Models\Stock;
+use App\Models\Category;
+use App\Models\StockCategory;
 
 use Illuminate\Support\Facades\Log;
 
@@ -19,7 +21,9 @@ class StockController extends Controller
      */
     public function index()
     {
-        return new StockResource(Stock::paginate());
+        $category_id = \Request::all()['category_id'] ?? 0;
+
+        return new StockResource($category_id ? Category::find($category_id)->stocks->paginate() : Stock::paginate());
     }
 
     /**
@@ -47,6 +51,15 @@ class StockController extends Controller
                 $stock->in_date = \Carbon\Carbon::parse($request->in_date)->format('Y-m-d H:i:s');
                 $stock->note = $request->note;
                 $stock->save();
+
+                // EAV
+                foreach ($request->categories_id as $category_id)
+                {
+                    $stock_category = new StockCategory;
+                    $stock_category->stock_id = $stock->id;
+                    $stock_category->category_id = $category_id;
+                    $stock_category->save();
+                }
             }
 
             \DB::commit();
@@ -96,6 +109,27 @@ class StockController extends Controller
             $stock->in_date = \Carbon\Carbon::parse($request->in_date)->format('Y-m-d H:i:s');
             $stock->note = $request->note;
             $stock->save();
+
+            // EAV
+            foreach ($request->categories_id as $category_id)
+            {
+                $stock_category = StockCategory::where('stock_id', $stock->id)
+                    ->where('category_id', $category_id)
+                    ->first();
+                if ($stock_category)
+                {
+                    continue;
+                }
+
+                $stock_category = new StockCategory;
+                $stock_category->stock_id = $stock->id;
+                $stock_category->category_id = $category_id;
+                $stock_category->save();
+            }
+
+            StockCategory::where('stock_id', $stock->id)
+                ->whereNotIn('category_id', $request->categories_id)
+                ->delete();
 
             \DB::commit();
         }

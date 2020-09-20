@@ -20,5 +20,14 @@ class Category extends Model
                   ->where('category_id', $this->id);
         });
     }
+
+    public function getStocksAttribute()
+    {
+        return Stock::whereIn('id', function($query){
+            $query->select('stock_id')
+                  ->from(with(new StockCategory)->getTable())
+                  ->where('category_id', $this->id);
+        });
+    }
 }
 

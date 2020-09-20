@@ -148,11 +148,12 @@ export default {
     return {
       labelCol: { span: 4 },
       wrapperCol: { span: 14 },
-      productInfoLoading: false,
+
       categoriesTreeLoading: false,
       addCategoryModalVisible: false,
       categories: [],
 
+      productInfoLoading: false,
       formData: {
         id: undefined,
         name: '',

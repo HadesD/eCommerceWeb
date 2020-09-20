@@ -1,5 +1,13 @@
 <template>
   <div>
+    <AddCategoryModal
+      :visible="addCategoryModalVisible"
+      :categories="categories"
+      :categoriesTreeLoading="categoriesTreeLoading"
+      @handleOk="addCategoryModalHandleOk"
+      @handleCancel="addCategoryModalHandleCancel"
+      @updateCategories="updateCategories"
+      />
     <a-spin :spinning="stockInfoLoading">
       <h2>{{ $route.params.id ? `Sửa hàng trong kho #${$route.params.id}` : 'Nhập hàng mới vào kho' }}</h2>
       <a-form-model
@@ -59,6 +67,43 @@
             </a-select-option>
           </a-select>
         </a-form-model-item>
+        <a-form-model-item label="Chuyên mục cha" ref="categories_id" prop="categories_id">
+          <a-form-model-item
+            style="display: inline-block; margin-right: 5px;"
+            >
+            <a-tooltip title="Thêm chuyên mục">
+              <a-button type="primary" icon="plus" @click="showAddCategoryModal" />
+            </a-tooltip>
+          </a-form-model-item>
+          <a-form-model-item
+            :style="{ display: 'inline-block', width: 'calc(100% - 80px)' }"
+            >
+            <a-spin :spinning="categoriesTreeLoading">
+              <a-tree-select
+                show-search
+                allow-clear
+                multiple
+                tree-data-simple-mode
+                treeNodeFilterProp="title"
+                v-model="formData.categories_id"
+                style="width: 100%"
+                :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                :tree-data="categoriesTreeData"
+                placeholder="Chuyên mục"
+                :replaceFields="{ pId:'parent_id',title:'name',value:'id' }"
+                @blur="() => $refs.categories_id.onFieldBlur()"
+                @change="() => $refs.categories_id.onFieldBlur()"
+                />
+            </a-spin>
+          </a-form-model-item>
+          <a-form-model-item
+            style="display: inline-block; margin-left: 5px;"
+            >
+            <a-tooltip title="Làm mới">
+              <a-button type="primary" icon="reload" @click="reloadCategoriesTree" :loading="categoriesTreeLoading" />
+            </a-tooltip>
+          </a-form-model-item>
+        </a-form-model-item>
         <a-form-model-item label="Ghi chú">
           <a-textarea
             v-model="formData.note"
@@ -87,10 +132,17 @@
 import axios from 'axios';
 
 export default {
+  components: {
+    AddCategoryModal: () => import('../../components/AddCategoryModal.vue'),
+  },
   data() {
     return {
       labelCol: { span: 4 },
       wrapperCol: { span: 14 },
+
+      categoriesTreeLoading: false,
+      addCategoryModalVisible: false,
+      categories: [],
 
       stockInfoLoading: false,
       stockInfo: {},
@@ -107,6 +159,7 @@ export default {
         status: 0,
         addon_transactions: [],
         order_products: [],
+        categories_id: [],
       },
       rules: {
         idi: [
@@ -118,10 +171,23 @@ export default {
         status: [
           { required: true, trigger: 'blur' },
         ],
+        categories_id: [
+          { required: true, trigger: 'blur' },
+        ],
       },
     }
   },
   computed: {
+    categoriesTreeData(){
+      let data = this.categories;
+
+      for (let i = 0; i < data.length; i++)
+      {
+        data[i].pId = data[i].parent_id;
+      }
+
+      return data;
+    },
     statusDisabled(){
       return this.$route.params.id && this.stockInfo.product;
     },
@@ -132,26 +198,61 @@ export default {
   mounted() {
     this.formData.id = this.$route.params.id;
 
+    this.reloadCategoriesTree();
+
     if (this.formData.id)
     {
       this.loadStock(this.formData.id)
     }
   },
   methods: {
+    loadCategoriesTree(){
+      this.reloadCategoriesTree();
+    },
+    reloadCategoriesTree(){
+      this.categoriesTreeLoading = true;
+      axios.get('/api/categories')
+        .then(res => {
+          this.categories = res.data.data || [];
+        })
+        .catch(err => {
+          console.log(err);
+
+          this.$message.error('Thất bại');
+        })
+        .then(()=>{
+          this.categoriesTreeLoading = false;
+        });
+    },
+    updateCategories(cats) {
+      this.loadCategoriesTree();
+    },
+    showAddCategoryModal() {
+      this.addCategoryModalVisible = true;
+    },
+    addCategoryModalHandleOk(e){
+      // this.addCategoryModalVisible = false;
+    },
+    addCategoryModalHandleCancel(e){
+      this.addCategoryModalVisible = false;
+    },
+
     loadStock(id){
       this.stockInfoLoading = true;
       axios.get(`/api/stocks/${id}`)
         .then(res => {
-          const stockData = res.data.data;
-          if (!stockData.id)
+          const sData = res.data.data;
+          if (!sData.id)
           {
             throw res;
             return;
           }
 
-          _.assign(this.formData, _.pick(stockData, _.keys(this.formData)));
+          _.assign(this.formData, _.pick(sData, _.keys(this.formData)));
 
-          this.stockInfo = stockData;
+          this.formData.categories_id = sData.categories.map((item) => item.id);
+
+          this.stockInfo = sData;
 
           this.stockInfoLoading = false;
         })
