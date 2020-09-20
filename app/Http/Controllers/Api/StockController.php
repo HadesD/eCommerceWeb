@@ -114,7 +114,12 @@ class StockController extends Controller
      */
     public function destroy($id)
     {
-        return new StockResource(Stock::find($id)->delete() ? [
+        $stock = Stock::find($id);
+        if ($stock->product)
+        {
+            throw new \RuntimeException('Stock sold');
+        }
+        return new StockResource($stock->delete() ? [
             'error_code' => 0,
         ] : []);
     }
