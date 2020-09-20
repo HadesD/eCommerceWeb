@@ -229,7 +229,7 @@ export default {
     loadProducts(category_id, page){
       this.productsTableLoading = true;
 
-      axios.get(`/api/products?category_id=${category_id}&page=${page}`)
+      axios.get(`/api/products?page=${page}&category_id=${category_id}`)
         .then(res => {
           const resData = res.data;
           this.products = resData.data || [];

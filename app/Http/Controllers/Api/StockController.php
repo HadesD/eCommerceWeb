@@ -119,6 +119,7 @@ class StockController extends Controller
         {
             throw new \RuntimeException('Stock sold');
         }
+
         return new StockResource($stock->delete() ? [
             'error_code' => 0,
         ] : []);
