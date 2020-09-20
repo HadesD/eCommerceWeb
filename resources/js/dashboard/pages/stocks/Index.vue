@@ -238,7 +238,7 @@ export default {
 
     loadStocks(category_id, page){
       this.stocksTableLoading = true;
-      axios.get(`/api/stocks?page=${page}&category_id${category_id}`)
+      axios.get(`/api/stocks?page=${page}&category_id=${category_id}`)
         .then(res => {
           const resData = res.data;
           this.stocks = resData.data || [];
