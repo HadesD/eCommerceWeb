@@ -20,6 +20,16 @@
             @blur="() => $refs.idi.onFieldBlur()"
             />
         </a-form-model-item>
+        <a-form-model-item label="Số lượng" ref="num" prop="num">
+          <a-input-number
+            v-model="formData.num"
+            @blur="() => $refs.num.onFieldBlur()"
+            :min="1"
+            :max="200"
+            :disabled="numDisabled"
+            >
+          </a-input-number>
+        </a-form-model-item>
         <a-form-model-item label="Giá lúc nhập (Đơn giá)" ref="cost_price" prop="cost_price">
           <a-input-number
             v-model="formData.cost_price"
@@ -29,16 +39,6 @@
             style="width: 100%;"
             :min="-2000000000"
             :max="2000000000"
-            >
-          </a-input-number>
-        </a-form-model-item>
-        <a-form-model-item label="Số lượng" ref="num" prop="num">
-          <a-input-number
-            v-model="formData.num"
-            @blur="() => $refs.num.onFieldBlur()"
-            :min="1"
-            :max="200"
-            :disabled="numDisabled"
             >
           </a-input-number>
         </a-form-model-item>
