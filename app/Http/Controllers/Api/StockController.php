@@ -106,6 +106,12 @@ class StockController extends Controller
             \DB::beginTransaction();
 
             $stock = Stock::find($id);
+
+            if ($stock->product && ($stock->status !== $request->status))
+            {
+                throw new \RuntimeException('Can not change status of sold item');
+            }
+
             $stock->name = $request->name;
             $stock->idi = $request->idi;
             $stock->status = $request->status;

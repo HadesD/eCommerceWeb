@@ -149,9 +149,9 @@ class OrderController extends Controller
             $order->customer_id = $request->customer_id;
             $order->save();
 
-            $order_products = $order->order_products;
-
             $order_product_ids_keep = [];
+            $order_product_stock_ids_keep = [];
+            $order_product_stock_transaction_ids_keep = [];
 
             foreach ($request['order_products'] as $_order_product)
             {
@@ -195,6 +195,9 @@ class OrderController extends Controller
                     $order_product_stock->amount = $_order_product_stock['amount'];
                     $order_product_stock->save();
 
+                    // Push to keep
+                    $order_product_stock_ids_keep[] = $order_product_stock->id;
+
                     // Transactions
                     foreach ($_order_product_stock['transactions'] as $_transaction)
                     {
@@ -206,6 +209,8 @@ class OrderController extends Controller
                         $transaction->cashier_id = $request->user()->id;
                         $transaction->save();
 
+                        $order_product_stock_transaction_ids_keep[] = $transaction->id;
+
                         if (!$transaction_id)
                         {
                             $order_product_stock_transaction = new OrderProductStockTransaction;
@@ -216,6 +221,8 @@ class OrderController extends Controller
                     }
                 }
             }
+
+            $transaction_ids_keep = [];
 
             $_transactions = $request['transactions'];
 
@@ -229,6 +236,8 @@ class OrderController extends Controller
                 $transaction->cashier_id = $request->user()->id;
                 $transaction->save();
 
+                $transaction_ids_keep[] = $transaction->id;
+
                 if (!$transaction_id)
                 {
                     $order_transaction = new OrderTransaction;
@@ -239,11 +248,46 @@ class OrderController extends Controller
             }
 
             // Delete order_product
-            foreach ($order_products as $_order_product)
+            foreach ($order->order_products as $_order_product)
             {
+                // Delete order_product_stock
+                foreach ($_order_product->order_product_stocks as $_order_product_stock)
+                {
+                    // Delete transactions
+                    foreach ($_order_product_stock->transactions as $_transaction)
+                    {
+                        if (!in_array($_transaction->id, $order_product_stock_transaction_ids_keep))
+                        {
+                            OrderProductStockTransaction::where('order_product_stock_id', $_order_product_stock->id)
+                                ->where('transaction_id', $_transaction->id)
+                                ->delete();
+                            $_transaction->delete();
+                        }
+                    }
+
+                    // Delete order_product_stocks
+                    if (!in_array($_order_product_stock->id, $order_product_stock_ids_keep))
+                    {
+                        $_order_product_stock->delete();
+                    }
+                }
+
                 if (!in_array($_order_product->id, $order_product_ids_keep))
                 {
                     $_order_product->delete();
+                }
+            }
+
+            // Delete transactions
+            foreach ($order->transactions as $_transaction)
+            {
+
+                if (!in_array($_transaction->id, $transaction_ids_keep))
+                {
+                    OrderTransaction::where('order_id', $order->id)
+                        ->where('transaction_id', $_transaction->id)
+                        ->delete();
+                    $_transaction->delete();
                 }
             }
 
@@ -255,6 +299,8 @@ class OrderController extends Controller
 
             throw new \RuntimeException($e);
         }
+
+        return new OrderResource($order ?? []);
     }
 
     /**

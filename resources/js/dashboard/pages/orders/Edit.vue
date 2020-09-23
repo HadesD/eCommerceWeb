@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-spin :spinning="stockInfoLoading">
+    <a-spin :spinning="orderInfoLoading">
       <h2>{{ $route.params.id ? `Chỉnh sửa hóa đơn #${$route.params.id}` : 'Tạo hóa đơn đặt hàng' }}</h2>
       <a-form-model
         ref="ruleForm"
@@ -226,7 +226,7 @@ export default {
       productData: [],
       stockData: [],
 
-      stockInfoLoading: false,
+      orderInfoLoading: false,
       formData: {
         id: undefined,
         note: '',
@@ -250,23 +250,22 @@ export default {
       this.loadOrder(this.formData.id)
     }
   },
-  watch:{
+  watch: {
     $route (to, from){
       if (!to.params.id)
       {
         this.formData.order_products.forEach((p) => {
           p.id = undefined;
-          p.order_product_stocks.forEach(ps => {
-            ps.id = undefined;
-            ps.transactions.forEach(t => {
-              t.id = undefined;
-            });
-          });
+          p.order_product_stocks = [];
         });
 
         this.formData.transactions.forEach((t) => {
           t.id = undefined;
         });
+      }
+      else
+      {
+        this.loadOrder(this.formData.id)
       }
     },
   },
@@ -301,7 +300,7 @@ export default {
   methods: {
     // CategoriesTree
     loadCategoriesTree(){
-      this.categoriesTreeLoading = true;
+      // this.categoriesTreeLoading = true;
       axios.get('/api/categories')
         .then(res => {
           this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
@@ -333,7 +332,7 @@ export default {
           this.$message.error('Thất bại');
         })
         .then(()=>{
-          this.categoriesTreeLoading = false;
+          // this.categoriesTreeLoading = false;
         });
     },
 

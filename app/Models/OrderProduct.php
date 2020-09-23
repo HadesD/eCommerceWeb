@@ -15,7 +15,8 @@ interface PaymentMethod
 class OrderProduct extends Model
     implements PaymentMethod
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    // use SoftDeletes;
 
     protected $appends = [
         'product',
