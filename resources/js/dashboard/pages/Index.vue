@@ -6,6 +6,7 @@
           <a-card title="Đơn hàng">
             <a-statistic title="Tổng" :value="statistics.order.count" />
             <a-statistic title="Chưa hoàn tất" :value="statistics.order.uncompleted_count" />
+            <a-statistic title="Tổng thu (VND)" :value="statistics.transaction.amount_total" />
           </a-card>
         </a-col>
         <a-col :span="6">
@@ -19,7 +20,6 @@
             <a-statistic title="Tổng" :value="statistics.stock.count" />
             <a-statistic title="Có sẵn" :value="statistics.stock.avail_count" />
             <a-statistic title="Tổng vốn (VND)" :value="statistics.stock.cost_price_total" />
-            <a-statistic title="Tổng thu (VND)" :value="statistics.transaction.amount_total" />
           </a-card>
         </a-col>
         <a-col :span="6">
