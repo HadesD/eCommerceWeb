@@ -472,7 +472,7 @@ export default {
             const elm = sData[i];
             const newOtp = {
               isLeaf: true,
-              title: elm.name,
+              title: elm.id +'. ' + elm.name + ' ('+(new Intl.NumberFormat().format(elm.price))+' VND)',
               value: elm.id,
             };
             targetOption.children.push(newOtp);
@@ -525,7 +525,7 @@ export default {
             const newOtp = {
               isLeaf: true,
               disabled: elm.status !== 0,
-              title: elm.name,
+              title: elm.id +'. ' + elm.name + ' ('+(new Intl.NumberFormat().format(elm.cost_price))+' VND)',
               value: elm.id,
             };
             targetOption.children.push(newOtp);
