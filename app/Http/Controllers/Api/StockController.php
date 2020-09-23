@@ -52,7 +52,7 @@ class StockController extends Controller
                 $stock->idi = $request->idi;
                 $stock->status = $request->status;
                 $stock->cost_price = $request->cost_price;
-                $stock->updated_user_id = \Auth::user()->id;
+                $stock->updated_user_id = $request->user()->id;
                 $stock->in_date = \Carbon\Carbon::parse($request->in_date)->format('Y-m-d H:i:s');
                 $stock->note = $request->note;
                 $stock->save();
@@ -116,7 +116,7 @@ class StockController extends Controller
             $stock->idi = $request->idi;
             $stock->status = $request->status;
             $stock->cost_price = $request->cost_price;
-            $stock->updated_user_id = \Auth::user()->id;
+            $stock->updated_user_id = $request->user()->id;
             $stock->in_date = \Carbon\Carbon::parse($request->in_date)->format('Y-m-d H:i:s');
             $stock->note = $request->note;
             $stock->save();
@@ -165,13 +165,35 @@ class StockController extends Controller
     public function destroy($id)
     {
         $stock = Stock::find($id);
+
         if ($stock->product)
         {
             throw new \RuntimeException('Stock sold');
         }
 
-        return new StockResource($stock->delete() ? [
+        try
+        {
+            \DB::beginTransaction();
+
+            StockCategory::where('stock_id', $stock->id)
+                ->delete();
+
+            $stock->delete();
+
+            \DB::commit();
+        }
+        catch(\Throwable $e)
+        {
+            \DB::rollback();
+
+            Log::error($e);
+
+            throw new \RuntimeException($e);
+        }
+
+        return [
             'error_code' => 0,
-        ] : []);
+        ];
     }
 }
+

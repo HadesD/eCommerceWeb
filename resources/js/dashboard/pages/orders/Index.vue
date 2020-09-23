@@ -6,7 +6,7 @@
         <a-button type="primary" icon="reload" :loading="ordersTableLoading" @click="() => {loadOrders(ordersTablePagination.current)}" />
       </a-tooltip>
       <router-link to="/orders/new">
-        <a-tooltip title="Nhập kho">
+        <a-tooltip title="Thêm đơn hàng">
           <a-button type="primary" icon="plus" style="float:right;" />
         </a-tooltip>
       </router-link>
@@ -22,8 +22,14 @@
       <span slot="status" slot-scope="record">
         {{ configOrderStatus[record.status] }}
       </span>
-      <span slot="cost_price" slot-scope="record" style="display:block;text-align:right;">
-        {{ new Intl.NumberFormat().format(record.cost_price) }}
+      <span slot="product_num" slot-scope="record">
+        {{ record.order_products.length }}
+      </span>
+      <span slot="transaction_num" slot-scope="record">
+        {{ record.transactions.length }}
+      </span>
+      <span slot="customer" slot-scope="record">
+        {{ record.customer ? record.customer.name : record.customer_id }}
       </span>
       <span slot="time" slot-scope="record">
         Ngày tạo: {{ record.created_at }}<br />
@@ -51,34 +57,34 @@ const ordersTableColumns = [
     key: 'id',
   },
   {
-    title: 'Tên',
-    dataIndex: 'name',
-    key: 'name',
-  },
-  {
-    title: 'Id/Imei',
-    dataIndex: 'idi',
-    key: 'idi',
-  },
-  {
     title: 'Trạng thái',
     key: 'status',
     scopedSlots: { customRender: 'status' },
   },
   {
-    title: 'Giá lúc nhập (VND)',
-    key: 'cost_price',
-    scopedSlots: { customRender: 'cost_price' },
+    title: 'Sản phẩm',
+    key: 'product_num',
+    scopedSlots: { customRender: 'product_num' },
+  },
+  {
+    title: 'Hàng từ kho',
+    key: 'stock_num',
+    scopedSlots: { customRender: 'stock_num' },
+  },
+  {
+    title: 'Giao dịch thêm',
+    key: 'transaction_num',
+    scopedSlots: { customRender: 'transaction_num' },
+  },
+  {
+    title: 'Khách hàng',
+    key: 'customer',
+    scopedSlots: { customRender: 'customer' },
   },
   {
     title: 'Thời gian',
     key: 'time',
     scopedSlots: { customRender: 'time' },
-  },
-  {
-    title: 'Người update',
-    key: 'update_user_id',
-    scopedSlots: { customRender: 'update_user' },
   },
   {
     title: 'Hành động',
@@ -107,9 +113,12 @@ export default {
     },
     configOrderStatus(){
       return {
-        0: 'Có sẵn',
-        1: 'Đã bán',
-        2: 'Hỏng / Lỗi',
+        0: 'Đang xử lí',
+        10: 'Đã hủy bỏ',
+        50: 'Đã thanh toán',
+        51: 'Đang thanh toán',
+        100: 'Đang ship',
+        200: 'Hoàn tất',
       }
     },
   },

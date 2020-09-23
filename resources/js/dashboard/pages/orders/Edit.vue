@@ -60,7 +60,9 @@
               >
               <a-button type="primary" icon="delete"></a-button>
             </a-popconfirm>
-            <a-form-model-item label="Sản phẩm" :rules="{required:true, trigger: 'blur'}">
+            <a-form-model-item label="Sản phẩm" :rules="{required:true, trigger: 'blur'}"
+              :prop="'order_products.'+pIdx+'.product_id'"
+              >
               <a-tree-select
                 :tree-data="productData"
                 :load-data="loadCategoryProducts"
@@ -94,7 +96,9 @@
                   >
                   <a-button type="primary" icon="delete"></a-button>
                 </a-popconfirm>
-                <a-form-model-item label="Hàng" :rules="{required:true, trigger: 'blur'}">
+                <a-form-model-item label="Hàng" :rules="{required:true, trigger: 'blur'}"
+                  :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.stock_id'"
+                  >
                   <a-tree-select
                     :tree-data="stockData"
                     :load-data="loadCategoryStocks"
@@ -102,7 +106,7 @@
                     v-model="ps.stock_id"
                     />
                 </a-form-model-item>
-                <a-form-model-item label="Tổng tiền phải thanh toán" :rules="{required:true, trigger: 'blur'}">
+                <a-form-model-item label="Tổng tiền phải thanh toán" :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.amount'">
                   <a-input-number
                     v-model="ps.amount"
                     :formatter="value => new Intl.NumberFormat().format(value)"
@@ -127,14 +131,14 @@
                       >
                       <a-button type="primary" icon="delete"></a-button>
                     </a-popconfirm>
-                    <a-form-model-item label="Nội dung giao dịch" :rules="{required:true, trigger: 'blur'}">
+                    <a-form-model-item label="Nội dung giao dịch" :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.description'">
                       <a-input
                         v-model="pst.description"
                         placeholder="Trả góp, trả thẳng, thanh toán sản phẩm ABC, vv..vv"
                         type="textarea"
                         />
                     </a-form-model-item>
-                    <a-form-model-item label="Số tiền" :rules="{required:true, trigger: 'blur'}">
+                    <a-form-model-item label="Số tiền" :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.amount'">
                       <a-input-number
                         v-model="pst.amount"
                         :formatter="value => new Intl.NumberFormat().format(value)"
@@ -176,14 +180,14 @@
               >
               <a-button type="primary" icon="delete"></a-button>
             </a-popconfirm>
-            <a-form-model-item label="Nội dung giao dịch" :rules="{required:true, trigger: 'blur'}">
+            <a-form-model-item label="Nội dung giao dịch" :rules="{required:true, trigger: 'blur'}" :prop="'transactions.'+index+'.description'">
                 <a-input
                   v-model="item.description"
                   placeholder="Mã giảm giá, phí ship, v..v"
                   type="textarea"
                   />
             </a-form-model-item>
-            <a-form-model-item label="Số tiền" :rules="{required:true, trigger: 'blur'}">
+            <a-form-model-item label="Số tiền" :rules="{required:true, trigger: 'blur'}" :prop="'transactions.'+index+'.amount'">
               <a-input-number
                 v-model="item.amount"
                 :formatter="value => new Intl.NumberFormat().format(value)"
@@ -222,6 +226,7 @@ export default {
       labelCol: { span: 4 },
       wrapperCol: { span: 14 },
 
+      orderInfo: {},
       categories: [],
       productData: [],
       stockData: [],
@@ -346,7 +351,13 @@ export default {
             throw res;
             return;
           }
+
+          this.orderInfo = orderData;
+
           this.formData = {...orderData};
+
+          // Load tree
+
           this.orderInfoLoading = false;
         })
         .catch(err => {
@@ -372,6 +383,17 @@ export default {
         {
           axios.put(`/api/orders/${orderId}`, this.formData)
             .then(res => {
+              const orderData = res.data.data;
+              this.formData.id = res.data.data.id;
+
+              if (!this.formData.id)
+              {
+                throw res;
+                return;
+              }
+
+              this.formData = {...orderData};
+
               this.$message.success('Đã sửa sản phẩm thành công');
             })
             .catch(err => {
@@ -387,6 +409,7 @@ export default {
         {
           axios.post('/api/orders', this.formData)
             .then(res => {
+              const orderData = res.data.data;
               this.formData.id = res.data.data.id;
 
               if (!this.formData.id)
@@ -394,6 +417,8 @@ export default {
                 throw res;
                 return;
               }
+
+              this.formData = {...orderData};
 
               this.$message.success('Đã thêm sản phẩm thành công');
               this.$router.push({ path: `/orders/${this.formData.id}/edit` });

@@ -26,7 +26,13 @@ class Order extends Model
     protected $appends = [
         'order_products',
         'transactions', // Addon fee,..
+        'customer',
     ];
+
+    public function getCustomerAttribute()
+    {
+        return User::find($this->customer_id);
+    }
 
     public function getOrderProductsAttribute()
     {

@@ -65,6 +65,7 @@ class OrderController extends Controller
                     {
                         throw new \RuntimeException('Stock not avalable');
                     }
+
                     $stock->status = Stock::STS_SOLD;
                     $stock->save();
 
