@@ -323,7 +323,7 @@ export default {
               isLeaf: false,
               selectable: false,
               value: 'cat-'+elm.id,
-              title: elm.name,
+              title: '[+] ' + elm.name,
               meta: {category_id: elm.id},
             };
 
@@ -460,11 +460,10 @@ export default {
                 isLeaf: false,
                 selectable: false,
                 value: 'cat-'+elm.id,
-                title: elm.name,
+                title: '[+] ' + elm.name,
                 meta: {category_id: elm.id},
               };
               targetOption.children.push(Object.assign({}, newOtp));
-              break;
             }
           }
 
@@ -513,11 +512,10 @@ export default {
                 isLeaf: false,
                 selectable: false,
                 value: 'cat-'+elm.id,
-                title: elm.name,
+                title: '[+] ' + elm.name,
                 meta: {category_id: elm.id},
               };
               targetOption.children.push(Object.assign({}, newOtp));
-              break;
             }
           }
 
