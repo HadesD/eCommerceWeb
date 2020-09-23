@@ -154,8 +154,6 @@ export default {
         cost_price: 0,
         num: 1,
         note: '',
-        customer_id: 0, // TODO: config this
-        tax: 0.0,
         in_date: undefined,
         status: 0,
         addon_transactions: [],
