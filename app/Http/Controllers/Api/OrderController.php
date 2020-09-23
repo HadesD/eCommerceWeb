@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 
 use App\Http\Resources\Order as OrderResource;
 use App\Models\Order;
+use App\Models\OrderProduct;
+use App\Models\OrderTransaction;
+use App\Models\OrderProductStock;
+use App\Models\OrderProductStockTransaction;
+use App\Models\Transaction;
+use App\Models\Stock;
 
 use Illuminate\Support\Facades\Log;
 
@@ -19,7 +25,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        return new OrderResource(Order::paginate());
+        return new OrderResource(Order::orderBy('updated_at', 'DESC')->paginate());
     }
 
     /**
@@ -35,10 +41,71 @@ class OrderController extends Controller
             \DB::beginTransaction();
 
             $order = new Order;
-            $order->tax = $request->tax;
             $order->note = $request->note;
+            $order->status = $request->status;
             $order->customer_id = $request->customer_id;
             $order->save();
+
+            foreach ($request['order_products'] as $_order_product)
+            {
+                $order_product = new OrderProduct;
+                $order_product->order_id = $order->id;
+                $order_product->product_id = $_order_product['product_id'];
+                $order_product->payment_method = $_order_product['payment_method'];
+                $order_product->quantity = count($_order_product['order_product_stocks']);
+                $order_product->save();
+
+                foreach ($_order_product['order_product_stocks'] as $_order_product_stock)
+                {
+                    $stock_id = $_order_product_stock['stock_id'];
+
+                    $stock = Stock::find($stock_id);
+
+                    if ($stock->status !== Stock::STS_AVAILABLE)
+                    {
+                        throw new \RuntimeException('Stock not avalable');
+                    }
+                    $stock->status = Stock::STS_SOLD;
+                    $stock->save();
+
+                    $order_product_stock = new OrderProductStock;
+                    $order_product_stock->order_product_id = $order_product->id;
+                    $order_product_stock->stock_id = $stock_id;;
+                    $order_product_stock->amount = $_order_product_stock['amount'];
+                    $order_product_stock->save();
+
+                    // Transactions
+                    foreach ($_order_product_stock['transactions'] as $_transaction)
+                    {
+                        $transaction = new Transaction;
+                        $transaction->amount = $_transaction['amount'];
+                        $transaction->description = $_transaction['description'];
+                        $transaction->paid_date = \Carbon\Carbon::parse($_transaction['paid_date'])->format('Y-m-d H:i:s');
+                        $transaction->cashier_id = $request->user()->id;
+                        $transaction->save();
+
+                        $order_product_stock_transaction = new OrderProductStockTransaction;
+                        $order_product_stock_transaction->order_product_stock_id = $order_product_stock->id;
+                        $order_product_stock_transaction->transaction_id = $transaction->id;
+                        $order_product_stock_transaction->save();
+                    }
+                }
+            }
+
+            foreach ($request['transactions'] as $_transaction)
+            {
+                $transaction = new Transaction;
+                $transaction->amount = $_transaction['amount'];
+                $transaction->description = $_transaction['description'];
+                $transaction->paid_date = \Carbon\Carbon::parse($_transaction['paid_date'])->format('Y-m-d H:i:s');
+                $transaction->cashier_id = $request->user()->id;
+                $transaction->save();
+
+                $order_transaction = new OrderTransaction;
+                $order_transaction->order_id = $order->id;
+                $order_transaction->transaction_id = $transaction->id;
+                $order_transaction->save();
+            }
 
             \DB::commit();
         }
@@ -60,7 +127,7 @@ class OrderController extends Controller
      */
     public function show($id)
     {
-        //
+        return new OrderResource(Order::find($id));
     }
 
     /**
@@ -72,7 +139,122 @@ class OrderController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try
+        {
+            \DB::beginTransaction();
+
+            $order = Order::find($id);
+            $order->note = $request->note;
+            $order->status = $request->status;
+            $order->customer_id = $request->customer_id;
+            $order->save();
+
+            $order_products = $order->order_products;
+
+            $order_product_ids_keep = [];
+
+            foreach ($request['order_products'] as $_order_product)
+            {
+                $order_product_id = $_order_product['id'] ?? null;
+                $order_product = $order_product_id ? OrderProduct::find($order_product_id) : new OrderProduct;
+                if (!$order_product_id)
+                {
+                    $order_product->order_id = $order->id;
+                }
+                $order_product->product_id = $_order_product['product_id'];
+                $order_product->payment_method = $_order_product['payment_method'];
+                $order_product->quantity = count($_order_product['order_product_stocks']);
+                $order_product->save();
+
+                // Push to keep
+                $order_product_ids_keep[] = $order_product->id;
+
+                foreach ($_order_product['order_product_stocks'] as $_order_product_stock)
+                {
+                    $order_product_stock_id = $_order_product_stock['id'] ?? null;
+
+                    $order_product_stock = $order_product_stock_id ? OrderProductStock::find($order_product_stock_id) : null;
+
+                    $stock_id = $_order_product_stock['stock_id'] ?? null;
+
+                    if (!$order_product_stock || ($order_product_stock->stock_id !== $stock_id))
+                    {
+                        $stock = Stock::find($stock_id);
+
+                        if ($stock->status !== Stock::STS_AVAILABLE)
+                        {
+                            throw new \RuntimeException('Stock not avalable');
+                        }
+                        $stock->status = Stock::STS_SOLD;
+                        $stock->save();
+                    }
+
+                    $order_product_stock = $order_product_stock ? $order_product_stock : new OrderProductStock;
+                    $order_product_stock->order_product_id = $order_product->id;
+                    $order_product_stock->stock_id = $stock_id;;
+                    $order_product_stock->amount = $_order_product_stock['amount'];
+                    $order_product_stock->save();
+
+                    // Transactions
+                    foreach ($_order_product_stock['transactions'] as $_transaction)
+                    {
+                        $transaction_id = $_transaction['id'] ?? null;
+                        $transaction = $transaction_id ? Transaction::find($transaction_id) : new Transaction;
+                        $transaction->amount = $_transaction['amount'];
+                        $transaction->description = $_transaction['description'];
+                        $transaction->paid_date = \Carbon\Carbon::parse($_transaction['paid_date'])->format('Y-m-d H:i:s');
+                        $transaction->cashier_id = $request->user()->id;
+                        $transaction->save();
+
+                        if (!$transaction_id)
+                        {
+                            $order_product_stock_transaction = new OrderProductStockTransaction;
+                            $order_product_stock_transaction->order_product_stock_id = $order_product_stock->id;
+                            $order_product_stock_transaction->transaction_id = $transaction->id;
+                            $order_product_stock_transaction->save();
+                        }
+                    }
+                }
+            }
+
+            $_transactions = $request['transactions'];
+
+            foreach ($_transactions as $_transaction)
+            {
+                $transaction_id = $_transaction['id'] ?? null;
+                $transaction = $transaction_id ? Transaction::find($transaction_id) : new Transaction;
+                $transaction->amount = $_transaction['amount'];
+                $transaction->description = $_transaction['description'];
+                $transaction->paid_date = \Carbon\Carbon::parse($_transaction['paid_date'])->format('Y-m-d H:i:s');
+                $transaction->cashier_id = $request->user()->id;
+                $transaction->save();
+
+                if (!$transaction_id)
+                {
+                    $order_transaction = new OrderTransaction;
+                    $order_transaction->order_id = $order->id;
+                    $order_transaction->transaction_id = $transaction->id;
+                    $order_transaction->save();
+                }
+            }
+
+            // Delete order_product
+            foreach ($order_products as $_order_product)
+            {
+                if (!in_array($_order_product->id, $order_product_ids_keep))
+                {
+                    $_order_product->delete();
+                }
+            }
+
+            \DB::commit();
+        }
+        catch(\Throwable $e)
+        {
+            \DB::rollback();
+
+            throw new \RuntimeException($e);
+        }
     }
 
     /**

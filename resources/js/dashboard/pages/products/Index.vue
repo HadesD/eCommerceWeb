@@ -145,7 +145,7 @@ export default {
           {
             parent = node;
           }
-          else if (node.children.length)
+          else if (node.children && node.children.length)
           {
             parent = getParent(key, node.children);
           }
@@ -154,7 +154,10 @@ export default {
         return parent;
       };
 
-      const sortedCategories = this.categories.sort((a, b) => a.parent_id - b.parent_id);
+      const sortedCategories = this.categories;
+
+      // Reset
+      this.categoriesTreeExpandedKeys = [];
 
       let data = [];
       for (let i = 0; i < sortedCategories.length; i++)
@@ -197,7 +200,7 @@ export default {
       this.categoriesTreeLoading = true;
       axios.get('/api/categories')
         .then(res => {
-          this.categories = res.data.data || [];
+          this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
         })
         .catch(err => {
           console.log(err);

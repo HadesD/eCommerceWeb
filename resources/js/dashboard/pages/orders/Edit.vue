@@ -9,6 +9,30 @@
         :label-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? labelCol : 0"
         :wrapper-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? wrapperCol : 0"
         >
+        <a-form-model-item label="Trạng thái" prop="status">
+          <a-select
+            v-model="formData.status"
+            >
+            <a-select-option :value="0">
+              Đang xử lí
+            </a-select-option>
+            <a-select-option :value="10">
+              Đã hủy bỏ
+            </a-select-option>
+            <a-select-option :value="50">
+              Đã thanh toán
+            </a-select-option>
+            <a-select-option :value="51">
+              Đang thanh toán
+            </a-select-option>
+            <a-select-option :value="100">
+              Đang ship
+            </a-select-option>
+            <a-select-option :value="200">
+              Hoàn tất
+            </a-select-option>
+          </a-select>
+        </a-form-model-item>
         <a-form-model-item label="Khách hàng" ref="customer_id" prop="customer_id">
           <a-input
             v-model="formData.customer_id"
@@ -19,13 +43,16 @@
             v-model="formData.note"
             />
         </a-form-model-item>
-        <a-card title="Sản phẩm đặt mua" style="margin-bottom:16px;">
-          <a slot="extra" @click="() => formData.order_products.push(Object.assign({}, order_product_obj))">
+        <a-card title="Sản phẩm đặt mua" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#9800ab',color:'#FFF'}">
+          <a
+            slot="extra"
+            @click="() => {formData.order_products.push(Object.assign({}, order_product_obj));}"
+            >
             <a-tooltip title="Thêm sản phẩm">
               <a-button type="primary" icon="plus"></a-button>
             </a-tooltip>
           </a>
-          <a-card v-for="(p, pIdx) in formData.order_products" :key="p.id" :title="p.id || 'Sản phẩm'" style="margin-bottom: 16px;">
+          <a-card v-for="(p, pIdx) in formData.order_products" :key="p.id" :title="p.id || 'Sản phẩm #'+pIdx" style="margin-bottom: 16px;" :headStyle="{backgroundColor:'#f18e1f',color:'#FFF'}">
             <a-popconfirm
               slot="extra"
               title="Chắc chắn muốn xóa?"
@@ -33,18 +60,17 @@
               >
               <a-button type="primary" icon="delete"></a-button>
             </a-popconfirm>
-            <a-form-model-item label="Sản phẩm">
-              <a-select
+            <a-form-model-item label="Sản phẩm" :rules="{required:true, trigger: 'blur'}">
+              <a-tree-select
+                :tree-data="productData"
+                :load-data="loadCategoryProducts"
+                placeholder="Please select"
                 v-model="p.product_id"
-                >
-                <a-select-option :value="0">
-                  Bản nháp
-                </a-select-option>
-              </a-select>
+                />
             </a-form-model-item>
-            <a-form-model-item label="Hình thức thanh toán">
+            <a-form-model-item label="Hình thức thanh toán" :rules="{required:true, trigger: 'blur'}">
               <a-select
-                v-model="formData.order_products[pIdx].payment_method"
+                v-model="p.payment_method"
                 >
                 <a-select-option :value="1">
                   Trả thẳng 100%
@@ -54,13 +80,13 @@
                 </a-select-option>
               </a-select>
             </a-form-model-item>
-			<a-card title="Xuất kho" style="margin-bottom:16px;">
+			<a-card title="Xuất kho" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#680075',color:'#FFF'}">
               <a slot="extra" @click="() => p.order_product_stocks.push(Object.assign({}, order_product_stock_obj))">
                 <a-tooltip title="Chọn thêm hàng từ kho">
                   <a-button type="primary" icon="plus"></a-button>
                 </a-tooltip>
               </a>
-			  <a-card v-for="(ps, psIdx) in p.order_product_stocks" :key="ps.id" :title="ps.id || 'Hàng trong kho'" style="margin-bottom: 16px;">
+			  <a-card v-for="(ps, psIdx) in p.order_product_stocks" :key="ps.id" :title="ps.id || 'Hàng trong kho #'+psIdx" style="margin-bottom: 16px;">
                 <a-popconfirm
                   slot="extra"
                   title="Chắc chắn muốn xóa?"
@@ -68,16 +94,15 @@
                   >
                   <a-button type="primary" icon="delete"></a-button>
                 </a-popconfirm>
-                <a-form-model-item label="Hàng">
-                  <a-select
+                <a-form-model-item label="Hàng" :rules="{required:true, trigger: 'blur'}">
+                  <a-tree-select
+                    :tree-data="stockData"
+                    :load-data="loadCategoryStocks"
+                    placeholder="Please select"
                     v-model="ps.stock_id"
-                    >
-                    <a-select-option :value="0">
-                      Bản nháp
-                    </a-select-option>
-                  </a-select>
+                    />
                 </a-form-model-item>
-                <a-form-model-item label="Tổng tiền phải thanh toán">
+                <a-form-model-item label="Tổng tiền phải thanh toán" :rules="{required:true, trigger: 'blur'}">
                   <a-input-number
                     v-model="ps.amount"
                     :formatter="value => new Intl.NumberFormat().format(value)"
@@ -88,9 +113,13 @@
                     >
                   </a-input-number>
                 </a-form-model-item>
-                <a-card title="Thanh toán" style="margin-bottom:16px;">
-                  <a slot="extra" @click="() => ps.transactions.push(Object.assign({}, transaction_obj))"><a-button type="primary" icon="plus"></a-button></a>
-                  <a-card v-for="(pst, pstIdx) in ps.transactions" :key="pst.id" :title="pst.id || 'Giao dịch'" style="margin-bottom: 16px;">
+                <a-card title="Thanh toán" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#9800ab',color:'#FFF'}">
+                  <a slot="extra" @click="() => ps.transactions.push(Object.assign({}, transaction_obj))">
+                    <a-tooltip title="Thêm giao dịch">
+                      <a-button type="primary" icon="plus"></a-button>
+                    </a-tooltip>
+                  </a>
+                  <a-card v-for="(pst, pstIdx) in ps.transactions" :key="pst.id" :title="pst.id || 'Giao dịch #'+pstIdx" style="margin-bottom: 16px;" :headStyle="{backgroundColor:'#f18e1f',color:'#FFF'}">
                     <a-popconfirm
                       slot="extra"
                       title="Chắc chắn muốn xóa?"
@@ -98,14 +127,14 @@
                       >
                       <a-button type="primary" icon="delete"></a-button>
                     </a-popconfirm>
-                    <a-form-model-item label="Nội dung giao dịch">
+                    <a-form-model-item label="Nội dung giao dịch" :rules="{required:true, trigger: 'blur'}">
                       <a-input
                         v-model="pst.description"
                         placeholder="Trả góp, trả thẳng, thanh toán sản phẩm ABC, vv..vv"
                         type="textarea"
                         />
                     </a-form-model-item>
-                    <a-form-model-item label="Số tiền">
+                    <a-form-model-item label="Số tiền" :rules="{required:true, trigger: 'blur'}">
                       <a-input-number
                         v-model="pst.amount"
                         :formatter="value => new Intl.NumberFormat().format(value)"
@@ -129,28 +158,32 @@
             </a-card>
           </a-card>
         </a-card>
-        <a-card title="Giao dịch thêm" style="margin-bottom:16px;">
-          <a slot="extra" @click="() => formData.addon_transactions.push(Object.assign({}, transaction_obj))">
+        <a-card title="Giao dịch thêm" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#9800ab',color:'#FFF'}">
+          <a slot="extra" @click="() => formData.transactions.push(Object.assign({}, transaction_obj))">
             <a-tooltip title="Thêm giao dịch">
               <a-button type="primary" icon="plus"></a-button>
             </a-tooltip>
           </a>
-          <a-card v-for="(item, index) in formData.addon_transactions" :key="item.id" :title="item.id || 'Giao dịch'" style="margin-bottom: 16px;">
+          <a-card
+            v-for="(item, index) in formData.transactions" :key="item.id"
+            :title="item.id || 'Giao dịch #'+index"
+            style="margin-bottom: 16px;"
+            :headStyle="{backgroundColor:'#f18e1f',color:'#FFF'}">
             <a-popconfirm
               slot="extra"
               title="Chắc chắn muốn xóa?"
-              @confirm="() => formData.addon_transactions.splice(index, 1)"
+              @confirm="() => formData.transactions.splice(index, 1)"
               >
               <a-button type="primary" icon="delete"></a-button>
             </a-popconfirm>
-            <a-form-model-item label="Nội dung giao dịch">
+            <a-form-model-item label="Nội dung giao dịch" :rules="{required:true, trigger: 'blur'}">
                 <a-input
                   v-model="item.description"
                   placeholder="Mã giảm giá, phí ship, v..v"
                   type="textarea"
                   />
             </a-form-model-item>
-            <a-form-model-item label="Số tiền">
+            <a-form-model-item label="Số tiền" :rules="{required:true, trigger: 'blur'}">
               <a-input-number
                 v-model="item.amount"
                 :formatter="value => new Intl.NumberFormat().format(value)"
@@ -189,26 +222,53 @@ export default {
       labelCol: { span: 4 },
       wrapperCol: { span: 14 },
 
+      categories: [],
+      productData: [],
+      stockData: [],
+
       stockInfoLoading: false,
       formData: {
         id: undefined,
         note: '',
-        tax: 0.0,
         customer_id: 0, // TODO: config this
         order_products: [],
-        addon_transactions: [],
+        status: undefined,
+        transactions: [],
       },
       rules: {
+        status: {required: true,},
       },
     }
   },
   mounted() {
     this.formData.id = this.$route.params.id;
 
+    this.loadCategoriesTree();
+
     if (this.formData.id)
     {
       this.loadOrder(this.formData.id)
     }
+  },
+  watch:{
+    $route (to, from){
+      if (!to.params.id)
+      {
+        this.formData.order_products.forEach((p) => {
+          p.id = undefined;
+          p.order_product_stocks.forEach(ps => {
+            ps.id = undefined;
+            ps.transactions.forEach(t => {
+              t.id = undefined;
+            });
+          });
+        });
+
+        this.formData.transactions.forEach((t) => {
+          t.id = undefined;
+        });
+      }
+    },
   },
   computed: {
     transaction_obj() {
@@ -239,6 +299,44 @@ export default {
     },
   },
   methods: {
+    // CategoriesTree
+    loadCategoriesTree(){
+      this.categoriesTreeLoading = true;
+      axios.get('/api/categories')
+        .then(res => {
+          this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
+
+          const len = this.categories.length;
+          for (let i = 0; i < len; i++)
+          {
+            const elm = this.categories[i];
+            if (elm.parent_id !== 0)
+            {
+              break;
+            }
+
+            const newOtp = {
+              isLeaf: false,
+              selectable: false,
+              value: 'cat-'+elm.id,
+              title: elm.name,
+              meta: {category_id: elm.id},
+            };
+
+            this.productData.push(Object.assign({}, newOtp));
+            this.stockData.push(Object.assign({}, newOtp));
+          }
+        })
+        .catch(err => {
+          console.log(err);
+
+          this.$message.error('Thất bại');
+        })
+        .then(()=>{
+          this.categoriesTreeLoading = false;
+        });
+    },
+
     loadOrder(id){
       this.orderInfoLoading = true;
       axios.get(`/api/orders/${id}`)
@@ -314,6 +412,113 @@ export default {
     },
     resetForm() {
       this.$refs.ruleForm.resetFields();
+    },
+
+    loadCategoryProducts(treeNode) {
+      const targetOption = treeNode.dataRef;
+
+      const category_id = targetOption.meta.category_id;
+
+      return axios.get(`/api/products?category_id=${category_id}&all=true`)
+        .then(res => {
+          const sData = res.data.data;
+
+          targetOption.children = [];
+
+          // Find category
+          const len = this.categories.length;
+          for (let i = 0; i < len; i++)
+          {
+            const elm = this.categories[i];
+            if (elm.parent_id === category_id)
+            {
+              const newOtp = {
+                isLeaf: false,
+                selectable: false,
+                value: 'cat-'+elm.id,
+                title: elm.name,
+                meta: {category_id: elm.id},
+              };
+              targetOption.children.push(Object.assign({}, newOtp));
+              break;
+            }
+          }
+
+          for (let i = 0; i < sData.length; i++)
+          {
+            const elm = sData[i];
+            const newOtp = {
+              isLeaf: true,
+              title: elm.name,
+              value: elm.id,
+            };
+            targetOption.children.push(newOtp);
+          }
+
+          targetOption.disabled = targetOption.children.length === 0;
+        })
+        .catch(err => {
+          console.log(err);
+
+          this.$message.error('Thất bại');
+        })
+        .then(()=>{
+          this.productData = [...this.productData];
+        });
+    },
+
+    loadCategoryStocks(treeNode) {
+      const targetOption = treeNode.dataRef;
+
+      const category_id = targetOption.meta.category_id;
+
+      return axios.get(`/api/stocks?category_id=${category_id}&all=true`)
+        .then(res => {
+          const sData = res.data.data;
+
+          targetOption.children = [];
+
+          // Find category
+          const len = this.categories.length;
+          for (let i = 0; i < len; i++)
+          {
+            const elm = this.categories[i];
+            if (elm.parent_id === category_id)
+            {
+              const newOtp = {
+                isLeaf: false,
+                selectable: false,
+                value: 'cat-'+elm.id,
+                title: elm.name,
+                meta: {category_id: elm.id},
+              };
+              targetOption.children.push(Object.assign({}, newOtp));
+              break;
+            }
+          }
+
+          for (let i = 0; i < sData.length; i++)
+          {
+            const elm = sData[i];
+            const newOtp = {
+              isLeaf: true,
+              disabled: elm.status !== 0,
+              title: elm.name,
+              value: elm.id,
+            };
+            targetOption.children.push(newOtp);
+          }
+
+          targetOption.disabled = targetOption.children.length === 0;
+        })
+        .catch(err => {
+          console.log(err);
+
+          this.$message.error('Thất bại');
+        })
+        .then(()=>{
+          this.stockData = [...this.stockData];
+        });
     },
   },
 }

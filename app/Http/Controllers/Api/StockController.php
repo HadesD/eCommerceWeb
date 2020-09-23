@@ -21,9 +21,14 @@ class StockController extends Controller
      */
     public function index()
     {
-        $category_id = \Request::all()['category_id'] ?? 0;
+        $params = \Request::all();
+        $category_id = $params['category_id'] ?? 0;
+        if (isset($params['all']))
+        {
+            return new StockResource($category_id ? Category::find($category_id)->stocks->orderBy('in_date', 'DESC')->get() : Stock::orderBy('in_date', 'DESC')->get());
+        }
 
-        return new StockResource($category_id ? Category::find($category_id)->stocks->paginate() : Stock::paginate());
+        return new StockResource($category_id ? Category::find($category_id)->stocks->orderBy('in_date', 'DESC')->paginate() : Stock::orderBy('in_date', 'DESC')->paginate());
     }
 
     /**

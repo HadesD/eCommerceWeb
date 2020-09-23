@@ -21,9 +21,14 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $category_id = \Request::all()['category_id'] ?? 0;
+        $params = \Request::all();
+        $category_id = $params['category_id'] ?? 0;
+        if (isset($params['all']))
+        {
+            return new ProductResource($category_id ? Category::find($category_id)->products->orderBy('updated_at', 'DESC')->get() : Product::orderBy('updated_at', 'DESC')->get());
+        }
 
-        return new ProductResource($category_id ? Category::find($category_id)->products->paginate() : Product::paginate());
+        return new ProductResource($category_id ? Category::find($category_id)->products->orderBy('updated_at', 'DESC')->paginate() : Product::orderBy('updated_at', 'DESC')->paginate());
     }
 
     /**

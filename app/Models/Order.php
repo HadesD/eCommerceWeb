@@ -6,7 +6,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+interface OrderStatus
+{
+    const STS_PROCESSING = 0;
+    const STS_CANCELED = 10;
+    const STS_PAID = 50;
+    const STS_PAYING = 51;
+    const STS_SHIPPING = 100;
+    const STS_COMPLETED = 200;
+}
+
 class Order extends Model
+    implements OrderStatus
 {
     use HasFactory, SoftDeletes;
 
@@ -24,7 +35,7 @@ class Order extends Model
 
     public function getTransactionsAttribute()
     {
-        return Transaction::where('id', function($query){
+        return Transaction::whereIn('id', function($query){
             $query->select('transaction_id')
                   ->from((new OrderTransaction)->getTable())
                   ->where('order_id', $this->id);
