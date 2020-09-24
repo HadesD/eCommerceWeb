@@ -37,9 +37,11 @@ class StatisticController extends Controller
                 'count' => Stock::count(),
                 'avail_count' => Stock::where('status', Stock::STS_AVAILABLE)->count(),
                 'cost_price_total' => Stock::sum('cost_price'),
+                'this_month_cost_price_total' => Stock::where('in_date', '>=', date('Y-m-01'))->sum('cost_price'),
             ],
             'transaction' => [
                 'amount_total' => Transaction::sum('amount'),
+                'this_month_amount_total' => Transaction::where('paid_date', '>=', date('Y-m-01'))->sum('amount'),
             ],
         ];
     }
