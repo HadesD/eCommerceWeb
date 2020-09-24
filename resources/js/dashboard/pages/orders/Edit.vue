@@ -152,6 +152,7 @@
                     <a-form-model-item label="Ngày thanh toán">
                       <a-date-picker
                         v-model="pst.paid_date"
+                        format="YYYY-MM-DD HH:mm:ss"
                         show-time
                         type="date"
                         />
@@ -201,6 +202,7 @@
             <a-form-model-item label="Ngày thanh toán">
               <a-date-picker
                 v-model="item.paid_date"
+                format="YYYY-MM-DD HH:mm:ss"
                 show-time
                 type="date"
                 />

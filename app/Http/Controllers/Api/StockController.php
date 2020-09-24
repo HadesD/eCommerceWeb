@@ -53,7 +53,7 @@ class StockController extends Controller
                 $stock->status = $request->status;
                 $stock->cost_price = $request->cost_price;
                 $stock->updated_user_id = $request->user()->id;
-                $stock->in_date = \Carbon\Carbon::parse($request->in_date)->format('Y-m-d H:i:s');
+                $stock->in_date = $request->in_date;
                 $stock->note = $request->note;
                 $stock->save();
 
@@ -117,7 +117,7 @@ class StockController extends Controller
             $stock->status = $request->status;
             $stock->cost_price = $request->cost_price;
             $stock->updated_user_id = $request->user()->id;
-            $stock->in_date = \Carbon\Carbon::parse($request->in_date)->format('Y-m-d H:i:s');
+            $stock->in_date = $request->in_date;
             $stock->note = $request->note;
             $stock->save();
 

@@ -113,6 +113,7 @@
         <a-form-model-item label="Ngày nhập" ref="in_date" prop="in_date">
           <a-date-picker
             v-model="formData.in_date"
+            format="YYYY-MM-DD HH:mm:ss"
             show-time
             type="date"
             @blur="() => $refs.in_date.onFieldBlur()"

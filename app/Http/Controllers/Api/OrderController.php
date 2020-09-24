@@ -81,7 +81,7 @@ class OrderController extends Controller
                         $transaction = new Transaction;
                         $transaction->amount = $_transaction['amount'];
                         $transaction->description = $_transaction['description'];
-                        $transaction->paid_date = \Carbon\Carbon::parse($_transaction['paid_date'])->format('Y-m-d H:i:s');
+                        $transaction->paid_date = $_transaction['paid_date'];
                         $transaction->cashier_id = $request->user()->id;
                         $transaction->save();
 
@@ -98,7 +98,7 @@ class OrderController extends Controller
                 $transaction = new Transaction;
                 $transaction->amount = $_transaction['amount'];
                 $transaction->description = $_transaction['description'];
-                $transaction->paid_date = \Carbon\Carbon::parse($_transaction['paid_date'])->format('Y-m-d H:i:s');
+                $transaction->paid_date = $_transaction['paid_date'];
                 $transaction->cashier_id = $request->user()->id;
                 $transaction->save();
 
@@ -164,7 +164,7 @@ class OrderController extends Controller
                 }
                 $order_product->product_id = $_order_product['product_id'];
                 $order_product->payment_method = $_order_product['payment_method'];
-                // $order_product->quantity = count($_order_product['order_product_stocks']);
+                $order_product->quantity = $order_product_id ? $order_product->quantity : count($_order_product['order_product_stocks']);
                 $order_product->save();
 
                 // Push to keep
@@ -206,7 +206,7 @@ class OrderController extends Controller
                         $transaction = $transaction_id ? Transaction::find($transaction_id) : new Transaction;
                         $transaction->amount = $_transaction['amount'];
                         $transaction->description = $_transaction['description'];
-                        $transaction->paid_date = \Carbon\Carbon::parse($_transaction['paid_date'])->format('Y-m-d H:i:s');
+                        $transaction->paid_date = $_transaction['paid_date'];
                         $transaction->cashier_id = $request->user()->id;
                         $transaction->save();
 
@@ -233,7 +233,7 @@ class OrderController extends Controller
                 $transaction = $transaction_id ? Transaction::find($transaction_id) : new Transaction;
                 $transaction->amount = $_transaction['amount'];
                 $transaction->description = $_transaction['description'];
-                $transaction->paid_date = \Carbon\Carbon::parse($_transaction['paid_date'])->format('Y-m-d H:i:s');
+                $transaction->paid_date = $_transaction['paid_date'];
                 $transaction->cashier_id = $request->user()->id;
                 $transaction->save();
 
@@ -269,6 +269,11 @@ class OrderController extends Controller
                     // Delete order_product_stocks
                     if (!in_array($_order_product_stock->id, $order_product_stock_ids_keep))
                     {
+                        // Reset item
+                        $stock = Stock::find($_order_product_stock->stock_id);
+                        $stock->status = Stock::STS_AVAILABLE;
+                        $stock->save();
+
                         $_order_product_stock->delete();
                     }
                 }

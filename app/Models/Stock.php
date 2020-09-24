@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use Carbon\Carbon;
+use DateTimeInterface;
+
 interface StockStatus
 {
     const STS_AVAILABLE = 0;
@@ -24,6 +27,21 @@ class Stock extends Model
         'product',
         'categories',
     ];
+
+    /**
+     * Prepare a date for array / JSON serialization.
+     *
+     * @param  \DateTimeInterface  $date
+     * @return string
+     **/
+    // protected function serializeDate(DateTimeInterface $date)
+    // {
+    //     return $date->format('Y-m-d H:i:s');
+    // }
+
+    public function setInDateAttribute($value){
+        $this->attributes['in_date'] = Carbon::parse($value)->format('Y-m-d H:i:s');
+    }
 
     public function getProductAttribute(){
         return Product::where('id', function($query){
