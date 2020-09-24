@@ -164,7 +164,7 @@ class OrderController extends Controller
                 }
                 $order_product->product_id = $_order_product['product_id'];
                 $order_product->payment_method = $_order_product['payment_method'];
-                $order_product->quantity = count($_order_product['order_product_stocks']);
+                // $order_product->quantity = count($_order_product['order_product_stocks']);
                 $order_product->save();
 
                 // Push to keep
@@ -297,6 +297,8 @@ class OrderController extends Controller
         catch(\Throwable $e)
         {
             \DB::rollback();
+
+            Log::error($e);
 
             throw new \RuntimeException($e);
         }

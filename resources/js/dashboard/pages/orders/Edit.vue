@@ -131,14 +131,14 @@
                       >
                       <a-button type="primary" icon="delete"></a-button>
                     </a-popconfirm>
-                    <a-form-model-item label="Nội dung giao dịch" :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.description'">
+                    <a-form-model-item label="Nội dung giao dịch" :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.description'">
                       <a-input
                         v-model="pst.description"
                         placeholder="Trả góp, trả thẳng, thanh toán sản phẩm ABC, vv..vv"
                         type="textarea"
                         />
                     </a-form-model-item>
-                    <a-form-model-item label="Số tiền" :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.amount'">
+                    <a-form-model-item label="Số tiền" :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.amount'">
                       <a-input-number
                         v-model="pst.amount"
                         :formatter="value => new Intl.NumberFormat().format(value)"

@@ -17,7 +17,7 @@ class OrderProductStock extends Model
 
     public function getTransactionsAttribute()
     {
-        return Transaction::where('id', function($query){
+        return Transaction::whereIn('id', function($query){
             $query->select('transaction_id')
                 ->from((new OrderProductStockTransaction)->getTable())
                 ->where('order_product_stock_id', $this->id);
