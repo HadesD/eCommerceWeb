@@ -13,7 +13,13 @@ class OrderProductStock extends Model
 
     protected $appends = [
         'transactions',
+        'stock',
     ];
+
+    public function getStockAttribute()
+    {
+        return Stock::where('id', $this->stock_id)->first();
+    }
 
     public function getTransactionsAttribute()
     {

@@ -143,7 +143,9 @@ export default {
   mounted() {
     this.loadCategoriesTree();
 
-    this.loadStocks(this.currentCategoryId, 0);
+    this.stocksTablePagination.current = (this.$route.params.page || 1)
+
+    this.loadStocks(this.currentCategoryId, this.stocksTablePagination.current);
   },
   computed: {
     categoriesTreeData(){
@@ -258,6 +260,8 @@ export default {
             pageSize: resData.per_page,
           };
           this.stocksTablePagination = {...newPagi};
+
+          this.$router.push('/stocks/index?page='+resData.current_page);
         })
         .catch(err => {
           console.log(err);

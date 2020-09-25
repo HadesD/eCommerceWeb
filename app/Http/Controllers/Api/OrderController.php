@@ -52,7 +52,7 @@ class OrderController extends Controller
                 $order_product->order_id = $order->id;
                 $order_product->product_id = $_order_product['product_id'];
                 $order_product->payment_method = $_order_product['payment_method'];
-                $order_product->quantity = count($_order_product['order_product_stocks']);
+                $order_product->quantity = $_order_product['quantity'] ?? count($_order_product['order_product_stocks']);
                 $order_product->save();
 
                 foreach ($_order_product['order_product_stocks'] as $_order_product_stock)
@@ -164,7 +164,7 @@ class OrderController extends Controller
                 }
                 $order_product->product_id = $_order_product['product_id'];
                 $order_product->payment_method = $_order_product['payment_method'];
-                $order_product->quantity = $order_product_id ? $order_product->quantity : count($_order_product['order_product_stocks']);
+                $order_product->quantity = $order_product_id ? $order_product->quantity : ($_order_product['quantity'] ?? count($_order_product['order_product_stocks']));
                 $order_product->save();
 
                 // Push to keep

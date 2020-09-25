@@ -52,7 +52,15 @@
               <a-button type="primary" icon="plus"></a-button>
             </a-tooltip>
           </a>
-          <a-card v-for="(p, pIdx) in formData.order_products" :key="p.id" :title="p.id || 'Sản phẩm #'+pIdx" style="margin-bottom: 16px;" :headStyle="{backgroundColor:'#f18e1f',color:'#FFF'}">
+          <a-card v-for="(p, pIdx) in formData.order_products" :key="p.id" style="margin-bottom: 16px;" :headStyle="{backgroundColor:'#f18e1f',color:'#FFF'}">
+            <template slot="title">
+              <template v-if="p.id">
+                <a-tooltip title="Xem">
+                  <RouterLink :to="'/products/'+p.product.id+'/edit'">Đang chọn: #{{ p.product.id + '. ' + p.product.name + ' ('+ (new Intl.NumberFormat().format(p.product.price)) +' VND)' }}</RouterLink>
+                </a-tooltip>
+              </template>
+              <template v-else>{{ 'Sản phẩm #'+pIdx }}</template>
+            </template>
             <a-popconfirm
               slot="extra"
               title="Chắc chắn muốn xóa?"
@@ -82,13 +90,30 @@
                 </a-select-option>
               </a-select>
             </a-form-model-item>
+            <a-form-model-item label="Số lượng muốn đặt ban đầu">
+              <a-input-number
+                v-model="p.quantity"
+                style="width: 100%;"
+                :min="1"
+                :disabled="p.product ? true : false"
+                >
+              </a-input-number>
+            </a-form-model-item>
 			<a-card title="Xuất kho" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#680075',color:'#FFF'}">
               <a slot="extra" @click="() => p.order_product_stocks.push(Object.assign({}, order_product_stock_obj))">
                 <a-tooltip title="Chọn thêm hàng từ kho">
                   <a-button type="primary" icon="plus"></a-button>
                 </a-tooltip>
               </a>
-			  <a-card v-for="(ps, psIdx) in p.order_product_stocks" :key="ps.id" :title="ps.id || 'Hàng trong kho #'+psIdx" style="margin-bottom: 16px;">
+			  <a-card v-for="(ps, psIdx) in p.order_product_stocks" :key="ps.id" style="margin-bottom: 16px;">
+                <template slot="title">
+                  <template v-if="ps.id">
+                    <a-tooltip title="Xem">
+                      <RouterLink :to="'/stocks/'+ps.stock.id+'/edit'">Đang chọn: #{{ ps.stock.id + '. ' + ps.stock.name + ' ('+ ps.stock.idi +')' + ' ('+ (new Intl.NumberFormat().format(ps.stock.cost_price)) +' VND)' }}</RouterLink>
+                    </a-tooltip>
+                  </template>
+                  <template v-else>{{ 'Hàng trong kho #'+psIdx }}</template>
+                </template>
                 <a-popconfirm
                   slot="extra"
                   title="Chắc chắn muốn xóa?"
@@ -292,6 +317,7 @@ export default {
         product_id: undefined,
         payment_method: 1,
         order_product_stocks: [],
+        quantity: undefined,
       }
     },
     order_product_stock_obj() {
@@ -480,7 +506,7 @@ export default {
             targetOption.children.push(newOtp);
           }
 
-          targetOption.disabled = targetOption.children.length === 0;
+          targetOption.disabled = (targetOption.children.length === 0);
         })
         .catch(err => {
           console.log(err);
@@ -536,7 +562,7 @@ export default {
             }
           }
 
-          targetOption.disabled = targetOption.children.length === 0;
+          targetOption.disabled = (targetOption.children.length === 0);
         })
         .catch(err => {
           console.log(err);

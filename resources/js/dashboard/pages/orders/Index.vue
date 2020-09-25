@@ -20,11 +20,22 @@
       @change="onOrdersTablePaginationChanged"
       >
       <span slot="status" slot-scope="record">
-        {{ configOrderStatus[record.status] }}
+        <a-tag :color="configOrderStatus[record.status].color">{{ configOrderStatus[record.status].title }}</a-tag>
       </span>
-      <span slot="product_num" slot-scope="record">
-        {{ record.order_products.length }}
-      </span>
+      <template slot="order_product" slot-scope="record">
+        <div v-for="(p, pIdx) in record.order_products" :key="p.id">
+          <a-tooltip title="Xem">
+            <RouterLink :to="'/products/'+p.product.id+'/edit'">{{ p.product.name }} [Số lượng: {{ p.quantity }}]</RouterLink>
+          </a-tooltip>
+          <ul>
+            <li v-for="(ps) in p.order_product_stocks" :key="ps.id">
+              <a-tooltip title="Xem">
+                <RouterLink :to="'/stocks/'+ps.stock.id+'/edit'">{{ ps.stock.name }} ({{ ps.stock.idi }})</RouterLink>
+              </a-tooltip>
+            </li>
+          </ul>
+        </div>
+      </template>
       <span slot="transaction_num" slot-scope="record">
         {{ record.transactions.length }}
       </span>
@@ -62,14 +73,9 @@ const ordersTableColumns = [
     scopedSlots: { customRender: 'status' },
   },
   {
-    title: 'Sản phẩm',
-    key: 'product_num',
-    scopedSlots: { customRender: 'product_num' },
-  },
-  {
-    title: 'Hàng từ kho',
-    key: 'stock_num',
-    scopedSlots: { customRender: 'stock_num' },
+    title: 'Đặt hàng',
+    key: 'order_product',
+    scopedSlots: { customRender: 'order_product' },
   },
   {
     title: 'Giao dịch thêm',
@@ -105,6 +111,8 @@ export default {
     }
   },
   mounted() {
+    this.ordersTablePagination.current = (this.$route.params.page || 1)
+
     this.loadOrders(this.ordersTablePagination.current);
   },
   computed: {
@@ -113,21 +121,49 @@ export default {
     },
     configOrderStatus(){
       return {
-        0: 'Đang xử lí',
-        10: 'Đã hủy bỏ',
-        50: 'Đã thanh toán',
-        51: 'Đang thanh toán',
-        100: 'Đang ship',
-        200: 'Hoàn tất',
+        0: {
+          title: 'Đang xử lí',
+          color: '#F50',
+        },
+        10: {
+          title: 'Đã hủy bỏ',
+          color: 'darkgrey',
+        },
+        50: {
+          title: 'Đã thanh toán',
+          color: 'green',
+        },
+        51: {
+          title: 'Đang thanh toán',
+          color: 'red',
+        },
+        100: {
+          title: 'Đang ship',
+          color: 'orange',
+        },
+        200: {
+          title: 'Hoàn tất',
+          color: 'blue',
+        },
       }
     },
   },
   methods: {
     loadOrders(page){
       this.ordersTableLoading = true;
-      axios.get('/api/orders')
+      axios.get('/api/orders?page='+page)
         .then(res => {
-          this.orders = res.data.data || [];
+          const resData = res.data;
+          this.orders = resData.data || [];
+
+          const newPagi = {
+            total: resData.total,
+            current: resData.current_page,
+            pageSize: resData.per_page,
+          };
+          this.ordersTablePagination = {...newPagi};
+
+          this.$router.push('/orders/index?page='+resData.current_page);
         })
         .catch(err => {
           console.log(err);
