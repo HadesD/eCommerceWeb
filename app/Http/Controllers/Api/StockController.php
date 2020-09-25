@@ -101,6 +101,11 @@ class StockController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($request->status === Stock::STS_SOLD)
+        {
+            throw new \RuntimeException('Can not change status of sold item');
+        }
+
         try
         {
             \DB::beginTransaction();

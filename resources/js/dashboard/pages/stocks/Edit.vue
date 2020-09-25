@@ -59,7 +59,7 @@
             <a-select-option :value="0">
               Có sẵn
             </a-select-option>
-            <a-select-option :value="1" :disabled="$route.params.id ? false : true">
+            <a-select-option :value="1" disabled>
               Đã bán
             </a-select-option>
             <a-select-option :value="2">

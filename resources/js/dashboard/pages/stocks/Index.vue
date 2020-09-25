@@ -47,7 +47,7 @@
         @change="onStocksTablePaginationChanged"
         >
         <span slot="status" slot-scope="record">
-          {{ configStockStatus[record.status] }}
+          <a-tag :color="configStockStatus[record.status].color">{{ configStockStatus[record.status].title }}</a-tag>
         </span>
         <span slot="cost_price" slot-scope="record" style="display:block;text-align:right;">
           {{ new Intl.NumberFormat().format(record.cost_price) }}
@@ -202,9 +202,18 @@ export default {
     },
     configStockStatus(){
       return {
-        0: 'Có sẵn',
-        1: 'Đã bán',
-        2: 'Hỏng / Lỗi',
+        0: {
+          title: 'Có sẵn',
+          color: 'green',
+        },
+        1: {
+          title: 'Đã bán',
+          color: 'blue',
+        },
+        2: {
+          title: 'Hỏng / Lỗi',
+          color: 'red',
+        },
       }
     },
   },
