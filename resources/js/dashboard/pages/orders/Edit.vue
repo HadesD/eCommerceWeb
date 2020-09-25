@@ -72,6 +72,8 @@
               :prop="'order_products.'+pIdx+'.product_id'"
               >
               <a-tree-select
+                show-search
+                treeNodeFilterProp="title"
                 :tree-data="productData"
                 :load-data="loadCategoryProducts"
                 placeholder="Please select"
@@ -125,6 +127,8 @@
                   :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.stock_id'"
                   >
                   <a-tree-select
+                    show-search
+                    treeNodeFilterProp="title"
                     :tree-data="stockData"
                     :load-data="loadCategoryStocks"
                     placeholder="Please select"
@@ -550,16 +554,13 @@ export default {
           for (let i = 0; i < sData.length; i++)
           {
             const elm = sData[i];
-            // Avail check
-            if (elm.status === 0)
-            {
-              const newOtp = {
-                isLeaf: true,
-                title: elm.id +'. ' + elm.name + ' ('+elm.idi+') ' + ' ('+(new Intl.NumberFormat().format(elm.cost_price))+' VND)',
-                value: elm.id,
-              };
-              targetOption.children.push(newOtp);
-            }
+            const newOtp = {
+              disabled: elm.status !== 0,
+              isLeaf: true,
+              title: elm.id +'. ' + elm.name + ' ('+elm.idi+') ' + ' ('+(new Intl.NumberFormat().format(elm.cost_price))+' VND)',
+              value: elm.id,
+            };
+            targetOption.children.push(newOtp);
           }
 
           targetOption.disabled = (targetOption.children.length === 0);
