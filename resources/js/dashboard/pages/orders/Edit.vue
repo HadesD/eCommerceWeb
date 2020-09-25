@@ -474,7 +474,7 @@ export default {
             const elm = sData[i];
             const newOtp = {
               isLeaf: true,
-              title: elm.id +'. ' + elm.name + ' ('+elm.idi+') ' + ' ('+(new Intl.NumberFormat().format(elm.price))+' VND)',
+              title: elm.id +'. ' + elm.name + ' ('+(new Intl.NumberFormat().format(elm.price))+' VND)',
               value: elm.id,
             };
             targetOption.children.push(newOtp);
@@ -524,13 +524,16 @@ export default {
           for (let i = 0; i < sData.length; i++)
           {
             const elm = sData[i];
-            const newOtp = {
-              isLeaf: true,
-              disabled: elm.status !== 0,
-              title: elm.id +'. ' + elm.name + ' ('+(new Intl.NumberFormat().format(elm.cost_price))+' VND)',
-              value: elm.id,
-            };
-            targetOption.children.push(newOtp);
+            // Avail check
+            if (elm.status === 0)
+            {
+              const newOtp = {
+                isLeaf: true,
+                title: elm.id +'. ' + elm.name + ' ('+elm.idi+') ' + ' ('+(new Intl.NumberFormat().format(elm.cost_price))+' VND)',
+                value: elm.id,
+              };
+              targetOption.children.push(newOtp);
+            }
           }
 
           targetOption.disabled = targetOption.children.length === 0;
