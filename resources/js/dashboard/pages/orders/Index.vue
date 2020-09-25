@@ -111,7 +111,7 @@ export default {
     }
   },
   mounted() {
-    this.ordersTablePagination.current = (this.$route.params.page || 1)
+    this.ordersTablePagination.current = (parseInt(this.$route.query.page) || 1)
 
     this.loadOrders(this.ordersTablePagination.current);
   },
@@ -163,7 +163,10 @@ export default {
           };
           this.ordersTablePagination = {...newPagi};
 
-          this.$router.push('/orders/index?page='+resData.current_page);
+          if (this.$route.query.page != resData.current_page)
+          {
+            this.$router.push('/orders/index?page='+resData.current_page);
+          }
         })
         .catch(err => {
           console.log(err);

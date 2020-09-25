@@ -132,7 +132,7 @@ export default {
   mounted(){
     this.loadCategoriesTree();
 
-    this.productsTablePagination.current = (this.$route.params.page || 1)
+    this.productsTablePagination.current = (parseInt(this.$route.query.page) || 1)
 
     this.loadProducts(this.currentCategoryId, this.productsTablePagination.current);
   },
