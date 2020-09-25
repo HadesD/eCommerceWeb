@@ -143,9 +143,8 @@ export default {
   mounted() {
     this.loadCategoriesTree();
 
-    console.log(this.$route)
-
-    this.stocksTablePagination.current = (parseInt(this.$route.query.page) || 1)
+    this.currentCategoryId = (parseInt(this.$route.query.category_id) || '');
+    this.stocksTablePagination.current = (parseInt(this.$route.query.page) || 1);
 
     this.loadStocks(this.currentCategoryId, this.stocksTablePagination.current);
   },
@@ -263,9 +262,9 @@ export default {
           };
           this.stocksTablePagination = {...newPagi};
 
-          if (this.$route.query.page != resData.current_page)
+          if ((this.$route.query.page != resData.current_page) || (this.$route.query.category_id != category_id))
           {
-            this.$router.push('/stocks/index?page='+resData.current_page);
+            this.$router.push('/stocks/index?page='+resData.current_page+'&category_id='+category_id);
           }
         })
         .catch(err => {

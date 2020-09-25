@@ -132,7 +132,8 @@ export default {
   mounted(){
     this.loadCategoriesTree();
 
-    this.productsTablePagination.current = (parseInt(this.$route.query.page) || 1)
+    this.currentCategoryId = (parseInt(this.$route.query.category_id) || '');
+    this.productsTablePagination.current = (parseInt(this.$route.query.page) || 1);
 
     this.loadProducts(this.currentCategoryId, this.productsTablePagination.current);
   },
@@ -252,7 +253,10 @@ export default {
           };
           this.productsTablePagination = {...newPagi};
 
-          this.$router.push('/products/index?page='+resData.current_page);
+          if ((this.$route.query.page != resData.current_page) || (this.$route.query.category_id != category_id))
+          {
+            this.$router.push('/products/index?page='+resData.current_page+'&category_id='+category_id);
+          }
         })
         .catch(err => {
           console.log(err);
