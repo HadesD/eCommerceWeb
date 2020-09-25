@@ -474,7 +474,7 @@ export default {
             const elm = sData[i];
             const newOtp = {
               isLeaf: true,
-              title: elm.id +'. ' + elm.name + ' ('+(new Intl.NumberFormat().format(elm.price))+' VND)',
+              title: elm.id +'. ' + elm.name + ' ('+elm.idi+') ' + ' ('+(new Intl.NumberFormat().format(elm.price))+' VND)',
               value: elm.id,
             };
             targetOption.children.push(newOtp);
