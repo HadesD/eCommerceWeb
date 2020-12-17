@@ -10,6 +10,8 @@ use App\Models\Stock;
 use App\Models\Product;
 use App\Models\Order;
 use App\Models\Transaction;
+use App\Models\OrderProductStock;
+use App\Models\OrderProductStockTransaction;
 
 class StatisticController extends Controller
 {
@@ -42,6 +44,29 @@ class StatisticController extends Controller
             'transaction' => [
                 'amount_total' => Transaction::sum('amount'),
                 'this_month_amount_total' => Transaction::where('paid_date', '>=', date('Y-m-01'))->sum('amount'),
+
+                // = sell_price - cost_price
+                'this_month_earning_total' => (function(){
+                    $sold_stock_elo = OrderProductStock::select('id', 'stock_id')->whereIn('id', function($q_ops){
+                        $q_ops->select('order_product_stock_id')
+                            ->from((new OrderProductStockTransaction)->getTable())
+                            ->whereIn('transaction_id', function($q_t){
+                                $q_t->select('id')
+                                    ->from((new Transaction)->getTable())
+                                    ->where('paid_date', '>=', date('Y-m-01'));
+                            });
+                    });//->pluck('id')->toArray();
+                    $sold_price = Transaction::whereIn('id', function($q_t) use ($sold_stock_elo){
+                        $q_t->select('transaction_id')
+                            ->from((new OrderProductStockTransaction)->getTable())
+                            ->whereIn('order_product_stock_id', (clone $sold_stock_elo)->pluck('id')->toArray());
+                    })//->where('paid_date', '>=', date('Y-m-01'))
+                        ->sum('amount');
+
+                    $cost_price = Stock::whereIn('id', (clone $sold_stock_elo)->pluck('stock_id')->toArray())->sum('cost_price');
+
+                    return ($sold_price - $cost_price);
+                })(),
             ],
         ];
     }

@@ -20,4 +20,5 @@ yarn-error.log
 /public/js/chunks/*.js
 /public/public.zip
 ~*
+/composer.phar
 
