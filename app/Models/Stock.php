@@ -9,19 +9,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use DateTimeInterface;
 
-interface StockStatus
-{
-    const STS_AVAILABLE = 0;
-    const STS_SOLD = 1;
-    const STS_BROKEN = 2;
-}
-
 class Stock extends Model
     implements StockStatus
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'idi', 'status', 'cost_price', 'updated_user_id', 'in_date'];
+    protected $fillable = [
+        'name', 'idi', 'cost_price', 'updated_user_id', 'in_date'
+    ];
 
     protected $appends = [
         'product',
