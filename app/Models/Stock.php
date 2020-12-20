@@ -38,10 +38,10 @@ class Stock extends Model
     }
 
     public function getProductsAttribute(){
-        return Product::where('id', function($query){
+        return Product::whereIn('id', function($query){
             $query->select('product_id')
                   ->from(with(new OrderProduct)->getTable())
-                  ->where('id', function($q1){
+                  ->whereIn('id', function($q1){
                       $q1->select('order_product_id')
                          ->from(with(new OrderProductStock)->getTable())
                          ->where('stock_id', $this->id);
