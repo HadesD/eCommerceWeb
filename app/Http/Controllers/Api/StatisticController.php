@@ -55,7 +55,11 @@ class StatisticController extends Controller
                                     ->from((new Transaction)->getTable())
                                     ->where('paid_date', '>=', date('Y-m-01'));
                             });
-                    });//->pluck('id')->toArray();
+                    })->whereIn('id', function($q_ops){
+                        $q_ops->select('id')
+                            ->from((new Order)->getTable())
+                            ->whereIn('status', [Order::STS_PAID, Order::STS_COMPLETED]);
+                    });
                     $sold_price = Transaction::whereIn('id', function($q_t) use ($sold_stock_elo){
                         $q_t->select('transaction_id')
                             ->from((new OrderProductStockTransaction)->getTable())
