@@ -14,8 +14,8 @@
         ref="ruleForm"
         :model="formData"
         :rules="rules"
-        :label-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? labelCol : 0"
-        :wrapper-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? wrapperCol : 0"
+        :label-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? labelCol : {}"
+        :wrapper-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? wrapperCol : {}"
         >
         <a-form-model-item label="Tên sản phẩm" ref="name" prop="name">
           <a-input
@@ -171,7 +171,7 @@ export default {
       return data;
     },
     cost_priceDisabled(){
-      return this.stockInfo.products;
+        return (this.stockInfo.products && (this.stockInfo.products.length > 0));
     },
   },
   mounted() {
