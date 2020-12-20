@@ -43,28 +43,23 @@ class StockController extends Controller
         {
             \DB::beginTransaction();
 
-            $num = $request->num ?? 1;
+            $stock = new Stock;
+            $stock->name = $request->name;
+            $stock->idi = $request->idi;
+            $stock->quantity = $request->quantity;
+            $stock->cost_price = $request->cost_price;
+            $stock->updated_user_id = $request->user()->id;
+            $stock->in_date = $request->in_date;
+            $stock->note = $request->note;
+            $stock->save();
 
-            for ($i = 0; $i < $num; $i++)
+            // EAV
+            foreach ($request->categories_id as $category_id)
             {
-                $stock = new Stock;
-                $stock->name = $request->name;
-                $stock->idi = $request->idi;
-                $stock->status = $request->status;
-                $stock->cost_price = $request->cost_price;
-                $stock->updated_user_id = $request->user()->id;
-                $stock->in_date = $request->in_date;
-                $stock->note = $request->note;
-                $stock->save();
-
-                // EAV
-                foreach ($request->categories_id as $category_id)
-                {
-                    $stock_category = new StockCategory;
-                    $stock_category->stock_id = $stock->id;
-                    $stock_category->category_id = $category_id;
-                    $stock_category->save();
-                }
+                $stock_category = new StockCategory;
+                $stock_category->stock_id = $stock->id;
+                $stock_category->category_id = $category_id;
+                $stock_category->save();
             }
 
             \DB::commit();

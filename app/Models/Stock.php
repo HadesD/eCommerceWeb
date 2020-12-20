@@ -10,7 +10,6 @@ use Carbon\Carbon;
 use DateTimeInterface;
 
 class Stock extends Model
-    implements StockStatus
 {
     use HasFactory, SoftDeletes;
 

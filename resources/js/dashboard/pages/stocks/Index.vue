@@ -52,6 +52,9 @@
         <span slot="cost_price" slot-scope="record" style="display:block;text-align:right;">
           {{ new Intl.NumberFormat().format(record.cost_price) }}
         </span>
+        <span slot="quantity" slot-scope="record">
+          {{ record.quantity }}
+        </span>
         <span slot="time" slot-scope="record">
           Ngày tạo: {{ record.created_at }}<br />
           Ngày update: {{ record.updated_at }}
@@ -89,14 +92,14 @@ const stocksTableColumns = [
     key: 'idi',
   },
   {
-    title: 'Trạng thái',
-    key: 'status',
-    scopedSlots: { customRender: 'status' },
-  },
-  {
     title: 'Giá lúc nhập (VND)',
     key: 'cost_price',
     scopedSlots: { customRender: 'cost_price' },
+  },
+  {
+    title: 'Tồn kho (Cái)',
+    dataIndex: 'quantity',
+    key: 'quantity',
   },
   {
     title: 'Ngày nhập',

@@ -13,13 +13,21 @@ class MigrateStockTable2 extends Migration
      */
     public function up()
     {
-        throw 1;
         Schema::table('stocks', function (Blueprint $table) {
-            \DB::statement(
-                'UPDATE stocks m_s SET quantity=(
-                    SELECT SUM(s_s.quantity) FROM stocks s_s WHERE s_s.idi=m_s.idi AND s_s.cost_price=m_s.cost_price
-                ) WHERE m_s.quantity>0 LIMIT 1;'
-            );
+            $allStocks = \App\Models\Stock::all();
+            $cleared = [];
+            foreach ($allStocks as $stock)
+            {
+                if (isset($cleared[$stock->idi]) && ($cleared[$stock->idi] == $stock->cost_price))
+                {
+                    $stock->delete();
+                    continue;
+                }
+
+                $stock->quantity = \App\Models\Stock::where('idi', $stock->idi)->where('cost_price', $stock->cost_price)->sum('quantity');
+                $stock->save();
+                $cleared[$stock->idi] = $stock->cost_price;
+            }
         });
     }
 

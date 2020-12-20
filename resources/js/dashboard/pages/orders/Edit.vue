@@ -555,9 +555,9 @@ export default {
           {
             const elm = sData[i];
             const newOtp = {
-              disabled: elm.status !== 0,
+              disabled: elm.quantity <= 0,
               isLeaf: true,
-              title: elm.id +'. ' + elm.name + ' ('+elm.idi+') ' + ' ('+(new Intl.NumberFormat().format(elm.cost_price))+' VND)',
+              title: elm.id +'. ' + elm.name + ' ('+elm.idi+') ' + ' ('+(new Intl.NumberFormat().format(elm.cost_price))+' VND)' + ' (x'+ elm.quantity +')',
               value: elm.id,
             };
             targetOption.children.push(newOtp);

@@ -28,13 +28,13 @@
             @blur="() => $refs.idi.onFieldBlur()"
             />
         </a-form-model-item>
-        <a-form-model-item label="Số lượng" ref="num" prop="num">
+        <a-form-model-item label="Số lượng" ref="quantity" prop="quantity">
           <a-input-number
-            v-model="formData.num"
-            @blur="() => $refs.num.onFieldBlur()"
+            v-model="formData.quantity"
+            @blur="() => $refs.quantity.onFieldBlur()"
             :min="1"
             :max="200"
-            :disabled="numDisabled"
+            :disabled="quantityDisabled"
             >
           </a-input-number>
         </a-form-model-item>
@@ -49,23 +49,6 @@
             :max="2000000000"
             >
           </a-input-number>
-        </a-form-model-item>
-        <a-form-model-item label="Trạng thái" ref="status" prop="status">
-          <a-select
-            v-model="formData.status"
-            @blur="() => $refs.status.onFieldBlur()"
-            :disabled="statusDisabled"
-            >
-            <a-select-option :value="0">
-              Có sẵn
-            </a-select-option>
-            <a-select-option :value="1" disabled>
-              Đã bán
-            </a-select-option>
-            <a-select-option :value="2">
-              Hỏng / Lỗi
-            </a-select-option>
-          </a-select>
         </a-form-model-item>
         <a-form-model-item label="Chuyên mục cha" ref="categories_id" prop="categories_id">
           <a-form-model-item
@@ -153,10 +136,9 @@ export default {
         name: '',
         idi: '',
         cost_price: 0,
-        num: 1,
+        quantity: 1,
         note: '',
         in_date: undefined,
-        status: 0,
         addon_transactions: [],
         order_products: [],
         categories_id: [],
@@ -168,7 +150,7 @@ export default {
         cost_price: [
           { required: true, trigger: 'blur' },
         ],
-        status: [
+        quantity: [
           { required: true, trigger: 'blur' },
         ],
         categories_id: [
@@ -188,11 +170,9 @@ export default {
 
       return data;
     },
-    statusDisabled(){
-      return this.$route.params.id && this.stockInfo.product;
-    },
-    numDisabled(){
-      return this.$route.params.id ? true : false;
+    quantityDisabled(){
+      // TODO: Deny user modify here
+      return true;
     },
   },
   mounted() {

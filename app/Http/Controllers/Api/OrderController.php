@@ -61,12 +61,12 @@ class OrderController extends Controller
 
                     $stock = Stock::find($stock_id);
 
-                    if ($stock->status !== Stock::STS_AVAILABLE)
+                    if ($stock->quantity <= 0)
                     {
                         throw new \RuntimeException('Stock not avalable');
                     }
 
-                    $stock->status = Stock::STS_SOLD;
+                    $stock->quantity -= 1;
                     $stock->save();
 
                     $order_product_stock = new OrderProductStock;
@@ -182,11 +182,11 @@ class OrderController extends Controller
                     {
                         $stock = Stock::find($stock_id);
 
-                        if ($stock->status !== Stock::STS_AVAILABLE)
+                        if ($stock->quantity <= 0)
                         {
                             throw new \RuntimeException('Stock not avalable');
                         }
-                        $stock->status = Stock::STS_SOLD;
+                        $stock->quantity -= 1;
                         $stock->save();
                     }
 
@@ -271,7 +271,7 @@ class OrderController extends Controller
                     {
                         // Reset item
                         $stock = Stock::find($_order_product_stock->stock_id);
-                        $stock->status = Stock::STS_AVAILABLE;
+                        $stock->quantity += 1;
                         $stock->save();
 
                         $_order_product_stock->delete();
