@@ -109,7 +109,7 @@ class StockController extends Controller
 
             $stock->name = $request->name;
             $stock->idi = $request->idi;
-            $stock->status = $request->status;
+            $stock->quantity = $request->quantity;
             $stock->cost_price = $request->cost_price;
             $stock->updated_user_id = $request->user()->id;
             $stock->in_date = $request->in_date;
