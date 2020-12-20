@@ -139,7 +139,7 @@
                                             <a-input-number
                                                 v-model="ps.amount"
                                                 :formatter="value => new Intl.NumberFormat().format(value)"
-                                                :parser="value => value.replace(/\$\s?|(\.*)/g, '')"
+                                                :parser="value => value.replaceAll(',', '')"
                                                 style="width: 100%;"
                                                 :min="0"
                                                 :max="2000000000"
@@ -171,7 +171,7 @@
                                                     <a-input-number
                                                         v-model="pst.amount"
                                                         :formatter="value => new Intl.NumberFormat().format(value)"
-                                                        :parser="value => value.replace(/\$\s?|(\.*)/g, '')"
+                                                        :parser="value => value.replaceAll(',', '')"
                                                         style="width: 100%;"
                                                         :min="-2000000000"
                                                         :max="2000000000"
@@ -221,7 +221,7 @@
                             <a-input-number
                                 v-model="item.amount"
                                 :formatter="value => new Intl.NumberFormat().format(value)"
-                                :parser="value => value.replace(/\$\s?|(\.*)/g, '')"
+                                :parser="value => value.replaceAll(',', '')"
                                 style="width: 100%;"
                                 :min="-2000000000"
                                 :max="2000000000"

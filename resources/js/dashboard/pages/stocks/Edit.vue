@@ -42,7 +42,7 @@
             v-model="formData.cost_price"
             @blur="() => $refs.cost_price.onFieldBlur()"
             :formatter="value => new Intl.NumberFormat().format(value)"
-            :parser="value => value.replace(/\$\s?|(\.*)/g, '')"
+            :parser="value => value.replaceAll(',', '')"
             style="width: 100%;"
             :min="-2000000000"
             :max="2000000000"
