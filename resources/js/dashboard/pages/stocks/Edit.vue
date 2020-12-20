@@ -32,9 +32,8 @@
           <a-input-number
             v-model="formData.quantity"
             @blur="() => $refs.quantity.onFieldBlur()"
-            :min="1"
+            :min="-200"
             :max="200"
-            :disabled="quantityDisabled"
             >
           </a-input-number>
         </a-form-model-item>
@@ -47,6 +46,7 @@
             style="width: 100%;"
             :min="-2000000000"
             :max="2000000000"
+            :disabled="cost_priceDisabled"
             >
           </a-input-number>
         </a-form-model-item>
@@ -170,9 +170,8 @@ export default {
 
       return data;
     },
-    quantityDisabled(){
-      // TODO: Deny user modify here
-      return true;
+    cost_priceDisabled(){
+      return this.stockInfo.products;
     },
   },
   mounted() {

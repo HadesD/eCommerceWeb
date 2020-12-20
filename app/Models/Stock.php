@@ -18,7 +18,7 @@ class Stock extends Model
     ];
 
     protected $appends = [
-        'product',
+        'products',
         'categories',
     ];
 
@@ -37,7 +37,7 @@ class Stock extends Model
         $this->attributes['in_date'] = Carbon::parse($value)->format('Y-m-d H:i:s');
     }
 
-    public function getProductAttribute(){
+    public function getProductsAttribute(){
         return Product::where('id', function($query){
             $query->select('product_id')
                   ->from(with(new OrderProduct)->getTable())
@@ -46,7 +46,7 @@ class Stock extends Model
                          ->from(with(new OrderProductStock)->getTable())
                          ->where('stock_id', $this->id);
                   });
-        })->first();
+        })->get();
     }
 
     public function getCategoriesAttribute()

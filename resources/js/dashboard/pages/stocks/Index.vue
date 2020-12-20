@@ -46,16 +46,15 @@
         :pagination="stocksTablePagination"
         @change="onStocksTablePaginationChanged"
         >
-        <span slot="status" slot-scope="record">
-          <a-tag :color="configStockStatus[record.status].color">{{ configStockStatus[record.status].title }}</a-tag>
-        </span>
         <span slot="cost_price" slot-scope="record" style="display:block;text-align:right;">
           {{ new Intl.NumberFormat().format(record.cost_price) }}
         </span>
-        <span slot="quantity" slot-scope="record">
-          {{ record.quantity }}
+        <span slot="quantity_info" slot-scope="record">
+          Đã bán: {{ record.products.length }}<br />
+          Tồn kho: {{ record.quantity }}
         </span>
         <span slot="time" slot-scope="record">
+          Ngày nhập: {{ record.in_date }}<br />
           Ngày tạo: {{ record.created_at }}<br />
           Ngày update: {{ record.updated_at }}
         </span>
@@ -97,14 +96,9 @@ const stocksTableColumns = [
     scopedSlots: { customRender: 'cost_price' },
   },
   {
-    title: 'Tồn kho (Cái)',
-    dataIndex: 'quantity',
-    key: 'quantity',
-  },
-  {
-    title: 'Ngày nhập',
-    dataIndex: 'in_date',
-    key: 'in_date',
+    title: 'Số lượng',
+    key: 'quantity_info',
+    scopedSlots: { customRender: 'quantity_info' },
   },
   {
     title: 'Thời gian',

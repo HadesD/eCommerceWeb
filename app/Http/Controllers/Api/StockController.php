@@ -96,20 +96,15 @@ class StockController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if ($request->status === Stock::STS_SOLD)
-        {
-            throw new \RuntimeException('Can not change status of sold item');
-        }
-
         try
         {
             \DB::beginTransaction();
 
             $stock = Stock::find($id);
 
-            if ($stock->product && ($stock->status !== $request->status))
+            if ($stock->products && ($stock->cost_price !== $request->cost_price))
             {
-                throw new \RuntimeException('Can not change status of sold item');
+                throw new \RuntimeException('Can not change price of sold item');
             }
 
             $stock->name = $request->name;
@@ -166,7 +161,7 @@ class StockController extends Controller
     {
         $stock = Stock::find($id);
 
-        if ($stock->product)
+        if ($stock->products)
         {
             throw new \RuntimeException('Stock sold');
         }
