@@ -192,51 +192,59 @@
                             </a-card>
                     </a-card>
                 </a-card>
-                <a-card title="Giao dịch thêm" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#9800ab',color:'#FFF'}">
+                <a-card title="Giao dịch thêm" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#9800ab',color:'#FFF'}" :bodyStyle="{padding:0,}">
                     <a slot="extra" @click="() => formData.transactions.push(Object.assign({}, transaction_obj))">
                         <a-tooltip title="Thêm giao dịch">
                             <a-button type="primary" icon="plus"></a-button>
                         </a-tooltip>
                     </a>
-                    <a-card
-                        v-for="(item, index) in formData.transactions" :key="item.id"
-                        :title="item.id || 'Giao dịch #'+index"
-                        style="margin-bottom: 16px;"
-                        :headStyle="{backgroundColor:'#f18e1f',color:'#FFF'}">
-                        <a-popconfirm
-                            slot="extra"
-                            title="Chắc chắn muốn xóa?"
-                            @confirm="() => formData.transactions.splice(index, 1)"
-                            >
-                            <a-button type="primary" icon="delete"></a-button>
-                        </a-popconfirm>
-                        <a-form-model-item label="Nội dung giao dịch" :rules="{required:true, trigger: 'blur'}" :prop="'transactions.'+index+'.description'">
-                            <a-input
-                                v-model="item.description"
-                                placeholder="Mã giảm giá, phí ship, v..v"
-                                type="textarea"
-                                />
-                        </a-form-model-item>
-                        <a-form-model-item label="Số tiền" :rules="{required:true, trigger: 'blur'}" :prop="'transactions.'+index+'.amount'">
-                            <a-input-number
-                                v-model="item.amount"
-                                :formatter="value => new Intl.NumberFormat().format(value)"
-                                :parser="value => value.replaceAll(',', '')"
-                                style="width: 100%;"
-                                :min="-2000000000"
-                                :max="2000000000"
+                    <a-table
+                        :columns="addon_transactionsTableColumns"
+                        :data-source="formData.transactions"
+                        :pagination="false"
+                        :row-key="record => record.id"
+                        >
+                        <template slot="description" slot-scope="text, record, index">
+                            <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'transactions.'+index+'.description'">
+                                <a-input
+                                    v-model="record.description"
+                                    placeholder="Mã giảm giá, phí ship, v..v"
+                                    type="textarea"
+                                    />
+                            </a-form-model-item>
+                        </template>
+                        <template slot="amount" slot-scope="text, record, index">
+                            <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'transactions.'+index+'.amount'">
+                                <a-input-number
+                                    v-model="record.amount"
+                                    :formatter="value => new Intl.NumberFormat().format(value)"
+                                    :parser="value => value.replaceAll(',', '')"
+                                    style="width: 100%;"
+                                    :min="-2000000000"
+                                    :max="2000000000"
+                                    >
+                                </a-input-number>
+                            </a-form-model-item>
+                        </template>
+                        <template slot="paid_date" slot-scope="record">
+                            <a-form-model-item>
+                                <a-date-picker
+                                    v-model="record.paid_date"
+                                    format="YYYY-MM-DD HH:mm:ss"
+                                    show-time
+                                    type="date"
+                                    />
+                            </a-form-model-item>
+                        </template>
+                        <template slot="extra" slot-scope="text, record, index">
+                            <a-popconfirm
+                                title="Chắc chắn muốn xóa?"
+                                @confirm="() => formData.transactions.splice(index,1)"
                                 >
-                            </a-input-number>
-                        </a-form-model-item>
-                        <a-form-model-item label="Ngày thanh toán">
-                            <a-date-picker
-                                v-model="item.paid_date"
-                                format="YYYY-MM-DD HH:mm:ss"
-                                show-time
-                                type="date"
-                                />
-                        </a-form-model-item>
-                    </a-card>
+                                <a-button type="primary" icon="delete"></a-button>
+                            </a-popconfirm>
+                        </template>
+                    </a-table>
                 </a-card>
                 <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
                     <a-button type="primary" @click="onSubmit">
@@ -251,6 +259,34 @@
 
 <script>
 
+const addon_transactionsTableColumns = [
+    {
+        title: '#',
+        dataIndex: 'id',
+        key: 'id',
+    },
+    {
+        title: 'Nội dung',
+        key: 'description',
+        scopedSlots: { customRender: 'description' },
+    },
+    {
+        title: 'Số tiền',
+        key: 'amount',
+        scopedSlots: { customRender: 'amount' },
+    },
+    {
+        title: 'Ngày thanh toán',
+        key: 'paid_date',
+        scopedSlots: { customRender: 'paid_date' },
+    },
+    {
+        title: 'Action',
+        key: 'extra',
+        scopedSlots: { customRender: 'extra' },
+    },
+];
+
 export default {
     data() {
         return {
@@ -261,6 +297,8 @@ export default {
             categories: [],
             productData: [],
             stockData: [],
+
+            addon_transactionsTableColumns,
 
             orderInfoLoading: false,
             formData: {
@@ -557,7 +595,6 @@ export default {
                         if (elm.quantity > 0)
                         {
                             const newOtp = {
-                                // disabled: elm.quantity <= 0,
                                 isLeaf: true,
                                 title: elm.id +'. ' + elm.name + ' ('+elm.idi+') ' + ' ('+(new Intl.NumberFormat().format(elm.cost_price))+' VND)' + ' (x'+ elm.quantity +')',
                                 value: elm.id,
