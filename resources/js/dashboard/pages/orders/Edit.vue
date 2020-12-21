@@ -146,53 +146,65 @@
                                                 >
                                             </a-input-number>
                                         </a-form-model-item>
-                                        <a-card title="Thanh toán" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#9800ab',color:'#FFF'}">
+                                        <a-card title="Thanh toán" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#9800ab',color:'#FFF'}" :bodyStyle="{padding:0}">
                                             <a slot="extra" @click="() => ps.transactions.push(Object.assign({}, transaction_obj))">
                                                 <a-tooltip title="Thêm giao dịch">
                                                     <a-button type="primary" icon="plus"></a-button>
                                                 </a-tooltip>
                                             </a>
-                                            <a-card v-for="(pst, pstIdx) in ps.transactions" :key="pst.id" :title="pst.id || 'Giao dịch #'+pstIdx" style="margin-bottom: 16px;" :headStyle="{backgroundColor:'#f18e1f',color:'#FFF'}">
-                                                <a-popconfirm
-                                                    slot="extra"
-                                                    title="Chắc chắn muốn xóa?"
-                                                    @confirm="() => ps.transactions.splice(pstIdx, 1)"
-                                                    >
-                                                    <a-button type="primary" icon="delete"></a-button>
-                                                </a-popconfirm>
-                                                <a-form-model-item label="Nội dung giao dịch" :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.description'">
-                                                    <a-input
-                                                        v-model="pst.description"
-                                                        placeholder="Trả góp, trả thẳng, thanh toán sản phẩm ABC, vv..vv"
-                                                        type="textarea"
-                                                        />
-                                                </a-form-model-item>
-                                                <a-form-model-item label="Số tiền" :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.amount'">
-                                                    <a-input-number
-                                                        v-model="pst.amount"
-                                                        :formatter="value => new Intl.NumberFormat().format(value)"
-                                                        :parser="value => value.replaceAll(',', '')"
-                                                        style="width: 100%;"
-                                                        :min="-2000000000"
-                                                        :max="2000000000"
+                                            <a-table
+                                                :columns="addon_transactionsTableColumns"
+                                                :data-source="ps.transactions"
+                                                :pagination="false"
+                                                :row-key="record => record.id"
+                                                >
+                                                <template slot="description" slot-scope="text, pst, pstIdx">
+                                                    <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.description'">
+                                                        <a-input
+                                                            v-model="pst.description"
+                                                            placeholder="Trả góp, trả thẳng, thanh toán sản phẩm ABC, vv..vv"
+                                                            type="textarea"
+                                                            />
+                                                    </a-form-model-item>
+                                                </template>
+                                                <template slot="amount" slot-scope="text, pst, pstIdx">
+                                                    <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.amount'">
+                                                        <a-input-number
+                                                            v-model="pst.amount"
+                                                            :formatter="value => new Intl.NumberFormat().format(value)"
+                                                            :parser="value => value.replaceAll(',', '')"
+                                                            style="width: 100%;"
+                                                            :min="-2000000000"
+                                                            :max="2000000000"
+                                                            >
+                                                        </a-input-number>
+                                                    </a-form-model-item>
+                                                </template>
+                                                <template slot="paid_date" slot-scope="text, pst, pstIdx">
+                                                    <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.paid_date'">
+                                                        <a-date-picker
+                                                            v-model="pst.paid_date"
+                                                            format="YYYY-MM-DD HH:mm:ss"
+                                                            show-time
+                                                            type="date"
+                                                            />
+                                                    </a-form-model-item>
+                                                </template>
+                                                <template slot="extra" slot-scope="text, record, pstIdx">
+                                                    <a-popconfirm
+                                                        title="Chắc chắn muốn xóa?"
+                                                        @confirm="() => ps.transactions.splice(pstIdx,1)"
                                                         >
-                                                    </a-input-number>
-                                                </a-form-model-item>
-                                                <a-form-model-item label="Ngày thanh toán">
-                                                    <a-date-picker
-                                                        v-model="pst.paid_date"
-                                                        format="YYYY-MM-DD HH:mm:ss"
-                                                        show-time
-                                                        type="date"
-                                                        />
-                                                </a-form-model-item>
-                                            </a-card>
+                                                        <a-button type="primary" icon="delete"></a-button>
+                                                    </a-popconfirm>
+                                                </template>
+                                            </a-table>
                                         </a-card>
                                 </a-card>
                             </a-card>
                     </a-card>
                 </a-card>
-                <a-card title="Giao dịch thêm" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#9800ab',color:'#FFF'}" :bodyStyle="{padding:0,}">
+                <a-card title="Giao dịch thêm" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#9800ab',color:'#FFF'}" :bodyStyle="{padding:0}">
                     <a slot="extra" @click="() => formData.transactions.push(Object.assign({}, transaction_obj))">
                         <a-tooltip title="Thêm giao dịch">
                             <a-button type="primary" icon="plus"></a-button>
@@ -226,8 +238,8 @@
                                 </a-input-number>
                             </a-form-model-item>
                         </template>
-                        <template slot="paid_date" slot-scope="record">
-                            <a-form-model-item>
+                        <template slot="paid_date" slot-scope="text, record, index">
+                            <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'transactions.'+index+'.paid_date'">
                                 <a-date-picker
                                     v-model="record.paid_date"
                                     format="YYYY-MM-DD HH:mm:ss"
