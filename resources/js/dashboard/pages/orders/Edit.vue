@@ -157,9 +157,10 @@
                                                 :data-source="ps.transactions"
                                                 :pagination="false"
                                                 :row-key="record => record.id"
+                                                bordered
                                                 >
                                                 <template slot="description" slot-scope="text, pst, pstIdx">
-                                                    <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.description'">
+                                                    <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.description'" style="margin-bottom:0;">
                                                         <a-input
                                                             v-model="pst.description"
                                                             placeholder="Trả góp, trả thẳng, thanh toán sản phẩm ABC, vv..vv"
@@ -168,7 +169,7 @@
                                                     </a-form-model-item>
                                                 </template>
                                                 <template slot="amount" slot-scope="text, pst, pstIdx">
-                                                    <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.amount'">
+                                                    <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.amount'" style="margin-bottom:0;">
                                                         <a-input-number
                                                             v-model="pst.amount"
                                                             :formatter="value => new Intl.NumberFormat().format(value)"
@@ -181,7 +182,7 @@
                                                     </a-form-model-item>
                                                 </template>
                                                 <template slot="paid_date" slot-scope="text, pst, pstIdx">
-                                                    <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.paid_date'">
+                                                    <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.paid_date'" style="margin-bottom:0;">
                                                         <a-date-picker
                                                             v-model="pst.paid_date"
                                                             format="YYYY-MM-DD HH:mm:ss"
@@ -215,9 +216,10 @@
                         :data-source="formData.transactions"
                         :pagination="false"
                         :row-key="record => record.id"
+                        bordered
                         >
                         <template slot="description" slot-scope="text, record, index">
-                            <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'transactions.'+index+'.description'">
+                            <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'transactions.'+index+'.description'" style="margin-bottom:0;">
                                 <a-input
                                     v-model="record.description"
                                     placeholder="Mã giảm giá, phí ship, v..v"
@@ -226,7 +228,7 @@
                             </a-form-model-item>
                         </template>
                         <template slot="amount" slot-scope="text, record, index">
-                            <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'transactions.'+index+'.amount'">
+                            <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'transactions.'+index+'.amount'" style="margin-bottom:0;">
                                 <a-input-number
                                     v-model="record.amount"
                                     :formatter="value => new Intl.NumberFormat().format(value)"
@@ -239,7 +241,7 @@
                             </a-form-model-item>
                         </template>
                         <template slot="paid_date" slot-scope="text, record, index">
-                            <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'transactions.'+index+'.paid_date'">
+                            <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'transactions.'+index+'.paid_date'" style="margin-bottom:0;">
                                 <a-date-picker
                                     v-model="record.paid_date"
                                     format="YYYY-MM-DD HH:mm:ss"
