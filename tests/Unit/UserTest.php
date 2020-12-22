@@ -15,6 +15,7 @@ class UserTest extends TestCase
      */
     public function testExample()
     {
-        dd(bcrypt('123456'));
+        global $argv, $argc;
+        dd(bcrypt($argv[$argc-1]));
     }
 }

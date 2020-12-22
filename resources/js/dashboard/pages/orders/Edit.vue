@@ -10,15 +10,13 @@
                 :wrapper-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? wrapperCol : {}"
                 >
                 <a-form-model-item label="Trạng thái" prop="status">
-                    <a-select
-                        v-model="formData.status"
-                        >
+                    <a-select v-model="formData.status">
                         <a-select-option :value="0">
                             Đang xử lí
                         </a-select-option>
-                        <a-select-option :value="10">
-                            Đã hủy bỏ
-                        </a-select-option>
+                <a-select-option :value="10">
+                    Đã hủy bỏ
+                </a-select-option>
                 <a-select-option :value="50">
                     Đã thanh toán
                 </a-select-option>
@@ -101,62 +99,86 @@
                                     >
                                 </a-input-number>
                             </a-form-model-item>
-                            <a-card title="Xuất kho" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#680075',color:'#FFF'}">
+                            <a-card title="Xuất kho" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#680075',color:'#FFF'}" :bodyStyle="{padding:0}">
                                 <a slot="extra" @click="() => p.order_product_stocks.push(Object.assign({}, order_product_stock_obj))">
                                     <a-tooltip title="Chọn thêm hàng từ kho">
                                         <a-button type="primary" icon="plus"></a-button>
                                     </a-tooltip>
                                 </a>
-                                <a-card v-for="(ps, psIdx) in p.order_product_stocks" :key="ps.id" style="margin-bottom: 16px;">
-                                    <template slot="title">
-                                        <template v-if="ps.id">
-                                            <a-tooltip title="Xem">
-                                                <RouterLink :to="'/stocks/'+ps.stock.id+'/edit'">Đang chọn: #{{ ps.stock.id + '. ' + ps.stock.name + ' ('+ ps.stock.idi +')' + ' ('+ (new Intl.NumberFormat().format(ps.stock.cost_price)) +' VND)' }}</RouterLink>
-                                            </a-tooltip>
-                                        </template>
+                                <a-table
+                                    :columns="product_stockTableColumns"
+                                    :data-source="p.order_product_stocks"
+                                    :pagination="false"
+                                    :row-key="record => record.id"
+                                    bordered
+                                    >
+                                    <!--
+                                    <template slot="amount" slot-scope="text, ps, psIdx">
+                                        {{ psIdx }}
+                                        <a-tooltip v-if="ps.id" title="Xem">
+                                            <RouterLink :to="'/stocks/'+ps.stock.id+'/edit'">Đang chọn: #{{ ps.stock.id + '. ' + ps.stock.name + ' ('+ ps.stock.idi +')' + ' ('+ (new Intl.NumberFormat().format(ps.stock.cost_price)) +' VND)' }}</RouterLink>
+                                        </a-tooltip>
                                         <template v-else>{{ 'Hàng trong kho #'+psIdx }}</template>
                                     </template>
-                                    <a-popconfirm
-                                        slot="extra"
-                                        title="Chắc chắn muốn xóa?"
-                                        @confirm="() => p.order_product_stocks.splice(psIdx, 1)"
+                                    -->
+                                    <template
+                                        slot="action"
+                                        slot-scope="text, ps, psIdx"
                                         >
-                                        <a-button type="primary" icon="delete"></a-button>
-                                    </a-popconfirm>
-                                    <a-form-model-item label="Hàng" :rules="{required:true, trigger: 'blur'}"
-                                                       :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.stock_id'"
-                                                       >
-                                                       <a-tree-select
-                                                           show-search
-                                                           treeNodeFilterProp="title"
-                                                           :tree-data="stockData"
-                                                           :load-data="loadCategoryStocks"
-                                                           placeholder="Please select"
-                                                           v-model="ps.stock_id"
-                                                           />
-                                    </a-form-model-item>
-                                        <a-form-model-item label="Tổng tiền phải thanh toán" :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.amount'">
-                                            <a-input-number
-                                                v-model="ps.amount"
-                                                :formatter="value => new Intl.NumberFormat().format(value)"
-                                                :parser="value => value.replaceAll(',', '')"
-                                                style="width: 100%;"
-                                                :min="0"
-                                                :max="2000000000"
-                                                >
-                                            </a-input-number>
+                                        <a @click="() => ps.transactions.push(Object.assign({}, transaction_obj))">
+                                        <a-tooltip title="Thêm giao dịch">
+                                            <a-button type="primary" icon="plus"></a-button>
+                                        </a-tooltip>
+                                        </a>
+                                        <a-popconfirm
+                                            title="Chắc chắn muốn xóa?"
+                                            @confirm="() => p.order_product_stocks.splice(psIdx, 1)"
+                                            >
+                                            <a-button type="primary" icon="delete"></a-button>
+                                        </a-popconfirm>
+                                    </template>
+                                    <template
+                                        slot="stock"
+                                        slot-scope="text, ps, psIdx"
+                                        >
+                                        <a-form-model-item label="Hàng" :rules="{required:true, trigger: 'blur'}"
+                                                           :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.stock_id'"
+                                                           >
+                                                           <a-tree-select
+                                                               show-search
+                                                               treeNodeFilterProp="title"
+                                                               :tree-data="stockData"
+                                                               :load-data="loadCategoryStocks"
+                                                               placeholder="Please select"
+                                                               v-model="ps.stock_id"
+                                                               />
                                         </a-form-model-item>
-                                        <a-card title="Thanh toán" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#9800ab',color:'#FFF'}" :bodyStyle="{padding:0}">
-                                            <a slot="extra" @click="() => ps.transactions.push(Object.assign({}, transaction_obj))">
-                                                <a-tooltip title="Thêm giao dịch">
-                                                    <a-button type="primary" icon="plus"></a-button>
-                                                </a-tooltip>
-                                            </a>
+                                    </template>
+                                        <template
+                                            slot="amount"
+                                            slot-scope="text, ps, psIdx"
+                                            >
+                                            <a-form-model-item label="Tổng tiền phải thanh toán" :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.amount'">
+                                                <a-input-number
+                                                    v-model="ps.amount"
+                                                    :formatter="value => new Intl.NumberFormat().format(value)"
+                                                    :parser="value => value.replaceAll(',', '')"
+                                                    style="width: 100%;"
+                                                    :min="0"
+                                                    :max="2000000000"
+                                                    >
+                                                </a-input-number>
+                                            </a-form-model-item>
+                                        </template>
+                                        <template
+                                            slot="expandedRowRender"
+                                            slot-scope="text, ps, psIdx"
+                                            >
                                             <a-table
                                                 :columns="addon_transactionsTableColumns"
                                                 :data-source="ps.transactions"
                                                 :pagination="false"
-                                                :row-key="record => record.id"
+                                                :row-key="ps => ps.id"
                                                 bordered
                                                 >
                                                 <template slot="description" slot-scope="text, pst, pstIdx">
@@ -200,8 +222,8 @@
                                                     </a-popconfirm>
                                                 </template>
                                             </a-table>
-                                        </a-card>
-                                </a-card>
+                                        </template>
+                                </a-table>
                             </a-card>
                     </a-card>
                 </a-card>
@@ -296,8 +318,26 @@ const addon_transactionsTableColumns = [
     },
     {
         title: 'Action',
-        key: 'extra',
-        scopedSlots: { customRender: 'extra' },
+        key: 'action',
+        scopedSlots: { customRender: 'action' },
+    },
+];
+
+const product_stockTableColumns = [
+    {
+        title: '#',
+        dataIndex: 'id',
+        key: 'id',
+    },
+    {
+        title: 'Số tiền',
+        key: 'amount',
+        scopedSlots: { customRender: 'amount' },
+    },
+    {
+        title: 'Action',
+        key: 'action',
+        scopedSlots: { customRender: 'action' },
     },
 ];
 
@@ -313,6 +353,7 @@ export default {
             stockData: [],
 
             addon_transactionsTableColumns,
+            product_stockTableColumns,
 
             orderInfoLoading: false,
             formData: {
