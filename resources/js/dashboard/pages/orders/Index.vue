@@ -23,13 +23,13 @@
         <a-tag :color="configOrderStatus[record.status].color">{{ configOrderStatus[record.status].title }}</a-tag>
       </span>
       <template slot="order_product" slot-scope="record">
-        <div v-for="(p, pIdx) in record.order_products" :key="p.id">
-          <a-tooltip title="Xem">
+        <div v-for="(p) in record.order_products" :key="p.id">
+          <a-tooltip title="Xem" v-if="p.product ? true : false">
             <RouterLink :to="'/products/'+p.product.id+'/edit'">{{ p.product.name }} [Số lượng: {{ p.quantity }}]</RouterLink>
           </a-tooltip>
           <ul>
             <li v-for="(ps) in p.order_product_stocks" :key="ps.id">
-              <a-tooltip title="Xem">
+              <a-tooltip title="Xem" v-if="ps.stock ? true : false">
                 <RouterLink :to="'/stocks/'+ps.stock.id+'/edit'">{{ ps.stock.name }} ({{ ps.stock.idi }})</RouterLink>
               </a-tooltip>
             </li>
