@@ -9,14 +9,17 @@
                 :label-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? labelCol : {}"
                 :wrapper-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? wrapperCol : {}"
                 >
-                <a-form-model-item label="Trạng thái" prop="status">
+                <a-form-model-item
+                    label="Trạng thái"
+                    prop="status"
+                    >
                     <a-select v-model="formData.status">
                         <a-select-option :value="0">
                             Đang xử lí
                         </a-select-option>
-                <a-select-option :value="10">
-                    Đã hủy bỏ
-                </a-select-option>
+                    <a-select-option :value="10">
+                        Đã hủy bỏ
+                    </a-select-option>
                 <a-select-option :value="50">
                     Đã thanh toán
                 </a-select-option>
@@ -112,15 +115,48 @@
                                     :row-key="record => record.id"
                                     bordered
                                     >
-                                    <!--
-                                    <template slot="amount" slot-scope="text, ps, psIdx">
-                                        {{ psIdx }}
+                                    <template
+                                        slot="stock"
+                                        slot-scope="text, ps, psIdx"
+                                        >
                                         <a-tooltip v-if="ps.id" title="Xem">
                                             <RouterLink :to="'/stocks/'+ps.stock.id+'/edit'">Đang chọn: #{{ ps.stock.id + '. ' + ps.stock.name + ' ('+ ps.stock.idi +')' + ' ('+ (new Intl.NumberFormat().format(ps.stock.cost_price)) +' VND)' }}</RouterLink>
                                         </a-tooltip>
                                         <template v-else>{{ 'Hàng trong kho #'+psIdx }}</template>
+                                        <a-form-model-item
+                                            :rules="{required:true, trigger: 'blur'}"
+                                            :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.stock_id'"
+                                            style="margin-bottom:0;"
+                                            >
+                                            <a-tree-select
+                                                show-search
+                                                treeNodeFilterProp="title"
+                                                :tree-data="stockData"
+                                                :load-data="loadCategoryStocks"
+                                                placeholder="Please select"
+                                                v-model="ps.stock_id"
+                                                />
+                                        </a-form-model-item>
                                     </template>
-                                    -->
+                                    <template
+                                        slot="amount"
+                                        slot-scope="text, ps, psIdx"
+                                        >
+                                        <a-form-model-item
+                                            label="" :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.amount'"
+                                            style="margin-bottom:0;"
+                                            >
+                                            <a-input-number
+                                                v-model="ps.amount"
+                                                :formatter="value => new Intl.NumberFormat().format(value)"
+                                                :parser="value => value.replaceAll(',', '')"
+                                                style="width: 100%;"
+                                                :min="0"
+                                                :max="2000000000"
+                                                >
+                                            </a-input-number>
+                                        </a-form-model-item>
+                                    </template>
                                     <template
                                         slot="action"
                                         slot-scope="text, ps, psIdx"
@@ -137,89 +173,56 @@
                                             <a-button type="primary" icon="delete"></a-button>
                                         </a-popconfirm>
                                     </template>
-                                    <template
-                                        slot="stock"
-                                        slot-scope="text, ps, psIdx"
+                                    <a-table
+                                        slot="expandedRowRender"
+                                        slot-scope="ps, psIdx"
+                                        :columns="addon_transactionsTableColumns"
+                                        :data-source="ps.transactions"
+                                        :pagination="false"
+                                        :row-key="ps => ps.id"
+                                        bordered
                                         >
-                                        <a-form-model-item label="Hàng" :rules="{required:true, trigger: 'blur'}"
-                                                           :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.stock_id'"
-                                                           >
-                                                           <a-tree-select
-                                                               show-search
-                                                               treeNodeFilterProp="title"
-                                                               :tree-data="stockData"
-                                                               :load-data="loadCategoryStocks"
-                                                               placeholder="Please select"
-                                                               v-model="ps.stock_id"
-                                                               />
-                                        </a-form-model-item>
-                                    </template>
-                                        <template
-                                            slot="amount"
-                                            slot-scope="text, ps, psIdx"
-                                            >
-                                            <a-form-model-item label="" :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.amount'">
+                                        <template slot="description" slot-scope="text, pst, pstIdx">
+                                            <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.description'" style="margin-bottom:0;">
+                                                <a-input
+                                                    v-model="pst.description"
+                                                    placeholder="Trả góp, trả thẳng, thanh toán sản phẩm ABC, vv..vv"
+                                                    type="textarea"
+                                                    />
+                                            </a-form-model-item>
+                                        </template>
+                                        <template slot="amount" slot-scope="text, pst, pstIdx">
+                                            <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.amount'" style="margin-bottom:0;">
                                                 <a-input-number
-                                                    v-model="ps.amount"
+                                                    v-model="pst.amount"
                                                     :formatter="value => new Intl.NumberFormat().format(value)"
                                                     :parser="value => value.replaceAll(',', '')"
                                                     style="width: 100%;"
-                                                    :min="0"
+                                                    :min="-2000000000"
                                                     :max="2000000000"
                                                     >
                                                 </a-input-number>
                                             </a-form-model-item>
                                         </template>
-                                        <a-table
-                                            slot="expandedRowRender"
-                                            slot-scope="ps, psIdx"
-                                            :columns="addon_transactionsTableColumns"
-                                            :data-source="ps.transactions"
-                                            :pagination="false"
-                                            :row-key="ps => ps.id"
-                                            bordered
-                                            >
-                                            <template slot="description" slot-scope="text, pst, pstIdx">
-                                                <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.description'" style="margin-bottom:0;">
-                                                    <a-input
-                                                        v-model="pst.description"
-                                                        placeholder="Trả góp, trả thẳng, thanh toán sản phẩm ABC, vv..vv"
-                                                        type="textarea"
-                                                        />
-                                                </a-form-model-item>
-                                            </template>
-                                            <template slot="amount" slot-scope="text, pst, pstIdx">
-                                                <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.amount'" style="margin-bottom:0;">
-                                                    <a-input-number
-                                                        v-model="pst.amount"
-                                                        :formatter="value => new Intl.NumberFormat().format(value)"
-                                                        :parser="value => value.replaceAll(',', '')"
-                                                        style="width: 100%;"
-                                                        :min="-2000000000"
-                                                        :max="2000000000"
-                                                        >
-                                                    </a-input-number>
-                                                </a-form-model-item>
-                                            </template>
-                                            <template slot="paid_date" slot-scope="text, pst, pstIdx">
-                                                <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.paid_date'" style="margin-bottom:0;">
-                                                    <a-date-picker
-                                                        v-model="pst.paid_date"
-                                                        format="YYYY-MM-DD HH:mm:ss"
-                                                        show-time
-                                                        type="date"
-                                                        />
-                                                </a-form-model-item>
-                                            </template>
-                                            <template slot="action" slot-scope="text, record, pstIdx">
-                                                <a-popconfirm
-                                                    title="Chắc chắn muốn xóa?"
-                                                    @confirm="() => ps.transactions.splice(pstIdx,1)"
-                                                    >
-                                                    <a-button type="primary" icon="delete"></a-button>
-                                                </a-popconfirm>
-                                            </template>
-                                        </a-table>
+                                        <template slot="paid_date" slot-scope="text, pst, pstIdx">
+                                            <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.paid_date'" style="margin-bottom:0;">
+                                                <a-date-picker
+                                                    v-model="pst.paid_date"
+                                                    format="YYYY-MM-DD HH:mm:ss"
+                                                    show-time
+                                                    type="date"
+                                                    />
+                                            </a-form-model-item>
+                                        </template>
+                                        <template slot="action" slot-scope="text, record, pstIdx">
+                                            <a-popconfirm
+                                                title="Chắc chắn muốn xóa?"
+                                                @confirm="() => ps.transactions.splice(pstIdx,1)"
+                                                >
+                                                <a-button type="primary" icon="delete"></a-button>
+                                            </a-popconfirm>
+                                        </template>
+                                    </a-table>
                                 </a-table>
                             </a-card>
                     </a-card>
@@ -299,17 +302,17 @@ const addon_transactionsTableColumns = [
         key: 'id',
     },
     {
-        title: 'Nội dung',
+        title: '* Nội dung',
         key: 'description',
         scopedSlots: { customRender: 'description' },
     },
     {
-        title: 'Số tiền',
+        title: '* Số tiền',
         key: 'amount',
         scopedSlots: { customRender: 'amount' },
     },
     {
-        title: 'Ngày thanh toán',
+        title: '* Ngày thanh toán',
         key: 'paid_date',
         scopedSlots: { customRender: 'paid_date' },
     },
@@ -327,7 +330,12 @@ const product_stockTableColumns = [
         key: 'id',
     },
     {
-        title: 'Tổng tiền phải thanh toán',
+        title: '* Hàng trong kho',
+        key: 'stock',
+        scopedSlots: { customRender: 'stock' },
+    },
+    {
+        title: '* Tổng tiền phải thanh toán',
         key: 'amount',
         scopedSlots: { customRender: 'amount' },
     },
