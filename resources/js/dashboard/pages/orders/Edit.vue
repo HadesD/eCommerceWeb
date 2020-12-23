@@ -156,6 +156,7 @@
                                                 >
                                             </a-input-number>
                                         </a-form-model-item>
+                                        <div>Đã thanh toán: {{ new Intl.NumberFormat().format(ps.transactions.reduce((a, b) => a + (b['amount'] || 0), 0)) }}</div>
                                     </template>
                                     <template
                                         slot="action"
