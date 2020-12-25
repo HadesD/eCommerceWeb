@@ -1,40 +1,40 @@
 <?php
+namespace App\Http\Controllers;
 
-namespace App\Http\Controllers\Auth;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
-
-    use AuthenticatesUsers;
-
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
     protected $redirectTo = RouteServiceProvider::HOME;
 
     /**
-     * Create a new controller instance.
+     * Handle an authentication attempt.
      *
-     * @return void
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
      */
-    public function __construct()
+    public function authenticate(Request $request)
     {
-        $this->middleware('guest')->except('logout');
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials, $remember->remember ?? true))
+        {
+            $request->session()->regenerate();
+
+            if ($user->hasPermission(\App\Models\User::ROLE_ADMIN_MANAGER))
+            {
+                // return redirect()->route('dashboard.index');
+            }
+
+            // return redirect($this->redirectTo());
+        }
+        return redirect()->route('dashboard.index');
+
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ]);
     }
 }
