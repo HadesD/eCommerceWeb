@@ -13,14 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('dashboard')->name('dashboard.')->group(function(){
-    Route::get('{any?}', [App\Http\Controllers\Dashboard\DashboardController::class, 'index'])->where('any', '.*')->name('index');
-});
+Route::middleware(['auth:sanctum', 'verified', 'role.manager'])->get('/dashboard{any?}', function(){
+    return view('dashboard.index');
+})->where('any', '.*')->name('dashboard.index');
 
 Route::name('web.')->group(function(){
-    Route::get('{any?}', [App\Http\Controllers\Web\WebController::class, 'index'])->where('any', '^(?!api).*$')->name('index');
+    Route::get('/', [App\Http\Controllers\Web\WebController::class, 'index'])->name('index');
 });
 
-// Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
-//     return Inertia\Inertia::render('Dashboard');
-// })->name('dashboard');

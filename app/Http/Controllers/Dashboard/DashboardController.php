@@ -33,7 +33,7 @@ class DashboardController extends Controller
             }
         }
 
-        return view('dashboard.app');
+        return view('dashboard.index');
     }
 }
 
