@@ -8,6 +8,9 @@
       <a-menu-item key="-" @click="sideBarCollapse">
         <a-icon :type="sideBarCollapsed ? 'menu-unfold' : 'menu-fold'" style="font-size: 25px;vertical-align: middle;" />
       </a-menu-item>
+      <a-menu-item>
+          <a href="/" target="_blank">Trang Chủ</a>
+      </a-menu-item>
       <a-menu-item key="--" style="float:right;">
         <a-dropdown>
           <a @click="e => e.preventDefault()">
