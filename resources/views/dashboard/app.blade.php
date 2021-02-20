@@ -7,5 +7,5 @@
     <div id="app"></div>
 @endsection
 @push('body.js')
-    <script src="{{ mix('js/dashboard/app.js') }}?v=4.1.0"></script>
+    <script src="{{ mix('js/dashboard/app.js') }}?v=4.1.1"></script>
 @endpush
