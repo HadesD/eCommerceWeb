@@ -77,15 +77,8 @@ let routes = [
         ],
     },
     {
-        path: '/auth',
-        redirect: '/auth/login',
-        component: RouteView,
-        children: [
-            {
-                path: 'login',
-                component: () => import('./pages/auth/Login.vue'),
-            },
-        ],
+        path: '/login',
+        component: () => import('./pages/auth/Login.vue'),
     },
 ];
 

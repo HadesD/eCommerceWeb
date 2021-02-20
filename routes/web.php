@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
+Route::get('/dashboard/login', function(){
+    return view('dashboard.index');
+})->name('login');
+
 Route::middleware(['auth:sanctum', 'verified', 'role.manager'])->get('/dashboard{any?}', function(){
     return view('dashboard.index');
 })->where('any', '.*')->name('dashboard.index');
