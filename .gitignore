@@ -21,4 +21,5 @@ yarn-error.log
 /public/public.zip
 ~*
 /composer.phar
+*.orig
 
