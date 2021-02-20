@@ -46,8 +46,8 @@ class StockController extends Controller
             $stock = new Stock;
             $stock->name = $request->name;
             $stock->idi = $request->idi;
-            $stock->quantity = $request->quantity;
-            $stock->cost_price = $request->cost_price;
+            $stock->quantity = ($request->quantity < 0) ? 0 : $request->quantity;
+            $stock->cost_price = ($request->cost_price < 0) ? 0 : $request->cost_price;
             $stock->updated_user_id = $request->user()->id;
             $stock->in_date = $request->in_date;
             $stock->note = $request->note;
@@ -102,15 +102,15 @@ class StockController extends Controller
 
             $stock = Stock::find($id);
 
-            if ($stock->products && ($stock->cost_price !== $request->cost_price))
+            if ($stock->products->count() && ($stock->cost_price !== $request->cost_price))
             {
                 throw new \RuntimeException('Can not change price of sold item');
             }
 
             $stock->name = $request->name;
             $stock->idi = $request->idi;
-            $stock->quantity = $request->quantity;
-            $stock->cost_price = $request->cost_price;
+            $stock->quantity = ($request->quantity < 0) ? 0 : $request->quantity;
+            $stock->cost_price = ($request->cost_price < 0) ? 0 : $request->cost_price;
             $stock->updated_user_id = $request->user()->id;
             $stock->in_date = $request->in_date;
             $stock->note = $request->note;
