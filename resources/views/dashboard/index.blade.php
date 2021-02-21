@@ -4,7 +4,7 @@
     @php
         $appCssFile = mix('/css/dashboard/app.css');
     @endphp
-    <link href="{{ $appCssFile }}?v={{ filemtime($appCssFile) }}" rel="stylesheet">
+    <link href="{{ $appCssFile }}?v={{ filemtime(public_path($appCssFile)) }}" rel="stylesheet">
 @endpush
 @section('body.content')
     <div id="app"></div>
@@ -13,5 +13,5 @@
     @php
         $appJsFile = mix('/js/dashboard/app.js');
     @endphp
-    <script src="{{ $appJsFile }}?v={{ filemtime($appJsFile) }}"></script>
+    <script src="{{ $appJsFile }}?v={{ filemtime(public_path($appJsFile)) }}"></script>
 @endpush
