@@ -7,7 +7,6 @@
         <title>@yield('title')</title>
         <link rel="icon" href="{{ asset('favicon.ico') }}">
         @stack('head.css')
-        <link href="{{ asset('css/dashboard/app.css') }}?v=1.0.0" rel="stylesheet">
     </head>
     <body>
         @yield('body.content')
