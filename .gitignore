@@ -19,7 +19,7 @@ yarn-error.log
 /public/mix-manifest.json
 /public/js/chunks/*.js
 /public/public.zip
-/public/public.tar.gz
+/public.tar.gz
 ~*
 /composer.phar
 *.orig
