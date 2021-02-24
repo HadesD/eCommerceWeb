@@ -34,13 +34,12 @@
           <a-input-number
             v-model="formData.price"
             @blur="() => $refs.price.onFieldBlur()"
-            :formatter="value => new Intl.NumberFormat().format(value)"
-            :parser="value => value.replaceAll(',', '')"
             style="width: 100%;"
             :min="0"
             :max="2000000000"
             >
           </a-input-number>
+          <span>VND: {{ new Intl.NumberFormat().format(formData.price || 0) }}</span>
         </a-form-model-item>
         <a-form-model-item label="Trạng thái" ref="status" prop="status">
           <a-select

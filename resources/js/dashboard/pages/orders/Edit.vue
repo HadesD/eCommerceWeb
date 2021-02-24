@@ -143,18 +143,19 @@
                                         slot-scope="text, ps, psIdx"
                                         >
                                         <a-form-model-item
-                                            label="" :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.amount'"
+                                            label=""
+                                            :rules="{required:true, trigger: 'blur'}"
+                                            :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.amount'"
                                             style="margin-bottom:0;"
                                             >
                                             <a-input-number
                                                 v-model="ps.amount"
-                                                :formatter="value => new Intl.NumberFormat().format(value)"
-                                                :parser="value => value.replaceAll(',', '')"
                                                 style="width: 100%;"
                                                 :min="0"
                                                 :max="2000000000"
                                                 >
                                             </a-input-number>
+                                            <span>VND: {{ new Intl.NumberFormat().format(ps.amount || 0) }}</span>
                                         </a-form-model-item>
                                         <div>Đã thanh toán: {{ new Intl.NumberFormat().format(ps.transactions.reduce((a, b) => a + (b['amount'] || 0), 0)) }}</div>
                                     </template>
@@ -196,13 +197,12 @@
                                             <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.amount'" style="margin-bottom:0;">
                                                 <a-input-number
                                                     v-model="pst.amount"
-                                                    :formatter="value => new Intl.NumberFormat().format(value)"
-                                                    :parser="value => value.replaceAll(',', '')"
                                                     style="width: 100%;"
                                                     :min="-2000000000"
                                                     :max="2000000000"
                                                     >
                                                 </a-input-number>
+                                                <span>VND: {{ new Intl.NumberFormat().format(record.amount || 0) }}</span>
                                             </a-form-model-item>
                                         </template>
                                         <template slot="paid_date" slot-scope="text, pst, pstIdx">
@@ -254,13 +254,12 @@
                             <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'transactions.'+index+'.amount'" style="margin-bottom:0;">
                                 <a-input-number
                                     v-model="record.amount"
-                                    :formatter="value => new Intl.NumberFormat().format(value)"
-                                    :parser="value => value.replaceAll(',', '')"
                                     style="width: 100%;"
                                     :min="-2000000000"
                                     :max="2000000000"
                                     >
                                 </a-input-number>
+                                <span>VND: {{ new Intl.NumberFormat().format(record.amount || 0) }}</span>
                             </a-form-model-item>
                         </template>
                         <template slot="paid_date" slot-scope="text, record, index">

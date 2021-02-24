@@ -41,14 +41,13 @@
           <a-input-number
             v-model="formData.cost_price"
             @blur="() => $refs.cost_price.onFieldBlur()"
-            :formatter="value => new Intl.NumberFormat().format(value)"
-            :parser="value => value.replaceAll(',', '')"
             style="width: 100%;"
             :min="-2000000000"
             :max="2000000000"
             :disabled="cost_priceDisabled"
             >
           </a-input-number>
+          <span>VND: {{ new Intl.NumberFormat().format(formData.cost_price || 0) }}</span>
         </a-form-model-item>
         <a-form-model-item label="Chuyên mục cha" ref="categories_id" prop="categories_id">
           <a-form-model-item
