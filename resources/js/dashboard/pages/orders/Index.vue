@@ -43,7 +43,6 @@
         {{ record.customer ? record.customer.name : record.customer_id }}
       </span>
       <span slot="time" slot-scope="record">
-        Thanh toán: {{ record.paid_date }}<br />
         Tạo: {{ record.created_at }}<br />
         Update: {{ record.updated_at }}
       </span>
