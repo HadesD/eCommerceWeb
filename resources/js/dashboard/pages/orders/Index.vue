@@ -43,8 +43,9 @@
         {{ record.customer ? record.customer.name : record.customer_id }}
       </span>
       <span slot="time" slot-scope="record">
-        Ngày tạo: {{ record.created_at }}<br />
-        Ngày update: {{ record.updated_at }}
+        Thanh toán: {{ record.paid_date }}<br />
+        Tạo: {{ record.created_at }}<br />
+        Update: {{ record.updated_at }}
       </span>
       <span slot="action" slot-scope="record">
         <router-link :to="`/orders/${record.id}/edit`">
@@ -73,6 +74,10 @@ const ordersTableColumns = [
     scopedSlots: { customRender: 'status' },
   },
   {
+    title: 'Ghi chú',
+    dataIndex: 'note',
+  },
+  {
     title: 'Đặt hàng',
     key: 'order_product',
     scopedSlots: { customRender: 'order_product' },
@@ -82,11 +87,11 @@ const ordersTableColumns = [
     key: 'transaction_num',
     scopedSlots: { customRender: 'transaction_num' },
   },
-  {
+  /*{
     title: 'Khách hàng',
     key: 'customer',
     scopedSlots: { customRender: 'customer' },
-  },
+  },*/
   {
     title: 'Thời gian',
     key: 'time',

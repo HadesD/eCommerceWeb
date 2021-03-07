@@ -179,9 +179,9 @@
                                 <a-date-picker v-model="record.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" />
                             </a-form-model-item>
                         </template>
-                        <template slot="extra" slot-scope="text, record, index">
+                        <template slot="action" slot-scope="text, record, index">
                             <a-popconfirm title="Chắc chắn muốn xóa?" @confirm="() => formData.transactions.splice(index,1)">
-                                <a-button type="primary" icon="delete"></a-button>
+                                <a-button type="primary" icon="delete" />
                             </a-popconfirm>
                         </template>
                     </a-table>
