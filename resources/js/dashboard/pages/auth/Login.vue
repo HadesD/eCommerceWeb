@@ -87,8 +87,7 @@ export default {
     methods: {
         onSubmit(){
             this.$refs.ruleForm.validate(valid => {
-                if (!valid)
-                {
+                if (!valid) {
                     return false;
                 }
                 this.refreshingCsrf = true;
@@ -98,20 +97,25 @@ export default {
                     axios.post('/login', this.formData).then(res => {
                         axios.get('/api/user').then(userRes => {
                             const userData = userRes.data;
-                            if (userData.role >= 100)
-                            {
+                            if (userData.role >= 100) {
                                 this.$user.setInfo(userData);
                                 this.$Progress.finish();
                                 this.$router.push({path: '/index'});
-                            }
-                            else
-                            {
+                            } else {
                                 this.$message.error('Bạn không có quyền hạn truy cập trang này');
                                 this.$Progress.fail();
                             }
                         }).catch(res => {
-                            this.$message.error('Lấy thông tin người dùng bị lỗi: ' + res.message);
+                            console.log(res);
+
                             this.$Progress.fail();
+
+                            if (err.response && err.response.message) {
+                                this.$message.error(err.response.message);
+                                return;
+                            }
+
+                            this.$message.error(err.message || 'Thất bại');
                         }).then(()=> {
                             this.loggingIn = false;
                             this.$Progress.stop();
@@ -126,7 +130,7 @@ export default {
                         this.loggingIn = false;
                         this.$Progress.stop();
                     });
-                }).catch(res => {
+                }).catch(error => {
                     this.$message.error('Get CSRF thất bại');
                     this.$Progress.fail();
                 }).then(()=> {

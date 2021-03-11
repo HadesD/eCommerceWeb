@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Http\Resources\Product as ProductResource;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\ProductCategory;
-
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
@@ -19,16 +19,20 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $params = \Request::all();
-        $category_id = $params['category_id'] ?? 0;
-        if (isset($params['all']))
-        {
-            return new ProductResource($category_id ? Category::find($category_id)->products->orderBy('updated_at', 'DESC')->get() : Product::orderBy('updated_at', 'DESC')->get());
+        $category_id = $request->category_id ?? 0;
+        if (isset($request->all)) {
+            return new JsonResource(
+                $category_id ? Category::find($category_id)->products->orderBy('updated_at', 'DESC')->get()
+                    : Product::orderBy('updated_at', 'DESC')->get()
+            );
         }
 
-        return new ProductResource($category_id ? Category::find($category_id)->products->orderBy('updated_at', 'DESC')->paginate() : Product::orderBy('updated_at', 'DESC')->paginate());
+        return new JsonResource(
+            $category_id ? Category::find($category_id)->products->orderBy('updated_at', 'DESC')->paginate()
+                : Product::orderBy('updated_at', 'DESC')->paginate()
+        );
     }
 
     /**
@@ -39,9 +43,8 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        try
-        {
-            \DB::beginTransaction();
+        try {
+            DB::beginTransaction();
 
             $product = new Product;
             $product->name = $request->name;
@@ -55,24 +58,23 @@ class ProductController extends Controller
             $product->save();
 
             // EAV
-            foreach ($request->categories_id as $category_id)
-            {
+            foreach ($request->categories_id as $category_id) {
                 $product_category = new ProductCategory;
                 $product_category->product_id = $product->id;
                 $product_category->category_id = $category_id;
                 $product_category->save();
             }
 
-            \DB::commit();
-        }
-        catch(\Throwable $e)
-        {
-            \DB::rollback();
+            DB::commit();
+        } catch(\Throwable $e) {
+            DB::rollback();
 
-            throw new \RuntimeException($e);
+            Log::error($e);
+
+            return response(null, 500);
         }
 
-        return new ProductResource($product ?? []);
+        return $this->show($product);
     }
 
     /**
@@ -81,9 +83,9 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Product $product)
     {
-        return new ProductResource(Product::find($id));
+        return new JsonResource($product);
     }
 
     /**
@@ -93,13 +95,11 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Product $product)
     {
-        try
-        {
-            \DB::beginTransaction();
+        try {
+            DB::beginTransaction();
 
-            $product = Product::find($id);
             $product->name = $request->name;
             $product->slug = $request->slug;
             $product->price = $request->price;
@@ -111,13 +111,11 @@ class ProductController extends Controller
             $product->save();
 
             // EAV
-            foreach ($request->categories_id as $category_id)
-            {
+            foreach ($request->categories_id as $category_id) {
                 $product_category = ProductCategory::where('product_id', $product->id)
                     ->where('category_id', $category_id)
                     ->first();
-                if ($product_category)
-                {
+                if ($product_category) {
                     continue;
                 }
 
@@ -131,16 +129,16 @@ class ProductController extends Controller
                 ->whereNotIn('category_id', $request->categories_id)
                 ->delete();
 
-            \DB::commit();
-        }
-        catch(\Throwable $e)
-        {
-            \DB::rollback();
+            DB::commit();
+        } catch(\Throwable $e) {
+            DB::rollback();
 
-            throw new \RuntimeException($e);
+            Log::error($e);
+
+            return response(null, 500);
         }
 
-        return new ProductResource($product);
+        return $this->show($product);
     }
 
     /**
@@ -149,32 +147,25 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Product $product)
     {
-        $product = Product::find($id);
-
-        try
-        {
-            \DB::beginTransaction();
+        try {
+            DB::beginTransaction();
 
             ProductCategory::where('product_id', $product->id)
                 ->delete();
 
             $product->delete();
 
-            \DB::commit();
-        }
-        catch(\Throwable $e)
-        {
-            \DB::rollback();
+            DB::commit();
+        } catch(\Throwable $e) {
+            DB::rollback();
 
             Log::error($e);
 
-            throw new \RuntimeException($e);
+            return response(null, 500);
         }
 
-        return [
-            'error_code' => 0,
-        ];
+        return response(null, 204);
     }
 }

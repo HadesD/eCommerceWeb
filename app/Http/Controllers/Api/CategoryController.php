@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Http\Resources\Category as CategoryResource;
 use App\Models\Category;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class CategoryController extends Controller
 {
@@ -17,7 +17,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return new CategoryResource(Category::all());
+        return new JsonResource(Category::all());
     }
 
     /**
@@ -38,7 +38,7 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        return new CategoryResource(Category::create([
+        return new JsonResource(Category::create([
             'name' => $request->name,
             'slug' => $request->slug,
             'description' => $request->description,

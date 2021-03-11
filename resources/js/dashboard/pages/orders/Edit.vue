@@ -368,9 +368,14 @@ export default {
                 .catch(err => {
                     console.log(err);
 
-                    this.$message.error('Thất bại');
+                    if (err.response && err.response.message) {
+                        this.$message.error(err.response.message);
+                        return;
+                    }
+
+                    this.$message.error(err.message || 'Thất bại');
                 })
-                .then(()=>{
+                .finally(()=>{
                     // this.categoriesTreeLoading = false;
                 });
         },
@@ -380,10 +385,8 @@ export default {
             axios.get(`/api/orders/${id}`)
                 .then(res => {
                     const orderData = res.data.data;
-                    if (!orderData.id)
-                    {
+                    if (!orderData.id) {
                         throw res;
-                        return;
                     }
 
                     this.orderInfo = orderData;
@@ -397,9 +400,14 @@ export default {
                 .catch(err => {
                     console.log(err);
 
-                    this.$message.error('Thất bại');
+                    if (err.response && err.response.message) {
+                        this.$message.error(err.response.message);
+                        return;
+                    }
+
+                    this.$message.error(err.message || 'Thất bại');
                 })
-                .then(()=>{
+                .finally(()=>{
                 });
         },
 
@@ -433,9 +441,14 @@ export default {
                         .catch(err => {
                             console.log(err);
 
-                            this.$message.error('Thất bại');
+                            if (err.response && err.response.message) {
+                                this.$message.error(err.response.message);
+                                return;
+                            }
+
+                            this.$message.error(err.message || 'Thất bại');
                         })
-                        .then(()=>{
+                        .finally(()=>{
                             this.orderInfoLoading = false;
                         });
                 }
@@ -449,7 +462,6 @@ export default {
                             if (!this.formData.id)
                             {
                                 throw res;
-                                return;
                             }
 
                             this.formData = {...orderData};
@@ -460,9 +472,14 @@ export default {
                         .catch(err => {
                             console.log(err);
 
-                            this.$message.error('Thất bại');
+                            if (err.response && err.response.message) {
+                                this.$message.error(err.response.message);
+                                return;
+                            }
+
+                            this.$message.error(err.message || 'Thất bại');
                         })
-                        .then(()=>{
+                        .finally(()=>{
                             this.orderInfoLoading = false;
                         });
                 }
@@ -517,9 +534,14 @@ export default {
                 .catch(err => {
                     console.log(err);
 
-                    this.$message.error('Thất bại');
+                    if (err.response && err.response.message) {
+                        this.$message.error(err.response.message);
+                        return;
+                    }
+
+                    this.$message.error(err.message || 'Thất bại');
                 })
-                .then(()=>{
+                .finally(()=>{
                     this.productData = [...this.productData];
                 });
         },
@@ -577,9 +599,9 @@ export default {
                         return;
                     }
 
-                    this.$message.error('Thất bại');
+                    this.$message.error(err.message || 'Thất bại');
                 })
-                .then(()=>{
+                .finally(()=>{
                     this.stockData = [...this.stockData];
                 });
         },

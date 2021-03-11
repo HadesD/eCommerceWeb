@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Http\Resources\Order as OrderResource;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\OrderTransaction;
@@ -13,7 +12,8 @@ use App\Models\OrderProductStock;
 use App\Models\OrderProductStockTransaction;
 use App\Models\Transaction;
 use App\Models\Stock;
-
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
@@ -25,7 +25,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        return new OrderResource(Order::orderBy('updated_at', 'DESC')->paginate());
+        return new JsonResource(Order::orderBy('updated_at', 'DESC')->paginate());
     }
 
     /**
@@ -36,9 +36,8 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        try
-        {
-            \DB::beginTransaction();
+        try {
+            DB::beginTransaction();
 
             $order = new Order;
             $order->note = $request->note;
@@ -46,8 +45,7 @@ class OrderController extends Controller
             $order->customer_id = $request->customer_id;
             $order->save();
 
-            foreach ($request['order_products'] as $_order_product)
-            {
+            foreach ($request['order_products'] as $_order_product) {
                 $order_product = new OrderProduct;
                 $order_product->order_id = $order->id;
                 $order_product->product_id = $_order_product['product_id'];
@@ -55,14 +53,12 @@ class OrderController extends Controller
                 $order_product->quantity = $_order_product['quantity'] ?? count($_order_product['order_product_stocks']);
                 $order_product->save();
 
-                foreach ($_order_product['order_product_stocks'] as $_order_product_stock)
-                {
+                foreach ($_order_product['order_product_stocks'] as $_order_product_stock) {
                     $stock_id = $_order_product_stock['stock_id'];
 
                     $stock = Stock::find($stock_id);
 
-                    if ($stock->quantity <= 0)
-                    {
+                    if ($stock->quantity <= 0) {
                         throw new \RuntimeException('Stock not avalable');
                     }
 
@@ -76,8 +72,7 @@ class OrderController extends Controller
                     $order_product_stock->save();
 
                     // Transactions
-                    foreach ($_order_product_stock['transactions'] as $_transaction)
-                    {
+                    foreach ($_order_product_stock['transactions'] as $_transaction) {
                         $transaction = new Transaction;
                         $transaction->amount = $_transaction['amount'];
                         $transaction->description = $_transaction['description'];
@@ -93,8 +88,7 @@ class OrderController extends Controller
                 }
             }
 
-            foreach ($request['transactions'] as $_transaction)
-            {
+            foreach ($request['transactions'] as $_transaction) {
                 $transaction = new Transaction;
                 $transaction->amount = $_transaction['amount'];
                 $transaction->description = $_transaction['description'];
@@ -108,16 +102,16 @@ class OrderController extends Controller
                 $order_transaction->save();
             }
 
-            \DB::commit();
-        }
-        catch(\Throwable $e)
-        {
-            \DB::rollback();
+            DB::commit();
+        } catch(\Throwable $e) {
+            DB::rollback();
 
-            throw new \RuntimeException($e);
+            Log::error($e);
+
+            return response(null, 500);
         }
 
-        return new OrderResource($order ?? []);
+        return $this->show($order);
     }
 
     /**
@@ -126,9 +120,9 @@ class OrderController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Order $order)
     {
-        return new OrderResource(Order::find($id));
+        return new JsonResource($order);
     }
 
     /**
@@ -138,13 +132,11 @@ class OrderController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Order $order)
     {
-        try
-        {
-            \DB::beginTransaction();
+        try {
+            DB::beginTransaction();
 
-            $order = Order::find($id);
             $order->note = $request->note;
             $order->status = $request->status;
             $order->customer_id = $request->customer_id;
@@ -154,8 +146,7 @@ class OrderController extends Controller
             $order_product_stock_ids_keep = [];
             $order_product_stock_transaction_ids_keep = [];
 
-            foreach ($request['order_products'] as $_order_product)
-            {
+            foreach ($request['order_products'] as $_order_product) {
                 $order_product_id = $_order_product['id'] ?? null;
                 $order_product = $order_product_id ? OrderProduct::find($order_product_id) : new OrderProduct;
                 if (!$order_product_id)
@@ -164,22 +155,21 @@ class OrderController extends Controller
                 }
                 $order_product->product_id = $_order_product['product_id'];
                 $order_product->payment_method = $_order_product['payment_method'];
-                $order_product->quantity = $order_product_id ? $order_product->quantity : ($_order_product['quantity'] ?? count($_order_product['order_product_stocks']));
+                $order_product->quantity = $order_product_id ? $order_product->quantity
+                    : ($_order_product['quantity'] ?? count($_order_product['order_product_stocks']));
                 $order_product->save();
 
                 // Push to keep
                 $order_product_ids_keep[] = $order_product->id;
 
-                foreach ($_order_product['order_product_stocks'] as $_order_product_stock)
-                {
+                foreach ($_order_product['order_product_stocks'] as $_order_product_stock) {
                     $order_product_stock_id = $_order_product_stock['id'] ?? null;
 
                     $order_product_stock = $order_product_stock_id ? OrderProductStock::find($order_product_stock_id) : null;
 
                     $stock_id = $_order_product_stock['stock_id'] ?? null;
 
-                    if (!$order_product_stock || ($order_product_stock->stock_id !== $stock_id))
-                    {
+                    if (!$order_product_stock || ($order_product_stock->stock_id !== $stock_id)) {
                         $stock = Stock::find($stock_id);
 
                         if ($stock->quantity <= 0)
@@ -200,8 +190,7 @@ class OrderController extends Controller
                     $order_product_stock_ids_keep[] = $order_product_stock->id;
 
                     // Transactions
-                    foreach ($_order_product_stock['transactions'] as $_transaction)
-                    {
+                    foreach ($_order_product_stock['transactions'] as $_transaction) {
                         $transaction_id = $_transaction['id'] ?? null;
                         $transaction = $transaction_id ? Transaction::find($transaction_id) : new Transaction;
                         $transaction->amount = $_transaction['amount'];
@@ -212,8 +201,7 @@ class OrderController extends Controller
 
                         $order_product_stock_transaction_ids_keep[] = $transaction->id;
 
-                        if (!$transaction_id)
-                        {
+                        if (!$transaction_id) {
                             $order_product_stock_transaction = new OrderProductStockTransaction;
                             $order_product_stock_transaction->order_product_stock_id = $order_product_stock->id;
                             $order_product_stock_transaction->transaction_id = $transaction->id;
@@ -227,8 +215,7 @@ class OrderController extends Controller
 
             $_transactions = $request['transactions'];
 
-            foreach ($_transactions as $_transaction)
-            {
+            foreach ($_transactions as $_transaction) {
                 $transaction_id = $_transaction['id'] ?? null;
                 $transaction = $transaction_id ? Transaction::find($transaction_id) : new Transaction;
                 $transaction->amount = $_transaction['amount'];
@@ -239,8 +226,7 @@ class OrderController extends Controller
 
                 $transaction_ids_keep[] = $transaction->id;
 
-                if (!$transaction_id)
-                {
+                if (!$transaction_id) {
                     $order_transaction = new OrderTransaction;
                     $order_transaction->order_id = $order->id;
                     $order_transaction->transaction_id = $transaction->id;
@@ -249,16 +235,12 @@ class OrderController extends Controller
             }
 
             // Delete order_product
-            foreach ($order->order_products as $_order_product)
-            {
+            foreach ($order->order_products as $_order_product) {
                 // Delete order_product_stock
-                foreach ($_order_product->order_product_stocks as $_order_product_stock)
-                {
+                foreach ($_order_product->order_product_stocks as $_order_product_stock) {
                     // Delete transactions
-                    foreach ($_order_product_stock->transactions as $_transaction)
-                    {
-                        if (!in_array($_transaction->id, $order_product_stock_transaction_ids_keep))
-                        {
+                    foreach ($_order_product_stock->transactions as $_transaction) {
+                        if (!in_array($_transaction->id, $order_product_stock_transaction_ids_keep)) {
                             OrderProductStockTransaction::where('order_product_stock_id', $_order_product_stock->id)
                                 ->where('transaction_id', $_transaction->id)
                                 ->delete();
@@ -267,8 +249,7 @@ class OrderController extends Controller
                     }
 
                     // Delete order_product_stocks
-                    if (!in_array($_order_product_stock->id, $order_product_stock_ids_keep))
-                    {
+                    if (!in_array($_order_product_stock->id, $order_product_stock_ids_keep)) {
                         // Reset item
                         $stock = Stock::find($_order_product_stock->stock_id);
                         $stock->quantity += 1;
@@ -278,18 +259,14 @@ class OrderController extends Controller
                     }
                 }
 
-                if (!in_array($_order_product->id, $order_product_ids_keep))
-                {
+                if (!in_array($_order_product->id, $order_product_ids_keep)) {
                     $_order_product->delete();
                 }
             }
 
             // Delete transactions
-            foreach ($order->transactions as $_transaction)
-            {
-
-                if (!in_array($_transaction->id, $transaction_ids_keep))
-                {
+            foreach ($order->transactions as $_transaction) {
+                if (!in_array($_transaction->id, $transaction_ids_keep)) {
                     OrderTransaction::where('order_id', $order->id)
                         ->where('transaction_id', $_transaction->id)
                         ->delete();
@@ -297,18 +274,16 @@ class OrderController extends Controller
                 }
             }
 
-            \DB::commit();
-        }
-        catch(\Throwable $e)
-        {
-            \DB::rollback();
+            DB::commit();
+        } catch(\Throwable $e) {
+            DB::rollback();
 
             Log::error($e);
 
-            throw new \RuntimeException($e);
+            return response(null, 500);
         }
 
-        return new OrderResource($order ?? []);
+        return $this->show($order);
     }
 
     /**

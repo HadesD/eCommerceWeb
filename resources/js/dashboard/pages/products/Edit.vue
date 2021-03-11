@@ -224,10 +224,9 @@ export default {
                         return;
                     }
 
-
-                    this.$message.error('Thất bại');
+                    this.$message.error(err.message || 'Thất bại');
                 })
-                .then(()=>{
+                .finally(()=>{
                     this.categoriesTreeLoading = false;
                 });
         },
@@ -269,9 +268,9 @@ export default {
                         return;
                     }
 
-                    this.$message.error('Thất bại');
+                    this.$message.error(err.message || 'Thất bại');
                 })
-                .then(()=>{
+                .finally(()=>{
                 });
         },
 
@@ -302,9 +301,9 @@ export default {
                                 return;
                             }
 
-                            this.$message.error('Thất bại');
+                            this.$message.error(err.message || 'Thất bại');
                         })
-                        .then(()=>{
+                        .finally(()=>{
                             this.productInfoLoading = false;
                         });
                 }
@@ -331,10 +330,9 @@ export default {
                                 return;
                             }
 
-
-                            this.$message.error('Thất bại');
+                            this.$message.error(err.message || 'Thất bại');
                         })
-                        .then(()=>{
+                        .finally(()=>{
                             this.productInfoLoading = false;
                         });
                 }

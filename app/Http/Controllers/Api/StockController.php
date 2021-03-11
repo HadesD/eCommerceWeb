@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\ApiErrorException;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Http\Resources\Stock as StockResource;
 use App\Models\Stock;
 use App\Models\Category;
 use App\Models\StockCategory;
-
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class StockController extends Controller
@@ -19,16 +20,20 @@ class StockController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $params = \Request::all();
-        $category_id = $params['category_id'] ?? 0;
-        if (isset($params['all']))
-        {
-            return new StockResource($category_id ? Category::find($category_id)->stocks->orderBy('in_date', 'DESC')->get() : Stock::orderBy('in_date', 'DESC')->get());
+        $category_id = $request->category_id ?? 0;
+        if (isset($request->all)) {
+            return new JsonResource(
+                $category_id ? Category::find($category_id)->stocks->orderBy('in_date', 'DESC')->get()
+                    : Stock::orderBy('in_date', 'DESC')->get()
+            );
         }
 
-        return new StockResource($category_id ? Category::find($category_id)->stocks->orderBy('in_date', 'DESC')->paginate() : Stock::orderBy('in_date', 'DESC')->paginate());
+        return new JsonResource(
+            $category_id ? Category::find($category_id)->stocks->orderBy('in_date', 'DESC')->paginate()
+                : Stock::orderBy('in_date', 'DESC')->paginate()
+        );
     }
 
     /**
@@ -39,9 +44,8 @@ class StockController extends Controller
      */
     public function store(Request $request)
     {
-        try
-        {
-            \DB::beginTransaction();
+        try {
+            DB::beginTransaction();
 
             $stock = new Stock;
             $stock->name = $request->name;
@@ -54,26 +58,29 @@ class StockController extends Controller
             $stock->save();
 
             // EAV
-            foreach ($request->categories_id as $category_id)
-            {
+            foreach ($request->categories_id as $category_id) {
                 $stock_category = new StockCategory;
                 $stock_category->stock_id = $stock->id;
                 $stock_category->category_id = $category_id;
                 $stock_category->save();
             }
 
-            \DB::commit();
-        }
-        catch(\Throwable $e)
-        {
-            \DB::rollback();
+            DB::commit();
+        } catch(\Throwable $e) {
+            DB::rollback();
+
+            if ($e instanceof ApiErrorException) {
+                return response([
+                    'message' => $e->getMessage()
+                ]);
+            }
 
             Log::error($e);
 
-            throw new \RuntimeException($e);
+            return response(null, 500);
         }
 
-        return new StockResource($stock);
+        return $this->show($stock);
     }
 
     /**
@@ -82,9 +89,9 @@ class StockController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Stock $stock)
     {
-        return new StockResource(Stock::find($id));
+        return new JsonResource($stock);
     }
 
     /**
@@ -94,17 +101,13 @@ class StockController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Stock $stock)
     {
-        try
-        {
-            \DB::beginTransaction();
+        try {
+            DB::beginTransaction();
 
-            $stock = Stock::find($id);
-
-            if ($stock->products->count() && ($stock->cost_price !== $request->cost_price))
-            {
-                throw new \RuntimeException('Can not change price of sold item');
+            if ($stock->products->count() && ($stock->cost_price !== $request->cost_price)) {
+                throw new ApiErrorException('Can not change price of sold item');
             }
 
             $stock->name = $request->name;
@@ -117,13 +120,11 @@ class StockController extends Controller
             $stock->save();
 
             // EAV
-            foreach ($request->categories_id as $category_id)
-            {
+            foreach ($request->categories_id as $category_id) {
                 $stock_category = StockCategory::where('stock_id', $stock->id)
                     ->where('category_id', $category_id)
                     ->first();
-                if ($stock_category)
-                {
+                if ($stock_category) {
                     continue;
                 }
 
@@ -137,18 +138,22 @@ class StockController extends Controller
                 ->whereNotIn('category_id', $request->categories_id)
                 ->delete();
 
-            \DB::commit();
-        }
-        catch(\Throwable $e)
-        {
-            \DB::rollback();
+            DB::commit();
+        } catch(\Throwable $e) {
+            DB::rollback();
+
+            if ($e instanceof ApiErrorException) {
+                return response([
+                    'message' => $e->getMessage()
+                ]);
+            }
 
             Log::error($e);
 
-            throw new \RuntimeException($e);
+            return response(null, 500);
         }
 
-        return new StockResource($stock);
+        return $this->show($stock);
     }
 
     /**
@@ -157,38 +162,35 @@ class StockController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Stock $stock)
     {
-        $stock = Stock::find($id);
+        try {
+            DB::beginTransaction();
 
-        if ($stock->products)
-        {
-            throw new \RuntimeException('Stock sold');
-        }
-
-        try
-        {
-            \DB::beginTransaction();
+            if ($stock->products) {
+                throw new ApiErrorException('Không thể xoá sản phâm đã bán');
+            }
 
             StockCategory::where('stock_id', $stock->id)
                 ->delete();
 
             $stock->delete();
 
-            \DB::commit();
-        }
-        catch(\Throwable $e)
-        {
-            \DB::rollback();
+            DB::commit();
+        } catch(\Throwable $e) {
+            DB::rollback();
+
+            if ($e instanceof ApiErrorException) {
+                return response([
+                    'message' => $e->getMessage()
+                ]);
+            }
 
             Log::error($e);
 
-            throw new \RuntimeException($e);
+            return response(null, 500);
         }
 
-        return [
-            'error_code' => 0,
-        ];
+        return response(null, 204);
     }
 }
-
