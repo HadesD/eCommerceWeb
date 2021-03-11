@@ -572,6 +572,11 @@ export default {
                 .catch(err => {
                     console.log(err);
 
+                    if (err.response && err.response.message) {
+                        this.$message.error(err.response.message);
+                        return;
+                    }
+
                     this.$message.error('Thất bại');
                 })
                 .then(()=>{
