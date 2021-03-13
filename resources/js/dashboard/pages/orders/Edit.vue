@@ -476,6 +476,8 @@ export default {
 
                     if (orderId) {
                         this.$message.success('Đã sửa sản phẩm thành công');
+
+                        this.loadOrder(orderData.id);
                     } else {
                         this.$message.success('Đã thêm sản phẩm thành công');
 
@@ -483,6 +485,8 @@ export default {
                     }
                 })
                 .catch(err => {
+                    this.orderInfoLoading = false;
+
                     if (err.response && err.response.data.message) {
                         this.$message.error(err.response.data.message);
                         return;
@@ -491,7 +495,6 @@ export default {
                     this.$message.error(err.message || 'Thất bại');
                 })
                 .finally(()=>{
-                    this.orderInfoLoading = false;
                 });
         },
         resetForm() {
