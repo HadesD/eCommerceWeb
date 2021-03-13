@@ -16,8 +16,11 @@ function vietnameseNormalize(str, toUpperCase = false) {
     return toUpperCase ? str.toUpperCase() : str;
 }
 
-export {
-    vietnameseNormalize,
+function number_format(num) {
+    return new Intl.NumberFormat().format(num);
 }
 
-
+export {
+    vietnameseNormalize,
+    number_format,
+}

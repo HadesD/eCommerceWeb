@@ -1,26 +1,26 @@
 export default {
     0: {
-        title: 'Đang xử lí',
+        name: 'Đang xử lí',
         color: '#F50',
     },
     10: {
-        title: 'Đã hủy bỏ',
+        name: 'Đã hủy bỏ',
         color: 'darkgrey',
     },
     51: {
-        title: 'Đang thanh toán',
+        name: 'Đang thanh toán',
         color: 'red',
     },
     50: {
-        title: 'Đã thanh toán',
+        name: 'Đã thanh toán',
         color: 'green',
     },
     100: {
-        title: 'Đang ship',
+        name: 'Đang ship',
         color: 'orange',
     },
     200: {
-        title: 'Hoàn tất',
+        name: 'Hoàn tất',
         color: 'blue',
     },
 };

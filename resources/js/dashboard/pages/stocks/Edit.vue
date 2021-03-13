@@ -9,7 +9,10 @@
             @updateCategories="updateCategories"
         />
         <a-spin :spinning="stockInfoLoading">
-            <h2>{{ $route.params.id ? `Sửa hàng trong kho #${$route.params.id}` : 'Nhập hàng mới vào kho' }}</h2>
+            <a-page-header
+                :title="$route.params.id ? `Tên hàng: ${formData.name}` : 'Nhập hàng mới vào kho'"
+                :sub-title="$route.params.id ? `#${$route.params.id}` : false"
+            />
             <a-form-model
                 ref="ruleForm"
                 :model="formData"
@@ -18,26 +21,15 @@
                 :wrapper-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? wrapperCol : {}"
             >
                 <a-form-model-item label="Tên sản phẩm" ref="name" prop="name">
-                    <a-input
-                        v-model="formData.name"
-                    />
+                    <a-input v-model="formData.name" />
                 </a-form-model-item>
                 <a-form-model-item label="Id/imei/mã phân biệt" ref="idi" prop="idi">
-                    <a-input
-                        v-model="formData.idi"
-                        @blur="() => $refs.idi.onFieldBlur()"
-                    />
+                    <a-input v-model="formData.idi" @blur="() => $refs.idi.onFieldBlur()" />
                 </a-form-model-item>
                 <a-form-model-item label="Số lượng" ref="quantity" prop="quantity">
-                    <a-input-number
-                        v-model="formData.quantity"
-                        @blur="() => $refs.quantity.onFieldBlur()"
-                        :min="-200"
-                        :max="200"
-                    >
-                    </a-input-number>
+                    <a-input-number v-model="formData.quantity" @blur="() => $refs.quantity.onFieldBlur()" :min="-200" :max="200" />
                 </a-form-model-item>
-                <a-form-model-item label="Giá lúc nhập (Đơn giá)" ref="cost_price" prop="cost_price">
+                <a-form-model-item label="Giá lúc nhập (Đơn giá)" ref="cost_price" prop="cost_price" :help="`VND: ${number_format(formData.cost_price || 0)}`">
                     <a-input-number
                         v-model="formData.cost_price"
                         @blur="() => $refs.cost_price.onFieldBlur()"
@@ -45,9 +37,7 @@
                         :min="-2000000000"
                         :max="2000000000"
                         :disabled="cost_priceDisabled"
-                    >
-                    </a-input-number>
-                    <span>VND: {{ new Intl.NumberFormat().format(formData.cost_price || 0) }}</span>
+                    />
                 </a-form-model-item>
                 <a-form-model-item label="Chuyên mục cha" ref="categories_id" prop="categories_id">
                     <a-form-model-item
@@ -79,20 +69,16 @@
                             />
                         </a-spin>
                     </a-form-model-item>
-                    <a-form-model-item
-                        style="display: inline-block; margin-left: 5px;"
-                    >
+                    <a-form-model-item style="display: inline-block; margin-left: 5px;">
                         <a-tooltip title="Làm mới">
                             <a-button type="primary" icon="reload" @click="reloadCategoriesTree" :loading="categoriesTreeLoading" />
                         </a-tooltip>
                     </a-form-model-item>
                 </a-form-model-item>
                 <a-form-model-item label="Ghi chú">
-                    <a-textarea
-                        v-model="formData.note"
-                    />
+                    <a-textarea v-model="formData.note" />
                 </a-form-model-item>
-                <a-form-model-item label="Ngày nhập" ref="in_date" prop="in_date">
+                <a-form-model-item label="Ngày nhập" ref="in_date" prop="in_date" help="Ngày nhập sẽ liên kết trực tiếp tới tiền vốn của tháng đó">
                     <a-date-picker
                         v-model="formData.in_date"
                         format="YYYY-MM-DD HH:mm:ss"
@@ -114,6 +100,7 @@
 
 <script>
 import axios from 'axios';
+import { number_format } from '../../../helpers';
 
 export default {
     components: {
@@ -144,16 +131,19 @@ export default {
             },
             rules: {
                 idi: [
-                    { required: true, trigger: 'blur' },
+                    { required: true },
                 ],
                 cost_price: [
-                    { required: true, trigger: 'blur' },
+                    { required: true },
                 ],
                 quantity: [
-                    { required: true, trigger: 'blur' },
+                    { required: true },
                 ],
                 categories_id: [
-                    { required: true, trigger: 'blur' },
+                    { required: true },
+                ],
+                in_date: [
+                    { required: true }
                 ],
             },
         }
@@ -172,14 +162,17 @@ export default {
         cost_priceDisabled(){
             return (this.stockInfo.products && (this.stockInfo.products.length > 0));
         },
+
+        number_format() {
+            return number_format;
+        },
     },
     mounted() {
         this.formData.id = this.$route.params.id;
 
         this.reloadCategoriesTree();
 
-        if (this.formData.id)
-        {
+        if (this.formData.id) {
             this.loadStock(this.formData.id)
         }
     },

@@ -47,7 +47,7 @@
         @change="onStocksTablePaginationChanged"
         >
         <span slot="cost_price" slot-scope="record" style="display:block;text-align:right;">
-          {{ new Intl.NumberFormat().format(record.cost_price) }}
+          {{ number_format(record.cost_price) }}
         </span>
         <span slot="quantity_info" slot-scope="record">
           Đã bán: {{ record.products.length }}<br />
@@ -74,6 +74,9 @@
 </template>
 
 <script>
+import StockStatus from '../../configs/StockStatus';
+import { number_format } from '../../../helpers';
+
 const stocksTableColumns = [
   {
     title: '#',
@@ -149,8 +152,7 @@ export default {
     categoriesTreeData(){
       const getParent = (key, tree) => {
         let parent;
-        for (let i = 0; i < tree.length; i++)
-        {
+        for (let i = 0; i < tree.length; i++) {
           const node = tree[i];
           if (node.key === key)
           {
@@ -171,8 +173,7 @@ export default {
       this.categoriesTreeExpandedKeys = [];
 
       let data = [];
-      for (let i = 0; i < sortedCategories.length; i++)
-      {
+      for (let i = 0; i < sortedCategories.length; i++) {
         const cur = sortedCategories[i];
 
         const newData = {
@@ -198,21 +199,12 @@ export default {
       return this.stocks;
     },
     configStockStatus(){
-      return {
-        0: {
-          title: 'Có sẵn',
-          color: 'green',
-        },
-        1: {
-          title: 'Đã bán',
-          color: 'blue',
-        },
-        2: {
-          title: 'Hỏng / Lỗi',
-          color: 'red',
-        },
-      }
+        return StockStatus;
     },
+
+    number_format() {
+        return number_format;
+    }
   },
   methods: {
     // CategoriesTree

@@ -1,12 +1,15 @@
 export default {
     0: {
-        title: 'Bản nháp',
+        name: 'Bản nháp',
+        color: '#F50',
     },
     1: {
-        title: 'Đang bán',
+        name: 'Đang bán',
+        color: 'green',
     },
     2: {
-        title: 'Hết hàng',
+        name: 'Hết hàng',
+        color: 'darkgrey',
     },
 };
 

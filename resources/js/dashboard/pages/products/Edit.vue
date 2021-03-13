@@ -9,7 +9,10 @@
             @updateCategories="updateCategories"
         />
         <a-spin :spinning="productInfoLoading">
-            <h2>{{ $route.params.id ? `Sửa sản phẩm #${$route.params.id}` : 'Đăng bán sản phẩm mới' }}</h2>
+            <a-page-header
+                :title="$route.params.id ? `Sản phẩm: ${formData.name}` : 'Đăng bán sản phẩm mới'"
+                :sub-title="$route.params.id ? `#${$route.params.id}` : false"
+            />
             <a-form-model
                 ref="ruleForm"
                 :model="formData"
@@ -30,25 +33,23 @@
                         @blur="() => $refs.slug.onFieldBlur()"
                     />
                 </a-form-model-item>
-                <a-form-model-item label="Giá bán" ref="price" prop="price">
+                <a-form-model-item label="Giá bán" ref="price" prop="price"
+                    :help="`VND: ${number_format(formData.price || 0)}`"
+                >
                     <a-input-number
                         v-model="formData.price"
                         @blur="() => $refs.price.onFieldBlur()"
                         style="width: 100%;"
                         :min="0"
                         :max="2000000000"
-                    >
-                    </a-input-number>
-                    <span>VND: {{ new Intl.NumberFormat().format(formData.price || 0) }}</span>
+                    />
                 </a-form-model-item>
                 <a-form-model-item label="Trạng thái" ref="status" prop="status">
                     <a-select
                         v-model="formData.status"
                         @blur="() => $refs.status.onFieldBlur()"
                     >
-                        <a-select-option v-for="codeSts in Object.keys(configProductStatus)" :key="codeSts" :value="parseInt(codeSts)"
-                            :disabled="(codeSts === 2) ? ($route.params.id ? false : true) : false"
-                        >{{ configProductStatus[codeSts].title }}</a-select-option>
+                        <a-select-option v-for="codeSts in Object.keys(configProductStatus)" :key="codeSts" :value="parseInt(codeSts)">{{ configProductStatus[codeSts].name }}</a-select-option>
                     </a-select>
                 </a-form-model-item>
                 <a-form-model-item label="Chuyên mục cha" ref="categories_id" prop="categories_id">
@@ -126,7 +127,7 @@
     </div>
 </template>
 <script>
-import { vietnameseNormalize } from '../../../stringNormalize.js';
+import { vietnameseNormalize, number_format } from '../../../helpers';
 import ProductStatus from '../../configs/ProductStatus';
 
 export default {
@@ -156,19 +157,19 @@ export default {
             },
             rules: {
                 name: [
-                    { required: true, trigger: 'blur' },
+                    { required: true },
                 ],
                 slug: [
-                    { required: true, trigger: 'blur' },
+                    { required: true },
                 ],
                 price: [
-                    { required: true, trigger: 'blur' },
+                    { required: true },
                 ],
                 status: [
-                    { required: true, trigger: 'blur' },
+                    { required: true },
                 ],
                 categories_id: [
-                    { required: true, trigger: 'blur' },
+                    { required: true },
                 ],
             },
         };
@@ -187,6 +188,10 @@ export default {
         configProductStatus() {
             return ProductStatus;
         },
+
+        number_format() {
+            return number_format;
+        }
     },
     mounted(){
         this.formData.id = this.$route.params.id;

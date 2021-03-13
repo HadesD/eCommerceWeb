@@ -11,7 +11,7 @@
             >
                 <a-form-model-item label="Trạng thái" prop="status">
                     <a-select v-model="formData.status">
-                        <a-select-option v-for="stsCode in Object.keys(configOrderStatus)" :key="stsCode" :value="parseInt(stsCode)">{{ configOrderStatus[stsCode].title }}</a-select-option>
+                        <a-select-option v-for="stsCode in Object.keys(configOrderStatus)" :key="stsCode" :value="parseInt(stsCode)">{{ configOrderStatus[stsCode].name }}</a-select-option>
                     </a-select>
                 </a-form-model-item>
                 <a-form-model-item label="Khách hàng" ref="customer_id" prop="customer_id">
@@ -30,7 +30,7 @@
                         <template slot="title">
                             <template v-if="p.id && p.product">
                                 <a-tooltip title="Xem">
-                                    <RouterLink :to="'/products/'+p.product.id+'/edit'">Đang chọn: #{{ p.product.id + '. ' + p.product.name + ' ('+ (new Intl.NumberFormat().format(p.product.price)) +' VND)' }}</RouterLink>
+                                    <RouterLink :to="'/products/'+p.product.id+'/edit'">Đang chọn: #{{ p.product.id + '. ' + p.product.name + ' ('+ number_format(p.product.price) +' VND)' }}</RouterLink>
                                 </a-tooltip>
                             </template>
                             <template v-else>{{ 'Sản phẩm #'+pIdx }}</template>
@@ -38,10 +38,10 @@
                         <a-popconfirm slot="extra" title="Chắc chắn muốn xóa?" @confirm="() => formData.order_products.splice(pIdx, 1)">
                             <a-button type="primary" icon="delete"></a-button>
                         </a-popconfirm>
-                        <a-form-model-item label="Sản phẩm" :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.product_id'">
+                        <a-form-model-item label="Sản phẩm" :rules="{required:true}" :prop="'order_products.'+pIdx+'.product_id'">
                             <a-tree-select show-search treeNodeFilterProp="title" :tree-data="productData" :load-data="loadCategoryProducts" placeholder="Please select" v-model="p.product_id" />
                         </a-form-model-item>
-                        <a-form-model-item label="Hình thức thanh toán" :rules="{required:true, trigger: 'blur'}">
+                        <a-form-model-item label="Hình thức thanh toán" :rules="{required:true}">
                             <a-select v-model="p.payment_method">
                                 <a-select-option :value="1">
                                     Trả thẳng 100%
@@ -69,10 +69,10 @@
                             >
                                 <template slot="stock" slot-scope="text, ps, psIdx">
                                     <a-tooltip v-if="ps.id" title="Xem">
-                                        <RouterLink :to="'/stocks/'+ps.stock.id+'/edit'">Đang chọn: #{{ ps.stock.id + '. ' + ps.stock.name + ' ('+ ps.stock.idi +')' + ' ('+ (new Intl.NumberFormat().format(ps.stock.cost_price)) +' VND)' }}</RouterLink>
+                                        <RouterLink :to="'/stocks/'+ps.stock.id+'/edit'">Đang chọn: #{{ ps.stock.id + '. ' + ps.stock.name + ' ('+ ps.stock.idi +')' + ' ('+ (number_format(ps.stock.cost_price)) +' VND)' }}</RouterLink>
                                     </a-tooltip>
                                     <template v-else>{{ 'Hàng trong kho #'+psIdx }}</template>
-                                    <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.stock_id'" style="margin-bottom:0;">
+                                    <a-form-model-item :rules="{required:true}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.stock_id'" style="margin-bottom:0;">
                                         <a-tree-select show-search treeNodeFilterProp="title" :tree-data="stockData" :load-data="loadCategoryStocks" placeholder="Please select" v-model="ps.stock_id" />
                                     </a-form-model-item>
                                 </template>
@@ -80,11 +80,12 @@
                                     slot="amount"
                                     slot-scope="text, ps, psIdx"
                                 >
-                                    <a-form-model-item label="" :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.amount'" style="margin-bottom:0;">
+                                    <a-form-model-item label="" :rules="{required:true}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.amount'" style="margin-bottom:0;"
+                                        :help="`VND: ${number_format(ps.amount || 0)}`"
+                                    >
                                         <a-input-number v-model="ps.amount" style="width: 100%;" :min="0" :max="2000000000" />
-                                        <span>VND: {{ new Intl.NumberFormat().format(ps.amount || 0) }}</span>
                                     </a-form-model-item>
-                                    <div>Đã thanh toán: {{ new Intl.NumberFormat().format(ps.transactions.reduce((a, b) => a + (b['amount'] || 0), 0)) }}</div>
+                                    <div>Đã thanh toán: {{ number_format(ps.transactions.reduce((a, b) => a + (b['amount'] || 0), 0)) }}</div>
                                 </template>
                                 <template slot="action" slot-scope="text, ps, psIdx">
                                     <a @click="() => ps.transactions.push(Object.assign({}, transaction_obj))">
@@ -106,19 +107,19 @@
                                     bordered
                                 >
                                     <template slot="description" slot-scope="text, pst, pstIdx">
-                                        <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.description'" style="margin-bottom:0;">
+                                        <a-form-model-item :rules="{required:true}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.description'" style="margin-bottom:0;">
                                             <a-input v-model="pst.description" placeholder="Trả góp, trả thẳng, thanh toán sản phẩm ABC, vv..vv" type="textarea" />
                                         </a-form-model-item>
                                     </template>
                                     <template slot="amount" slot-scope="text, pst, pstIdx">
-                                        <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.amount'" style="margin-bottom:0;">
-                                            <a-input-number v-model="pst.amount" style="width: 100%;" :min="-2000000000" :max="2000000000">
-                                            </a-input-number>
-                                            <span>VND: {{ new Intl.NumberFormat().format(pst.amount || 0) }}</span>
+                                        <a-form-model-item :rules="{required:true}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.amount'" style="margin-bottom:0;"
+                                            :help="`VND: ${number_format(pst.amount || 0)}`"
+                                        >
+                                            <a-input-number v-model="pst.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" />
                                         </a-form-model-item>
                                     </template>
                                     <template slot="paid_date" slot-scope="text, pst, pstIdx">
-                                        <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.paid_date'" style="margin-bottom:0;">
+                                        <a-form-model-item :rules="{required:true}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.paid_date'" style="margin-bottom:0;">
                                             <a-date-picker v-model="pst.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" />
                                         </a-form-model-item>
                                     </template>
@@ -146,19 +147,19 @@
                         bordered
                     >
                         <template slot="description" slot-scope="text, record, index">
-                            <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'transactions.'+index+'.description'" style="margin-bottom:0;">
+                            <a-form-model-item :rules="{required:true}" :prop="`transactions.${index}.description`" style="margin-bottom:0;">
                                 <a-input v-model="record.description" placeholder="Mã giảm giá, phí ship, v..v" type="textarea" />
                             </a-form-model-item>
                         </template>
                         <template slot="amount" slot-scope="text, record, index">
-                            <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'transactions.'+index+'.amount'" style="margin-bottom:0;">
-                                <a-input-number v-model="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000">
-                                </a-input-number>
-                                <span>VND: {{ new Intl.NumberFormat().format(record.amount || 0) }}</span>
+                            <a-form-model-item :rules="{required:true}" :prop="`transactions.${index}.amount`" style="margin-bottom:0;"
+                                :help="`VND: ${number_format(record.amount || 0)}`"
+                            >
+                                <a-input-number v-model="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" />
                             </a-form-model-item>
                         </template>
                         <template slot="paid_date" slot-scope="text, record, index">
-                            <a-form-model-item :rules="{required:true, trigger: 'blur'}" :prop="'transactions.'+index+'.paid_date'" style="margin-bottom:0;">
+                            <a-form-model-item :rules="{required:true}" :prop="'transactions.'+index+'.paid_date'" style="margin-bottom:0;">
                                 <a-date-picker v-model="record.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" />
                             </a-form-model-item>
                         </template>
@@ -182,6 +183,7 @@
 
 <script>
 import OrderStatus from '../../configs/OrderStatus';
+import { number_format } from '../../../helpers';
 
 const addon_transactionsTableColumns = [
     {
@@ -318,6 +320,9 @@ export default {
 
         configOrderStatus() {
             return OrderStatus;
+        },
+        number_format() {
+            return number_format;
         },
     },
     methods: {
@@ -503,7 +508,7 @@ export default {
                         const elm = sData[i];
                         const newOtp = {
                             isLeaf: true,
-                            title: elm.id +'. ' + elm.name + ' ('+(new Intl.NumberFormat().format(elm.price))+' VND)',
+                            title: elm.id +'. ' + elm.name + ' ('+number_format(elm.price)+' VND)',
                             value: elm.id,
                         };
                         targetOption.children.push(newOtp);
@@ -560,7 +565,7 @@ export default {
                         {
                             const newOtp = {
                                 isLeaf: true,
-                                title: elm.id +'. ' + elm.name + ' ('+elm.idi+') ' + ' ('+(new Intl.NumberFormat().format(elm.cost_price))+' VND)' + ' (x'+ elm.quantity +')',
+                                title: elm.id +'. ' + elm.name + ' ('+elm.idi+') ' + ' ('+number_format(elm.cost_price)+' VND)' + ' (x'+ elm.quantity +')',
                                 value: elm.id,
                             };
                             targetOption.children.push(newOtp);

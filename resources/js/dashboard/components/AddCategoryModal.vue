@@ -62,7 +62,7 @@
   </a-modal>
 </template>
 <script>
-import {vietnameseNormalize} from '../../stringNormalize.js'
+import {vietnameseNormalize} from '../../helpers.js'
 
 const TREE_ROOT_ID = 0;
 const TREE_NONE_PARENT_ID = -1;

@@ -51,10 +51,10 @@
           <a-tag>{{ record.slug }}</a-tag>
         </span>
         <span slot="status" slot-scope="record">
-          {{ configProductStatus[record.status].title }}
+            <a-tag :color="configProductStatus[record.status].color">{{ configProductStatus[record.status].name }}</a-tag>
         </span>
         <span slot="price" slot-scope="record" style="display:block;text-align:right;">
-          {{ new Intl.NumberFormat().format(record.price) }}
+          {{ number_format(record.price) }}
         </span>
         <span slot="time" slot-scope="record">
           Ngày tạo: {{ record.created_at }}<br />
@@ -77,6 +77,7 @@
 
 <script>
 import ProductStatus from '../../configs/ProductStatus';
+import { number_format } from '../../../helpers';
 
 const productsTableColumns = [
   {
@@ -193,6 +194,10 @@ export default {
 
     configProductStatus() {
         return ProductStatus;
+    },
+
+    number_format() {
+        return number_format;
     },
   },
   methods: {

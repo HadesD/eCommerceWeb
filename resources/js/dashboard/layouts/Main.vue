@@ -6,7 +6,7 @@
             <Header :sideBarCollapsed="sideBarCollapsed" @onSetSidebarCollapsed="setSidebarCollapsed"></Header>
             <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
                 <!-- <Breadcrumb></Breadcrumb> -->
-                <div :style="{ padding: '24px', background: '#fff', minHeight: '80vh' }">
+                <div :style="{ padding: '24px', background: '#fff', minHeight: 'calc(100vh - 160px)' }">
                     <router-view />
                 </div>
             </a-layout-content>

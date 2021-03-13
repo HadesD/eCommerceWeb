@@ -20,7 +20,7 @@
       @change="onOrdersTablePaginationChanged"
       >
       <span slot="status" slot-scope="record">
-        <a-tag :color="configOrderStatus[record.status].color">{{ configOrderStatus[record.status].title }}</a-tag>
+        <a-tag :color="configOrderStatus[record.status].color">{{ configOrderStatus[record.status].name }}</a-tag>
       </span>
       <span slot="total_amount" slot-scope="record">
         <span>{{ totalAmount(record) }}</span>
@@ -38,10 +38,10 @@
             </li>
           </ul>
         </div>
+        <div v-for="addon_tnx in record.transactions" :key="addon_tnx.id">
+            {{ addon_tnx.description }} ({{ number_format(addon_tnx.amount) }})
+        </div>
       </template>
-      <span slot="transaction_num" slot-scope="record">
-        {{ record.transactions.length }}
-      </span>
       <span slot="customer" slot-scope="record">
         {{ record.customer ? record.customer.name : record.customer_id }}
       </span>
@@ -65,6 +65,7 @@
 
 <script>
 import OrderStatus from '../../configs/OrderStatus';
+import { number_format } from '../../../helpers';
 
 const ordersTableColumns = [
   {
@@ -90,11 +91,6 @@ const ordersTableColumns = [
     title: 'Đặt hàng',
     key: 'order_product',
     scopedSlots: { customRender: 'order_product' },
-  },
-  {
-    title: 'Giao dịch thêm',
-    key: 'transaction_num',
-    scopedSlots: { customRender: 'transaction_num' },
   },
   /*{
     title: 'Khách hàng',
@@ -131,10 +127,13 @@ export default {
   },
   computed: {
     ordersTableData(){
-      return this.orders;
+        return this.orders;
     },
     configOrderStatus() {
         return OrderStatus;
+    },
+    number_format() {
+        return number_format;
     },
   },
   methods: {
@@ -185,7 +184,7 @@ export default {
             });
         });
 
-        return `${new Intl.NumberFormat().format(amount)} / ${new Intl.NumberFormat().format(cost)}`;
+        return `${number_format(amount)} / ${number_format(cost)}`;
     },
 
     onOrdersTablePaginationChanged(pagination){
