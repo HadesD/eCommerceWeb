@@ -22,6 +22,9 @@
       <span slot="status" slot-scope="record">
         <a-tag :color="configOrderStatus[record.status].color">{{ configOrderStatus[record.status].title }}</a-tag>
       </span>
+      <span slot="total_amount" slot-scope="record">
+        <span>{{ totalAmount(record.order_products) }}</span>
+      </span>
       <template slot="order_product" slot-scope="record">
         <div v-for="(p) in record.order_products" :key="p.id">
           <a-tooltip title="Xem" v-if="p.product ? true : false">
@@ -75,6 +78,11 @@ const ordersTableColumns = [
   {
     title: 'Ghi chú',
     dataIndex: 'note',
+  },
+  {
+    title: 'Tổng Thu/Giá Nhập',
+    key: 'total_amount',
+    scopedSlots: { customRender: 'total_amount' },
   },
   {
     title: 'Đặt hàng',
@@ -167,8 +175,7 @@ export default {
           };
           this.ordersTablePagination = {...newPagi};
 
-          if (this.$route.query.page != resData.current_page)
-          {
+          if (this.$route.query.page != resData.current_page) {
             this.$router.push('/orders/index?page='+resData.current_page);
           }
         })
@@ -180,6 +187,23 @@ export default {
         .then(()=>{
           this.ordersTableLoading = false;
         });
+    },
+
+    totalAmount(order_products) {
+        let amount = 0;
+        let cost = 0;
+        order_products.forEach(op_elm => {
+            op_elm.order_product_stocks.forEach(ops_elm => {
+                ops_elm.transactions.forEach(tnx_eml => {
+                    amount += tnx_eml.amount;
+                });
+
+                // stock.cost_amount
+                cost += ops_elm.stock.cost_price;
+            });
+        });
+
+        return `${new Intl.NumberFormat().format(amount)} / ${new Intl.NumberFormat().format(cost)}`;
     },
 
     onOrdersTablePaginationChanged(pagination){
