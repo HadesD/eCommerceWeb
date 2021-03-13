@@ -64,7 +64,7 @@
                                 :columns="product_stockTableColumns"
                                 :data-source="p.order_product_stocks"
                                 :pagination="false"
-                                :row-key="record => record.id"
+                                :row-key="record => `po-${record.id || Math.random()}`"
                                 bordered
                             >
                                 <template slot="stock" slot-scope="text, ps, psIdx">
@@ -100,7 +100,7 @@
                                     :columns="addon_transactionsTableColumns"
                                     :data-source="ps.transactions"
                                     :pagination="false"
-                                    :row-key="ps => ps.id"
+                                    :row-key="ps => `p-addon-tnx-${ps.id || Math.random()}`"
                                     bordered
                                 >
                                     <template slot="description" slot-scope="text, pst, pstIdx">
@@ -140,7 +140,7 @@
                         :columns="addon_transactionsTableColumns"
                         :data-source="formData.transactions"
                         :pagination="false"
-                        :row-key="record => record.id"
+                        :row-key="record => `addon-tnx-${record.id || Math.random()}`"
                         bordered
                     >
                         <template slot="description" slot-scope="text, record, index">
@@ -168,7 +168,7 @@
                     </a-table>
                 </a-card>
                 <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
-                    <a-button type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate(valid => { if (valid) onFinish() })">
+                    <a-button type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })">
                         {{ $route.params.id ? 'Sửa' : 'Tạo đơn' }}
                     </a-button>
                     <a-button style="margin-left: 10px;" @click="resetForm">Reset</a-button>
@@ -179,6 +179,8 @@
 </template>
 
 <script>
+import moment from 'moment';
+
 import OrderStatus from '../../configs/OrderStatus';
 import { number_format } from '../../../helpers';
 
@@ -268,7 +270,6 @@ export default {
 
             orderInfoLoading: false,
             formData: {
-                id: undefined,
                 note: undefined,
                 customer_id: 0, // TODO: config this
                 order_products: [],
@@ -285,12 +286,11 @@ export default {
         PaidAmount,
     },
     mounted() {
-        this.formData.id = this.$route.params.id;
-
         this.loadCategoriesTree();
 
-        if (this.formData.id) {
-            this.loadOrder(this.formData.id)
+        const orderId = this.$route.params.id;
+        if (orderId) {
+            this.loadOrder(orderId)
         }
     },
     watch: {
@@ -305,7 +305,7 @@ export default {
                     t.id = undefined;
                 });
             } else {
-                this.loadOrder(this.formData.id)
+                this.loadOrder(to.params.id)
             }
         },
     },
@@ -352,11 +352,9 @@ export default {
                     this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
 
                     const len = this.categories.length;
-                    for (let i = 0; i < len; i++)
-                    {
+                    for (let i = 0; i < len; i++) {
                         const elm = this.categories[i];
-                        if (elm.parent_id !== 0)
-                        {
+                        if (elm.parent_id !== 0) {
                             break;
                         }
 
@@ -394,9 +392,31 @@ export default {
                         throw res;
                     }
 
-                    this.orderInfo = orderData;
+                    _.assign(this.formData, _.pick(orderData, _.keys(this.formData)));
+                    this.formData.transactions = this.formData.transactions.map(value => {
+                        return {
+                            ...value,
+                            paid_date: moment(value.paid_date),
+                        }
+                    });
+                    this.formData.order_products = this.formData.order_products.map(op_value => {
+                        return {
+                            ...op_value,
+                            order_product_stocks: op_value.order_product_stocks.map(ops_value => {
+                                return {
+                                    ...ops_value,
+                                    transactions: ops_value.transactions.map(opst_value => {
+                                        return {
+                                            ...opst_value,
+                                            paid_date: moment(opst_value.paid_date)
+                                        };
+                                    }),
+                                };
+                            }),
+                        };
+                    });
 
-                    this.formData = {...orderData};
+                    this.orderInfo = orderData;
 
                     // Load tree
 
@@ -418,62 +438,61 @@ export default {
             this.orderInfoLoading = true;
 
             const orderId = this.$route.params.id;
-            if (orderId) {
-                axios.put(`/api/orders/${orderId}`, this.formData)
-                    .then(res => {
-                        const orderData = res.data.data;
-                        this.formData.id = res.data.data.id;
+            axios({
+                url: orderId ? `/api/orders/${orderId}` : '/api/orders',
+                method: orderId ? 'put' : 'post',
+                data: {
+                    ...this.formData,
+                    transactions: this.formData.transactions.map(value => {
+                        return {
+                            ...value,
+                            paid_date: moment(value.paid_date).format("YYYY-MM-DD HH:mm:ss"),
+                        };
+                    }),
+                    order_products: this.formData.order_products.map(op_value => {
+                        return {
+                            ...op_value,
+                            order_product_stocks: op_value.order_product_stocks.map(ops_value => {
+                                return {
+                                    ...ops_value,
+                                    transactions: ops_value.transactions.map(opst_value => {
+                                        return {
+                                            ...opst_value,
+                                            paid_date: moment(opst_value.paid_date).format('YYYY-MM-DD HH:mm:ss')
+                                        };
+                                    }),
+                                };
+                            }),
+                        };
+                    }),
+                }
+            })
+                .then(res => {
+                    const orderData = res.data.data;
 
-                        if (!this.formData.id)
-                        {
-                            throw res;
-                            return;
-                        }
+                    if (!orderData.id) {
+                        throw res;
+                    }
 
-                        this.formData = {...orderData};
-
+                    if (orderId) {
                         this.$message.success('Đã sửa sản phẩm thành công');
-                    })
-                    .catch(err => {
-                        if (err.response && err.response.data.message) {
-                            this.$message.error(err.response.data.message);
-                            return;
-                        }
-
-                        this.$message.error(err.message || 'Thất bại');
-                    })
-                    .finally(()=>{
-                        this.orderInfoLoading = false;
-                    });
-            }
-            else
-            {
-                axios.post('/api/orders', this.formData)
-                    .then(res => {
-                        const orderData = res.data.data;
-                        this.formData.id = res.data.data.id;
-
-                        if (!this.formData.id) {
-                            throw res;
-                        }
-
-                        this.formData = {...orderData};
-
+                    } else {
                         this.$message.success('Đã thêm sản phẩm thành công');
-                        this.$router.push({ path: `/orders/${this.formData.id}/edit` });
-                    })
-                    .catch(err => {
-                        if (err.response && err.response.data.message) {
-                            this.$message.error(err.response.data.message);
-                            return;
-                        }
 
-                        this.$message.error(err.message || 'Thất bại');
-                    })
-                    .finally(()=>{
-                        this.orderInfoLoading = false;
-                    });
-            }
+                        this.$router.push({ path: `/orders/${orderData.id}/edit` });
+                    }
+                })
+                .catch(err => {
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
+                        return;
+                    }
+
+                    this.$message.error(err.message || 'Thất bại');
+                })
+                .finally(()=>{
+                    this.orderInfoLoading = false;
+                });
         },
         resetForm() {
             this.$refs.ruleForm.resetFields();

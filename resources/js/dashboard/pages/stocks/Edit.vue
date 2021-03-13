@@ -40,16 +40,12 @@
                     />
                 </a-form-model-item>
                 <a-form-model-item label="Chuyên mục cha" ref="categories_id" prop="categories_id">
-                    <a-form-model-item
-                        style="display: inline-block; margin-right: 5px;"
-                    >
+                    <a-form-model-item style="display: inline-block; margin-right: 5px;">
                         <a-tooltip title="Thêm chuyên mục">
                             <a-button type="primary" icon="plus" @click="showAddCategoryModal" />
                         </a-tooltip>
                     </a-form-model-item>
-                    <a-form-model-item
-                        :style="{ display: 'inline-block', width: 'calc(100% - 80px)' }"
-                    >
+                    <a-form-model-item :style="{ display: 'inline-block', width: 'calc(100% - 80px)' }">
                         <a-spin :spinning="categoriesTreeLoading">
                             <a-tree-select
                                 show-search
@@ -88,7 +84,7 @@
                     />
                 </a-form-model-item>
                 <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
-                    <a-button type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate(valid => { if (valid) onFinish() })">
+                    <a-button type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })">
                         {{ $route.params.id ? 'Sửa' : 'Nhập kho' }}
                     </a-button>
                     <a-button style="margin-left: 10px;" @click="resetForm">Reset</a-button>
@@ -100,6 +96,8 @@
 
 <script>
 import axios from 'axios';
+import moment from 'moment';
+
 import { number_format } from '../../../helpers';
 
 export default {
@@ -118,12 +116,11 @@ export default {
             stockInfoLoading: false,
             stockInfo: {},
             formData: {
-                id: undefined,
-                name: '',
-                idi: '',
+                name: undefined,
+                idi: undefined,
                 cost_price: 0,
                 quantity: 1,
-                note: '',
+                note: undefined,
                 in_date: undefined,
                 addon_transactions: [],
                 order_products: [],
@@ -152,8 +149,7 @@ export default {
         categoriesTreeData(){
             let data = this.categories;
 
-            for (let i = 0; i < data.length; i++)
-            {
+            for (let i = 0; i < data.length; i++) {
                 data[i].pId = data[i].parent_id;
             }
 
@@ -168,12 +164,11 @@ export default {
         },
     },
     mounted() {
-        this.formData.id = this.$route.params.id;
-
         this.reloadCategoriesTree();
 
-        if (this.formData.id) {
-            this.loadStock(this.formData.id)
+        const stockId = this.$route.params.id;
+        if (stockId) {
+            this.loadStock(stockId)
         }
     },
     methods: {
@@ -223,6 +218,7 @@ export default {
                     _.assign(this.formData, _.pick(sData, _.keys(this.formData)));
 
                     this.formData.categories_id = sData.categories.map((item) => item.id);
+                    this.formData.in_date = moment(this.formData.in_date);
 
                     this.stockInfo = sData;
 
@@ -244,48 +240,40 @@ export default {
             this.stockInfoLoading = true;
 
             const stockId = this.$route.params.id;
-            if (stockId) {
-                axios.put(`/api/stocks/${stockId}`, this.formData)
-                    .then(res => {
+
+            axios({
+                url: stockId ? `/api/stocks/${stockId}` : '/api/stocks',
+                method: stockId ? 'put' : 'post',
+                data: {
+                    ...this.formData,
+                    in_date: moment(this.formData.in_date).format('YYYY-MM-DD HH:mm:ss'),
+                }
+            })
+                .then(res => {
+                    const sData = res.data.data;
+                    if (!sData.id) {
+                        throw res;
+                    }
+
+                    if (stockId) {
                         this.$message.success('Đã sửa sản phẩm thành công');
-                    })
-                    .catch(err => {
-                        if (err.response && err.response.data.message) {
-                            this.$message.error(err.response.data.message);
-                            return;
-                        }
-
-                        this.$message.error(err.message || 'Thất bại');
-                    })
-                    .finally(()=>{
-                        this.stockInfoLoading = false;
-                    });
-            } else {
-                axios.post('/api/stocks', this.formData)
-                    .then(res => {
-                        this.formData.id = res.data.data.id;
-
-                        if (!this.formData.id)
-                        {
-                            throw res;
-                            return;
-                        }
-
+                    } else {
                         this.$message.success('Đã thêm sản phẩm thành công');
-                        this.$router.push({ path: `/stocks/${this.formData.id}/edit` });
-                    })
-                    .catch(err => {
-                        if (err.response && err.response.data.message) {
-                            this.$message.error(err.response.data.message);
-                            return;
-                        }
 
-                        this.$message.error(err.message || 'Thất bại');
-                    })
-                    .finally(()=>{
-                        this.stockInfoLoading = false;
-                    });
-            }
+                        this.$router.push({ path: `/stocks/${sData.id}/edit` });
+                    }
+                })
+                .catch(err => {
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
+                        return;
+                    }
+
+                    this.$message.error(err.message || 'Thất bại');
+                })
+                .finally(()=>{
+                    this.stockInfoLoading = false;
+                });
         },
         resetForm() {
             this.$refs.ruleForm.resetFields();
