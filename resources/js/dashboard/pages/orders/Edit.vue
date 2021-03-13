@@ -85,7 +85,7 @@
                                     >
                                         <a-input-number v-model="ps.amount" style="width: 100%;" :min="0" :max="2000000000" />
                                     </a-form-model-item>
-                                    <div>Đã thanh toán: {{ number_format(ps.transactions.reduce((a, b) => a + (b['amount'] || 0), 0)) }}</div>
+                                    <div>Đã thanh toán: <PaidAmount :needAmount="ps.id ? ((ps.stock.cost_price > ps.amount) ? ps.stock.cost_price : ps.amount) : ps.amount" :amount="ps.transactions.reduce((a, b) => a + (b.amount || 0), 0)" /></div>
                                 </template>
                                 <template slot="action" slot-scope="text, ps, psIdx">
                                     <a @click="() => ps.transactions.push(Object.assign({}, transaction_obj))">
@@ -185,6 +185,26 @@
 import OrderStatus from '../../configs/OrderStatus';
 import { number_format } from '../../../helpers';
 
+const PaidAmount = {
+    props: {
+        amount: Number,
+        needAmount: Number,
+    },
+
+    render: function(createElement) {
+        console.log(this);
+        return createElement('a-tag', {
+            attrs: {
+                color: this.amount >= this.needAmount ? 'green' : 'red',
+            },
+
+            domProps: {
+                innerHTML: number_format(this.amount),
+            }
+        });
+    },
+};
+
 const addon_transactionsTableColumns = [
     {
         title: '#',
@@ -264,6 +284,9 @@ export default {
             },
         }
     },
+    components: {
+        PaidAmount,
+    },
     mounted() {
         this.formData.id = this.$route.params.id;
 
@@ -321,11 +344,9 @@ export default {
         configOrderStatus() {
             return OrderStatus;
         },
-        number_format() {
-            return number_format;
-        },
     },
     methods: {
+        number_format,
         // CategoriesTree
         loadCategoriesTree(){
             // this.categoriesTreeLoading = true;
