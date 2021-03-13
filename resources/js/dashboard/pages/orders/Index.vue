@@ -23,7 +23,7 @@
         <a-tag :color="configOrderStatus[record.status].color">{{ configOrderStatus[record.status].title }}</a-tag>
       </span>
       <span slot="total_amount" slot-scope="record">
-        <span>{{ totalAmount(record.order_products) }}</span>
+        <span>{{ totalAmount(record) }}</span>
       </span>
       <template slot="order_product" slot-scope="record">
         <div v-for="(p) in record.order_products" :key="p.id">
@@ -189,10 +189,15 @@ export default {
         });
     },
 
-    totalAmount(order_products) {
+    totalAmount(record) {
         let amount = 0;
         let cost = 0;
-        order_products.forEach(op_elm => {
+        // addon transactions
+        record.transactions.forEach(r_tnx_elm => {
+            amount += r_tnx_elm.amount;
+        });
+
+        record.order_products.forEach(op_elm => {
             op_elm.order_product_stocks.forEach(ops_elm => {
                 ops_elm.transactions.forEach(tnx_eml => {
                     amount += tnx_eml.amount;
