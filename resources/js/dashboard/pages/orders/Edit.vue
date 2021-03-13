@@ -116,7 +116,9 @@
                                         </a-form-model-item>
                                     </template>
                                     <template slot="paid_date" slot-scope="text, pst, pstIdx">
-                                        <a-form-model-item :rules="{required:true}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.paid_date'" style="margin-bottom:0;">
+                                        <a-form-model-item :rules="{required:true}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.paid_date'" style="margin-bottom:0;"
+                                            help="Ngày thanh toán sẽ liên kết trực tiếp tới tiền lãi/thu của tháng đó"
+                                        >
                                             <a-date-picker v-model="pst.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" />
                                         </a-form-model-item>
                                     </template>
@@ -156,7 +158,9 @@
                             </a-form-model-item>
                         </template>
                         <template slot="paid_date" slot-scope="text, record, index">
-                            <a-form-model-item :rules="{required:true}" :prop="'transactions.'+index+'.paid_date'" style="margin-bottom:0;">
+                            <a-form-model-item :rules="{required:true}" :prop="'transactions.'+index+'.paid_date'" style="margin-bottom:0;"
+                                help="Ngày thanh toán sẽ liên kết trực tiếp tới tiền lãi/thu của tháng đó"
+                            >
                                 <a-date-picker v-model="record.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" />
                             </a-form-model-item>
                         </template>
