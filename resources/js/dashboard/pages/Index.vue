@@ -72,13 +72,12 @@ export default {
     this.loading = true;
     axios.get('/api/statistics')
       .then(res => {
-        console.log(res);
         this.statistics = {...res.data}
       })
       .catch(res => {
 
       })
-      .then(() => {
+      .finally(() => {
         this.loading = false;
       });
   },

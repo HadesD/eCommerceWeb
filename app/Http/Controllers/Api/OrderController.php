@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\ApiErrorException;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -59,7 +60,7 @@ class OrderController extends Controller
                     $stock = Stock::find($stock_id);
 
                     if ($stock->quantity <= 0) {
-                        throw new \RuntimeException('Stock not avalable');
+                        throw new ApiErrorException('Stock not avalable');
                     }
 
                     $stock->quantity -= 1;
@@ -105,6 +106,12 @@ class OrderController extends Controller
             DB::commit();
         } catch(\Throwable $e) {
             DB::rollback();
+
+            if ($e instanceof ApiErrorException) {
+                return response([
+                    'message' => $e->getMessage()
+                ], 400);
+            }
 
             Log::error($e);
 
@@ -174,7 +181,7 @@ class OrderController extends Controller
 
                         if ($stock->quantity <= 0)
                         {
-                            throw new \RuntimeException('Stock not avalable');
+                            throw new ApiErrorException('Stock not avalable');
                         }
                         $stock->quantity -= 1;
                         $stock->save();
@@ -277,6 +284,12 @@ class OrderController extends Controller
             DB::commit();
         } catch(\Throwable $e) {
             DB::rollback();
+
+            if ($e instanceof ApiErrorException) {
+                return response([
+                    'message' => $e->getMessage()
+                ], 400);
+            }
 
             Log::error($e);
 

@@ -72,7 +72,7 @@ class StockController extends Controller
             if ($e instanceof ApiErrorException) {
                 return response([
                     'message' => $e->getMessage()
-                ]);
+                ], 400);
             }
 
             Log::error($e);
@@ -145,7 +145,7 @@ class StockController extends Controller
             if ($e instanceof ApiErrorException) {
                 return response([
                     'message' => $e->getMessage()
-                ]);
+                ], 400);
             }
 
             Log::error($e);
@@ -183,7 +183,7 @@ class StockController extends Controller
             if ($e instanceof ApiErrorException) {
                 return response([
                     'message' => $e->getMessage()
-                ]);
+                ], 400);
             }
 
             Log::error($e);

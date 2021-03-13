@@ -17,8 +17,8 @@
                 <a-form-model-item label="Khách hàng" ref="customer_id" prop="customer_id">
                     <a-input v-model="formData.customer_id" />
                 </a-form-model-item>
-                <a-form-model-item label="Ghi chú">
-                    <a-textarea v-model="formData.note" />
+                <a-form-model-item label="Ghi chú" prop="note">
+                    <a-textarea v-model="formData.note" placeholder="Tên khách hàng, loại thanh toán, chi phí sinh hoạt, lương nhân viên, v..v" />
                 </a-form-model-item>
                 <a-card title="Sản phẩm đặt mua" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#9800ab',color:'#FFF'}">
                     <a slot="extra" @click="() => {formData.order_products.push(Object.assign({}, order_product_obj));}">
@@ -39,9 +39,9 @@
                             <a-button type="primary" icon="delete"></a-button>
                         </a-popconfirm>
                         <a-form-model-item label="Sản phẩm" :rules="{required:true}" :prop="'order_products.'+pIdx+'.product_id'">
-                            <a-tree-select show-search treeNodeFilterProp="title" :tree-data="productData" :load-data="loadCategoryProducts" placeholder="Please select" v-model="p.product_id" />
+                            <a-tree-select show-search treeNodeFilterProp="title" :tree-data="productData" :load-data="loadCategoryProducts" placeholder="Please select" v-model="p.product_id" :dropdownStyle="{maxHeight:'60vh'}" />
                         </a-form-model-item>
-                        <a-form-model-item label="Hình thức thanh toán" :rules="{required:true}">
+                        <a-form-model-item label="Hình thức thanh toán" :rules="{required:true}" :prop="'order_products.'+pIdx+'.payment_method'">
                             <a-select v-model="p.payment_method">
                                 <a-select-option :value="1">
                                     Trả thẳng 100%
@@ -73,13 +73,10 @@
                                     </a-tooltip>
                                     <template v-else>{{ 'Hàng trong kho #'+psIdx }}</template>
                                     <a-form-model-item :rules="{required:true}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.stock_id'" style="margin-bottom:0;">
-                                        <a-tree-select show-search treeNodeFilterProp="title" :tree-data="stockData" :load-data="loadCategoryStocks" placeholder="Please select" v-model="ps.stock_id" />
+                                        <a-tree-select show-search treeNodeFilterProp="title" :tree-data="stockData" :load-data="loadCategoryStocks" placeholder="Please select" v-model="ps.stock_id" :dropdownStyle="{maxHeight:'60vh'}" />
                                     </a-form-model-item>
                                 </template>
-                                <template
-                                    slot="amount"
-                                    slot-scope="text, ps, psIdx"
-                                >
+                                <template slot="amount" slot-scope="text, ps, psIdx">
                                     <a-form-model-item label="" :rules="{required:true}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.amount'" style="margin-bottom:0;"
                                         :help="`VND: ${number_format(ps.amount || 0)}`"
                                     >
@@ -171,7 +168,7 @@
                     </a-table>
                 </a-card>
                 <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
-                    <a-button type="primary" @click="onSubmit">
+                    <a-button type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate(valid => { if (valid) onFinish() })">
                         {{ $route.params.id ? 'Sửa' : 'Tạo đơn' }}
                     </a-button>
                     <a-button style="margin-left: 10px;" @click="resetForm">Reset</a-button>
@@ -192,14 +189,13 @@ const PaidAmount = {
     },
 
     render: function(createElement) {
-        console.log(this);
         return createElement('a-tag', {
             attrs: {
                 color: this.amount >= this.needAmount ? 'green' : 'red',
             },
 
             domProps: {
-                innerHTML: number_format(this.amount),
+                innerText: number_format(this.amount),
             }
         });
     },
@@ -273,7 +269,7 @@ export default {
             orderInfoLoading: false,
             formData: {
                 id: undefined,
-                note: '',
+                note: undefined,
                 customer_id: 0, // TODO: config this
                 order_products: [],
                 status: undefined,
@@ -281,6 +277,7 @@ export default {
             },
             rules: {
                 status: {required: true,},
+                note: {required: true,},
             },
         }
     },
@@ -376,10 +373,8 @@ export default {
                     }
                 })
                 .catch(err => {
-                    console.log(err);
-
-                    if (err.response && err.response.message) {
-                        this.$message.error(err.response.message);
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
                         return;
                     }
 
@@ -408,10 +403,8 @@ export default {
                     this.orderInfoLoading = false;
                 })
                 .catch(err => {
-                    console.log(err);
-
-                    if (err.response && err.response.message) {
-                        this.$message.error(err.response.message);
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
                         return;
                     }
 
@@ -421,78 +414,66 @@ export default {
                 });
         },
 
-        onSubmit() {
-            this.$refs.ruleForm.validate(valid => {
-                if (!valid)
-                {
-                    return false;
-                }
+        onFinish() {
+            this.orderInfoLoading = true;
 
-                this.orderInfoLoading = true;
+            const orderId = this.$route.params.id;
+            if (orderId) {
+                axios.put(`/api/orders/${orderId}`, this.formData)
+                    .then(res => {
+                        const orderData = res.data.data;
+                        this.formData.id = res.data.data.id;
 
-                const orderId = this.$route.params.id;
-                if (orderId)
-                {
-                    axios.put(`/api/orders/${orderId}`, this.formData)
-                        .then(res => {
-                            const orderData = res.data.data;
-                            this.formData.id = res.data.data.id;
+                        if (!this.formData.id)
+                        {
+                            throw res;
+                            return;
+                        }
 
-                            if (!this.formData.id)
-                            {
-                                throw res;
-                                return;
-                            }
+                        this.formData = {...orderData};
 
-                            this.formData = {...orderData};
+                        this.$message.success('Đã sửa sản phẩm thành công');
+                    })
+                    .catch(err => {
+                        if (err.response && err.response.data.message) {
+                            this.$message.error(err.response.data.message);
+                            return;
+                        }
 
-                            this.$message.success('Đã sửa sản phẩm thành công');
-                        })
-                        .catch(err => {
-                            console.log(err);
+                        this.$message.error(err.message || 'Thất bại');
+                    })
+                    .finally(()=>{
+                        this.orderInfoLoading = false;
+                    });
+            }
+            else
+            {
+                axios.post('/api/orders', this.formData)
+                    .then(res => {
+                        const orderData = res.data.data;
+                        this.formData.id = res.data.data.id;
 
-                            if (err.response && err.response.message) {
-                                this.$message.error(err.response.message);
-                                return;
-                            }
+                        if (!this.formData.id) {
+                            throw res;
+                        }
 
-                            this.$message.error(err.message || 'Thất bại');
-                        })
-                        .finally(()=>{
-                            this.orderInfoLoading = false;
-                        });
-                }
-                else
-                {
-                    axios.post('/api/orders', this.formData)
-                        .then(res => {
-                            const orderData = res.data.data;
-                            this.formData.id = res.data.data.id;
+                        this.formData = {...orderData};
 
-                            if (!this.formData.id) {
-                                throw res;
-                            }
+                        this.$message.success('Đã thêm sản phẩm thành công');
+                        this.$router.push({ path: `/orders/${this.formData.id}/edit` });
+                    })
+                    .catch(err => {
+                        if (err.response && err.response.data.message) {
+                            this.$message.error(err.response.data.message);
+                            return;
+                        }
 
-                            this.formData = {...orderData};
-
-                            this.$message.success('Đã thêm sản phẩm thành công');
-                            this.$router.push({ path: `/orders/${this.formData.id}/edit` });
-                        })
-                        .catch(err => {
-                            console.log(err);
-
-                            if (err.response && err.response.message) {
-                                this.$message.error(err.response.message);
-                                return;
-                            }
-
-                            this.$message.error(err.message || 'Thất bại');
-                        })
-                        .finally(()=>{
-                            this.orderInfoLoading = false;
-                        });
-                }
-            });
+                        this.$message.error(err.message || 'Thất bại');
+                    })
+                    .finally(()=>{
+                        this.orderInfoLoading = false;
+                    });
+            }
         },
         resetForm() {
             this.$refs.ruleForm.resetFields();
@@ -538,10 +519,8 @@ export default {
                     targetOption.disabled = (targetOption.children.length === 0);
                 })
                 .catch(err => {
-                    console.log(err);
-
-                    if (err.response && err.response.message) {
-                        this.$message.error(err.response.message);
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
                         return;
                     }
 
@@ -596,10 +575,8 @@ export default {
                     targetOption.disabled = (targetOption.children.length === 0);
                 })
                 .catch(err => {
-                    console.log(err);
-
-                    if (err.response && err.response.message) {
-                        this.$message.error(err.response.message);
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
                         return;
                     }
 

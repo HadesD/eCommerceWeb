@@ -63,7 +63,7 @@
             <a-icon type="edit" /> Sửa
           </router-link>
           <a-divider type="vertical"></a-divider>
-          <a-popconfirm title="Chắc chưa?" @confirm="()=>{onDeleteConfirmed(record)}">
+          <a-popconfirm title="Chắc chưa?" @confirm="() => onDeleteConfirmed(record)">
             <a-icon slot="icon" type="question-circle-o" style="color: red" />
               <a href="#"><a-icon type="delete" /> Xóa</a>
           </a-popconfirm>
@@ -212,15 +212,18 @@ export default {
       this.categoriesTreeLoading = true;
       axios.get('/api/categories')
         .then(res => {
-          this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
+            this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
         })
         .catch(err => {
-          console.log(err);
+            if (err.response && err.response.data.message) {
+                this.$message.error(err.response.data.message);
+                return;
+            }
 
-          this.$message.error('Thất bại');
+            this.$message.error(err.message || 'Thất bại');
         })
-        .then(()=>{
-          this.categoriesTreeLoading = false;
+        .finally(()=>{
+            this.categoriesTreeLoading = false;
         });
     },
     updateCategories(cats) {
@@ -266,11 +269,14 @@ export default {
           }
         })
         .catch(err => {
-          console.log(err);
+            if (err.response && err.response.data.message) {
+                this.$message.error(err.response.data.message);
+                return;
+            }
 
-          this.$message.error('Thất bại');
+            this.$message.error(err.message || 'Thất bại');
         })
-        .then(()=>{
+        .finally(()=>{
           this.stocksTableLoading = false;
         });
     },
@@ -280,18 +286,21 @@ export default {
     },
 
     onDeleteConfirmed(record){
-      axios.delete(`/api/stocks/${record.id}`)
+      return axios.delete(`/api/stocks/${record.id}`)
         .then(res => {
           this.$message.success('Xóa thành công');
 
           this.loadStocks(this.currentCategoryId, this.stocksTablePagination.current);
         })
         .catch(err => {
-          console.log(err);
+            if (err.response && err.response.data.message) {
+                this.$message.error(err.response.data.message);
+                return;
+            }
 
-          this.$message.error('Xóa thất bại');
+            this.$message.error(err.message || 'Xóa thất bại');
         })
-        .then(()=>{
+        .finally(()=>{
         });
     },
   },

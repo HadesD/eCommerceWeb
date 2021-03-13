@@ -17,6 +17,9 @@ mix.webpackConfig({
     },
 });
 
-mix.js('resources/js/dashboard/app.js', 'public/js/dashboard')
-    .sass('resources/sass/dashboard/app.scss', 'public/css/dashboard');
+mix.js('resources/js/dashboard/app.js', 'public/js/dashboard').vue();
+mix.sass('resources/sass/dashboard/app.scss', 'public/css/dashboard');
 
+mix.browserSync({
+    proxy: 'rinphone.local',
+})

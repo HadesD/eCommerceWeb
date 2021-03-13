@@ -88,7 +88,7 @@
                     />
                 </a-form-model-item>
                 <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
-                    <a-button type="primary" @click="onSubmit">
+                    <a-button type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate(valid => { if (valid) onFinish() })">
                         {{ $route.params.id ? 'Sửa' : 'Nhập kho' }}
                     </a-button>
                     <a-button style="margin-left: 10px;" @click="resetForm">Reset</a-button>
@@ -187,10 +187,8 @@ export default {
                     this.categories = res.data.data || [];
                 })
                 .catch(err => {
-                    console.log(err);
-
-                    if (err.response && err.response.message) {
-                        this.$message.error(err.response.message);
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
                         return;
                     }
 
@@ -218,10 +216,8 @@ export default {
             axios.get(`/api/stocks/${id}`)
                 .then(res => {
                     const sData = res.data.data;
-                    if (!sData.id)
-                    {
+                    if (!sData.id) {
                         throw res;
-                        return;
                     }
 
                     _.assign(this.formData, _.pick(sData, _.keys(this.formData)));
@@ -233,10 +229,8 @@ export default {
                     this.stockInfoLoading = false;
                 })
                 .catch(err => {
-                    console.log(err);
-
-                    if (err.response && err.response.message) {
-                        this.$message.error(err.response.message);
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
                         return;
                     }
 
@@ -246,66 +240,52 @@ export default {
                 });
         },
 
-        onSubmit() {
-            this.$refs.ruleForm.validate(valid => {
-                if (!valid)
-                {
-                    return false;
-                }
+        onFinish() {
+            this.stockInfoLoading = true;
 
-                this.stockInfoLoading = true;
+            const stockId = this.$route.params.id;
+            if (stockId) {
+                axios.put(`/api/stocks/${stockId}`, this.formData)
+                    .then(res => {
+                        this.$message.success('Đã sửa sản phẩm thành công');
+                    })
+                    .catch(err => {
+                        if (err.response && err.response.data.message) {
+                            this.$message.error(err.response.data.message);
+                            return;
+                        }
 
-                const stockId = this.$route.params.id;
-                if (stockId)
-                {
-                    axios.put(`/api/stocks/${stockId}`, this.formData)
-                        .then(res => {
-                            this.$message.success('Đã sửa sản phẩm thành công');
-                        })
-                        .catch(err => {
-                            console.log(err);
+                        this.$message.error(err.message || 'Thất bại');
+                    })
+                    .finally(()=>{
+                        this.stockInfoLoading = false;
+                    });
+            } else {
+                axios.post('/api/stocks', this.formData)
+                    .then(res => {
+                        this.formData.id = res.data.data.id;
 
-                            if (err.response && err.response.message) {
-                                this.$message.error(err.response.message);
-                                return;
-                            }
+                        if (!this.formData.id)
+                        {
+                            throw res;
+                            return;
+                        }
 
-                            this.$message.error(err.message || 'Thất bại');
-                        })
-                        .finally(()=>{
-                            this.stockInfoLoading = false;
-                        });
-                }
-                else
-                {
-                    axios.post('/api/stocks', this.formData)
-                        .then(res => {
-                            this.formData.id = res.data.data.id;
+                        this.$message.success('Đã thêm sản phẩm thành công');
+                        this.$router.push({ path: `/stocks/${this.formData.id}/edit` });
+                    })
+                    .catch(err => {
+                        if (err.response && err.response.data.message) {
+                            this.$message.error(err.response.data.message);
+                            return;
+                        }
 
-                            if (!this.formData.id)
-                            {
-                                throw res;
-                                return;
-                            }
-
-                            this.$message.success('Đã thêm sản phẩm thành công');
-                            this.$router.push({ path: `/stocks/${this.formData.id}/edit` });
-                        })
-                        .catch(err => {
-                            console.log(err);
-
-                            if (err.response && err.response.message) {
-                                this.$message.error(err.response.message);
-                                return;
-                            }
-
-                            this.$message.error(err.message || 'Thất bại');
-                        })
-                        .finally(()=>{
-                            this.stockInfoLoading = false;
-                        });
-                }
-            });
+                        this.$message.error(err.message || 'Thất bại');
+                    })
+                    .finally(()=>{
+                        this.stockInfoLoading = false;
+                    });
+            }
         },
         resetForm() {
             this.$refs.ruleForm.resetFields();

@@ -117,7 +117,7 @@
                     </a-tab-pane>
                 </a-tabs>
                 <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
-                    <a-button type="primary" @click="onSubmit">
+                    <a-button type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate(valid => { if (valid) onFinish() })">
                         {{ $route.params.id ? 'Sửa' : 'Đăng bán' }}
                     </a-button>
                     <a-button style="margin-left: 10px;" @click="resetForm">Reset</a-button>
@@ -213,10 +213,8 @@ export default {
                     this.categories = res.data.data || [];
                 })
                 .catch(err => {
-                    console.log(err);
-
-                    if (err.response && err.response.message) {
-                        this.$message.error(err.response.message);
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
                         return;
                     }
 
@@ -244,10 +242,8 @@ export default {
             axios.get(`/api/products/${id}`)
                 .then(res => {
                     const pData = res.data.data;
-                    if (!pData.id)
-                    {
+                    if (!pData.id) {
                         throw res;
-                        return;
                     }
 
                     _.assign(this.formData, _.pick(pData, _.keys(this.formData)));
@@ -257,10 +253,8 @@ export default {
                     this.productInfoLoading = false;
                 })
                 .catch(err => {
-                    console.log(err);
-
-                    if (err.response && err.response.message) {
-                        this.$message.error(err.response.message);
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
                         return;
                     }
 
@@ -273,66 +267,52 @@ export default {
         onNameChanged(e){
             this.formData.slug = vietnameseNormalize(e.target.value);
         },
-        onSubmit() {
-            this.$refs.ruleForm.validate(valid => {
-                if (!valid)
-                {
-                    return false;
-                }
+        onFinish() {
+            this.productInfoLoading = true;
 
-                this.productInfoLoading = true;
+            const productId = this.$route.params.id;
+            if (productId) {
+                axios.put(`/api/products/${productId}`, this.formData)
+                    .then(res => {
+                        this.$message.success('Đã sửa sản phẩm thành công');
+                    })
+                    .catch(err => {
+                        if (err.response && err.response.data.message) {
+                            this.$message.error(err.response.data.message);
+                            return;
+                        }
 
-                const productId = this.$route.params.id;
-                if (productId)
-                {
-                    axios.put(`/api/products/${productId}`, this.formData)
-                        .then(res => {
-                            this.$message.success('Đã sửa sản phẩm thành công');
-                        })
-                        .catch(err => {
-                            console.log(err);
+                        this.$message.error(err.message || 'Thất bại');
+                    })
+                    .finally(()=>{
+                        this.productInfoLoading = false;
+                    });
+            } else {
+                axios.post('/api/products', this.formData)
+                    .then(res => {
+                        this.formData.id = res.data.data.id;
 
-                            if (err.response && err.response.message) {
-                                this.$message.error(err.response.message);
-                                return;
-                            }
+                        if (!this.formData.id)
+                        {
+                            throw res;
+                            return;
+                        }
 
-                            this.$message.error(err.message || 'Thất bại');
-                        })
-                        .finally(()=>{
-                            this.productInfoLoading = false;
-                        });
-                }
-                else
-                {
-                    axios.post('/api/products', this.formData)
-                        .then(res => {
-                            this.formData.id = res.data.data.id;
+                        this.$message.success('Đã thêm sản phẩm thành công');
+                        this.$router.push({ path: `/products/${this.formData.id}/edit` });
+                    })
+                    .catch(err => {
+                        if (err.response && err.response.data.message) {
+                            this.$message.error(err.response.data.message);
+                            return;
+                        }
 
-                            if (!this.formData.id)
-                            {
-                                throw res;
-                                return;
-                            }
-
-                            this.$message.success('Đã thêm sản phẩm thành công');
-                            this.$router.push({ path: `/products/${this.formData.id}/edit` });
-                        })
-                        .catch(err => {
-                            console.log(err);
-
-                            if (err.response && err.response.message) {
-                                this.$message.error(err.response.message);
-                                return;
-                            }
-
-                            this.$message.error(err.message || 'Thất bại');
-                        })
-                        .finally(()=>{
-                            this.productInfoLoading = false;
-                        });
-                }
-            });
+                        this.$message.error(err.message || 'Thất bại');
+                    })
+                    .finally(()=>{
+                        this.productInfoLoading = false;
+                    });
+            }
         },
         resetForm() {
             this.$refs.ruleForm.resetFields();

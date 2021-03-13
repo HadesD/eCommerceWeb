@@ -144,15 +144,11 @@ export default {
     categoriesTreeData(){
       const getParent = (key, tree) => {
         let parent;
-        for (let i = 0; i < tree.length; i++)
-        {
+        for (let i = 0; i < tree.length; i++) {
           const node = tree[i];
-          if (node.key === key)
-          {
+          if (node.key === key) {
             parent = node;
-          }
-          else if (node.children && node.children.length)
-          {
+          } else if (node.children && node.children.length) {
             parent = getParent(key, node.children);
           }
         }
@@ -166,8 +162,7 @@ export default {
       this.categoriesTreeExpandedKeys = [];
 
       let data = [];
-      for (let i = 0; i < sortedCategories.length; i++)
-      {
+      for (let i = 0; i < sortedCategories.length; i++) {
         const cur = sortedCategories[i];
 
         const newData = {
@@ -206,15 +201,18 @@ export default {
       this.categoriesTreeLoading = true;
       axios.get('/api/categories')
         .then(res => {
-          this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
+            this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
         })
         .catch(err => {
-          console.log(err);
+            if (err.response && err.response.data.message) {
+                this.$message.error(err.response.data.message);
+                return;
+            }
 
-          this.$message.error('Thất bại');
+            this.$message.error(err.message || 'Thất bại');
         })
-        .then(()=>{
-          this.categoriesTreeLoading = false;
+        .finally(()=>{
+            this.categoriesTreeLoading = false;
         });
     },
     updateCategories(cats) {
@@ -262,32 +260,38 @@ export default {
           }
         })
         .catch(err => {
-          console.log(err);
+            if (err.response && err.response.data.message) {
+                this.$message.error(err.response.data.message);
+                return;
+            }
 
-          this.$message.error('Load thất bại');
+            this.$message.error(err.message || 'Load thất bại');
         })
-        .then(()=>{
-          this.productsTableLoading = false;
+        .finally(()=>{
+            this.productsTableLoading = false;
         });
     },
     onProductsTablePaginationChanged(pagination){
-      this.loadProducts(this.currentCategoryId, pagination.current);
+        this.loadProducts(this.currentCategoryId, pagination.current);
     },
 
     onDeleteConfirmed(record){
-      axios.delete(`/api/products/${record.id}`)
-        .then(res => {
-          this.$message.success('Xóa thành công');
+        axios.delete(`/api/products/${record.id}`)
+            .then(res => {
+                this.$message.success('Xóa thành công');
 
-          this.loadProducts(this.currentCategoryId, this.productsTablePagination.current);
-        })
-        .catch(err => {
-          console.log(err);
+                this.loadProducts(this.currentCategoryId, this.productsTablePagination.current);
+            })
+            .catch(err => {
+                if (err.response && err.response.data.message) {
+                    this.$message.error(err.response.data.message);
+                    return;
+                }
 
-          this.$message.error('Xóa thất bại');
-        })
-        .then(()=>{
-        });
+                this.$message.error('Xóa thất bại');
+            })
+            .finally(()=>{
+            });
     },
   },
 }

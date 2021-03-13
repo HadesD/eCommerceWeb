@@ -156,11 +156,14 @@ export default {
           }
         })
         .catch(err => {
-          console.log(err);
+            if (err.response && err.response.data.message) {
+                this.$message.error(err.response.data.message);
+                return;
+            }
 
-          this.$message.error('Thất bại');
+            this.$message.error(err.message || 'Thất bại');
         })
-        .then(()=>{
+        .finally(()=>{
           this.ordersTableLoading = false;
         });
     },
@@ -192,18 +195,21 @@ export default {
     },
 
     onDeleteConfirmed(record){
-      axios.delete(`/api/orders/${record.id}`)
+      return axios.delete(`/api/orders/${record.id}`)
         .then(res => {
           this.$message.success('Xóa thành công');
 
           this.loadOrders(this.ordersTablePagination.current);
         })
         .catch(err => {
-          console.log(err);
+            if (err.response && err.response.data.message) {
+                this.$message.error(err.response.data.message);
+                return;
+            }
 
-          this.$message.error('Xóa thất bại');
+            this.$message.error(err.message || 'Xóa thất bại');
         })
-        .then(()=>{
+        .finally(()=>{
         });
     },
   },
