@@ -46,28 +46,18 @@
                         v-model="formData.status"
                         @blur="() => $refs.status.onFieldBlur()"
                     >
-                        <a-select-option :value="0">
-                            Bản nháp
-                        </a-select-option>
-                        <a-select-option :value="1">
-                            Đang bán
-                        </a-select-option>
-                        <a-select-option :value="2" :disabled="$route.params.id ? false : true">
-                            Hết hàng
-                        </a-select-option>
+                        <a-select-option v-for="codeSts in Object.keys(configProductStatus)" :key="codeSts" :value="parseInt(codeSts)"
+                            :disabled="(codeSts === 2) ? ($route.params.id ? false : true) : false"
+                        >{{ configProductStatus[codeSts].title }}</a-select-option>
                     </a-select>
                 </a-form-model-item>
                 <a-form-model-item label="Chuyên mục cha" ref="categories_id" prop="categories_id">
-                    <a-form-model-item
-                        style="display: inline-block; margin-right: 5px;"
-                    >
+                    <a-form-model-item style="display: inline-block; margin-right: 5px;">
                         <a-tooltip title="Thêm chuyên mục">
                             <a-button type="primary" icon="plus" @click="showAddCategoryModal" />
                         </a-tooltip>
                     </a-form-model-item>
-                    <a-form-model-item
-                        :style="{ display: 'inline-block', width: 'calc(100% - 80px)' }"
-                    >
+                    <a-form-model-item :style="{ display: 'inline-block', width: 'calc(100% - 80px)' }">
                         <a-spin :spinning="categoriesTreeLoading">
                             <a-tree-select
                                 show-search
@@ -87,9 +77,7 @@
                             />
                         </a-spin>
                     </a-form-model-item>
-                    <a-form-model-item
-                        style="display: inline-block; margin-left: 5px;"
-                    >
+                    <a-form-model-item style="display: inline-block; margin-left: 5px;">
                         <a-tooltip title="Làm mới">
                             <a-button type="primary" icon="reload" @click="reloadCategoriesTree" :loading="categoriesTreeLoading" />
                         </a-tooltip>
@@ -138,7 +126,8 @@
     </div>
 </template>
 <script>
-import {vietnameseNormalize} from '../../../stringNormalize.js'
+import { vietnameseNormalize } from '../../../stringNormalize.js';
+import ProductStatus from '../../configs/ProductStatus';
 
 export default {
     components: {
@@ -188,12 +177,15 @@ export default {
         categoriesTreeData(){
             let data = this.categories;
 
-            for (let i = 0; i < data.length; i++)
-            {
+            for (let i = 0; i < data.length; i++) {
                 data[i].pId = data[i].parent_id;
             }
 
             return data;
+        },
+
+        configProductStatus() {
+            return ProductStatus;
         },
     },
     mounted(){
@@ -201,8 +193,7 @@ export default {
 
         this.reloadCategoriesTree();
 
-        if (this.formData.id)
-        {
+        if (this.formData.id) {
             this.loadProduct(this.formData.id)
         }
     },

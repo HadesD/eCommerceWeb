@@ -11,24 +11,7 @@
             >
                 <a-form-model-item label="Trạng thái" prop="status">
                     <a-select v-model="formData.status">
-                        <a-select-option :value="0">
-                            Đang xử lí
-                        </a-select-option>
-                        <a-select-option :value="10">
-                            Đã hủy bỏ
-                        </a-select-option>
-                        <a-select-option :value="50">
-                            Đã thanh toán
-                        </a-select-option>
-                        <a-select-option :value="51">
-                            Đang thanh toán
-                        </a-select-option>
-                        <a-select-option :value="100">
-                            Đang ship
-                        </a-select-option>
-                        <a-select-option :value="200">
-                            Hoàn tất
-                        </a-select-option>
+                        <a-select-option v-for="stsCode in Object.keys(configOrderStatus)" :key="stsCode" :value="parseInt(stsCode)">{{ configOrderStatus[stsCode].title }}</a-select-option>
                     </a-select>
                 </a-form-model-item>
                 <a-form-model-item label="Khách hàng" ref="customer_id" prop="customer_id">
@@ -198,6 +181,7 @@
 </template>
 
 <script>
+import OrderStatus from '../../configs/OrderStatus';
 
 const addon_transactionsTableColumns = [
     {
@@ -283,15 +267,13 @@ export default {
 
         this.loadCategoriesTree();
 
-        if (this.formData.id)
-        {
+        if (this.formData.id) {
             this.loadOrder(this.formData.id)
         }
     },
     watch: {
         $route (to, from){
-            if (!to.params.id)
-            {
+            if (!to.params.id) {
                 this.formData.order_products.forEach((p) => {
                     p.id = undefined;
                     p.order_product_stocks = [];
@@ -300,9 +282,7 @@ export default {
                 this.formData.transactions.forEach((t) => {
                     t.id = undefined;
                 });
-            }
-            else
-            {
+            } else {
                 this.loadOrder(this.formData.id)
             }
         },
@@ -334,6 +314,10 @@ export default {
                 amount: undefined,
                 transactions: [],
             }
+        },
+
+        configOrderStatus() {
+            return OrderStatus;
         },
     },
     methods: {
@@ -459,8 +443,7 @@ export default {
                             const orderData = res.data.data;
                             this.formData.id = res.data.data.id;
 
-                            if (!this.formData.id)
-                            {
+                            if (!this.formData.id) {
                                 throw res;
                             }
 
@@ -502,11 +485,9 @@ export default {
 
                     // Find category
                     const len = this.categories.length;
-                    for (let i = 0; i < len; i++)
-                    {
+                    for (let i = 0; i < len; i++) {
                         const elm = this.categories[i];
-                        if (elm.parent_id === category_id)
-                        {
+                        if (elm.parent_id === category_id) {
                             const newOtp = {
                                 isLeaf: false,
                                 selectable: false,
@@ -518,8 +499,7 @@ export default {
                         }
                     }
 
-                    for (let i = 0; i < sData.length; i++)
-                    {
+                    for (let i = 0; i < sData.length; i++) {
                         const elm = sData[i];
                         const newOtp = {
                             isLeaf: true,
@@ -559,8 +539,7 @@ export default {
 
                     // Find category
                     const len = this.categories.length;
-                    for (let i = 0; i < len; i++)
-                    {
+                    for (let i = 0; i < len; i++) {
                         const elm = this.categories[i];
                         if (elm.parent_id === category_id)
                         {
@@ -575,8 +554,7 @@ export default {
                         }
                     }
 
-                    for (let i = 0; i < sData.length; i++)
-                    {
+                    for (let i = 0; i < sData.length; i++) {
                         const elm = sData[i];
                         if (elm.quantity > 0)
                         {
@@ -601,7 +579,7 @@ export default {
 
                     this.$message.error(err.message || 'Thất bại');
                 })
-                .finally(()=>{
+                .finally(() => {
                     this.stockData = [...this.stockData];
                 });
         },

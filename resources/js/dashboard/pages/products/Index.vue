@@ -51,7 +51,7 @@
           <a-tag>{{ record.slug }}</a-tag>
         </span>
         <span slot="status" slot-scope="record">
-          {{ configProductStatus[record.status] }}
+          {{ configProductStatus[record.status].title }}
         </span>
         <span slot="price" slot-scope="record" style="display:block;text-align:right;">
           {{ new Intl.NumberFormat().format(record.price) }}
@@ -76,6 +76,8 @@
 </template>
 
 <script>
+import ProductStatus from '../../configs/ProductStatus';
+
 const productsTableColumns = [
   {
     title: '#',
@@ -189,12 +191,8 @@ export default {
       return this.products;
     },
 
-    configProductStatus(){
-      return {
-        0: 'Bản nháp',
-        1: 'Đang bán',
-        2: 'Hết hàng',
-      }
+    configProductStatus() {
+        return ProductStatus;
     },
   },
   methods: {
