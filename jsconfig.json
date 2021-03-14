@@ -1,0 +1,24 @@
+{
+    "include": [
+        "./resources/vue/**/*"
+    ],
+    "compilerOptions": {
+        "target": "esnext",
+        "allowSyntheticDefaultImports": false,
+        "baseUrl": "./resources/vue",
+        "paths": {
+            "@/*": [
+                "./*"
+            ]
+        }
+    },
+    "exclude": [
+        "node_modules",
+        "bower_components",
+        "jspm_packages",
+        "public",
+        "tmp",
+        "temp",
+        "dotenv"
+    ]
+}
