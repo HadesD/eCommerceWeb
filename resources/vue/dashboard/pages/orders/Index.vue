@@ -45,14 +45,9 @@
       <span slot="customer" slot-scope="record">
         {{ record.customer ? record.customer.name : record.customer_id }}
       </span>
-      <span slot="time" slot-scope="record">
-        Tạo: {{ record.created_at }}<br />
-        Update: {{ record.updated_at }}
-      </span>
+      <span slot="time" slot-scope="record">Tạo: {{ record.created_at }}<br />Update: {{ record.updated_at }}</span>
       <span slot="action" slot-scope="record">
-        <router-link :to="`/orders/${record.id}/edit`">
-          <a-icon type="edit" /> Sửa
-        </router-link>
+        <router-link :to="`/orders/${record.id}/edit`"><a-icon type="edit" /> Sửa</router-link>
         <a-divider type="vertical"></a-divider>
         <a-popconfirm title="Chắc chưa?" @confirm="()=>{onDeleteConfirmed(record)}">
           <a-icon slot="icon" type="question-circle-o" style="color: red" />

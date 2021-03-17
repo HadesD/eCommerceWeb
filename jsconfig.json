@@ -1,11 +1,11 @@
 {
     "include": [
-        "./resources/vue/**/*"
+        "./resources/vue/dashboard/**/*"
     ],
     "compilerOptions": {
         "target": "esnext",
         "allowSyntheticDefaultImports": false,
-        "baseUrl": "./resources/vue",
+        "baseUrl": "./resources/vue/dashboard",
         "paths": {
             "@/*": [
                 "./*"

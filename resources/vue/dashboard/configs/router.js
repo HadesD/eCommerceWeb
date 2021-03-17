@@ -1,21 +1,23 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import Vue from 'vue';
+import Router from 'vue-router';
+
+// const PagesRoute = () => import('./pages/index');
 
 Vue.use(Router);
 
 const RouteView = {
     render: (h) => h('router-view')
-}
+};
 
 let routes = [
     {
         path: '/',
-        component: () => import('./layouts/Main.vue'),
+        component: () => import('../layouts/Main.vue'),
         redirect: '/index',
         children: [
             {
                 path: '/index',
-                component: () => import('./pages/Index.vue'),
+                component: () => import('../pages/Index.vue'),
             },
             {
                 path: '/products',
@@ -24,15 +26,15 @@ let routes = [
                 children: [
                     {
                         path: 'index',
-                        component: () => import('./pages/products/Index.vue'),
+                        component: () => import('../pages/products/Index.vue'),
                     },
                     {
                         path: 'new',
-                        component: () => import('./pages/products/Edit.vue'),
+                        component: () => import('../pages/products/Edit.vue'),
                     },
                     {
                         path: ':id/edit',
-                        component: () => import('./pages/products/Edit.vue'),
+                        component: () => import('../pages/products/Edit.vue'),
                     },
                 ],
             },
@@ -43,15 +45,15 @@ let routes = [
                 children: [
                     {
                         path: 'index',
-                        component: () => import('./pages/stocks/Index.vue'),
+                        component: () => import('../pages/stocks/Index.vue'),
                     },
                     {
                         path: 'new',
-                        component: () => import('./pages/stocks/Edit.vue'),
+                        component: () => import('../pages/stocks/Edit.vue'),
                     },
                     {
                         path: ':id/edit',
-                        component: () => import('./pages/stocks/Edit.vue'),
+                        component: () => import('../pages/stocks/Edit.vue'),
                     },
                 ],
             },
@@ -62,15 +64,15 @@ let routes = [
                 children: [
                     {
                         path: 'index',
-                        component: () => import('./pages/orders/Index.vue'),
+                        component: () => import('../pages/orders/Index.vue'),
                     },
                     {
                         path: 'new',
-                        component: () => import('./pages/orders/Edit.vue'),
+                        component: () => import('../pages/orders/Edit.vue'),
                     },
                     {
                         path: ':id/edit',
-                        component: () => import('./pages/orders/Edit.vue'),
+                        component: () => import('../pages/orders/Edit.vue'),
                     },
                 ],
             }
@@ -78,18 +80,17 @@ let routes = [
     },
     {
         path: '/login',
-        component: () => import('./pages/auth/Login.vue'),
+        component: () => import('../pages/auth/Login.vue'),
     },
 ];
 
 routes.push({
     path: '*',
-    component: () => import('./pages/404.vue'),
+    component: () => import('../pages/404.vue'),
 });
 
 export default new Router({
     base: '/dashboard',
     mode: 'history',
     routes,
-})
-
+});

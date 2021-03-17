@@ -1,7 +1,10 @@
 <template>
     <div>
         <a-spin :spinning="orderInfoLoading">
-            <h2>{{ $route.params.id ? `Chỉnh sửa hóa đơn #${$route.params.id}` : 'Tạo hóa đơn đặt hàng' }}</h2>
+            <a-page-header
+                :title="$route.params.id ? 'Chỉnh sửa hóa đơn' : 'Tạo hóa đơn đặt hàng'"
+                :sub-title="$route.params.id ? `#${$route.params.id}` : false"
+            />
             <a-form-model
                 ref="ruleForm"
                 :model="formData"
@@ -43,12 +46,8 @@
                         </a-form-model-item>
                         <a-form-model-item label="Hình thức thanh toán" :rules="{required:true}" :prop="'order_products.'+pIdx+'.payment_method'">
                             <a-select v-model="p.payment_method">
-                                <a-select-option :value="1">
-                                    Trả thẳng 100%
-                                </a-select-option>
-                                <a-select-option :value="2">
-                                    Trả góp
-                                </a-select-option>
+                                <a-select-option :value="1">Trả thẳng 100%</a-select-option>
+                                <a-select-option :value="2">Trả góp</a-select-option>
                             </a-select>
                         </a-form-model-item>
                         <a-form-model-item label="Số lượng muốn đặt ban đầu">
@@ -172,9 +171,9 @@
                     </a-table>
                 </a-card>
                 <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
-                    <a-button type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })">
-                        {{ $route.params.id ? 'Sửa' : 'Tạo đơn' }}
-                    </a-button>
+                    <a-button
+                        type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })"
+                    >{{ $route.params.id ? 'Sửa' : 'Tạo đơn' }}</a-button>
                     <a-button style="margin-left: 10px;" @click="resetForm">Reset</a-button>
                 </a-form-model-item>
             </a-form-model>
