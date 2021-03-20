@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -31,7 +34,7 @@ class LoginController extends Controller
                 'access_token' => $tokenResult,
                 'token_type' => 'Bearer',
             ]);
-        } catch (Exception $error) {
+        } catch (\Exception $error) {
             return response()->json([
                 'status_code' => 500,
                 'message' => 'Error in Login',
@@ -44,7 +47,7 @@ class LoginController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        if (!\Auth::attempt($credentials, $request->remember)) {
+        if (!Auth::attempt($credentials, $request->remember)) {
             return redirect()->route('login');
         }
         // return redirect()->intended('index');
