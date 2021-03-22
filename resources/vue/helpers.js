@@ -11,16 +11,15 @@ function vietnameseNormalize(str, toUpperCase = false) {
     str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, ""); // Huyền sắc hỏi ngã nặng
     str = str.replace(/\u02C6|\u0306|\u031B/g, ""); // Â, Ê, Ă, Ơ, Ư
 
-    str = str.replace(/[^a-zA-Z0-9]/g,'-');
+    str = str.replace(/[^a-zA-Z0-9]/g, '-');
 
     return toUpperCase ? str.toUpperCase() : str;
-}
+};
 
 function number_format(num) {
     return new Intl.NumberFormat().format(num);
-}
+};
 
 export {
-    vietnameseNormalize,
-    number_format,
-}
+    vietnameseNormalize, number_format,
+};

@@ -59,6 +59,8 @@
     </div>
 </template>
 <script>
+import User from '../../utils/User';
+
 export default {
     data(){
         return {
@@ -98,9 +100,9 @@ export default {
                         axios.get('/api/user').then(userRes => {
                             const userData = userRes.data;
                             if (userData.role >= 100) {
-                                this.$user.setInfo(userData);
+                                User.setInfo(userData);
                                 this.$Progress.finish();
-                                this.$router.push({path: '/index'});
+                                this.$router.push({path: '/'});
                             } else {
                                 this.$message.error('Bạn không có quyền hạn truy cập trang này');
                                 this.$Progress.fail();
@@ -126,14 +128,14 @@ export default {
                         this.$message.error('Login thất bại: ' + resData.message);
                         this.validErrors = resData.errors;
                         this.$Progress.fail();
-                    }).then(()=> {
+                    }).finally(()=> {
                         this.loggingIn = false;
                         this.$Progress.stop();
                     });
                 }).catch(error => {
                     this.$message.error('Get CSRF thất bại');
                     this.$Progress.fail();
-                }).then(()=> {
+                }).finally(()=> {
                     this.refreshingCsrf = false;
                     this.loggingIn = false;
                     this.$Progress.stop();

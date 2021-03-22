@@ -97,7 +97,6 @@
 <script>
 import axios from 'axios';
 import moment from 'moment';
-
 import { number_format } from '../../../helpers';
 
 export default {
@@ -158,10 +157,6 @@ export default {
         cost_priceDisabled(){
             return (this.stockInfo.products && (this.stockInfo.products.length > 0));
         },
-
-        number_format() {
-            return number_format;
-        },
     },
     mounted() {
         this.reloadCategoriesTree();
@@ -172,6 +167,7 @@ export default {
         }
     },
     methods: {
+        number_format,
         loadCategoriesTree(){
             this.reloadCategoriesTree();
         },

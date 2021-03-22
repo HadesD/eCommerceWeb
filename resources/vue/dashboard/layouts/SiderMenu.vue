@@ -3,7 +3,7 @@
     <a-menu
       theme="dark"
       mode="inline"
-      :defaultOpenKeys="['/products', '/stocks', '/orders']"
+      :defaultOpenKeys="['/products', '/stocks', '/orders', '/users']"
       :selectedKeys="[$route.path]"
       :style="{ height: '100%', borderRight: 0 }"
       >
@@ -18,8 +18,8 @@
         <span slot="title">
           <a-icon type="shopping-cart" /><span>Sản phẩm</span>
         </span>
-        <a-menu-item key="/products/index">
-          <router-link to="/products/index">
+        <a-menu-item key="/products/">
+          <router-link to="/products/">
             Danh sách
           </router-link>
         </a-menu-item>
@@ -33,8 +33,8 @@
         <span slot="title">
           <a-icon type="shopping-cart" /><span>Đơn đặt hàng</span>
         </span>
-        <a-menu-item key="/orders/index">
-          <router-link to="/orders/index">
+        <a-menu-item key="/orders/">
+          <router-link to="/orders/">
             Danh sách
           </router-link>
         </a-menu-item>
@@ -48,14 +48,24 @@
         <span slot="title">
           <a-icon type="bank" /><span>Kho hàng</span>
         </span>
-        <a-menu-item key="/stocks/index">
-          <router-link to="/stocks/index">
+        <a-menu-item key="/stocks/">
+          <router-link to="/stocks/">
             Danh sách
           </router-link>
         </a-menu-item>
         <a-menu-item key="/stocks/new">
           <router-link to="/stocks/new">
             Nhập kho
+          </router-link>
+        </a-menu-item>
+      </a-sub-menu>
+      <a-sub-menu key="/users">
+        <span slot="title">
+          <a-icon type="user" /><span>Khách hàng</span>
+        </span>
+        <a-menu-item key="/users/">
+          <router-link to="/users/">
+            Danh sách
           </router-link>
         </a-menu-item>
       </a-sub-menu>

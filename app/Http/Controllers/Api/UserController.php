@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
-
-use App\Http\Resources\Stock as StockResource;
-use App\Models\Stock;
-
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
@@ -19,7 +17,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        return new JsonResource(User::paginate());
     }
 
     /**

@@ -52,5 +52,10 @@ class LoginController extends Controller
         }
         // return redirect()->intended('index');
     }
+
+    public function logout()
+    {
+        Auth::logout();
+    }
 }
 

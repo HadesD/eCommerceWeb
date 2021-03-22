@@ -4,26 +4,23 @@ export default {
             const k = 'user_info';
 
             return {
-                info(){
+                info() {
                     const user_info = localStorage.getItem(k);
-                    if (user_info)
-                    {
-                        try
-                        {
+                    if (user_info) {
+                        try {
                             return JSON.parse(user_info);
                         }
-                        catch(e)
-                        {
+                        catch (e) {
                             this.clear();
                         }
                     }
 
                     return {};
                 },
-                clear(){
+                clear() {
                     localStorage.removeItem(k);
                 },
-                setInfo(info){
+                setInfo(info) {
                     localStorage.setItem(k, JSON.stringify(info));
                 },
             };

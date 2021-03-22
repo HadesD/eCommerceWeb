@@ -11,21 +11,20 @@ const RouteView = {
 
 let routes = [
     {
-        path: '/',
+        path: '',
         component: () => import('../layouts/Main.vue'),
-        redirect: '/index',
+        redirect: '/',
         children: [
             {
-                path: '/index',
+                path: '/',
                 component: () => import('../pages/Index.vue'),
             },
             {
                 path: '/products',
-                redirect: '/products/index',
                 component: RouteView,
                 children: [
                     {
-                        path: 'index',
+                        path: '/',
                         component: () => import('../pages/products/Index.vue'),
                     },
                     {
@@ -40,11 +39,10 @@ let routes = [
             },
             {
                 path: '/stocks',
-                redirect: '/stocks/index',
                 component: RouteView,
                 children: [
                     {
-                        path: 'index',
+                        path: '/',
                         component: () => import('../pages/stocks/Index.vue'),
                     },
                     {
@@ -59,11 +57,10 @@ let routes = [
             },
             {
                 path: '/orders',
-                redirect: '/orders/index',
                 component: RouteView,
                 children: [
                     {
-                        path: 'index',
+                        path: '/',
                         component: () => import('../pages/orders/Index.vue'),
                     },
                     {
@@ -75,7 +72,25 @@ let routes = [
                         component: () => import('../pages/orders/Edit.vue'),
                     },
                 ],
-            }
+            },
+            {
+                path: '/users',
+                component: RouteView,
+                children: [
+                    {
+                        path: '/',
+                        component: () => import('../pages/orders/Index.vue'),
+                    },
+                    {
+                        path: 'new',
+                        component: () => import('../pages/orders/Edit.vue'),
+                    },
+                    {
+                        path: ':id/edit',
+                        component: () => import('../pages/orders/Edit.vue'),
+                    },
+                ],
+            },
         ],
     },
     {

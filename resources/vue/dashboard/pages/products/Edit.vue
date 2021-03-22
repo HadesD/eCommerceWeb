@@ -127,8 +127,8 @@
     </div>
 </template>
 <script>
-import { vietnameseNormalize, number_format } from '../../../helpers';
 import ProductStatus from '../../configs/ProductStatus';
+import { vietnameseNormalize, number_format } from '../../../helpers';
 
 export default {
     components: {
@@ -189,9 +189,6 @@ export default {
             return ProductStatus;
         },
 
-        number_format() {
-            return number_format;
-        }
     },
     mounted(){
         this.formData.id = this.$route.params.id;
@@ -203,6 +200,7 @@ export default {
         }
     },
     methods: {
+        number_format,
         loadCategoriesTree(){
             this.reloadCategoriesTree();
         },

@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,13 +15,20 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
-Route::get('/dashboard/login', function(){
-    return view('dashboard.index');
-})->name('login');
+Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout']);
 
-Route::middleware(['auth:sanctum', 'verified', 'role.manager'])->get('/dashboard{any?}', function(){
-    return view('dashboard.index');
-})->where('any', '.*')->name('dashboard.index');
+Route::prefix('/dashboard')->group(function(){
+    Route::get('/login', function () {
+        if (Auth::check()) {
+            return redirect()->route('dashboard.index');
+        }
+        return view('dashboard.index');
+    });
+
+    Route::middleware(['auth:sanctum', 'verified', 'role.manager'])->get('/{any?}', function() {
+        return view('dashboard.index');
+    })->where('any', '.*')->name('dashboard.index');
+});
 
 Route::name('web.')->group(function(){
     Route::get('/', [App\Http\Controllers\Web\WebController::class, 'index'])->name('index');

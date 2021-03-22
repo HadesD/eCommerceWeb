@@ -22,4 +22,4 @@ mix.sass('resources/vue/assets/dashboard/app.scss', 'public/css/dashboard');
 
 mix.browserSync({
     proxy: 'rinphone.local',
-})
+});

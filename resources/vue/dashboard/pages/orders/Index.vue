@@ -67,11 +67,13 @@ const ordersTableColumns = [
     title: '#',
     dataIndex: 'id',
     key: 'id',
+    fixed: 'left',
   },
   {
     title: 'Trạng thái',
     key: 'status',
     scopedSlots: { customRender: 'status' },
+    fixed: 'left',
   },
   {
     title: 'Ghi chú',
@@ -101,6 +103,7 @@ const ordersTableColumns = [
     title: 'Hành động',
     key: 'action',
     scopedSlots: { customRender: 'action' },
+    fixed: 'right',
   },
 ];
 
@@ -127,11 +130,9 @@ export default {
     configOrderStatus() {
         return OrderStatus;
     },
-    number_format() {
-        return number_format;
-    },
   },
   methods: {
+    number_format,
     loadOrders(page){
       this.ordersTableLoading = true;
       axios.get('/api/orders?page='+page)
@@ -146,9 +147,9 @@ export default {
           };
           this.ordersTablePagination = {...newPagi};
 
-          if (this.$route.query.page != resData.current_page) {
-            this.$router.push('/orders/index?page='+resData.current_page);
-          }
+        //   if (this.$route.query.page != resData.current_page) {
+            // this.$router.push('/orders/index?page='+resData.current_page);
+        //   }
         })
         .catch(err => {
             if (err.response && err.response.data.message) {

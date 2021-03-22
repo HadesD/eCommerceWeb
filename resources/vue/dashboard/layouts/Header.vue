@@ -29,6 +29,8 @@
   </a-layout-header>
 </template>
 <script>
+import User from '../utils/User';
+
 export default {
   props: {
     sideBarCollapsed: {
@@ -42,7 +44,7 @@ export default {
   },
   computed: {
     userName(){
-      return this.$user.info().name || 'Admin'
+      return User.info().name || 'Admin'
     },
   },
   methods: {
@@ -58,21 +60,20 @@ export default {
           return axios
             .post('/logout')
             .then(res => {
+              User.clear();
+
+              self.$router.push({ path: '/login' });
+
               self.$message.success('Đăng xuất thành công');
-
-              self.$user.clear();
-
-              self.$router.push({ path: '/auth/login' });
             })
             .catch(res => {
               console.log(res);
               self.$message.error('Đăng xuất thất bại');
             })
-            .then(res => {
+            .finally(res => {
               modal.destroy();
             });
         },
-        onCancel() {},
       });
     },
   },

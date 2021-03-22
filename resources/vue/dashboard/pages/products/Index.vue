@@ -190,12 +190,9 @@ export default {
     configProductStatus() {
         return ProductStatus;
     },
-
-    number_format() {
-        return number_format;
-    },
   },
   methods: {
+    number_format,
     // CategoriesTree
     loadCategoriesTree(){
       this.categoriesTreeLoading = true;
@@ -254,10 +251,9 @@ export default {
           };
           this.productsTablePagination = {...newPagi};
 
-          if ((this.$route.query.page != resData.current_page) || (this.$route.query.category_id != category_id))
-          {
-            this.$router.push('/products/index?page='+resData.current_page+'&category_id='+category_id);
-          }
+        //   if ((this.$route.query.page != resData.current_page) || (this.$route.query.category_id != category_id)) {
+        //     this.$router.push('/products/index?page='+resData.current_page+'&category_id='+category_id);
+        //   }
         })
         .catch(err => {
             if (err.response && err.response.data.message) {

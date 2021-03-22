@@ -81,26 +81,23 @@ const stocksTableColumns = [
   {
     title: '#',
     dataIndex: 'id',
-    key: 'id',
   },
   {
     title: 'Tên',
     dataIndex: 'name',
-    key: 'name',
   },
   {
     title: 'Id/Imei',
     dataIndex: 'idi',
-    key: 'idi',
   },
   {
     title: 'Giá lúc nhập (VND)',
-    key: 'cost_price',
+    dataIndex: 'cost_price',
     scopedSlots: { customRender: 'cost_price' },
   },
   {
     title: 'Số lượng',
-    key: 'quantity_info',
+    dataIndex: 'quantity_info',
     scopedSlots: { customRender: 'quantity_info' },
   },
   {
@@ -138,7 +135,7 @@ export default {
       stocksTablePagination: {
         position: 'both',
       },
-    }
+    };
   },
   mounted() {
     this.loadCategoriesTree();
@@ -154,12 +151,9 @@ export default {
         let parent;
         for (let i = 0; i < tree.length; i++) {
           const node = tree[i];
-          if (node.key === key)
-          {
+          if (node.key === key) {
             parent = node;
-          }
-          else if (node.children && node.children.length)
-          {
+          } else if (node.children && node.children.length) {
             parent = getParent(key, node.children);
           }
         }
@@ -201,12 +195,9 @@ export default {
     configStockStatus(){
         return StockStatus;
     },
-
-    number_format() {
-        return number_format;
-    }
   },
   methods: {
+    number_format,
     // CategoriesTree
     loadCategoriesTree(){
       this.categoriesTreeLoading = true;
@@ -263,10 +254,9 @@ export default {
           };
           this.stocksTablePagination = {...newPagi};
 
-          if ((this.$route.query.page != resData.current_page) || (this.$route.query.category_id != category_id))
-          {
-            this.$router.push('/stocks/index?page='+resData.current_page+'&category_id='+category_id);
-          }
+        //   if ((this.$route.query.page != resData.current_page) || (this.$route.query.category_id != category_id)) {
+        //     this.$router.push('/stocks/index?page='+resData.current_page+'&category_id='+category_id);
+        //   }
         })
         .catch(err => {
             if (err.response && err.response.data.message) {
