@@ -1,17 +1,11 @@
 @extends('layouts.app')
 @section('title', 'Dashboard | ' . config('app.name'))
 @push('head.css')
-    @php
-        $appCssFile = mix('/css/dashboard/app.css');
-    @endphp
-    <link href="{{ $appCssFile }}?v={{ filemtime(public_path($appCssFile)) }}" rel="stylesheet">
+    <link href="{{ mix('/css/dashboard/app.css') }}" rel="stylesheet">
 @endpush
 @section('body.content')
     <div id="app"></div>
 @endsection
 @push('body.js')
-    @php
-        $appJsFile = mix('/js/dashboard/app.js');
-    @endphp
-    <script src="{{ $appJsFile }}?v={{ filemtime(public_path($appJsFile)) }}"></script>
+    <script src="{{ mix('/js/dashboard/app.js') }}"></script>
 @endpush

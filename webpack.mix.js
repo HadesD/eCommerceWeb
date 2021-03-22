@@ -11,11 +11,11 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.webpackConfig({
-    output: {
-        chunkFilename: process.env.NODE_ENV === 'development' ? 'js/chunks/[name].js' : 'js/chunks/[name].[chunkhash].js',
-    },
-});
+// mix.webpackConfig({
+//     output: {
+//         chunkFilename: mix.inProduction() ? 'js/chunks/[name].[chunkhash].js' : 'js/chunks/[name].js',
+//     },
+// });
 
 mix.js('resources/vue/dashboard/app.js', 'public/js/dashboard').vue();
 mix.sass('resources/vue/assets/dashboard/app.scss', 'public/css/dashboard');
@@ -23,3 +23,9 @@ mix.sass('resources/vue/assets/dashboard/app.scss', 'public/css/dashboard');
 mix.browserSync({
     proxy: 'rinphone.local',
 });
+
+if (mix.inProduction()) {
+    mix.version();
+} else {
+    mix.sourceMaps();
+}

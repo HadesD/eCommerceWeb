@@ -11,7 +11,7 @@
                 </div>
             </a-layout-content>
             <a-layout-footer :style="{ textAlign: 'center' }">
-                From Dark.Hades with &lt;3
+                From Dark.Hades with <a-icon type="heart" :style="{ color: 'hotpink' }" />
             </a-layout-footer>
         </a-layout>
     </a-layout>

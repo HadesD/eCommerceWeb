@@ -1,5 +1,5 @@
 <template>
-  <a-layout-header :style="{ background: '#fff', padding: 0  }">
+  <a-layout-header :style="{ background: '#fff', padding: 0 }">
     <a-menu
       mode="horizontal"
       :selectedKeys="[$route.path]"
@@ -57,8 +57,7 @@ export default {
         title: 'Chú ý',
         content: 'Chắc chắn muốn đăng xuất chứ?',
         onOk() {
-          return axios
-            .post('/logout')
+          return axios.post('/logout')
             .then(res => {
               User.clear();
 
