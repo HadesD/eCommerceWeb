@@ -3,7 +3,7 @@
     <h2>
       Đơn đặt hàng
       <a-tooltip title="Làm mới">
-        <a-button type="primary" icon="reload" :loading="ordersTableLoading" @click="() => {loadOrders(ordersTablePagination.current)}" />
+        <a-button type="primary" icon="reload" :loading="ordersTableLoading" @click="() => loadOrders(ordersTablePagination.current)" />
       </a-tooltip>
       <router-link to="/orders/new">
         <a-tooltip title="Thêm đơn hàng">
@@ -17,7 +17,7 @@
       :loading="ordersTableLoading"
       :row-key="record => record.id"
       :pagination="ordersTablePagination"
-      @change="onOrdersTablePaginationChanged"
+      @change="(pagination) => loadOrders(pagination.current)"
       >
       <span slot="status" slot-scope="record">
         <a-tag :color="configOrderStatus[record.status].color">{{ configOrderStatus[record.status].name }}</a-tag>
@@ -28,12 +28,12 @@
       <template slot="order_product" slot-scope="record">
         <div v-for="(p) in record.order_products" :key="p.id">
           <a-tooltip title="Xem" v-if="p.product ? true : false">
-            <RouterLink :to="'/products/'+p.product.id+'/edit'">{{ p.product.name }} [Số lượng: {{ p.quantity }}]</RouterLink>
+            <RouterLink :to="`/products/${p.product.id}/edit`">{{ p.product.name }} [Số lượng: {{ p.quantity }}]</RouterLink>
           </a-tooltip>
           <ul>
             <li v-for="(ps) in p.order_product_stocks" :key="ps.id">
               <a-tooltip title="Xem" v-if="ps.stock ? true : false">
-                <RouterLink :to="'/stocks/'+ps.stock.id+'/edit'">{{ ps.stock.name }} ({{ ps.stock.idi }})</RouterLink>
+                <RouterLink :to="`/stocks/${ps.stock.id}/edit`">{{ ps.stock.name }} ({{ ps.stock.idi }})</RouterLink>
               </a-tooltip>
             </li>
           </ul>
@@ -140,7 +140,11 @@ export default {
 
     loadOrders(page){
       this.ordersTableLoading = true;
-      axios.get('/api/orders?page='+page)
+      axios.get('/api/orders', {
+          params: {
+              page,
+          }
+      })
         .then(res => {
           const resData = res.data;
           this.orders = resData.data || [];
@@ -189,10 +193,6 @@ export default {
         });
 
         return `${number_format(amount)} / ${number_format(cost)}`;
-    },
-
-    onOrdersTablePaginationChanged(pagination){
-      this.loadOrders(pagination.current);
     },
 
     onDeleteConfirmed(record){

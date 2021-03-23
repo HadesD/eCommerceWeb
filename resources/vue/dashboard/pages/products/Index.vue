@@ -15,7 +15,7 @@
           <a-button type="primary" icon="plus" @click="showAddCategoryModal" style="float:right;" />
         </a-tooltip>
       </h2>
-      <a-spin :spinning="categoriesTreeLoading">
+      <a-spin :spinning="categoriesTreeLoading || productsTableLoading">
         <a-tree
           show-line
           :expandedKeys="categoriesTreeExpandedKeys"
@@ -30,7 +30,7 @@
       <h2>
         Sản phẩm
         <a-tooltip title="Làm mới">
-          <a-button type="primary" icon="reload" :loading="productsTableLoading" @click="() => {loadProducts(currentCategoryId, productsTablePagination.current)}" />
+          <a-button type="primary" icon="reload" :loading="productsTableLoading" @click="() => loadProducts(currentCategoryId, productsTablePagination.current)" />
         </a-tooltip>
         <router-link to="/products/new">
           <a-tooltip title="Thêm sản phẩm">
@@ -44,7 +44,7 @@
         :loading="productsTableLoading"
         :row-key="record => record.id"
         :pagination="productsTablePagination"
-        @change="onProductsTablePaginationChanged"
+        @change="(pagination) => loadProducts(currentCategoryId, pagination.current)"
         >
         <span slot="name" slot-scope="record">
           {{ record.name }}<br />
@@ -217,7 +217,7 @@ export default {
       this.loadCategoriesTree();
     },
     onCategoriesTreeSelect(keys, event) {
-      this.currentCategoryId = keys;
+      this.currentCategoryId = keys[0];
 
       this.loadProducts(this.currentCategoryId, 1);
     },
@@ -240,7 +240,11 @@ export default {
     loadProducts(category_id, page){
       this.productsTableLoading = true;
 
-      axios.get(`/api/products?page=${page}&category_id=${category_id}`)
+      axios.get('/api/products', {
+          params: {
+            page, category_id,
+          },
+      })
         .then(res => {
           const resData = res.data;
           this.products = resData.data || [];
@@ -267,9 +271,6 @@ export default {
         .finally(()=>{
             this.productsTableLoading = false;
         });
-    },
-    onProductsTablePaginationChanged(pagination){
-        this.loadProducts(this.currentCategoryId, pagination.current);
     },
 
     onDeleteConfirmed(record){

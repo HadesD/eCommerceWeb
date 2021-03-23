@@ -1,20 +1,90 @@
 <template>
+    <div>
+        <a-page-header
+            title="Người dùng / Khách hàng"
+        />
+        <a-table
+            :columns="usersTableColumns"
+            :data-source="usersTableData"
+            :loading="usersTableLoading"
+            :row-key="record => record.id"
+            :pagination="usersTablePagination"
+            @change="(pagination) => loadUserList(pagination.current)"
+        >
+            <a-tag slot="role" slot-scope="value" :color="configUserRole[value].color">{{ configUserRole[value].name }}</a-tag>
+        </a-table>
+    </div>
 </template>
 <script>
-import ApiRequest from '../../utils/ApiRequest';
+import UserRole from '../../configs/UserRole';
 
-const userTableColumns = [
-
+const usersTableColumns = [
+    {
+        title: '#',
+        dataIndex: 'id',
+    },
+    {
+        title: 'Tên',
+        dataIndex: 'name',
+    },
+    {
+        title: 'Chức vụ',
+        dataIndex: 'role',
+        scopedSlots: { customRender: 'role' },
+    },
+    {
+        title: 'Số điện thoại',
+        dataIndex: 'phone',
+    },
+    {
+        title: 'Email',
+        dataIndex: 'email',
+    },
+    {
+        title: 'Hành động',
+        key: 'action',
+        scopedSlots: { customRender: 'action' },
+    },
 ];
 
 export default {
     data() {
         return {
-            userList: [],
+            usersTableColumns,
+            usersTableLoading: false,
+            usersTableData: [],
+            usersTablePagination: {
+                position: 'both',
+            },
         };
     },
     mounted() {
+        this.loadUserList({page: 1})
+    },
+    computed: {
+        configUserRole() {
+            return UserRole;
+        },
+    },
+    methods: {
+        loadUserList({page}) {
+            this.usersTableLoading = true;
 
+            axios.get('/api/users', {
+                params: {
+                    page,
+                }
+            })
+                .then(res => {
+                    this.usersTableData = res.data.data;
+                })
+                .catch(err => {
+
+                })
+                .finally(() => {
+                    this.usersTableLoading = false;
+                });
+        },
     },
 };
 </script>

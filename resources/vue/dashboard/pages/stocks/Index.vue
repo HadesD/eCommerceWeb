@@ -15,7 +15,7 @@
           <a-button type="primary" icon="plus" @click="showAddCategoryModal" style="float:right;" />
         </a-tooltip>
       </h2>
-      <a-spin :spinning="categoriesTreeLoading">
+      <a-spin :spinning="categoriesTreeLoading || stocksTableLoading">
         <a-tree
           show-line
           :expandedKeys="categoriesTreeExpandedKeys"
@@ -30,7 +30,7 @@
       <h2>
         Kho hàng
         <a-tooltip title="Làm mới">
-          <a-button type="primary" icon="reload" :loading="stocksTableLoading" @click="() => {loadStocks(currentCategoryId, stocksTablePagination.current)}" />
+          <a-button type="primary" icon="reload" :loading="stocksTableLoading" @click="() => loadStocks(currentCategoryId, stocksTablePagination.current)" />
         </a-tooltip>
         <router-link to="/stocks/new">
           <a-tooltip title="Nhập kho">
@@ -44,7 +44,7 @@
         :loading="stocksTableLoading"
         :row-key="record => record.id"
         :pagination="stocksTablePagination"
-        @change="onStocksTablePaginationChanged"
+        @change="(pagination) => loadStocks(currentCategoryId, pagination.current)"
         >
         <span slot="cost_price" slot-scope="value" style="display:block;text-align:right;">
           {{ number_format(value) }}
@@ -65,7 +65,7 @@
           <a-divider type="vertical"></a-divider>
           <a-popconfirm title="Chắc chưa?" @confirm="() => onDeleteConfirmed(record)">
             <a-icon slot="icon" type="question-circle-o" style="color: red" />
-              <a href="#"><a-icon type="delete" /> Xóa</a>
+            <a href="#"><a-icon type="delete" /> Xóa</a>
           </a-popconfirm>
         </span>
       </a-table>
@@ -222,7 +222,7 @@ export default {
       this.loadCategoriesTree();
     },
     onCategoriesTreeSelect(keys, event) {
-      this.currentCategoryId = keys;
+      this.currentCategoryId = keys[0];
 
       this.loadStocks(this.currentCategoryId, 1);
     },
@@ -243,7 +243,11 @@ export default {
 
     loadStocks(category_id, page){
       this.stocksTableLoading = true;
-      axios.get(`/api/stocks?page=${page}&category_id=${category_id}`)
+      axios.get('/api/stocks', {
+          params: {
+            page, category_id,
+          },
+      })
         .then(res => {
           const resData = res.data;
           this.stocks = resData.data || [];
@@ -270,10 +274,6 @@ export default {
         .finally(()=>{
           this.stocksTableLoading = false;
         });
-    },
-
-    onStocksTablePaginationChanged(pagination){
-      this.loadStocks(this.currentCategoryId, pagination.current);
     },
 
     onDeleteConfirmed(record){
