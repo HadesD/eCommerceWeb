@@ -1,8 +1,19 @@
 <template>
     <div>
-        <a-page-header
-            title="Người dùng / Khách hàng"
-        />
+        <a-page-header title="Người dùng / Khách hàng">
+            <template slot="tags">
+                <a-tooltip title="Làm mới">
+                    <a-button type="primary" icon="reload" :loading="stocksTableLoading" @click="() => loadStocks(currentCategoryId, stocksTablePagination.current)" />
+                </a-tooltip>
+            </template>
+            <template slot="extra">
+                <router-link to="/stocks/new">
+                    <a-tooltip title="Nhập kho">
+                        <a-button type="primary" icon="plus" style="float:right;" />
+                    </a-tooltip>
+                </router-link>
+            </template>
+        </a-page-header>
         <a-table
             :columns="usersTableColumns"
             :data-source="usersTableData"
@@ -79,7 +90,12 @@ export default {
                     this.usersTableData = res.data.data;
                 })
                 .catch(err => {
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
+                        return;
+                    }
 
+                    this.$message.error(err.message || 'Thất bại');
                 })
                 .finally(() => {
                     this.usersTableLoading = false;

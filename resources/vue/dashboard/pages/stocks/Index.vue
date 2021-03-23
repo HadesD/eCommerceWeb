@@ -9,12 +9,13 @@
       @updateCategories="updateCategories"
       />
     <a-col :span="4" :lg="4" :md="24" :sm="24" :xs="24">
-      <h2>
-        Chuyên mục
-        <a-tooltip title="Thêm chuyên mục">
-          <a-button type="primary" icon="plus" @click="showAddCategoryModal" style="float:right;" />
-        </a-tooltip>
-      </h2>
+      <a-page-header title="Chuyên mục">
+        <template slot="extra">
+            <a-tooltip title="Thêm chuyên mục">
+            <a-button type="primary" icon="plus" @click="showAddCategoryModal" style="float:right;" />
+            </a-tooltip>
+        </template>
+      </a-page-header>
       <a-spin :spinning="categoriesTreeLoading || stocksTableLoading">
         <a-tree
           show-line
@@ -27,17 +28,20 @@
       </a-spin>
     </a-col>
     <a-col :span="20" :lg="20" :md="24" :sm="24" :xs="24" :style="{borderLeft: (['xs','sm','md'].indexOf($mq) !== -1) ?  'none' : '1px solid #CCC'}">
-      <h2>
-        Kho hàng
-        <a-tooltip title="Làm mới">
-          <a-button type="primary" icon="reload" :loading="stocksTableLoading" @click="() => loadStocks(currentCategoryId, stocksTablePagination.current)" />
-        </a-tooltip>
-        <router-link to="/stocks/new">
-          <a-tooltip title="Nhập kho">
-            <a-button type="primary" icon="plus" style="float:right;" />
-          </a-tooltip>
-        </router-link>
-      </h2>
+      <a-page-header title="Kho hàng">
+        <template slot="tags">
+            <a-tooltip title="Làm mới">
+                <a-button type="primary" icon="reload" :loading="stocksTableLoading" @click="() => loadStocks(currentCategoryId, stocksTablePagination.current)" />
+            </a-tooltip>
+        </template>
+        <template slot="extra">
+            <router-link to="/stocks/new">
+            <a-tooltip title="Nhập kho">
+                <a-button type="primary" icon="plus" style="float:right;" />
+            </a-tooltip>
+            </router-link>
+        </template>
+      </a-page-header>
       <a-table
         :columns="stocksTableColumns"
         :data-source="stocksTableData"

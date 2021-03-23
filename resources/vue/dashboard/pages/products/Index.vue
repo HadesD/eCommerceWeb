@@ -1,78 +1,81 @@
 <template>
-  <a-row :gutter="16">
-    <AddCategoryModal
-      :visible="addCategoryModalVisible"
-      :categories="categories"
-      :categoriesTreeLoading="categoriesTreeLoading"
-      @handleOk="addCategoryModalHandleOk"
-      @handleCancel="addCategoryModalHandleCancel"
-      @updateCategories="updateCategories"
-      />
-    <a-col :span="4" :lg="4" :md="24" :sm="24" :xs="24">
-      <h2>
-        Chuyên mục
-        <a-tooltip title="Thêm chuyên mục">
-          <a-button type="primary" icon="plus" @click="showAddCategoryModal" style="float:right;" />
-        </a-tooltip>
-      </h2>
-      <a-spin :spinning="categoriesTreeLoading || productsTableLoading">
-        <a-tree
-          show-line
-          :expandedKeys="categoriesTreeExpandedKeys"
-          :tree-data="categoriesTreeData"
-          @select="onCategoriesTreeSelect"
-          @expand="onCategoriesTreeExpand"
-          >
-        </a-tree>
-      </a-spin>
-    </a-col>
-    <a-col :span="20" :lg="20" :md="24" :sm="24" :xs="24" :style="{borderLeft: (['xs','sm','md'].indexOf($mq) !== -1) ?  'none' : '1px solid #CCC'}">
-      <h2>
-        Sản phẩm
-        <a-tooltip title="Làm mới">
-          <a-button type="primary" icon="reload" :loading="productsTableLoading" @click="() => loadProducts(currentCategoryId, productsTablePagination.current)" />
-        </a-tooltip>
-        <router-link to="/products/new">
-          <a-tooltip title="Thêm sản phẩm">
-            <a-button type="primary" icon="plus" style="float:right;" />
-          </a-tooltip>
-        </router-link>
-      </h2>
-      <a-table
-        :columns="productsTableColumns"
-        :data-source="productsTableData"
-        :loading="productsTableLoading"
-        :row-key="record => record.id"
-        :pagination="productsTablePagination"
-        @change="(pagination) => loadProducts(currentCategoryId, pagination.current)"
-        >
-        <span slot="name" slot-scope="record">
-          {{ record.name }}<br />
-          <a-tag>{{ record.slug }}</a-tag>
-        </span>
-        <span slot="status" slot-scope="record">
-            <a-tag :color="configProductStatus[record.status].color">{{ configProductStatus[record.status].name }}</a-tag>
-        </span>
-        <span slot="price" slot-scope="record" style="display:block;text-align:right;">
-          {{ number_format(record.price) }}
-        </span>
-        <span slot="time" slot-scope="record">
-          <div>Tạo: {{ date_format(record.created_at) }}</div>
-          <div>Update: {{ date_format(record.updated_at) }}</div>
-        </span>
-        <span slot="action" slot-scope="record">
-          <router-link :to="`/products/${record.id}/edit`">
-            <a-icon type="edit" /> Sửa
-          </router-link>
-          <a-divider type="vertical"></a-divider>
-          <a-popconfirm title="Chắc chưa?" @confirm="()=>{onDeleteConfirmed(record)}">
-            <a-icon slot="icon" type="question-circle-o" style="color: red" />
-              <a href="#"><a-icon type="delete" /> Xóa</a>
-          </a-popconfirm>
-        </span>
-      </a-table>
-    </a-col>
-  </a-row>
+    <a-row :gutter="16">
+        <AddCategoryModal
+        :visible="addCategoryModalVisible"
+        :categories="categories"
+        :categoriesTreeLoading="categoriesTreeLoading"
+        @handleOk="addCategoryModalHandleOk"
+        @handleCancel="addCategoryModalHandleCancel"
+        @updateCategories="updateCategories"
+        />
+        <a-col :span="4" :lg="4" :md="24" :sm="24" :xs="24">
+            <a-page-header title="Chuyên mục">
+                <template slot="extra">
+                    <a-tooltip title="Thêm chuyên mục">
+                        <a-button type="primary" icon="plus" @click="showAddCategoryModal" style="float:right;" />
+                    </a-tooltip>
+                </template>
+            </a-page-header>
+            <a-spin :spinning="categoriesTreeLoading || productsTableLoading">
+                <a-tree
+                    show-line
+                    :expandedKeys="categoriesTreeExpandedKeys"
+                    :tree-data="categoriesTreeData"
+                    @select="onCategoriesTreeSelect"
+                    @expand="onCategoriesTreeExpand"
+                />
+            </a-spin>
+        </a-col>
+        <a-col :span="20" :lg="20" :md="24" :sm="24" :xs="24" :style="{borderLeft: (['xs','sm','md'].indexOf($mq) !== -1) ?  'none' : '1px solid #CCC'}">
+            <a-page-header title="Sản phẩm">
+                <template slot="tags">
+                    <a-tooltip title="Làm mới">
+                        <a-button type="primary" icon="reload" :loading="productsTableLoading" @click="() => loadProducts(currentCategoryId, productsTablePagination.current)" />
+                    </a-tooltip>
+                </template>
+                <template slot="extra">
+                    <router-link to="/products/new">
+                        <a-tooltip title="Thêm sản phẩm">
+                            <a-button type="primary" icon="plus" style="float:right;" />
+                        </a-tooltip>
+                    </router-link>
+                </template>
+            </a-page-header>
+            <a-table
+                :columns="productsTableColumns"
+                :data-source="productsTableData"
+                :loading="productsTableLoading"
+                :row-key="record => record.id"
+                :pagination="productsTablePagination"
+                @change="(pagination) => loadProducts(currentCategoryId, pagination.current)"
+            >
+                <span slot="name" slot-scope="record">
+                    {{ record.name }}<br />
+                    <a-tag>{{ record.slug }}</a-tag>
+                </span>
+                <span slot="status" slot-scope="record">
+                    <a-tag :color="configProductStatus[record.status].color">{{ configProductStatus[record.status].name }}</a-tag>
+                </span>
+                <span slot="price" slot-scope="record" style="display:block;text-align:right;">
+                    {{ number_format(record.price) }}
+                </span>
+                <span slot="time" slot-scope="record">
+                    <div>Tạo: {{ date_format(record.created_at) }}</div>
+                    <div>Update: {{ date_format(record.updated_at) }}</div>
+                </span>
+                <span slot="action" slot-scope="record">
+                    <router-link :to="`/products/${record.id}/edit`">
+                        <a-icon type="edit" /> Sửa
+                    </router-link>
+                    <a-divider type="vertical"></a-divider>
+                    <a-popconfirm title="Chắc chưa?" @confirm="()=>{onDeleteConfirmed(record)}">
+                        <a-icon slot="icon" type="question-circle-o" style="color: red" />
+                        <a href="#"><a-icon type="delete" /> Xóa</a>
+                    </a-popconfirm>
+                </span>
+            </a-table>
+        </a-col>
+    </a-row>
 </template>
 
 <script>
