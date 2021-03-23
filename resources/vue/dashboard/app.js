@@ -8,13 +8,10 @@ import VueMq from 'vue-mq';
 
 import router from './configs/router.js';
 import MainApp from './layouts/MainApp.vue';
-import UserInfo from './plugins/user-info.js';
 
 Vue.use(Antd);
 Vue.use(VueLazyload);
 Vue.use(VueMq);
-
-Vue.use(UserInfo);
 
 Vue.use(VueProgressBar, {
     color: '#9254de',
