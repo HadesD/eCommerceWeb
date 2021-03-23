@@ -3,12 +3,12 @@
         <a-page-header title="Người dùng / Khách hàng">
             <template slot="tags">
                 <a-tooltip title="Làm mới">
-                    <a-button type="primary" icon="reload" :loading="stocksTableLoading" @click="() => loadStocks(currentCategoryId, stocksTablePagination.current)" />
+                    <a-button type="primary" icon="reload" :loading="usersTableLoading" @click="() => loadUserList({page:usersTablePagination.current})" />
                 </a-tooltip>
             </template>
             <template slot="extra">
-                <router-link to="/stocks/new">
-                    <a-tooltip title="Nhập kho">
+                <router-link to="/users/new">
+                    <a-tooltip title="Thêm người dùng">
                         <a-button type="primary" icon="plus" style="float:right;" />
                     </a-tooltip>
                 </router-link>
@@ -20,7 +20,7 @@
             :loading="usersTableLoading"
             :row-key="record => record.id"
             :pagination="usersTablePagination"
-            @change="(pagination) => loadUserList(pagination.current)"
+            @change="(pagination) => loadUserList({page:pagination.current})"
         >
             <a-tag slot="role" slot-scope="value" :color="configUserRole[value].color">{{ configUserRole[value].name }}</a-tag>
         </a-table>
