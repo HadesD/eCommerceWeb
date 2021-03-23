@@ -45,7 +45,10 @@
       <span slot="customer" slot-scope="record">
         {{ record.customer ? record.customer.name : record.customer_id }}
       </span>
-      <span slot="time" slot-scope="record">Tạo: {{ record.created_at }}<br />Update: {{ record.updated_at }}</span>
+      <span slot="time" slot-scope="record">
+        <div>Tạo: {{ date_format(record.created_at) }}</div>
+        <div>Update: {{ date_format(record.updated_at) }}</div>
+      </span>
       <span slot="action" slot-scope="record">
         <router-link :to="`/orders/${record.id}/edit`"><a-icon type="edit" /> Sửa</router-link>
         <a-divider type="vertical"></a-divider>
@@ -60,7 +63,7 @@
 
 <script>
 import OrderStatus from '../../configs/OrderStatus';
-import { number_format } from '../../../helpers';
+import { number_format, date_format } from '../../../helpers';
 
 const ordersTableColumns = [
   {
@@ -133,6 +136,8 @@ export default {
   },
   methods: {
     number_format,
+    date_format,
+
     loadOrders(page){
       this.ordersTableLoading = true;
       axios.get('/api/orders?page='+page)

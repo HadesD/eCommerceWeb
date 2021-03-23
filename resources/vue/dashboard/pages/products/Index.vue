@@ -57,8 +57,8 @@
           {{ number_format(record.price) }}
         </span>
         <span slot="time" slot-scope="record">
-          Ngày tạo: {{ record.created_at }}<br />
-          Ngày update: {{ record.updated_at }}
+          <div>Tạo: {{ date_format(record.created_at) }}</div>
+          <div>Update: {{ date_format(record.updated_at) }}</div>
         </span>
         <span slot="action" slot-scope="record">
           <router-link :to="`/products/${record.id}/edit`">
@@ -77,7 +77,7 @@
 
 <script>
 import ProductStatus from '../../configs/ProductStatus';
-import { number_format } from '../../../helpers';
+import { number_format, date_format } from '../../../helpers';
 
 const productsTableColumns = [
   {
@@ -193,6 +193,7 @@ export default {
   },
   methods: {
     number_format,
+    date_format,
     // CategoriesTree
     loadCategoriesTree(){
       this.categoriesTreeLoading = true;

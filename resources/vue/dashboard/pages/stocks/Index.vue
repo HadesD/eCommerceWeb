@@ -46,17 +46,17 @@
         :pagination="stocksTablePagination"
         @change="onStocksTablePaginationChanged"
         >
-        <span slot="cost_price" slot-scope="record" style="display:block;text-align:right;">
-          {{ number_format(record.cost_price) }}
+        <span slot="cost_price" slot-scope="value" style="display:block;text-align:right;">
+          {{ number_format(value) }}
         </span>
         <span slot="quantity_info" slot-scope="record">
-          Đã bán: {{ record.products.length }}<br />
-          Tồn kho: {{ record.quantity }}
+          <div>Đã bán: {{ record.products.length }}</div>
+          <div>Tồn kho: {{ record.quantity }}</div>
         </span>
         <span slot="time" slot-scope="record">
-          Ngày nhập: {{ record.in_date }}<br />
-          Ngày tạo: {{ record.created_at }}<br />
-          Ngày update: {{ record.updated_at }}
+          <div>Nhập kho: {{ date_format(record.in_date) }}</div>
+          <div>Tạo: {{ date_format(record.created_at) }}</div>
+          <div>Update: {{ date_format(record.updated_at) }}</div>
         </span>
         <span slot="action" slot-scope="record">
           <router-link :to="`/stocks/${record.id}/edit`">
@@ -75,7 +75,7 @@
 
 <script>
 import StockStatus from '../../configs/StockStatus';
-import { number_format } from '../../../helpers';
+import { number_format, date_format } from '../../../helpers';
 
 const stocksTableColumns = [
   {
@@ -97,7 +97,7 @@ const stocksTableColumns = [
   },
   {
     title: 'Số lượng',
-    dataIndex: 'quantity_info',
+    key: 'quantity_info',
     scopedSlots: { customRender: 'quantity_info' },
   },
   {
@@ -198,6 +198,7 @@ export default {
   },
   methods: {
     number_format,
+    date_format,
     // CategoriesTree
     loadCategoriesTree(){
       this.categoriesTreeLoading = true;

@@ -10,6 +10,16 @@ use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
+    public function index(Request $request)
+    {
+        $refUrl = url()->previous();
+        if (strpos($refUrl, '/dashboard')) {
+            return redirect()->route('dashboard.login');
+        }
+
+        return view('auth.login');
+    }
+
     public function apiLogin(Request $request)
     {
         try {

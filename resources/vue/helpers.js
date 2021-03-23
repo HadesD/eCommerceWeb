@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 function vietnameseNormalize(str, toUpperCase = false) {
     str = str.toLowerCase();
     str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
@@ -20,6 +22,11 @@ function number_format(num) {
     return new Intl.NumberFormat().format(num);
 };
 
+function date_format(dateStr, formatStr = 'YYYY-MM-DD HH:mm:ss') {
+    return moment(dateStr).format(formatStr);
+}
+
 export {
     vietnameseNormalize, number_format,
+    date_format,
 };
