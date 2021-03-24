@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
@@ -17,7 +18,11 @@ class UserController extends Controller
      */
     public function index()
     {
-        return new JsonResource(User::paginate());
+        $userQuery = new User;
+        if (!Auth::user()->hasPermission(User::ROLE_ADMIN_MASTER)) {
+            $userQuery = $userQuery->where('role', '<', User::ROLE_ADMIN_MANAGER);
+        }
+        return new JsonResource( $userQuery->paginate());
     }
 
     /**
@@ -37,9 +42,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(User $user)
     {
-        //
+        return new JsonResource((Auth::user()->role > $user->role) ? $user : null);
     }
 
     /**
