@@ -17,13 +17,13 @@
                         <a-select-option v-for="stsCode in Object.keys(configOrderStatus)" :key="stsCode" :value="parseInt(stsCode)">{{ configOrderStatus[stsCode].name }}</a-select-option>
                     </a-select>
                 </a-form-model-item>
-                <a-form-model-item label="Khách hàng" ref="customer_id" prop="customer_id" help="Click nút 'Tìm kiếm' để chọn/tạo khách hàng">
+                <a-form-model-item label="Khách hàng" ref="customer_id" prop="customer_id" help="Click nút 'Tìm kiếm' để xem thông tin khách hàng">
                     <a-row :gutter="8">
                         <a-col :span="12">
                             <a-input-search v-model="formData.customer_id" readOnly enter-button @search="() => {userEditPageVisible = true;}" />
                         </a-col>
                         <a-col :span="8">
-                            <a-tooltip title="Thêm chuyên mục">
+                            <a-tooltip title="Chọn khách hàng từ danh sách">
                                 <a-button type="primary" icon="user" @click="() => {userIndexPageVisible = true;}">Chọn</a-button>
                             </a-tooltip>
                         </a-col>
