@@ -29,6 +29,11 @@
                     <a-button type="primary" icon="user" @click="() => onFinishSelect({userId: record.id, recordData: record})">Chọn</a-button>
                 </template>
             </template>
+            <template slot="sns_info" slot-scope="value">
+                <a v-if="value && value.facebook" :href="value.facebook" target="_blank">
+                    <a-icon type="facebook" style="font-size: 20px;"></a-icon>
+                </a>
+            </template>
         </a-table>
         <a-modal
             :visible="editPageVisible"
@@ -61,6 +66,11 @@ const usersTableColumns = [
     {
         title: 'Số điện thoại',
         dataIndex: 'phone',
+    },
+    {
+        title: 'Mạng xã hội',
+        dataIndex: 'sns_info',
+        scopedSlots: { customRender: 'sns_info' },
     },
     {
         title: 'Email',
