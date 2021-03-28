@@ -7,11 +7,9 @@
                 </a-tooltip>
             </template>
             <template slot="extra">
-                <router-link to="/users/new">
-                    <a-tooltip title="Thêm người dùng">
-                        <a-button type="primary" icon="plus" style="float:right;" />
-                    </a-tooltip>
-                </router-link>
+                <a-tooltip title="Thêm người dùng">
+                    <a-button type="primary" icon="plus" @click="() => {userId = undefined; editPageVisible = true;}" />
+                </a-tooltip>
             </template>
         </a-page-header>
         <a-table
@@ -23,11 +21,28 @@
             @change="(pagination) => loadUserList({page:pagination.current})"
         >
             <a-tag slot="role" slot-scope="value" :color="configUserRole[value].color">{{ configUserRole[value].name }}</a-tag>
+            <template slot="action" slot-scope="record">
+                <template v-if="!onFinishSelect">
+                    <a-button type="primary" icon="edit" @click="() => {userId = record.id; editPageVisible = true;}" />
+                </template>
+                <template v-else>
+                    <a-button type="primary" icon="user" @click="() => onFinishSelect({userId: record.id, recordData: record})">Chọn</a-button>
+                </template>
+            </template>
         </a-table>
+        <a-modal
+            :visible="editPageVisible"
+            @cancel="() => editPageVisible = false"
+            :footer="false"
+            :width="700"
+        >
+            <Edit :userId="userId" />
+        </a-modal>
     </div>
 </template>
 <script>
 import UserRole from '../../configs/UserRole';
+import Edit from './Edit';
 
 const usersTableColumns = [
     {
@@ -59,18 +74,28 @@ const usersTableColumns = [
 ];
 
 export default {
+    props: {
+        onFinishSelect: Function,
+    },
+    components: {
+        Edit,
+    },
     data() {
         return {
+            userId: undefined,
+
             usersTableColumns,
             usersTableLoading: false,
             usersTableData: [],
             usersTablePagination: {
                 position: 'both',
             },
+
+            editPageVisible: false,
         };
     },
     mounted() {
-        this.loadUserList({page: 1})
+        this.loadUserList({page: 1});
     },
     computed: {
         configUserRole() {

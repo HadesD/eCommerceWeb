@@ -34,6 +34,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'phone',
+        'sns_info',
     ];
 
     /**
@@ -53,7 +55,13 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'sns_info' => 'object',
     ];
+
+    public function setSnsInfoAttribute($value)
+    {
+        $this->attributes['sns_info'] = json_encode($value);
+    }
 
     public function hasPermission(int $perm) : bool
     {

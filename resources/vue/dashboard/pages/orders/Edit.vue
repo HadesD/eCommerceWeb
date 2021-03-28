@@ -17,8 +17,17 @@
                         <a-select-option v-for="stsCode in Object.keys(configOrderStatus)" :key="stsCode" :value="parseInt(stsCode)">{{ configOrderStatus[stsCode].name }}</a-select-option>
                     </a-select>
                 </a-form-model-item>
-                <a-form-model-item label="Khách hàng" ref="customer_id" prop="customer_id">
-                    <a-input v-model="formData.customer_id" />
+                <a-form-model-item label="Khách hàng" ref="customer_id" prop="customer_id" help="Click nút 'Tìm kiếm' để chọn/tạo khách hàng">
+                    <a-row :gutter="8">
+                        <a-col :span="12">
+                            <a-input-search v-model="formData.customer_id" readOnly enter-button @search="() => {userEditPageVisible = true;}" />
+                        </a-col>
+                        <a-col :span="8">
+                            <a-tooltip title="Thêm chuyên mục">
+                                <a-button type="primary" icon="user" @click="() => {userIndexPageVisible = true;}">Chọn</a-button>
+                            </a-tooltip>
+                        </a-col>
+                    </a-row>
                 </a-form-model-item>
                 <a-form-model-item label="Ghi chú" prop="note">
                     <a-textarea v-model="formData.note" placeholder="Tên khách hàng, loại thanh toán, chi phí sinh hoạt, lương nhân viên, v..v" />
@@ -178,6 +187,22 @@
                 </a-form-model-item>
             </a-form-model>
         </a-spin>
+        <a-modal
+            :visible="userIndexPageVisible"
+            @cancel="() => userIndexPageVisible = false"
+            :footer="false"
+            :width="1000"
+        >
+            <UserIndex :onFinishSelect="onFinishSelectUser" />
+        </a-modal>
+        <a-modal
+            :visible="userEditPageVisible"
+            @cancel="() => userEditPageVisible = false"
+            :footer="false"
+            :width="800"
+        >
+            <UserEdit :userId="formData.customer_id" />
+        </a-modal>
     </div>
 </template>
 
@@ -186,6 +211,9 @@ import moment from 'moment';
 
 import OrderStatus from '../../configs/OrderStatus';
 import { number_format } from '../../../helpers';
+
+import UserIndex from '../users/Index';
+import UserEdit from '../users/Edit';
 
 const PaidAmount = {
     props: {
@@ -263,6 +291,9 @@ export default {
             labelCol: { span: 4 },
             wrapperCol: { span: 14 },
 
+            userIndexPageVisible: false,
+            userEditPageVisible: false,
+
             orderInfo: {},
             categories: [],
             productData: [],
@@ -274,7 +305,7 @@ export default {
             orderInfoLoading: false,
             formData: {
                 note: undefined,
-                customer_id: 0, // TODO: config this
+                customer_id: undefined,
                 order_products: [],
                 status: undefined,
                 transactions: [],
@@ -282,11 +313,12 @@ export default {
             rules: {
                 status: {required: true,},
                 note: {required: true,},
+                customer_id: {required: true},
             },
         }
     },
     components: {
-        PaidAmount,
+        PaidAmount, UserIndex, UserEdit,
     },
     mounted() {
         this.loadCategoriesTree();
@@ -610,6 +642,12 @@ export default {
                 .finally(() => {
                     this.stockData = [...this.stockData];
                 });
+        },
+
+        onFinishSelectUser(data) {
+            this.formData.customer_id = data.userId;
+
+            this.userIndexPageVisible = false;
         },
     },
 }
