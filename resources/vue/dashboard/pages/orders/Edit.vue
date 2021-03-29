@@ -2,8 +2,8 @@
     <div>
         <a-spin :spinning="orderInfoLoading">
             <a-page-header
-                :title="$route.params.id ? 'Chỉnh sửa hóa đơn' : 'Tạo hóa đơn đặt hàng'"
-                :sub-title="$route.params.id ? `#${$route.params.id}` : false"
+                :title="id ? 'Chỉnh sửa hóa đơn' : 'Tạo hóa đơn đặt hàng'"
+                :sub-title="id ? `#${id}` : false"
             />
             <a-form-model
                 ref="ruleForm"
@@ -182,7 +182,7 @@
                 <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
                     <a-button
                         type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })"
-                    >{{ $route.params.id ? 'Sửa' : 'Tạo đơn' }}</a-button>
+                    >{{ id ? 'Sửa' : 'Tạo đơn' }}</a-button>
                     <a-button style="margin-left: 10px;" @click="resetForm">Reset</a-button>
                 </a-form-model-item>
             </a-form-model>
@@ -286,6 +286,9 @@ const product_stockTableColumns = [
 ];
 
 export default {
+    props: {
+        orderId: Number,
+    },
     data() {
         return {
             labelCol: { span: 4 },
@@ -323,14 +326,15 @@ export default {
     mounted() {
         this.loadCategoriesTree();
 
-        const orderId = this.$route.params.id;
-        if (orderId) {
-            this.loadOrder(orderId)
+        if (this.id) {
+            this.loadOrder(this.id)
         }
     },
     watch: {
-        $route (to, from){
-            if (!to.params.id) {
+        id (to, from) {
+            if (to) {
+                this.loadOrder(to.params.id)
+            } else {
                 this.formData.order_products.forEach((p) => {
                     p.id = undefined;
                     p.order_product_stocks = [];
@@ -339,12 +343,13 @@ export default {
                 this.formData.transactions.forEach((t) => {
                     t.id = undefined;
                 });
-            } else {
-                this.loadOrder(to.params.id)
             }
         },
     },
     computed: {
+        id () {
+            return this.orderId || $route.params.id;
+        },
         transaction_obj() {
             return {
                 id: undefined,
@@ -472,7 +477,7 @@ export default {
         onFinish() {
             this.orderInfoLoading = true;
 
-            const orderId = this.$route.params.id;
+            const orderId = this.id;
             axios({
                 url: orderId ? `/api/orders/${orderId}` : '/api/orders',
                 method: orderId ? 'put' : 'post',
@@ -541,7 +546,12 @@ export default {
 
             const category_id = targetOption.meta.category_id;
 
-            return axios.get(`/api/products?category_id=${category_id}&all=true`)
+            return axios.get(`/api/products`, {
+                params: {
+                    category_id,
+                    all: true,
+                },
+            })
                 .then(res => {
                     const sData = res.data.data;
 

@@ -10,8 +10,8 @@
         />
         <a-spin :spinning="stockInfoLoading">
             <a-page-header
-                :title="$route.params.id ? `Tên hàng: ${formData.name}` : 'Nhập hàng mới vào kho'"
-                :sub-title="$route.params.id ? `#${$route.params.id}` : false"
+                :title="id ? `Tên hàng: ${formData.name}` : 'Nhập hàng mới vào kho'"
+                :sub-title="id ? `#${id}` : false"
             />
             <a-form-model
                 ref="ruleForm"
@@ -85,7 +85,7 @@
                 </a-form-model-item>
                 <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
                     <a-button type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })">
-                        {{ $route.params.id ? 'Sửa' : 'Nhập kho' }}
+                        {{ id ? 'Sửa' : 'Nhập kho' }}
                     </a-button>
                     <a-button style="margin-left: 10px;" @click="resetForm">Reset</a-button>
                 </a-form-model-item>
@@ -100,6 +100,9 @@ import moment from 'moment';
 import { number_format } from '../../../helpers';
 
 export default {
+    props: {
+        stockId: Number,
+    },
     components: {
         AddCategoryModal: () => import('../../components/AddCategoryModal.vue'),
     },
@@ -145,6 +148,9 @@ export default {
         }
     },
     computed: {
+        id() {
+            return this.stockId || $route.params.id;
+        },
         categoriesTreeData(){
             let data = this.categories;
 
@@ -158,13 +164,15 @@ export default {
             return (this.stockInfo.products && (this.stockInfo.products.length > 0));
         },
     },
+    watch: {
+        id(to, from) {
+            this.loadStock(this.id);
+        },
+    },
     mounted() {
         this.reloadCategoriesTree();
 
-        const stockId = this.$route.params.id;
-        if (stockId) {
-            this.loadStock(stockId)
-        }
+        this.loadStock(this.id);
     },
     methods: {
         number_format,
@@ -195,14 +203,17 @@ export default {
         showAddCategoryModal() {
             this.addCategoryModalVisible = true;
         },
-        addCategoryModalHandleOk(e){
+        addCategoryModalHandleOk(e) {
             // this.addCategoryModalVisible = false;
         },
-        addCategoryModalHandleCancel(e){
+        addCategoryModalHandleCancel(e) {
             this.addCategoryModalVisible = false;
         },
 
-        loadStock(id){
+        loadStock(id) {
+            if (!id) {
+                return;
+            }
             this.stockInfoLoading = true;
             axios.get(`/api/stocks/${id}`)
                 .then(res => {
@@ -235,7 +246,7 @@ export default {
         onFinish() {
             this.stockInfoLoading = true;
 
-            const stockId = this.$route.params.id;
+            const stockId = this.id;
 
             axios({
                 url: stockId ? `/api/stocks/${stockId}` : '/api/stocks',
