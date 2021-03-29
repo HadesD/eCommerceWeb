@@ -60,7 +60,7 @@
                     </a-popconfirm>
                 </template>
                 <template v-else>
-                    <a-button type="primary" icon="bank" @click="() => onFinishSelect({orderId: record.id, recordData: record})">Chọn</a-button>
+                    <a-button type="primary" icon="shopping-cart" @click="() => onFinishSelect(record)">Chọn</a-button>
                 </template>
             </template>
         </a-table>

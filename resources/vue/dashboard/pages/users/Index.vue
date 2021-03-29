@@ -26,7 +26,7 @@
                     <a-button type="primary" icon="edit" @click="() => {userId = record.id; editPageVisible = true;}" />
                 </template>
                 <template v-else>
-                    <a-button type="primary" icon="user" @click="() => onFinishSelect({userId: record.id, recordData: record})">Chọn</a-button>
+                    <a-button type="primary" icon="user" @click="() => onFinishSelect(record)">Chọn</a-button>
                 </template>
             </template>
             <template slot="sns_info" slot-scope="value">

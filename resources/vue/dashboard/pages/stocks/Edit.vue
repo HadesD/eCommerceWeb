@@ -84,10 +84,9 @@
                     />
                 </a-form-model-item>
                 <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
-                    <a-button type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })">
-                        {{ id ? 'Sửa' : 'Nhập kho' }}
-                    </a-button>
-                    <a-button style="margin-left: 10px;" @click="resetForm">Reset</a-button>
+                    <a-button
+                        type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })"
+                    >{{ id ? 'Sửa' : 'Nhập kho' }}</a-button>
                 </a-form-model-item>
             </a-form-model>
         </a-spin>
@@ -281,9 +280,6 @@ export default {
                 .finally(()=>{
                     this.stockInfoLoading = false;
                 });
-        },
-        resetForm() {
-            this.$refs.ruleForm.resetFields();
         },
     },
 }

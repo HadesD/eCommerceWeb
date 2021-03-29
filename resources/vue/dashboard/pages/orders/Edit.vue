@@ -183,7 +183,6 @@
                     <a-button
                         type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })"
                     >{{ id ? 'Sửa' : 'Tạo đơn' }}</a-button>
-                    <a-button style="margin-left: 10px;" @click="resetForm">Reset</a-button>
                 </a-form-model-item>
             </a-form-model>
         </a-spin>
@@ -537,9 +536,6 @@ export default {
                 .finally(()=>{
                 });
         },
-        resetForm() {
-            this.$refs.ruleForm.resetFields();
-        },
 
         loadCategoryProducts(treeNode) {
             const targetOption = treeNode.dataRef;
@@ -613,8 +609,7 @@ export default {
                     const len = this.categories.length;
                     for (let i = 0; i < len; i++) {
                         const elm = this.categories[i];
-                        if (elm.parent_id === category_id)
-                        {
+                        if (elm.parent_id === category_id) {
                             const newOtp = {
                                 isLeaf: false,
                                 selectable: false,
@@ -628,8 +623,7 @@ export default {
 
                     for (let i = 0; i < sData.length; i++) {
                         const elm = sData[i];
-                        if (elm.quantity > 0)
-                        {
+                        if (elm.quantity > 0) {
                             const newOtp = {
                                 isLeaf: true,
                                 title: elm.id +'. ' + elm.name + ' ('+elm.idi+') ' + ' ('+number_format(elm.cost_price)+' VND)' + ' (x'+ elm.quantity +')',
@@ -654,8 +648,8 @@ export default {
                 });
         },
 
-        onFinishSelectUser(data) {
-            this.formData.customer_id = data.userId;
+        onFinishSelectUser(recordData) {
+            this.formData.customer_id = recordData.id;
 
             this.userIndexPageVisible = false;
         },

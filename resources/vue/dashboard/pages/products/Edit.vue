@@ -117,10 +117,9 @@
                     </a-tab-pane>
                 </a-tabs>
                 <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
-                    <a-button type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate(valid => { if (valid) onFinish() })">
-                        {{ $route.params.id ? 'Sửa' : 'Đăng bán' }}
-                    </a-button>
-                    <a-button style="margin-left: 10px;" @click="resetForm">Reset</a-button>
+                    <a-button
+                        type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate(valid => { if (valid) onFinish() })"
+                    >{{ $route.params.id ? 'Sửa' : 'Đăng bán' }}</a-button>
                 </a-form-model-item>
             </a-form-model>
         </a-spin>
@@ -311,9 +310,6 @@ export default {
                         this.productInfoLoading = false;
                     });
             }
-        },
-        resetForm() {
-            this.$refs.ruleForm.resetFields();
         },
     },
 };

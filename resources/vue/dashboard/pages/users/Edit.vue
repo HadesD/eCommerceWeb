@@ -36,7 +36,6 @@
                     <a-button type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })">
                         {{ id ? 'Sửa' : 'Tạo' }}
                     </a-button>
-                    <a-button style="margin-left: 10px;" @click="() => $refs.ruleForm.resetFields()">Reset</a-button>
                 </a-form-model-item>
             </a-form-model>
         </a-spin>

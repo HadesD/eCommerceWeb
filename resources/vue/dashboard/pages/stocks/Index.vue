@@ -61,14 +61,18 @@
                     <div>Update: {{ date_format(record.updated_at) }}</div>
                 </template>
                 <template slot="action" slot-scope="record">
-                    <router-link :to="`/stocks/${record.id}/edit`">
-                        <a-icon type="edit" /> Sửa
-                    </router-link>
-                    <a-divider type="vertical"></a-divider>
-                    <a-popconfirm title="Chắc chưa?" @confirm="() => onDeleteConfirmed(record)">
-                        <a-icon slot="icon" type="question-circle-o" style="color: red" />
-                        <a href="#"><a-icon type="delete" /> Xóa</a>
-                    </a-popconfirm>
+                    <template v-if="!onFinishSelect">
+                        <router-link :to="`/stocks/${record.id}/edit`">
+                            <a-button type="primary" icon="edit">Sửa</a-button>
+                        </router-link>
+                        <a-popconfirm title="Chắc chưa?" @confirm="()=>{onDeleteConfirmed(record)}">
+                            <a-icon slot="icon" type="question-circle-o" style="color: red" />
+                            <a-button type="danger" icon="delete">Xóa</a-button>
+                        </a-popconfirm>
+                    </template>
+                    <template v-else>
+                        <a-button type="primary" icon="shopping-cart" @click="() => onFinishSelect(record)">Chọn</a-button>
+                    </template>
                 </template>
             </a-table>
         </a-col>
@@ -120,182 +124,186 @@ const stocksTableColumns = [
 ];
 
 export default {
-  components: {
-    AddCategoryModal: () => import('../../components/AddCategoryModal.vue'),
-  },
-  data() {
-    return {
-      categories: [],
-      addCategoryModalVisible: false,
-      categoriesTreeLoading: false,
-      currentCategoryId: 0,
-      categoriesTreeExpandedKeys: [],
+    props: {
+        onFinishSelect: Function,
+    },
+    components: {
+        AddCategoryModal: () => import('../../components/AddCategoryModal.vue'),
+    },
+    data() {
+        return {
+        categories: [],
+        addCategoryModalVisible: false,
+        categoriesTreeLoading: false,
+        currentCategoryId: 0,
+        categoriesTreeExpandedKeys: [],
 
-      stocks: [],
-      stocksTableLoading: false,
-      stocksTableColumns,
-      stocksTablePagination: {
-        position: 'both',
-      },
-    };
-  },
-  mounted() {
-    this.loadCategoriesTree();
-
-    this.currentCategoryId = (parseInt(this.$route.query.category_id) || '');
-    this.stocksTablePagination.current = (parseInt(this.$route.query.page) || 1);
-
-    this.loadStocks(this.currentCategoryId, this.stocksTablePagination.current);
-  },
-  computed: {
-    categoriesTreeData(){
-      const getParent = (key, tree) => {
-        let parent;
-        for (let i = 0; i < tree.length; i++) {
-          const node = tree[i];
-          if (node.key === key) {
-            parent = node;
-          } else if (node.children && node.children.length) {
-            parent = getParent(key, node.children);
-          }
-        }
-
-        return parent;
-      };
-
-      const sortedCategories = this.categories;
-
-      // Reset
-      this.categoriesTreeExpandedKeys = [];
-
-      let data = [];
-      for (let i = 0; i < sortedCategories.length; i++) {
-        const cur = sortedCategories[i];
-
-        const newData = {
-          key: cur.id,
-          title: cur.name,
-          children: [],
+        stocks: [],
+        stocksTableLoading: false,
+        stocksTableColumns,
+        stocksTablePagination: {
+            position: 'both',
+        },
         };
-
-        let parent = getParent(cur.parent_id, data);
-        let toNode = parent ? parent.children : data;
-        toNode.push(newData);
-
-        toNode = toNode.sort((a,b) => a.title.toUpperCase() > b.title.toUpperCase() ? 1 : -1);
-
-        // Update key
-        this.categoriesTreeExpandedKeys.push(newData.key);
-      }
-
-      return data;
     },
+    mounted() {
+        this.loadCategoriesTree();
 
-    stocksTableData(){
-      return this.stocks;
+        this.currentCategoryId = (parseInt(this.$route.query.category_id) || '');
+        this.stocksTablePagination.current = (parseInt(this.$route.query.page) || 1);
+
+        this.loadStocks(this.currentCategoryId, this.stocksTablePagination.current);
     },
-    configStockStatus(){
-        return StockStatus;
-    },
-  },
-  methods: {
-    number_format,
-    date_format,
-    // CategoriesTree
-    loadCategoriesTree(){
-      this.categoriesTreeLoading = true;
-      axios.get('/api/categories')
-        .then(res => {
-            this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
-        })
-        .catch(err => {
-            if (err.response && err.response.data.message) {
-                this.$message.error(err.response.data.message);
-                return;
+    computed: {
+        categoriesTreeData(){
+            const getParent = (key, tree) => {
+                let parent;
+                for (let i = 0; i < tree.length; i++) {
+                const node = tree[i];
+                if (node.key === key) {
+                    parent = node;
+                } else if (node.children && node.children.length) {
+                    parent = getParent(key, node.children);
+                }
+                }
+
+                return parent;
+            };
+
+            const sortedCategories = this.categories;
+
+            // Reset
+            this.categoriesTreeExpandedKeys = [];
+
+            let data = [];
+            for (let i = 0; i < sortedCategories.length; i++) {
+                const cur = sortedCategories[i];
+
+                const newData = {
+                key: cur.id,
+                title: cur.name,
+                children: [],
+                };
+
+                let parent = getParent(cur.parent_id, data);
+                let toNode = parent ? parent.children : data;
+                toNode.push(newData);
+
+                toNode = toNode.sort((a,b) => a.title.toUpperCase() > b.title.toUpperCase() ? 1 : -1);
+
+                // Update key
+                this.categoriesTreeExpandedKeys.push(newData.key);
             }
 
-            this.$message.error(err.message || 'Thất bại');
-        })
-        .finally(()=>{
-            this.categoriesTreeLoading = false;
-        });
-    },
-    updateCategories(cats) {
-      this.loadCategoriesTree();
-    },
-    onCategoriesTreeSelect(keys, event) {
-      this.currentCategoryId = keys[0];
+            return data;
+        },
 
-      this.loadStocks(this.currentCategoryId, 1);
+        stocksTableData(){
+            return this.stocks;
+        },
+        configStockStatus(){
+            return StockStatus;
+        },
     },
-    onCategoriesTreeExpand() {
-      console.log('Trigger Expand');
+    methods: {
+        number_format,
+        date_format,
+        // CategoriesTree
+        loadCategoriesTree(){
+            this.categoriesTreeLoading = true;
+            axios.get('/api/categories')
+                .then(res => {
+                    this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
+                })
+                .catch(err => {
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
+                        return;
+                    }
+
+                    this.$message.error(err.message || 'Thất bại');
+                })
+                .finally(()=>{
+                    this.categoriesTreeLoading = false;
+                });
+        },
+        updateCategories(cats) {
+            this.loadCategoriesTree();
+        },
+        onCategoriesTreeSelect(keys, event) {
+            this.currentCategoryId = keys[0];
+
+            this.loadStocks(this.currentCategoryId, 1);
+            },
+            onCategoriesTreeExpand() {
+            console.log('Trigger Expand');
+        },
+
+        // Modal
+        showAddCategoryModal() {
+            this.addCategoryModalVisible = true;
+        },
+        addCategoryModalHandleOk(e){
+            // this.addCategoryModalVisible = false;
+        },
+        addCategoryModalHandleCancel(e){
+            this.addCategoryModalVisible = false;
+        },
+
+        loadStocks(category_id, page){
+            this.stocksTableLoading = true;
+
+            axios.get('/api/stocks', {
+                params: {
+                    page, category_id,
+                },
+            })
+                .then(res => {
+                    const resData = res.data;
+                    this.stocks = resData.data || [];
+
+                    const newPagi = {
+                        total: resData.total,
+                        current: resData.current_page,
+                        pageSize: resData.per_page,
+                    };
+                    this.stocksTablePagination = {...newPagi};
+
+                    //   if ((this.$route.query.page != resData.current_page) || (this.$route.query.category_id != category_id)) {
+                    //     this.$router.push('/stocks/index?page='+resData.current_page+'&category_id='+category_id);
+                    //   }
+                })
+                .catch(err => {
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
+                        return;
+                    }
+
+                    this.$message.error(err.message || 'Thất bại');
+                })
+                .finally(()=>{
+                    this.stocksTableLoading = false;
+                });
+        },
+
+        onDeleteConfirmed(record){
+            return axios.delete(`/api/stocks/${record.id}`)
+                .then(res => {
+                    this.$message.success('Xóa thành công');
+
+                    this.loadStocks(this.currentCategoryId, this.stocksTablePagination.current);
+                })
+                .catch(err => {
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
+                        return;
+                    }
+
+                    this.$message.error(err.message || 'Xóa thất bại');
+                })
+                .finally(()=>{
+                });
+        },
     },
-
-    // Modal
-    showAddCategoryModal() {
-      this.addCategoryModalVisible = true;
-    },
-    addCategoryModalHandleOk(e){
-      // this.addCategoryModalVisible = false;
-    },
-    addCategoryModalHandleCancel(e){
-      this.addCategoryModalVisible = false;
-    },
-
-    loadStocks(category_id, page){
-      this.stocksTableLoading = true;
-      axios.get('/api/stocks', {
-          params: {
-            page, category_id,
-          },
-      })
-        .then(res => {
-          const resData = res.data;
-          this.stocks = resData.data || [];
-
-          const newPagi = {
-            total: resData.total,
-            current: resData.current_page,
-            pageSize: resData.per_page,
-          };
-          this.stocksTablePagination = {...newPagi};
-
-        //   if ((this.$route.query.page != resData.current_page) || (this.$route.query.category_id != category_id)) {
-        //     this.$router.push('/stocks/index?page='+resData.current_page+'&category_id='+category_id);
-        //   }
-        })
-        .catch(err => {
-            if (err.response && err.response.data.message) {
-                this.$message.error(err.response.data.message);
-                return;
-            }
-
-            this.$message.error(err.message || 'Thất bại');
-        })
-        .finally(()=>{
-          this.stocksTableLoading = false;
-        });
-    },
-
-    onDeleteConfirmed(record){
-      return axios.delete(`/api/stocks/${record.id}`)
-        .then(res => {
-          this.$message.success('Xóa thành công');
-
-          this.loadStocks(this.currentCategoryId, this.stocksTablePagination.current);
-        })
-        .catch(err => {
-            if (err.response && err.response.data.message) {
-                this.$message.error(err.response.data.message);
-                return;
-            }
-
-            this.$message.error(err.message || 'Xóa thất bại');
-        })
-        .finally(()=>{
-        });
-    },
-  },
 }
 </script>
