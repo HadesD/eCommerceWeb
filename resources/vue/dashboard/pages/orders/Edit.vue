@@ -20,11 +20,11 @@
                 <a-form-model-item label="Khách hàng" ref="customer_id" prop="customer_id" help="Click nút 'Tìm kiếm' để xem thông tin khách hàng">
                     <a-row :gutter="8">
                         <a-col :span="12">
-                            <a-input-search v-model="formData.customer_id" readOnly enter-button @search="() => {userEditPageVisible = true;}" />
+                            <a-input-search v-model="formData.customer_id" readOnly enter-button @search="() => userEditPageVisible = true" />
                         </a-col>
                         <a-col :span="8">
                             <a-tooltip title="Chọn khách hàng từ danh sách">
-                                <a-button type="primary" icon="user" @click="() => {userIndexPageVisible = true;}">Chọn</a-button>
+                                <a-button type="primary" icon="user" @click="() => userIndexPageVisible = true">Chọn</a-button>
                             </a-tooltip>
                         </a-col>
                     </a-row>
@@ -186,6 +186,7 @@
                 </a-form-model-item>
             </a-form-model>
         </a-spin>
+
         <a-modal
             :visible="userIndexPageVisible"
             @cancel="() => userIndexPageVisible = false"
@@ -202,6 +203,23 @@
         >
             <UserEdit :userId="formData.customer_id" />
         </a-modal>
+
+        <a-modal
+            :visible="stockIndexPageVisible"
+            @cancel="() => stockIndexPageVisible = false"
+            :footer="false"
+            :width="1000"
+        >
+            <StockIndex :onFinishSelect="onFinishSelectUser" />
+        </a-modal>
+        <a-modal
+            :visible="stockEditPageVisible"
+            @cancel="() => stockEditPageVisible = false"
+            :footer="false"
+            :width="800"
+        >
+            <StockEdit :userId="formData.customer_id" />
+        </a-modal>
     </div>
 </template>
 
@@ -213,6 +231,9 @@ import { number_format } from '../../../helpers';
 
 import UserIndex from '../users/Index';
 import UserEdit from '../users/Edit';
+
+import StockIndex from '../stocks/Index';
+import StockEdit from '../stocks/Edit';
 
 const PaidAmount = {
     props: {
@@ -320,7 +341,9 @@ export default {
         }
     },
     components: {
-        PaidAmount, UserIndex, UserEdit,
+        PaidAmount,
+        UserIndex, UserEdit,
+        StockIndex, StockEdit,
     },
     mounted() {
         this.loadCategoriesTree();
@@ -346,7 +369,7 @@ export default {
         },
     },
     computed: {
-        id () {
+        id() {
             return this.orderId || $route.params.id;
         },
         transaction_obj() {
@@ -422,7 +445,11 @@ export default {
                 });
         },
 
-        loadOrder(id){
+        loadOrder(id) {
+            if (!id) {
+                return;
+            }
+
             this.orderInfoLoading = true;
             axios.get(`/api/orders/${id}`)
                 .then(res => {
