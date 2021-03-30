@@ -51,7 +51,16 @@
                             <a-button type="primary" icon="delete"></a-button>
                         </a-popconfirm>
                         <a-form-model-item label="Sản phẩm" :rules="{required:true}" :prop="'order_products.'+pIdx+'.product_id'">
-                            <a-tree-select show-search treeNodeFilterProp="title" :tree-data="productData" :load-data="loadCategoryProducts" placeholder="Please select" v-model="p.product_id" :dropdownStyle="{maxHeight:'60vh'}" />
+                            <a-row :gutter="8">
+                                <a-col :span="12">
+                                    <a-input-search v-model="p.product_id" readOnly enter-button @search="() => { order_product = p;productEditPageVisible = true; }" />
+                                </a-col>
+                                <a-col :span="8">
+                                    <a-tooltip title="Chọn khách hàng từ danh sách">
+                                        <a-button type="primary" icon="bank" @click="() => {order_product = p;productIndexPageVisible = true}">Chọn</a-button>
+                                    </a-tooltip>
+                                </a-col>
+                            </a-row>
                         </a-form-model-item>
                         <a-form-model-item label="Hình thức thanh toán" :rules="{required:true}" :prop="'order_products.'+pIdx+'.payment_method'">
                             <a-select v-model="p.payment_method">
@@ -76,12 +85,20 @@
                                 bordered
                             >
                                 <template slot="stock" slot-scope="text, ps, psIdx">
-                                    <a-tooltip v-if="ps.id" title="Xem">
-                                        <RouterLink :to="'/stocks/'+ps.stock.id+'/edit'">Đang chọn: #{{ ps.stock.id + '. ' + ps.stock.name + ' ('+ ps.stock.idi +')' + ' ('+ (number_format(ps.stock.cost_price)) +' VND)' }}</RouterLink>
-                                    </a-tooltip>
-                                    <template v-else>{{ 'Hàng trong kho #'+psIdx }}</template>
-                                    <a-form-model-item :rules="{required:true}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.stock_id'" style="margin-bottom:0;">
-                                        <a-tree-select show-search treeNodeFilterProp="title" :tree-data="stockData" :load-data="loadCategoryStocks" placeholder="Please select" v-model="ps.stock_id" :dropdownStyle="{maxHeight:'60vh'}" />
+                                    <a-form-model-item
+                                        :rules="{required:true}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.stock_id'" style="margin-bottom:0;"
+                                        :help="ps.id ? `Đang chọn: #${ps.stock_id} - ${ps.stock.name} (${ps.stock.idi}) (${number_format(ps.stock.cost_price)} VND)` : false"
+                                    >
+                                        <a-row :gutter="8">
+                                            <a-col :span="12">
+                                                <a-input-search v-model="ps.stock_id" readOnly enter-button @search="() => { order_product_stock = ps;stockEditPageVisible = true; }" />
+                                            </a-col>
+                                            <a-col :span="8">
+                                                <a-tooltip title="Chọn khách hàng từ danh sách">
+                                                    <a-button type="primary" icon="bank" @click="() => {order_product_stock = ps;stockIndexPageVisible = true}">Chọn</a-button>
+                                                </a-tooltip>
+                                            </a-col>
+                                        </a-row>
                                     </a-form-model-item>
                                 </template>
                                 <template slot="amount" slot-scope="text, ps, psIdx">
@@ -208,17 +225,34 @@
             :visible="stockIndexPageVisible"
             @cancel="() => stockIndexPageVisible = false"
             :footer="false"
-            :width="1000"
+            width="95vw"
         >
-            <StockIndex :onFinishSelect="onFinishSelectUser" />
+            <StockIndex :onFinishSelect="onFinishSelectStock" />
         </a-modal>
         <a-modal
             :visible="stockEditPageVisible"
             @cancel="() => stockEditPageVisible = false"
             :footer="false"
-            :width="800"
+            width="95vw"
         >
-            <StockEdit :userId="formData.customer_id" />
+            <StockEdit :stockId="order_product_stock.stock_id" />
+        </a-modal>
+
+        <a-modal
+            :visible="productIndexPageVisible"
+            @cancel="() => productIndexPageVisible = false"
+            :footer="false"
+            width="95vw"
+        >
+            <ProductIndex :onFinishSelect="onFinishSelectProduct" />
+        </a-modal>
+        <a-modal
+            :visible="productEditPageVisible"
+            @cancel="() => productEditPageVisible = false"
+            :footer="false"
+            width="95vw"
+        >
+            <ProductEdit :productId="order_product.product_id" />
         </a-modal>
     </div>
 </template>
@@ -231,6 +265,9 @@ import { number_format } from '../../../helpers';
 
 import UserIndex from '../users/Index';
 import UserEdit from '../users/Edit';
+
+import ProductIndex from '../products/Index';
+import ProductEdit from '../products/Edit';
 
 import StockIndex from '../stocks/Index';
 import StockEdit from '../stocks/Edit';
@@ -317,6 +354,14 @@ export default {
             userIndexPageVisible: false,
             userEditPageVisible: false,
 
+            productIndexPageVisible: false,
+            productEditPageVisible: false,
+            order_product: {},
+
+            stockIndexPageVisible: false,
+            stockEditPageVisible: false,
+            order_product_stock: {},
+
             orderInfo: {},
             categories: [],
             productData: [],
@@ -344,6 +389,7 @@ export default {
         PaidAmount,
         UserIndex, UserEdit,
         StockIndex, StockEdit,
+        ProductIndex, ProductEdit,
     },
     mounted() {
         this.loadCategoriesTree();
@@ -370,7 +416,7 @@ export default {
     },
     computed: {
         id() {
-            return this.orderId || $route.params.id;
+            return this.orderId || this.$route.params.id;
         },
         transaction_obj() {
             return {
@@ -564,121 +610,22 @@ export default {
                 });
         },
 
-        loadCategoryProducts(treeNode) {
-            const targetOption = treeNode.dataRef;
-
-            const category_id = targetOption.meta.category_id;
-
-            return axios.get(`/api/products`, {
-                params: {
-                    category_id,
-                    all: true,
-                },
-            })
-                .then(res => {
-                    const sData = res.data.data;
-
-                    targetOption.children = [];
-
-                    // Find category
-                    const len = this.categories.length;
-                    for (let i = 0; i < len; i++) {
-                        const elm = this.categories[i];
-                        if (elm.parent_id === category_id) {
-                            const newOtp = {
-                                isLeaf: false,
-                                selectable: false,
-                                value: 'cat-'+elm.id,
-                                title: '[+] ' + elm.name,
-                                meta: {category_id: elm.id},
-                            };
-                            targetOption.children.push(Object.assign({}, newOtp));
-                        }
-                    }
-
-                    for (let i = 0; i < sData.length; i++) {
-                        const elm = sData[i];
-                        const newOtp = {
-                            isLeaf: true,
-                            title: elm.id +'. ' + elm.name + ' ('+number_format(elm.price)+' VND)',
-                            value: elm.id,
-                        };
-                        targetOption.children.push(newOtp);
-                    }
-
-                    targetOption.disabled = (targetOption.children.length === 0);
-                })
-                .catch(err => {
-                    if (err.response && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || 'Thất bại');
-                })
-                .finally(()=>{
-                    this.productData = [...this.productData];
-                });
-        },
-
-        loadCategoryStocks(treeNode) {
-            const targetOption = treeNode.dataRef;
-
-            const category_id = targetOption.meta.category_id;
-
-            return axios.get(`/api/stocks?category_id=${category_id}&all=true`)
-                .then(res => {
-                    const sData = res.data.data;
-
-                    targetOption.children = [];
-
-                    // Find category
-                    const len = this.categories.length;
-                    for (let i = 0; i < len; i++) {
-                        const elm = this.categories[i];
-                        if (elm.parent_id === category_id) {
-                            const newOtp = {
-                                isLeaf: false,
-                                selectable: false,
-                                value: 'cat-'+elm.id,
-                                title: '[+] ' + elm.name,
-                                meta: {category_id: elm.id},
-                            };
-                            targetOption.children.push(Object.assign({}, newOtp));
-                        }
-                    }
-
-                    for (let i = 0; i < sData.length; i++) {
-                        const elm = sData[i];
-                        if (elm.quantity > 0) {
-                            const newOtp = {
-                                isLeaf: true,
-                                title: elm.id +'. ' + elm.name + ' ('+elm.idi+') ' + ' ('+number_format(elm.cost_price)+' VND)' + ' (x'+ elm.quantity +')',
-                                value: elm.id,
-                            };
-                            targetOption.children.push(newOtp);
-                        }
-                    }
-
-                    targetOption.disabled = (targetOption.children.length === 0);
-                })
-                .catch(err => {
-                    if (err.response && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || 'Thất bại');
-                })
-                .finally(() => {
-                    this.stockData = [...this.stockData];
-                });
-        },
-
         onFinishSelectUser(recordData) {
             this.formData.customer_id = recordData.id;
 
             this.userIndexPageVisible = false;
+        },
+
+        onFinishSelectProduct(recordData) {
+            this.order_product.product_id = recordData.id;
+
+            this.productIndexPageVisible = false;
+        },
+
+        onFinishSelectStock(recordData) {
+            this.order_product_stock.stock_id = recordData.id;
+
+            this.stockIndexPageVisible = false;
         },
     },
 }

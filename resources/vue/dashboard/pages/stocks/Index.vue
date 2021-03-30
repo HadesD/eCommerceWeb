@@ -65,7 +65,7 @@
                         <router-link :to="`/stocks/${record.id}/edit`">
                             <a-button type="primary" icon="edit">Sửa</a-button>
                         </router-link>
-                        <a-popconfirm title="Chắc chưa?" @confirm="()=>{onDeleteConfirmed(record)}">
+                        <a-popconfirm title="Chắc chưa?" @confirm="() => onDeleteConfirmed(record)">
                             <a-icon slot="icon" type="question-circle-o" style="color: red" />
                             <a-button type="danger" icon="delete">Xóa</a-button>
                         </a-popconfirm>

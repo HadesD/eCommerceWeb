@@ -10,8 +10,8 @@
         />
         <a-spin :spinning="productInfoLoading">
             <a-page-header
-                :title="$route.params.id ? `Sản phẩm: ${formData.name}` : 'Đăng bán sản phẩm mới'"
-                :sub-title="$route.params.id ? `#${$route.params.id}` : false"
+                :title="id ? `Sản phẩm: ${formData.name}` : 'Đăng bán sản phẩm mới'"
+                :sub-title="id ? `#${id}` : false"
             />
             <a-form-model
                 ref="ruleForm"
@@ -116,10 +116,10 @@
                         </a-form-model-item>
                     </a-tab-pane>
                 </a-tabs>
-                <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
+                <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }" v-if="!productId">
                     <a-button
                         type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate(valid => { if (valid) onFinish() })"
-                    >{{ $route.params.id ? 'Sửa' : 'Đăng bán' }}</a-button>
+                    >{{ id ? 'Sửa' : 'Đăng bán' }}</a-button>
                 </a-form-model-item>
             </a-form-model>
         </a-spin>
@@ -130,6 +130,9 @@ import ProductStatus from '../../configs/ProductStatus';
 import { vietnameseNormalize, number_format } from '../../../helpers';
 
 export default {
+    props: {
+        productId: Number,
+    },
     components: {
         AddCategoryModal: () => import('../../components/AddCategoryModal.vue'),
     },
@@ -174,6 +177,10 @@ export default {
         };
     },
     computed:{
+        id() {
+            return this.productId || this.$route.params.id;
+        },
+
         categoriesTreeData(){
             let data = this.categories;
 
@@ -187,16 +194,11 @@ export default {
         configProductStatus() {
             return ProductStatus;
         },
-
     },
     mounted(){
-        this.formData.id = this.$route.params.id;
-
         this.reloadCategoriesTree();
 
-        if (this.formData.id) {
-            this.loadProduct(this.formData.id)
-        }
+        this.loadProduct(this.id)
     },
     methods: {
         number_format,
@@ -235,6 +237,10 @@ export default {
         },
 
         loadProduct(id){
+            if (!id) {
+                return;
+            }
+
             this.productInfoLoading = true;
             axios.get(`/api/products/${id}`)
                 .then(res => {
@@ -267,7 +273,7 @@ export default {
         onFinish() {
             this.productInfoLoading = true;
 
-            const productId = this.$route.params.id;
+            const productId = this.id;
             if (productId) {
                 axios.put(`/api/products/${productId}`, this.formData)
                     .then(res => {

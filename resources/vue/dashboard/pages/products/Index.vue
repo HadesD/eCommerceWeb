@@ -64,14 +64,18 @@
                     <div>Update: {{ date_format(record.updated_at) }}</div>
                 </span>
                 <span slot="action" slot-scope="record">
+                <template v-if="!onFinishSelect">
                     <router-link :to="`/products/${record.id}/edit`">
-                        <a-icon type="edit" /> Sửa
+                        <a-button type="primary" icon="edit">Sửa</a-button>
                     </router-link>
-                    <a-divider type="vertical"></a-divider>
-                    <a-popconfirm title="Chắc chưa?" @confirm="()=>{onDeleteConfirmed(record)}">
+                    <a-popconfirm title="Chắc chưa?" @confirm="() => onDeleteConfirmed(record)">
                         <a-icon slot="icon" type="question-circle-o" style="color: red" />
-                        <a href="#"><a-icon type="delete" /> Xóa</a>
+                        <a-button type="danger" icon="delete">Xóa</a-button>
                     </a-popconfirm>
+                </template>
+                <template v-else>
+                    <a-button type="primary" icon="shopping-cart" @click="() => onFinishSelect(record)">Chọn</a-button>
+                </template>
                 </span>
             </a-table>
         </a-col>
@@ -116,184 +120,187 @@ const productsTableColumns = [
 ];
 
 export default {
-  components: {
-    AddCategoryModal: () => import('../../components/AddCategoryModal.vue'),
-  },
-  data() {
-    return {
-      categories: [],
-      addCategoryModalVisible: false,
-      categoriesTreeLoading: false,
-      currentCategoryId: 0,
-      categoriesTreeExpandedKeys: [],
+    props: {
+        onFinishSelect: Function,
+    },
+    components: {
+        AddCategoryModal: () => import('../../components/AddCategoryModal.vue'),
+    },
+    data() {
+        return {
+            categories: [],
+            addCategoryModalVisible: false,
+            categoriesTreeLoading: false,
+            currentCategoryId: 0,
+            categoriesTreeExpandedKeys: [],
 
-      products: [],
-      productsTableLoading: false,
-      productsTableColumns,
-      productsTablePagination: {
-        position: 'both',
-      },
-    };
-  },
-  mounted(){
-    this.loadCategoriesTree();
-
-    this.currentCategoryId = (parseInt(this.$route.query.category_id) || '');
-    this.productsTablePagination.current = (parseInt(this.$route.query.page) || 1);
-
-    this.loadProducts(this.currentCategoryId, this.productsTablePagination.current);
-  },
-  computed: {
-    categoriesTreeData(){
-      const getParent = (key, tree) => {
-        let parent;
-        for (let i = 0; i < tree.length; i++) {
-          const node = tree[i];
-          if (node.key === key) {
-            parent = node;
-          } else if (node.children && node.children.length) {
-            parent = getParent(key, node.children);
-          }
-        }
-
-        return parent;
-      };
-
-      const sortedCategories = this.categories;
-
-      // Reset
-      this.categoriesTreeExpandedKeys = [];
-
-      let data = [];
-      for (let i = 0; i < sortedCategories.length; i++) {
-        const cur = sortedCategories[i];
-
-        const newData = {
-          key: cur.id,
-          title: cur.name,
-          children: [],
+            products: [],
+            productsTableLoading: false,
+            productsTableColumns,
+            productsTablePagination: {
+                position: 'both',
+            },
         };
-
-        let parent = getParent(cur.parent_id, data);
-        let toNode = parent ? parent.children : data;
-        toNode.push(newData);
-
-        toNode = toNode.sort((a,b) => a.title.toUpperCase() > b.title.toUpperCase() ? 1 : -1);
-
-        // Update key
-        this.categoriesTreeExpandedKeys.push(newData.key);
-      }
-
-      return data;
     },
-    productsTableData(){
-      return this.products;
+    mounted(){
+        this.loadCategoriesTree();
+
+        this.currentCategoryId = (parseInt(this.$route.query.category_id) || '');
+        this.productsTablePagination.current = (parseInt(this.$route.query.page) || 1);
+
+        this.loadProducts(this.currentCategoryId, this.productsTablePagination.current);
     },
-
-    configProductStatus() {
-        return ProductStatus;
-    },
-  },
-  methods: {
-    number_format,
-    date_format,
-    // CategoriesTree
-    loadCategoriesTree(){
-      this.categoriesTreeLoading = true;
-      axios.get('/api/categories')
-        .then(res => {
-            this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
-        })
-        .catch(err => {
-            if (err.response && err.response.data.message) {
-                this.$message.error(err.response.data.message);
-                return;
-            }
-
-            this.$message.error(err.message || 'Thất bại');
-        })
-        .finally(()=>{
-            this.categoriesTreeLoading = false;
-        });
-    },
-    updateCategories(cats) {
-      this.loadCategoriesTree();
-    },
-    onCategoriesTreeSelect(keys, event) {
-      this.currentCategoryId = keys[0];
-
-      this.loadProducts(this.currentCategoryId, 1);
-    },
-    onCategoriesTreeExpand() {
-      console.log('Trigger Expand');
-    },
-
-    // Modal
-    showAddCategoryModal() {
-      this.addCategoryModalVisible = true;
-    },
-    addCategoryModalHandleOk(e){
-      // this.addCategoryModalVisible = false;
-    },
-    addCategoryModalHandleCancel(e){
-      this.addCategoryModalVisible = false;
-    },
-
-    // Product
-    loadProducts(category_id, page){
-      this.productsTableLoading = true;
-
-      axios.get('/api/products', {
-          params: {
-            page, category_id,
-          },
-      })
-        .then(res => {
-          const resData = res.data;
-          this.products = resData.data || [];
-
-          const newPagi = {
-            total: resData.total,
-            current: resData.current_page,
-            pageSize: resData.per_page,
-          };
-          this.productsTablePagination = {...newPagi};
-
-        //   if ((this.$route.query.page != resData.current_page) || (this.$route.query.category_id != category_id)) {
-        //     this.$router.push('/products/index?page='+resData.current_page+'&category_id='+category_id);
-        //   }
-        })
-        .catch(err => {
-            if (err.response && err.response.data.message) {
-                this.$message.error(err.response.data.message);
-                return;
-            }
-
-            this.$message.error(err.message || 'Load thất bại');
-        })
-        .finally(()=>{
-            this.productsTableLoading = false;
-        });
-    },
-
-    onDeleteConfirmed(record){
-        axios.delete(`/api/products/${record.id}`)
-            .then(res => {
-                this.$message.success('Xóa thành công');
-
-                this.loadProducts(this.currentCategoryId, this.productsTablePagination.current);
-            })
-            .catch(err => {
-                if (err.response && err.response.data.message) {
-                    this.$message.error(err.response.data.message);
-                    return;
+    computed: {
+        categoriesTreeData(){
+            const getParent = (key, tree) => {
+                let parent;
+                for (let i = 0; i < tree.length; i++) {
+                    const node = tree[i];
+                    if (node.key === key) {
+                        parent = node;
+                    } else if (node.children && node.children.length) {
+                        parent = getParent(key, node.children);
+                    }
                 }
 
-                this.$message.error('Xóa thất bại');
-            })
-            .finally(()=>{
-            });
+                return parent;
+            };
+
+            const sortedCategories = this.categories;
+
+            // Reset
+            this.categoriesTreeExpandedKeys = [];
+
+            let data = [];
+            for (let i = 0; i < sortedCategories.length; i++) {
+                const cur = sortedCategories[i];
+
+                const newData = {
+                key: cur.id,
+                title: cur.name,
+                children: [],
+                };
+
+                let parent = getParent(cur.parent_id, data);
+                let toNode = parent ? parent.children : data;
+                toNode.push(newData);
+
+                toNode = toNode.sort((a,b) => a.title.toUpperCase() > b.title.toUpperCase() ? 1 : -1);
+
+                // Update key
+                this.categoriesTreeExpandedKeys.push(newData.key);
+            }
+
+            return data;
+        },
+        productsTableData(){
+            return this.products;
+        },
+
+        configProductStatus() {
+            return ProductStatus;
+        },
     },
-  },
+    methods: {
+        number_format,
+        date_format,
+        // CategoriesTree
+        loadCategoriesTree(){
+            this.categoriesTreeLoading = true;
+            axios.get('/api/categories')
+                .then(res => {
+                    this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
+                })
+                .catch(err => {
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
+                        return;
+                    }
+
+                    this.$message.error(err.message || 'Thất bại');
+                })
+                .finally(()=>{
+                    this.categoriesTreeLoading = false;
+                });
+        },
+        updateCategories(cats) {
+            this.loadCategoriesTree();
+        },
+        onCategoriesTreeSelect(keys, event) {
+            this.currentCategoryId = keys[0];
+
+            this.loadProducts(this.currentCategoryId, 1);
+        },
+        onCategoriesTreeExpand() {
+            console.log('Trigger Expand');
+        },
+
+        // Modal
+        showAddCategoryModal() {
+            this.addCategoryModalVisible = true;
+        },
+        addCategoryModalHandleOk(e){
+            // this.addCategoryModalVisible = false;
+        },
+        addCategoryModalHandleCancel(e){
+            this.addCategoryModalVisible = false;
+        },
+
+        // Product
+        loadProducts(category_id, page){
+            this.productsTableLoading = true;
+
+            axios.get('/api/products', {
+                params: {
+                    page, category_id,
+                },
+            })
+                .then(res => {
+                const resData = res.data;
+                this.products = resData.data || [];
+
+                const newPagi = {
+                    total: resData.total,
+                    current: resData.current_page,
+                    pageSize: resData.per_page,
+                };
+                this.productsTablePagination = {...newPagi};
+
+                //   if ((this.$route.query.page != resData.current_page) || (this.$route.query.category_id != category_id)) {
+                //     this.$router.push('/products/index?page='+resData.current_page+'&category_id='+category_id);
+                //   }
+                })
+                .catch(err => {
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
+                        return;
+                    }
+
+                    this.$message.error(err.message || 'Load thất bại');
+                })
+                .finally(()=>{
+                    this.productsTableLoading = false;
+                });
+        },
+
+        onDeleteConfirmed(record){
+            axios.delete(`/api/products/${record.id}`)
+                .then(res => {
+                    this.$message.success('Xóa thành công');
+
+                    this.loadProducts(this.currentCategoryId, this.productsTablePagination.current);
+                })
+                .catch(err => {
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
+                        return;
+                    }
+
+                    this.$message.error('Xóa thất bại');
+                })
+                .finally(()=>{
+                });
+        },
+    },
 }
 </script>
