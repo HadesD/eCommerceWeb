@@ -23,7 +23,7 @@
                             <a-input-search v-model="formData.customer_id" readOnly enter-button @search="() => userEditPageVisible = true" />
                         </a-col>
                         <a-col :span="8">
-                            <a-tooltip title="Chọn khách hàng từ danh sách">
+                            <a-tooltip title="Chọn từ danh sách">
                                 <a-button type="primary" icon="user" @click="() => userIndexPageVisible = true">Chọn</a-button>
                             </a-tooltip>
                         </a-col>
@@ -56,8 +56,8 @@
                                     <a-input-search v-model="p.product_id" readOnly enter-button @search="() => { order_product = p;productEditPageVisible = true; }" />
                                 </a-col>
                                 <a-col :span="8">
-                                    <a-tooltip title="Chọn khách hàng từ danh sách">
-                                        <a-button type="primary" icon="bank" @click="() => {order_product = p;productIndexPageVisible = true}">Chọn</a-button>
+                                    <a-tooltip title="Chọn từ danh sách">
+                                        <a-button type="primary" icon="shopping-cart" @click="() => {order_product = p;productIndexPageVisible = true}">Chọn</a-button>
                                     </a-tooltip>
                                 </a-col>
                             </a-row>
@@ -94,7 +94,7 @@
                                                 <a-input-search v-model="ps.stock_id" readOnly enter-button @search="() => { order_product_stock = ps;stockEditPageVisible = true; }" />
                                             </a-col>
                                             <a-col :span="8">
-                                                <a-tooltip title="Chọn khách hàng từ danh sách">
+                                                <a-tooltip title="Chọn từ danh sách">
                                                     <a-button type="primary" icon="bank" @click="() => {order_product_stock = ps;stockIndexPageVisible = true}">Chọn</a-button>
                                                 </a-tooltip>
                                             </a-col>
