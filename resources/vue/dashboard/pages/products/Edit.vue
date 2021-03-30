@@ -116,7 +116,7 @@
                         </a-form-model-item>
                     </a-tab-pane>
                 </a-tabs>
-                <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }" v-if="!productId">
+                <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }" v-if="productId === undefined">
                     <a-button
                         type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate(valid => { if (valid) onFinish() })"
                     >{{ id ? 'Sửa' : 'Đăng bán' }}</a-button>
@@ -178,7 +178,7 @@ export default {
     },
     computed:{
         id() {
-            return this.productId || this.$route.params.id;
+            return (this.productId !== undefined) ? this.productId : this.$route.params.id;
         },
 
         categoriesTreeData(){

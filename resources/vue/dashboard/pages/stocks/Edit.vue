@@ -83,7 +83,7 @@
                         @blur="() => $refs.in_date.onFieldBlur()"
                     />
                 </a-form-model-item>
-                <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }" v-if="!stockId">
+                <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }" v-if="stockId === undefined">
                     <a-button
                         type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })"
                     >{{ id ? 'Sửa' : 'Nhập kho' }}</a-button>
@@ -148,7 +148,7 @@ export default {
     },
     computed: {
         id() {
-            return this.stockId || this.$route.params.id;
+            return (this.stockId !== undefined) ? this.stockId : this.$route.params.id;
         },
         categoriesTreeData(){
             let data = this.categories;

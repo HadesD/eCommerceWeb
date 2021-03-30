@@ -44,7 +44,7 @@
                         </a-popconfirm>
                         <a-form-model-item
                             label="Sản phẩm" :rules="{required:true}" :prop="'order_products.'+pIdx+'.product_id'"
-                            :help="`Đang chọn: #${p.product.id}. ${p.product.name} (${number_format(p.product.price)} VND)`"
+                            :help="(p.id && p.product) ? `Đang chọn: #${p.product.id}. ${p.product.name} (${number_format(p.product.price)} VND)` : false"
                         >
                             <a-row :gutter="8">
                                 <a-col :span="12">
@@ -82,7 +82,7 @@
                                 <template slot="stock" slot-scope="text, ps, psIdx">
                                     <a-form-model-item
                                         :rules="{required:true}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.stock_id'" style="margin-bottom:0;"
-                                        :help="ps.id ? `Đang chọn: #${ps.stock_id}. ${ps.stock.name} (${ps.stock.idi}) (${number_format(ps.stock.cost_price)} VND)` : false"
+                                        :help="(ps.id && ps.stock) ? `Đang chọn: #${ps.stock_id}. ${ps.stock.name} (${ps.stock.idi}) (${number_format(ps.stock.cost_price)} VND)` : false"
                                     >
                                         <a-row :gutter="8">
                                             <a-col :span="12">
@@ -425,7 +425,7 @@ export default {
             return {
                 id: undefined,
                 order_id: undefined,
-                product_id: undefined,
+                product_id: null,
                 payment_method: 1,
                 order_product_stocks: [],
                 quantity: undefined,
@@ -435,7 +435,7 @@ export default {
             return {
                 id: undefined,
                 order_product_id: undefined,
-                stock_id: undefined,
+                stock_id: null,
                 amount: undefined,
                 transactions: [],
             }
