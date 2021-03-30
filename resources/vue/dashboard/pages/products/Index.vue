@@ -74,7 +74,10 @@
                     </a-popconfirm>
                 </template>
                 <template v-else>
-                    <a-button type="primary" icon="shopping-cart" @click="() => onFinishSelect(record)">Chọn</a-button>
+                    <a-button
+                        type="primary" icon="shopping-cart" @click="() => onFinishSelect(record)"
+                        :disabled="record.status === 2"
+                    >Chọn</a-button>
                 </template>
                 </span>
             </a-table>

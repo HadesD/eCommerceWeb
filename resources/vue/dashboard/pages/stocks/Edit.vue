@@ -164,7 +164,7 @@ export default {
         },
     },
     watch: {
-        id(to, from) {
+        id() {
             this.loadStock(this.id);
         },
     },

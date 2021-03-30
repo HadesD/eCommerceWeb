@@ -195,6 +195,11 @@ export default {
             return ProductStatus;
         },
     },
+    watch: {
+        id() {
+            this.loadProduct(this.id);
+        },
+    },
     mounted(){
         this.reloadCategoriesTree();
 

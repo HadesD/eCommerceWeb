@@ -38,19 +38,14 @@
                             <a-button type="primary" icon="plus" />
                         </a-tooltip>
                     </a>
-                    <a-card v-for="(p, pIdx) in formData.order_products" :key="p.id" style="margin-bottom: 16px;" :headStyle="{backgroundColor:'#f18e1f',color:'#FFF'}">
-                        <template slot="title">
-                            <template v-if="p.id && p.product">
-                                <a-tooltip title="Xem">
-                                    <RouterLink :to="'/products/'+p.product.id+'/edit'">Đang chọn: #{{ p.product.id + '. ' + p.product.name + ' ('+ number_format(p.product.price) +' VND)' }}</RouterLink>
-                                </a-tooltip>
-                            </template>
-                            <template v-else>{{ 'Sản phẩm #'+pIdx }}</template>
-                        </template>
+                    <a-card :title="`Sản phẩm #${pIdx}`" v-for="(p, pIdx) in formData.order_products" :key="p.id" style="margin-bottom: 16px;" :headStyle="{backgroundColor:'#f18e1f',color:'#FFF'}">
                         <a-popconfirm slot="extra" title="Chắc chắn muốn xóa?" @confirm="() => formData.order_products.splice(pIdx, 1)">
                             <a-button type="primary" icon="delete"></a-button>
                         </a-popconfirm>
-                        <a-form-model-item label="Sản phẩm" :rules="{required:true}" :prop="'order_products.'+pIdx+'.product_id'">
+                        <a-form-model-item
+                            label="Sản phẩm" :rules="{required:true}" :prop="'order_products.'+pIdx+'.product_id'"
+                            :help="`Đang chọn: #${p.product.id}. ${p.product.name} (${number_format(p.product.price)} VND)`"
+                        >
                             <a-row :gutter="8">
                                 <a-col :span="12">
                                     <a-input-search v-model="p.product_id" readOnly enter-button @search="() => { order_product = p;productEditPageVisible = true; }" />
@@ -87,7 +82,7 @@
                                 <template slot="stock" slot-scope="text, ps, psIdx">
                                     <a-form-model-item
                                         :rules="{required:true}" :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.stock_id'" style="margin-bottom:0;"
-                                        :help="ps.id ? `Đang chọn: #${ps.stock_id} - ${ps.stock.name} (${ps.stock.idi}) (${number_format(ps.stock.cost_price)} VND)` : false"
+                                        :help="ps.id ? `Đang chọn: #${ps.stock_id}. ${ps.stock.name} (${ps.stock.idi}) (${number_format(ps.stock.cost_price)} VND)` : false"
                                     >
                                         <a-row :gutter="8">
                                             <a-col :span="12">
