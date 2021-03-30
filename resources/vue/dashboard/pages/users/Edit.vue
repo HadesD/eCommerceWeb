@@ -57,7 +57,9 @@ export default {
                 email: undefined,
                 phone: undefined,
                 password: undefined,
-                sns_info: {},
+                sns_info: {
+                    facebook: undefined,
+                },
                 role: 50,
             },
             rules: {
