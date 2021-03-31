@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-interface Status
+interface OrderStatus
 {
     const STS_PROCESSING = 0;
     const STS_CANCELED = 10;
@@ -17,7 +17,7 @@ interface Status
 }
 
 class Order extends Model
-    implements Status
+    implements OrderStatus
 {
     use HasFactory, SoftDeletes;
 

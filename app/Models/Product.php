@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-interface Status
+interface ProductStatus
 {
     const STS_DRAFT = 0;
     const STS_SELLING = 1;
@@ -14,7 +14,7 @@ interface Status
 }
 
 class Product extends Model
-    implements Status
+    implements ProductStatus
 {
     use HasFactory, SoftDeletes;
 

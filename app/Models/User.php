@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-interface Role
+interface UserRole
 {
     const ROLE_USER_BLOCKED = 0;
     const ROLE_USER_UNACTIVE = 10;
@@ -18,7 +18,7 @@ interface Role
 }
 
 class User extends Authenticatable
-    implements Role
+    implements UserRole
 {
     use HasApiTokens;
     use HasFactory;
@@ -70,6 +70,6 @@ class User extends Authenticatable
 
     static public function allRoles()
     {
-        return (new \ReflectionClass(Role::class))->getConstants();
+        return (new \ReflectionClass(UserRole::class))->getConstants();
     }
 }
