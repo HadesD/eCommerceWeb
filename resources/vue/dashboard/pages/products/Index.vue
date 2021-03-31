@@ -47,6 +47,7 @@
                 :loading="productsTableLoading"
                 :row-key="record => record.id"
                 :pagination="productsTablePagination"
+                @change="(pagination, filters) => loadProducts({page: pagination.current, filters})"
             >
                 <!-- Block Search: BEGIN -->
                 <div
@@ -67,9 +68,9 @@
                         icon="search"
                         size="small"
                         style="width: 90px; margin-right: 8px"
-                        @click="() => {loadProducts({page:1, filters:{[column.dataIndex]: selectedKeys[0]}});confirm();}"
+                        @click="() => {confirm();}"
                     >Tìm</a-button>
-                    <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);loadProducts({page:1, filters:{[column.dataIndex]: undefined}});clearFilters();}">Reset</a-button>
+                    <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);clearFilters();}">Reset</a-button>
                 </div>
                 <a-icon
                     slot="filterSearchBoxIcon"
@@ -175,15 +176,7 @@ export default {
             productsTableColumns,
             productsTablePagination: {
                 position: 'both',
-                change: (page, pageSize) => {
-                    this.loadProducts({
-                        page,
-                        limit: pageSize,
-                    });
-                },
-                showSizeChanger: true,
             },
-            productsTableFilters: {},
         };
     },
     mounted(){
@@ -295,20 +288,14 @@ export default {
         },
 
         // Product
-        loadProducts({category_id, page, limit, filters}){
-            this.productsTableFilters = {
-                ...this.productsTableFilters,
-                ...filters,
-            };
-
+        loadProducts({category_id, page, filters}){
             this.productsTableLoading = true;
 
             axios.get('/api/products', {
                 params: {
-                    page: page || this.productsTablePagination.current,
                     category_id: category_id || this.currentCategoryId,
-                    limit,
-                    ...this.productsTableFilters,
+                    page: page || this.productsTablePagination.current,
+                    ...filters,
                 },
             })
                 .then(res => {

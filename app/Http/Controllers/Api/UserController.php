@@ -29,7 +29,7 @@ class UserController extends Controller
 
         foreach (['name', 'phone', 'email', 'sns_info'] as $value) {
             if (isset($request->{$value})) {
-                $userQuery = $userQuery->where($value, 'LIKE', '%'.$request->{$value}.'%');
+                $userQuery = $userQuery->where($value, 'LIKE', '%'.(is_array($request->{$value}) ? $request->{$value}[0] : $request->{$value}).'%');
             }
         }
 

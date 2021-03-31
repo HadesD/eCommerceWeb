@@ -18,6 +18,7 @@
             :loading="usersTableLoading"
             :row-key="record => record.id"
             :pagination="usersTablePagination"
+            @change="(pagination, filters) => loadUsers({page: pagination.current, filters})"
         >
             <!-- Block Search: BEGIN -->
             <div
@@ -38,9 +39,9 @@
                     icon="search"
                     size="small"
                     style="width: 90px; margin-right: 8px"
-                    @click="() => {loadUsers({page:1, filters:{[column.dataIndex]: selectedKeys[0]}});confirm();}"
+                    @click="() => {confirm();}"
                 >Tìm</a-button>
-                <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);loadUsers({page:1, filters:{[column.dataIndex]: undefined}});clearFilters();}">Reset</a-button>
+                <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);clearFilters();}">Reset</a-button>
             </div>
             <a-icon
                 slot="filterSearchBoxIcon"
@@ -158,15 +159,7 @@ export default {
             usersTableData: [],
             usersTablePagination: {
                 position: 'both',
-                change: (page, pageSize) => {
-                    this.loadUsers({
-                        page,
-                        limit: pageSize,
-                    });
-                },
-                showSizeChanger: true,
             },
-            usersTableFilters: {},
 
             editPageVisible: false,
         };
@@ -184,19 +177,13 @@ export default {
     },
     methods: {
         date_format,
-        loadUsers({page, limit, filters}) {
-            this.usersTableFilters = {
-                ...this.usersTableFilters,
-                ...filters,
-            };
-
+        loadUsers({page, filters}) {
             this.usersTableLoading = true;
 
             axios.get('/api/users', {
                 params: {
-                    page,
-                    limit,
-                    ...this.usersTableFilters,
+                    page: page || this.usersTablePagination.current,
+                    ...filters,
                 }
             })
                 .then(res => {

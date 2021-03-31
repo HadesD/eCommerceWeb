@@ -48,6 +48,7 @@
                 :loading="stocksTableLoading"
                 :row-key="record => record.id"
                 :pagination="stocksTablePagination"
+                @change="(pagination, filters) => loadStocks({page: pagination.current, filters})"
             >
                 <!-- Block Search: BEGIN -->
                 <div
@@ -56,7 +57,6 @@
                     style="padding: 8px"
                 >
                     <a-input
-                        :ref="`filterSearchBox.${column.dataIndex}.input`"
                         :placeholder="`Tìm ${column.title}`"
                         :value="selectedKeys[0]"
                         style="width: 188px; margin-bottom: 8px; display: block;"
@@ -69,9 +69,9 @@
                         icon="search"
                         size="small"
                         style="width: 90px; margin-right: 8px"
-                        @click="() => {loadStocks({page:1, filters:{[column.dataIndex]: selectedKeys[0]}});confirm();}"
+                        @click="() => {confirm();}"
                     >Tìm</a-button>
-                    <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);loadStocks({page:1, filters:{[column.dataIndex]: undefined}});clearFilters();}">Reset</a-button>
+                    <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);clearFilters();}">Reset</a-button>
                 </div>
                 <a-icon
                     slot="filterSearchBoxIcon"
@@ -187,15 +187,7 @@ export default {
             stocksTableColumns,
             stocksTablePagination: {
                 position: 'both',
-                change: (page, pageSize) => {
-                    this.loadStocks({
-                        page,
-                        limit: pageSize,
-                    });
-                },
-                showSizeChanger: true,
             },
-            stocksTableFilters: {},
         };
     },
     mounted() {
@@ -211,12 +203,12 @@ export default {
             const getParent = (key, tree) => {
                 let parent;
                 for (let i = 0; i < tree.length; i++) {
-                const node = tree[i];
-                if (node.key === key) {
-                    parent = node;
-                } else if (node.children && node.children.length) {
-                    parent = getParent(key, node.children);
-                }
+                    const node = tree[i];
+                    if (node.key === key) {
+                        parent = node;
+                    } else if (node.children && node.children.length) {
+                        parent = getParent(key, node.children);
+                    }
                 }
 
                 return parent;
@@ -304,20 +296,14 @@ export default {
             this.addCategoryModalVisible = false;
         },
 
-        loadStocks({category_id, page, limit, filters}) {
-            this.stocksTableFilters = {
-                ...this.stocksTableFilters,
-                ...filters,
-            };
-
+        loadStocks({category_id, page, filters}) {
             this.stocksTableLoading = true;
 
             axios.get('/api/stocks', {
                 params: {
-                    page: page || this.stocksTablePagination.current,
                     category_id: category_id || this.currentCategoryId,
-                    limit,
-                    ...this.stocksTableFilters,
+                    page: page || this.stocksTablePagination.current,
+                    ...filters,
                 },
             })
                 .then(res => {

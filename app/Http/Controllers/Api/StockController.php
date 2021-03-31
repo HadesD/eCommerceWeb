@@ -27,7 +27,7 @@ class StockController extends Controller
 
         foreach (['name', 'idi'] as $value) {
             if (isset($request->{$value})) {
-                $stockQuery = $stockQuery->where($value, 'LIKE', '%'.$request->{$value}.'%');
+                $stockQuery = $stockQuery->where($value, 'LIKE', '%'.(is_array($request->{$value}) ? $request->{$value}[0] : $request->{$value}).'%');
             }
         }
 

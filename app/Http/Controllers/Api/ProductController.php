@@ -26,7 +26,7 @@ class ProductController extends Controller
 
         foreach (['name'] as $value) {
             if (isset($request->{$value})) {
-                $productQuery = $productQuery->where($value, 'LIKE', '%'.$request->{$value}.'%');
+                $productQuery = $productQuery->where($value, 'LIKE', '%'.(is_array($request->{$value}) ? $request->{$value}[0] : $request->{$value}).'%');
             }
         }
 
