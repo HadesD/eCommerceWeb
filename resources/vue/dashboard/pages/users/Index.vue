@@ -3,7 +3,7 @@
         <a-page-header title="Người dùng / Khách hàng">
             <template slot="tags">
                 <a-tooltip title="Làm mới">
-                    <a-button type="primary" icon="reload" :loading="usersTableLoading" @click="() => loadUsers({page:usersTablePagination.current})" />
+                    <a-button type="primary" icon="reload" :loading="usersTableLoading" @click="() => loadUsers({})" />
                 </a-tooltip>
             </template>
             <template slot="extra">
@@ -18,7 +18,7 @@
             :loading="usersTableLoading"
             :row-key="record => record.id"
             :pagination="usersTablePagination"
-            @change="(pagination, filters) => loadUsers({page: pagination.current, filters})"
+            @change="(pagination, filters) => {usersTableFilters = filters;loadUsers({page: pagination.current});}"
         >
             <!-- Block Search: BEGIN -->
             <div
@@ -160,6 +160,7 @@ export default {
             usersTablePagination: {
                 position: 'both',
             },
+            usersTableFilters: {},
 
             editPageVisible: false,
         };
@@ -177,13 +178,13 @@ export default {
     },
     methods: {
         date_format,
-        loadUsers({page, filters}) {
+        loadUsers({page}) {
             this.usersTableLoading = true;
 
             axios.get('/api/users', {
                 params: {
                     page: page || this.usersTablePagination.current,
-                    ...filters,
+                    ...this.usersTableFilters,
                 }
             })
                 .then(res => {

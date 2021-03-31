@@ -47,7 +47,7 @@
                 :loading="productsTableLoading"
                 :row-key="record => record.id"
                 :pagination="productsTablePagination"
-                @change="(pagination, filters) => loadProducts({page: pagination.current, filters})"
+                @change="(pagination, filters) => {productsTableFilters = filters;loadProducts({page: pagination.current});}"
             >
                 <!-- Block Search: BEGIN -->
                 <div
@@ -177,6 +177,7 @@ export default {
             productsTablePagination: {
                 position: 'both',
             },
+            productsTableFilters: {},
         };
     },
     mounted(){
@@ -288,14 +289,14 @@ export default {
         },
 
         // Product
-        loadProducts({category_id, page, filters}){
+        loadProducts({category_id, page}){
             this.productsTableLoading = true;
 
             axios.get('/api/products', {
                 params: {
                     category_id: category_id || this.currentCategoryId,
                     page: page || this.productsTablePagination.current,
-                    ...filters,
+                    ...this.productsTableFilters,
                 },
             })
                 .then(res => {

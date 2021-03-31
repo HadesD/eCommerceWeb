@@ -48,7 +48,7 @@
                 :loading="stocksTableLoading"
                 :row-key="record => record.id"
                 :pagination="stocksTablePagination"
-                @change="(pagination, filters) => loadStocks({page: pagination.current, filters})"
+                @change="(pagination, filters) => {stocksTableFilters = filters;loadStocks({page: pagination.current});}"
             >
                 <!-- Block Search: BEGIN -->
                 <div
@@ -188,6 +188,7 @@ export default {
             stocksTablePagination: {
                 position: 'both',
             },
+            stocksTableFilters: {},
         };
     },
     mounted() {
@@ -296,14 +297,14 @@ export default {
             this.addCategoryModalVisible = false;
         },
 
-        loadStocks({category_id, page, filters}) {
+        loadStocks({category_id, page}) {
             this.stocksTableLoading = true;
 
             axios.get('/api/stocks', {
                 params: {
                     category_id: category_id || this.currentCategoryId,
                     page: page || this.stocksTablePagination.current,
-                    ...filters,
+                    ...this.stocksTableFilters,
                 },
             })
                 .then(res => {
