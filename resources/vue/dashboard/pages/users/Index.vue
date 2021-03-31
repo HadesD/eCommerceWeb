@@ -46,7 +46,7 @@
     </div>
 </template>
 <script>
-import UserRole from '../../configs/UserRole';
+import UserRole, { Config as configUserRole } from '../../configs/UserRole';
 import Edit from './Edit';
 
 const usersTableColumns = [
@@ -108,8 +108,11 @@ export default {
         this.loadUserList({page: 1});
     },
     computed: {
-        configUserRole() {
+        UserRole() {
             return UserRole;
+        },
+        configUserRole() {
+            return configUserRole;
         },
     },
     methods: {

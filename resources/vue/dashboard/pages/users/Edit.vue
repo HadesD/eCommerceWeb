@@ -42,7 +42,7 @@
     </div>
 </template>
 <script>
-import UserRole from '../../configs/UserRole';
+import UserRole, { Config as configUserRole } from '../../configs/UserRole';
 import User from '../../utils/User';
 
 export default {
@@ -92,8 +92,11 @@ export default {
         id() {
             return this.userId;
         },
-        configUserRole() {
+        UserRole() {
             return UserRole;
+        },
+        configUserRole() {
+            return configUserRole;
         },
 
         authUser() {
