@@ -3,7 +3,7 @@
         <a-page-header title="Người dùng / Khách hàng">
             <template slot="tags">
                 <a-tooltip title="Làm mới">
-                    <a-button type="primary" icon="reload" :loading="usersTableLoading" @click="() => loadUserList({page:usersTablePagination.current})" />
+                    <a-button type="primary" icon="reload" :loading="usersTableLoading" @click="() => loadUsers({page:usersTablePagination.current})" />
                 </a-tooltip>
             </template>
             <template slot="extra">
@@ -38,9 +38,9 @@
                     icon="search"
                     size="small"
                     style="width: 90px; margin-right: 8px"
-                    @click="() => {loadUserList({page:1, filters:{[column.dataIndex]: selectedKeys[0]}});confirm();}"
+                    @click="() => {loadUsers({page:1, filters:{[column.dataIndex]: selectedKeys[0]}});confirm();}"
                 >Tìm</a-button>
-                <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);loadUserList({page:1, filters:{[column.dataIndex]: undefined}});clearFilters();}">Reset</a-button>
+                <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);loadUsers({page:1, filters:{[column.dataIndex]: undefined}});clearFilters();}">Reset</a-button>
             </div>
             <a-icon
                 slot="filterSearchBoxIcon"
@@ -159,7 +159,7 @@ export default {
             usersTablePagination: {
                 position: 'both',
                 change: (page, pageSize) => {
-                    this.loadUserList({
+                    this.loadUsers({
                         page,
                         limit: pageSize,
                     });
@@ -172,7 +172,7 @@ export default {
         };
     },
     mounted() {
-        this.loadUserList({page: 1});
+        this.loadUsers({page: 1});
     },
     computed: {
         UserRole() {
@@ -184,7 +184,7 @@ export default {
     },
     methods: {
         date_format,
-        loadUserList({page, limit, filters}) {
+        loadUsers({page, limit, filters}) {
             this.usersTableFilters = {
                 ...this.usersTableFilters,
                 ...filters,

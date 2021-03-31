@@ -18,11 +18,11 @@
         </a-page-header>
         <a-spin :spinning="categoriesTreeLoading || stocksTableLoading">
             <a-tree
-            show-line
-            :expandedKeys="categoriesTreeExpandedKeys"
-            :tree-data="categoriesTreeData"
-            @select="onCategoriesTreeSelect"
-            @expand="onCategoriesTreeExpand"
+                show-line
+                :expandedKeys="categoriesTreeExpandedKeys"
+                :tree-data="categoriesTreeData"
+                @select="onCategoriesTreeSelect"
+                @expand="onCategoriesTreeExpand"
             >
             </a-tree>
         </a-spin>
@@ -31,7 +31,7 @@
             <a-page-header title="Kho hàng">
                 <template slot="tags">
                     <a-tooltip title="Làm mới">
-                        <a-button type="primary" icon="reload" :loading="stocksTableLoading" @click="() => loadStocks(currentCategoryId, stocksTablePagination.current)" />
+                        <a-button type="primary" icon="reload" :loading="stocksTableLoading" @click="() => loadStocks({})" />
                     </a-tooltip>
                 </template>
                 <template slot="extra">
@@ -48,8 +48,38 @@
                 :loading="stocksTableLoading"
                 :row-key="record => record.id"
                 :pagination="stocksTablePagination"
-                @change="(pagination) => loadStocks(currentCategoryId, pagination.current)"
             >
+                <!-- Block Search: BEGIN -->
+                <div
+                    slot="filterSearchBox"
+                    slot-scope="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }"
+                    style="padding: 8px"
+                >
+                    <a-input
+                        :placeholder="`Tìm ${column.title}`"
+                        :value="selectedKeys[0]"
+                        style="width: 188px; margin-bottom: 8px; display: block;"
+                        @change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
+                        @pressEnter="() => $refs[`filterSearchBoxSubmit.${column.dataIndex}`].$el.click()"
+                    />
+                    <a-button
+                        :ref="`filterSearchBoxSubmit.${column.dataIndex}`"
+                        type="primary"
+                        icon="search"
+                        size="small"
+                        style="width: 90px; margin-right: 8px"
+                        @click="() => {loadStocks({page:1, filters:{[column.dataIndex]: selectedKeys[0]}});confirm();}"
+                    >Tìm</a-button>
+                    <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);loadStocks({page:1, filters:{[column.dataIndex]: undefined}});clearFilters();}">Reset</a-button>
+                </div>
+                <a-icon
+                    slot="filterSearchBoxIcon"
+                    slot-scope="filtered"
+                    type="search"
+                    :style="{ color: filtered ? '#108ee9' : undefined }"
+                />
+                <!-- Block Search: END -->
+
                 <template slot="cost_price" slot-scope="value" style="display:block;text-align:right;">{{ number_format(value) }}</template>
                 <template slot="quantity_info" slot-scope="record">
                     <div>Đã bán: {{ record.products.length }}</div>
@@ -87,43 +117,53 @@ import StockStatus from '../../configs/StockStatus';
 import { number_format, date_format } from '../../../helpers';
 
 const stocksTableColumns = [
-  {
-    title: '#',
-    dataIndex: 'id',
-  },
-  {
-    title: 'Tên',
-    dataIndex: 'name',
-  },
-  {
-    title: 'Id/Imei',
-    dataIndex: 'idi',
-  },
-  {
-    title: 'Giá lúc nhập (VND)',
-    dataIndex: 'cost_price',
-    scopedSlots: { customRender: 'cost_price' },
-  },
-  {
-    title: 'Số lượng',
-    key: 'quantity_info',
-    scopedSlots: { customRender: 'quantity_info' },
-  },
-  {
-    title: 'Thời gian',
-    key: 'time',
-    scopedSlots: { customRender: 'time' },
-  },
-  {
-    title: 'Người update',
-    key: 'update_user_id',
-    scopedSlots: { customRender: 'update_user' },
-  },
-  {
-    title: 'Hành động',
-    key: 'action',
-    scopedSlots: { customRender: 'action' },
-  },
+    {
+        title: '#',
+        dataIndex: 'id',
+    },
+    {
+        title: 'Tên',
+        dataIndex: 'name',
+        scopedSlots: {
+            filterDropdown: 'filterSearchBox',
+            filterIcon: 'filterSearchBoxIcon',
+        },
+    },
+    {
+        title: 'Id/Imei',
+        dataIndex: 'idi',
+        scopedSlots: {
+            filterDropdown: 'filterSearchBox',
+            filterIcon: 'filterSearchBoxIcon',
+        },
+    },
+    {
+        title: 'Giá lúc nhập (VND)',
+        dataIndex: 'cost_price',
+        scopedSlots: {
+            customRender: 'cost_price'
+        },
+    },
+    {
+        title: 'Số lượng',
+        key: 'quantity_info',
+        scopedSlots: { customRender: 'quantity_info' },
+    },
+    {
+        title: 'Thời gian',
+        key: 'time',
+        scopedSlots: { customRender: 'time' },
+    },
+    {
+        title: 'Người update',
+        key: 'update_user_id',
+        scopedSlots: { customRender: 'update_user' },
+    },
+    {
+        title: 'Hành động',
+        key: 'action',
+        scopedSlots: { customRender: 'action' },
+    },
 ];
 
 export default {
@@ -135,27 +175,35 @@ export default {
     },
     data() {
         return {
-        categories: [],
-        addCategoryModalVisible: false,
-        categoriesTreeLoading: false,
-        currentCategoryId: 0,
-        categoriesTreeExpandedKeys: [],
+            categories: [],
+            addCategoryModalVisible: false,
+            categoriesTreeLoading: false,
+            currentCategoryId: 0,
+            categoriesTreeExpandedKeys: [],
 
-        stocks: [],
-        stocksTableLoading: false,
-        stocksTableColumns,
-        stocksTablePagination: {
-            position: 'both',
-        },
+            stocks: [],
+            stocksTableLoading: false,
+            stocksTableColumns,
+            stocksTablePagination: {
+                position: 'both',
+                change: (page, pageSize) => {
+                    this.loadStocks({
+                        page,
+                        limit: pageSize,
+                    });
+                },
+                showSizeChanger: true,
+            },
+            stocksTableFilters: {},
         };
     },
     mounted() {
         this.loadCategoriesTree();
 
-        this.currentCategoryId = (parseInt(this.$route.query.category_id) || '');
+        this.currentCategoryId = (parseInt(this.$route.query.category_id) || undefined);
         this.stocksTablePagination.current = (parseInt(this.$route.query.page) || 1);
 
-        this.loadStocks(this.currentCategoryId, this.stocksTablePagination.current);
+        this.loadStocks({});
     },
     computed: {
         categoriesTreeData(){
@@ -183,9 +231,9 @@ export default {
                 const cur = sortedCategories[i];
 
                 const newData = {
-                key: cur.id,
-                title: cur.name,
-                children: [],
+                    key: cur.id,
+                    title: cur.name,
+                    children: [],
                 };
 
                 let parent = getParent(cur.parent_id, data);
@@ -235,10 +283,12 @@ export default {
         },
         onCategoriesTreeSelect(keys, event) {
             this.currentCategoryId = keys[0];
+            this.productsTablePagination.current = 1;
 
-            this.loadStocks(this.currentCategoryId, 1);
-            },
-            onCategoriesTreeExpand() {
+            this.loadStocks({});
+        },
+
+        onCategoriesTreeExpand() {
             console.log('Trigger Expand');
         },
 
@@ -246,19 +296,27 @@ export default {
         showAddCategoryModal() {
             this.addCategoryModalVisible = true;
         },
-        addCategoryModalHandleOk(e){
+        addCategoryModalHandleOk(e) {
             // this.addCategoryModalVisible = false;
         },
-        addCategoryModalHandleCancel(e){
+        addCategoryModalHandleCancel(e) {
             this.addCategoryModalVisible = false;
         },
 
-        loadStocks(category_id, page){
+        loadStocks({category_id, page, limit, filters}) {
+            this.stocksTableFilters = {
+                ...this.stocksTableFilters,
+                ...filters,
+            };
+
             this.stocksTableLoading = true;
 
             axios.get('/api/stocks', {
                 params: {
-                    page, category_id,
+                    page: page || this.stocksTablePagination.current,
+                    category_id: category_id || this.currentCategoryId,
+                    limit,
+                    ...this.stocksTableFilters,
                 },
             })
                 .then(res => {
@@ -294,7 +352,7 @@ export default {
                 .then(res => {
                     this.$message.success('Xóa thành công');
 
-                    this.loadStocks(this.currentCategoryId, this.stocksTablePagination.current);
+                    this.loadStocks({});
                 })
                 .catch(err => {
                     if (err.response && err.response.data.message) {

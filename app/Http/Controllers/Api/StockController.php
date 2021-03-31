@@ -22,18 +22,16 @@ class StockController extends Controller
      */
     public function index(Request $request)
     {
-        $category_id = $request->category_id ?? 0;
-        if (isset($request->all)) {
-            return new JsonResource(
-                $category_id ? Category::find($category_id)->stocks->orderBy('in_date', 'DESC')->get()
-                    : Stock::orderBy('in_date', 'DESC')->get()
-            );
+        $stockQuery = isset($request->category_id) ? Category::find($request->category_id)->stocks->orderBy('in_date', 'DESC')
+                : Stock::orderBy('in_date', 'DESC');
+
+        foreach (['name', 'idi'] as $value) {
+            if (isset($request->{$value})) {
+                $stockQuery = $stockQuery->where($value, 'LIKE', '%'.$request->{$value}.'%');
+            }
         }
 
-        return new JsonResource(
-            $category_id ? Category::find($category_id)->stocks->orderBy('in_date', 'DESC')->paginate()
-                : Stock::orderBy('in_date', 'DESC')->paginate()
-        );
+        return new JsonResource($stockQuery->paginate());
     }
 
     /**

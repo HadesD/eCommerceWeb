@@ -27,20 +27,10 @@ class UserController extends Controller
             $userQuery = $userQuery->where('role', '<', User::ROLE_ADMIN_MANAGER);
         }
 
-        if (isset($request->name)) {
-            $userQuery = $userQuery->where('name', 'LIKE', '%'.$request->name.'%');
-        }
-
-        if (isset($request->phone)) {
-            $userQuery = $userQuery->where('phone', 'LIKE', '%'.$request->phone.'%');
-        }
-
-        if (isset($request->email)) {
-            $userQuery = $userQuery->where('email', 'LIKE', '%'.$request->email.'%');
-        }
-
-        if (isset($request->sns_info)) {
-            $userQuery = $userQuery->where('sns_info', 'LIKE', '%'.$request->sns_info.'%');
+        foreach (['name', 'phone', 'email', 'sns_info'] as $value) {
+            if (isset($request->{$value})) {
+                $userQuery = $userQuery->where($value, 'LIKE', '%'.$request->{$value}.'%');
+            }
         }
 
         return new JsonResource( $userQuery->paginate());
