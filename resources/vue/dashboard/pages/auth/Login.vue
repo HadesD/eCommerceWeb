@@ -88,7 +88,8 @@ export default {
                 await axios.post('/login', this.formData);
 
                 // Check permission
-                const userData = await axios.get('/api/user');
+                const userApiRequest = await axios.get('/api/user');
+                const userData = userApiRequest.data;
                 if (userData.role >= UserRole.ROLE_ADMIN_MANAGER) {
                     User.setInfo(userData);
 
