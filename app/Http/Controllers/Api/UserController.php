@@ -32,15 +32,15 @@ class UserController extends Controller
         }
 
         if (isset($request->phone)) {
-            $userQuery = $userQuery->where('name', 'LIKE', '%'.$request->phone.'%');
+            $userQuery = $userQuery->where('phone', 'LIKE', '%'.$request->phone.'%');
         }
 
         if (isset($request->email)) {
-            $userQuery = $userQuery->where('name', 'LIKE', '%'.$request->email.'%');
+            $userQuery = $userQuery->where('email', 'LIKE', '%'.$request->email.'%');
         }
 
         if (isset($request->sns_info)) {
-            $userQuery = $userQuery->where('name', 'LIKE', '%'.$request->sns_info.'%');
+            $userQuery = $userQuery->where('sns_info', 'LIKE', '%'.$request->sns_info.'%');
         }
 
         return new JsonResource( $userQuery->paginate());

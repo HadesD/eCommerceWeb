@@ -22,17 +22,15 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $category_id = $request->category_id ?? 0;
-        if (isset($request->all)) {
-            return new JsonResource(
-                $category_id ? Category::find($category_id)->products->orderBy('updated_at', 'DESC')->get()
-                    : Product::orderBy('updated_at', 'DESC')->get()
-            );
+
+        $productQuery = $category_id ? Category::find($category_id)->products->orderBy('updated_at', 'DESC')
+                : Product::orderBy('updated_at', 'DESC');
+
+        if (isset($request->name)) {
+            $productQuery = $productQuery->where('name', 'LIKE', '%'.$request->name.'%');
         }
 
-        return new JsonResource(
-            $category_id ? Category::find($category_id)->products->orderBy('updated_at', 'DESC')->paginate()
-                : Product::orderBy('updated_at', 'DESC')->paginate()
-        );
+        return new JsonResource($productQuery->paginate());
     }
 
     /**

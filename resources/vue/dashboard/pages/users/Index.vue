@@ -166,10 +166,9 @@ export default {
                 },
                 showSizeChanger: true,
             },
+            usersTableFilters: {},
 
             editPageVisible: false,
-
-            userTableFilters: {},
         };
     },
     mounted() {
@@ -186,8 +185,8 @@ export default {
     methods: {
         date_format,
         loadUserList({page, limit, filters}) {
-            this.userTableFilters = {
-                ...this.userTableFilters,
+            this.usersTableFilters = {
+                ...this.usersTableFilters,
                 ...filters,
             };
 
@@ -197,7 +196,7 @@ export default {
                 params: {
                     page,
                     limit,
-                    ...this.userTableFilters,
+                    ...this.usersTableFilters,
                 }
             })
                 .then(res => {

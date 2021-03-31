@@ -30,7 +30,7 @@
             <a-page-header title="Sản phẩm">
                 <template slot="tags">
                     <a-tooltip title="Làm mới">
-                        <a-button type="primary" icon="reload" :loading="productsTableLoading" @click="() => loadProducts(currentCategoryId, productsTablePagination.current)" />
+                        <a-button type="primary" icon="reload" :loading="productsTableLoading" @click="() => loadProducts({})" />
                     </a-tooltip>
                 </template>
                 <template slot="extra">
@@ -47,17 +47,47 @@
                 :loading="productsTableLoading"
                 :row-key="record => record.id"
                 :pagination="productsTablePagination"
-                @change="(pagination) => loadProducts(currentCategoryId, pagination.current)"
             >
-                <span slot="name" slot-scope="record">
-                    {{ record.name }}<br />
+                <!-- Block Search: BEGIN -->
+                <div
+                    slot="filterSearchBox"
+                    slot-scope="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }"
+                    style="padding: 8px"
+                >
+                    <a-input
+                        :placeholder="`Tìm ${column.title}`"
+                        :value="selectedKeys[0]"
+                        style="width: 188px; margin-bottom: 8px; display: block;"
+                        @change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
+                        @pressEnter="() => $refs[`filterSearchBoxSubmit.${column.dataIndex}`].$el.click()"
+                    />
+                    <a-button
+                        :ref="`filterSearchBoxSubmit.${column.dataIndex}`"
+                        type="primary"
+                        icon="search"
+                        size="small"
+                        style="width: 90px; margin-right: 8px"
+                        @click="() => {loadProducts({page:1, filters:{[column.dataIndex]: selectedKeys[0]}});confirm();}"
+                    >Tìm</a-button>
+                    <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);loadProducts({page:1, filters:{[column.dataIndex]: undefined}});clearFilters();}">Reset</a-button>
+                </div>
+                <a-icon
+                    slot="filterSearchBoxIcon"
+                    slot-scope="filtered"
+                    type="search"
+                    :style="{ color: filtered ? '#108ee9' : undefined }"
+                />
+                <!-- Block Search: END -->
+
+                <span slot="name" slot-scope="value, record">
+                    <div>{{ value }}</div>
                     <a-tag>{{ record.slug }}</a-tag>
                 </span>
-                <span slot="status" slot-scope="record">
-                    <a-tag :color="configProductStatus[record.status].color">{{ configProductStatus[record.status].name }}</a-tag>
+                <span slot="status" slot-scope="value">
+                    <a-tag :color="configProductStatus[value].color">{{ configProductStatus[value].name }}</a-tag>
                 </span>
-                <span slot="price" slot-scope="record" style="display:block;text-align:right;">
-                    {{ number_format(record.price) }}
+                <span slot="price" slot-scope="value" style="display:block;text-align:right;">
+                    {{ number_format(value) }}
                 </span>
                 <span slot="time" slot-scope="record">
                     <div>Tạo: {{ date_format(record.created_at) }}</div>
@@ -90,36 +120,39 @@ import ProductStatus, { Config as configProductStatus } from '../../configs/Prod
 import { number_format, date_format } from '../../../helpers';
 
 const productsTableColumns = [
-  {
-    title: '#',
-    dataIndex: 'id',
-    key: 'id',
-  },
-  {
-    title: 'Tên',
-    key: 'name',
-    scopedSlots: { customRender: 'name' },
-  },
-  {
-    title: 'Trạng thái',
-    key: 'status',
-    scopedSlots: { customRender: 'status' },
-  },
-  {
-    title: 'Giá (VND)',
-    key: 'price',
-    scopedSlots: { customRender: 'price' },
-  },
-  {
-    title: 'Thời gian',
-    key: 'time',
-    scopedSlots: { customRender: 'time' },
-  },
-  {
-    title: 'Hành động',
-    key: 'action',
-    scopedSlots: { customRender: 'action' },
-  },
+    {
+        title: '#',
+        dataIndex: 'id',
+    },
+    {
+        title: 'Tên',
+        dataIndex: 'name',
+        scopedSlots: {
+            customRender: 'name',
+            filterDropdown: 'filterSearchBox',
+            filterIcon: 'filterSearchBoxIcon',
+        },
+    },
+    {
+        title: 'Trạng thái',
+        dataIndex: 'status',
+        scopedSlots: { customRender: 'status' },
+    },
+    {
+        title: 'Giá (VND)',
+        dataIndex: 'price',
+        scopedSlots: { customRender: 'price' },
+    },
+    {
+        title: 'Thời gian',
+        key: 'time',
+        scopedSlots: { customRender: 'time' },
+    },
+    {
+        title: 'Hành động',
+        key: 'action',
+        scopedSlots: { customRender: 'action' },
+    },
 ];
 
 export default {
@@ -142,16 +175,24 @@ export default {
             productsTableColumns,
             productsTablePagination: {
                 position: 'both',
+                change: (page, pageSize) => {
+                    this.loadProducts({
+                        page,
+                        limit: pageSize,
+                    });
+                },
+                showSizeChanger: true,
             },
+            productsTableFilters: {},
         };
     },
     mounted(){
         this.loadCategoriesTree();
 
-        this.currentCategoryId = (parseInt(this.$route.query.category_id) || '');
+        this.currentCategoryId = (parseInt(this.$route.query.category_id) || undefined);
         this.productsTablePagination.current = (parseInt(this.$route.query.page) || 1);
 
-        this.loadProducts(this.currentCategoryId, this.productsTablePagination.current);
+        this.loadProducts({});
     },
     computed: {
         categoriesTreeData(){
@@ -179,9 +220,9 @@ export default {
                 const cur = sortedCategories[i];
 
                 const newData = {
-                key: cur.id,
-                title: cur.name,
-                children: [],
+                    key: cur.id,
+                    title: cur.name,
+                    children: [],
                 };
 
                 let parent = getParent(cur.parent_id, data);
@@ -211,7 +252,7 @@ export default {
         number_format,
         date_format,
         // CategoriesTree
-        loadCategoriesTree(){
+        loadCategoriesTree() {
             this.categoriesTreeLoading = true;
             axios.get('/api/categories')
                 .then(res => {
@@ -234,8 +275,9 @@ export default {
         },
         onCategoriesTreeSelect(keys, event) {
             this.currentCategoryId = keys[0];
+            this.productsTablePagination.current = 1;
 
-            this.loadProducts(this.currentCategoryId, 1);
+            this.loadProducts({});
         },
         onCategoriesTreeExpand() {
             console.log('Trigger Expand');
@@ -253,12 +295,20 @@ export default {
         },
 
         // Product
-        loadProducts(category_id, page){
+        loadProducts({category_id, page, limit, filters}){
+            this.productsTableFilters = {
+                ...this.productsTableFilters,
+                ...filters,
+            };
+
             this.productsTableLoading = true;
 
             axios.get('/api/products', {
                 params: {
-                    page, category_id,
+                    page: page || this.productsTablePagination.current,
+                    category_id: category_id || this.currentCategoryId,
+                    limit,
+                    ...this.productsTableFilters,
                 },
             })
                 .then(res => {
@@ -294,7 +344,7 @@ export default {
                 .then(res => {
                     this.$message.success('Xóa thành công');
 
-                    this.loadProducts(this.currentCategoryId, this.productsTablePagination.current);
+                    this.loadProducts({});
                 })
                 .catch(err => {
                     if (err.response && err.response.data.message) {
