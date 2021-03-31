@@ -59,8 +59,7 @@
                         </a-form-model-item>
                         <a-form-model-item label="Hình thức thanh toán" :rules="{required:true}" :prop="'order_products.'+pIdx+'.payment_method'">
                             <a-select v-model="p.payment_method">
-                                <a-select-option :value="1">Trả thẳng 100%</a-select-option>
-                                <a-select-option :value="2">Trả góp</a-select-option>
+                                <a-select-option v-for="methodCode in Object.keys(configPaymentMethod)" :key="methodCode" :value="parseInt(methodCode)">{{ configPaymentMethod[methodCode].name }}</a-select-option>
                             </a-select>
                         </a-form-model-item>
                         <a-form-model-item label="Số lượng muốn đặt ban đầu">
@@ -255,7 +254,8 @@
 <script>
 import moment from 'moment';
 
-import OrderStatus from '../../configs/OrderStatus';
+import OrderStatus, { Config as configOrderStatus } from '../../configs/OrderStatus';
+import PaymentMethod, { Config as configPaymentMethod } from '../../configs/PaymentMethod';
 import { number_format } from '../../../helpers';
 
 import UserIndex from '../users/Index';
@@ -370,7 +370,7 @@ export default {
                 note: undefined,
                 customer_id: undefined,
                 order_products: [],
-                status: undefined,
+                status: OrderStatus.STS_PROCESSING,
                 transactions: [],
             },
             rules: {
@@ -416,7 +416,7 @@ export default {
         transaction_obj() {
             return {
                 id: undefined,
-                description: '',
+                description: undefined,
                 amount: undefined,
                 paid_date: undefined,
             }
@@ -426,7 +426,7 @@ export default {
                 id: undefined,
                 order_id: undefined,
                 product_id: null,
-                payment_method: 1,
+                payment_method: PaymentMethod.PM_ONCE,
                 order_product_stocks: [],
                 quantity: undefined,
             }
@@ -441,8 +441,17 @@ export default {
             }
         },
 
-        configOrderStatus() {
+        OrderStatus() {
             return OrderStatus;
+        },
+        configOrderStatus() {
+            return configOrderStatus;
+        },
+        PaymentMethod() {
+            return PaymentMethod;
+        },
+        configPaymentMethod() {
+            return configPaymentMethod;
         },
     },
     methods: {

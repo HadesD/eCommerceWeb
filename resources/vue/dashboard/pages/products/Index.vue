@@ -76,7 +76,7 @@
                 <template v-else>
                     <a-button
                         type="primary" icon="shopping-cart" @click="() => onFinishSelect(record)"
-                        :disabled="record.status === 2"
+                        :disabled="record.status === ProductStatus.STS_SOLDOUT"
                     >Chọn</a-button>
                 </template>
                 </span>
@@ -86,7 +86,7 @@
 </template>
 
 <script>
-import ProductStatus from '../../configs/ProductStatus';
+import ProductStatus, { Config as configProductStatus } from '../../configs/ProductStatus';
 import { number_format, date_format } from '../../../helpers';
 
 const productsTableColumns = [
@@ -200,8 +200,11 @@ export default {
             return this.products;
         },
 
-        configProductStatus() {
+        ProductStatus() {
             return ProductStatus;
+        },
+        configProductStatus() {
+            return configProductStatus;
         },
     },
     methods: {

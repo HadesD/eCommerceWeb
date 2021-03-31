@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import OrderStatus from '../../configs/OrderStatus';
+import OrderStatus, { Config as configOrderStatus } from '../../configs/OrderStatus';
 import { number_format, date_format } from '../../../helpers';
 
 const ordersTableColumns = [
@@ -139,8 +139,12 @@ export default {
         ordersTableData(){
             return this.orders;
         },
-        configOrderStatus() {
+
+        OrderStatus() {
             return OrderStatus;
+        },
+        configOrderStatus() {
+            return configOrderStatus;
         },
     },
     methods: {

@@ -126,7 +126,7 @@
     </div>
 </template>
 <script>
-import ProductStatus from '../../configs/ProductStatus';
+import ProductStatus, { Config as configProductStatus } from '../../configs/ProductStatus';
 import { vietnameseNormalize, number_format } from '../../../helpers';
 
 export default {
@@ -148,14 +148,14 @@ export default {
             productInfoLoading: false,
             formData: {
                 id: undefined,
-                name: '',
-                slug: '',
+                name: undefined,
+                slug: undefined,
                 categories_id: [],
-                description: '',
-                detail: '',
-                specification: '',
+                description: undefined,
+                detail: undefined,
+                specification: undefined,
                 price: undefined,
-                status: 0,
+                status: ProductStatus.STS_DRAFT,
             },
             rules: {
                 name: [
@@ -191,8 +191,11 @@ export default {
             return data;
         },
 
-        configProductStatus() {
+        ProductStatus() {
             return ProductStatus;
+        },
+        configProductStatus() {
+            return configProductStatus;
         },
     },
     watch: {

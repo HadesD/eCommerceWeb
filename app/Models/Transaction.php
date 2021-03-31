@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use DateTimeInterface;
 
-interface TransactionStatus
+interface Status
 {
     const STS_PENDING = 0;
     const STS_COMPLETED = 1;
@@ -17,7 +17,7 @@ interface TransactionStatus
 }
 
 class Transaction extends Model
-    implements TransactionStatus
+    implements Status
 {
     use HasFactory, SoftDeletes;
 

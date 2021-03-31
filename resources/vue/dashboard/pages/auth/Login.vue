@@ -10,25 +10,22 @@
             :rules="rules"
             style="width: 400px;margin:0 auto;"
         >
-            <a-form-model-item ref="email" prop="email" :validateStatus="validErrors.email ? 'error' : 'validating'">
+            <a-form-model-item ref="email" prop="email">
                 <a-input
                     autoFocus
                     size="large"
-                    type="text"
                     placeholder="E-mail"
                     v-model="formData.email"
-                    @blur="() => $refs.email.onFieldBlur()"
                 >
                     <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
                 </a-input>
             </a-form-model-item>
 
-            <a-form-model-item ref="password" prop="password" :validateStatus="validErrors.password ? 'error' : 'validating'">
+            <a-form-model-item ref="password" prop="password">
                 <a-input-password
                     size="large"
                     placeholder="Mật khẩu"
                     v-model="formData.password"
-                    @blur="() => $refs.password.onFieldBlur()"
                 >
                     <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }"/>
                 </a-input-password>
@@ -36,11 +33,11 @@
 
             <a-form-model-item>
                 <a-checkbox v-model="formData.remember">Ghi nhớ</a-checkbox>
-                <router-link
+                <!-- <router-link
                     :to="{ name: 'recover', params: { user: 'aaa'} }"
                     class="forge-password"
                     style="float: right;"
-                >Quên mật khẩu?</router-link>
+                >Quên mật khẩu?</router-link> -->
             </a-form-model-item>
 
             <a-form-model-item style="margin-top:24px">
@@ -55,6 +52,7 @@
 </template>
 <script>
 import User from '../../utils/User';
+import UserRole from '../../configs/UserRole';
 
 export default {
     data(){
@@ -91,7 +89,7 @@ export default {
 
                 // Check permission
                 const userData = await axios.get('/api/user');
-                if (userData.role >= 100) {
+                if (userData.role >= UserRole.ROLE_ADMIN_MANAGER) {
                     User.setInfo(userData);
 
                     this.$Progress.finish();
