@@ -18,8 +18,38 @@
             :loading="usersTableLoading"
             :row-key="record => record.id"
             :pagination="usersTablePagination"
-            @change="(pagination) => loadUserList({page:pagination.current})"
         >
+            <!-- Block Search: BEGIN -->
+            <div
+                slot="filterSearchBox"
+                slot-scope="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }"
+                style="padding: 8px"
+            >
+                <a-input
+                    :placeholder="`Tìm ${column.title}`"
+                    :value="selectedKeys[0]"
+                    style="width: 188px; margin-bottom: 8px; display: block;"
+                    @change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
+                    @pressEnter="() => $refs[`filterSearchBoxSubmit.${column.dataIndex}`].$el.click()"
+                />
+                <a-button
+                    :ref="`filterSearchBoxSubmit.${column.dataIndex}`"
+                    type="primary"
+                    icon="search"
+                    size="small"
+                    style="width: 90px; margin-right: 8px"
+                    @click="() => {loadUserList({page:1, filters:{[column.dataIndex]: selectedKeys[0]}});confirm();}"
+                >Tìm</a-button>
+                <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);loadUserList({page:1, filters:{[column.dataIndex]: undefined}});clearFilters();}">Reset</a-button>
+            </div>
+            <a-icon
+                slot="filterSearchBoxIcon"
+                slot-scope="filtered"
+                type="search"
+                :style="{ color: filtered ? '#108ee9' : undefined }"
+            />
+            <!-- Block Search: END -->
+
             <a-tag slot="role" slot-scope="value" :color="configUserRole[value].color">{{ configUserRole[value].name }}</a-tag>
             <template slot="action" slot-scope="record">
                 <template v-if="!onFinishSelect">
@@ -28,6 +58,10 @@
                 <template v-else>
                     <a-button type="primary" icon="user" @click="() => onFinishSelect(record)">Chọn</a-button>
                 </template>
+            </template>
+            <template slot="time" slot-scope="record">
+                <div>Tạo: {{ date_format(record.created_at) }}</div>
+                <div>Update: {{ date_format(record.updated_at) }}</div>
             </template>
             <template slot="sns_info" slot-scope="value">
                 <a v-if="value && value.facebook" :href="value.facebook" target="_blank">
@@ -49,6 +83,8 @@
 import UserRole, { Config as configUserRole } from '../../configs/UserRole';
 import Edit from './Edit';
 
+import { date_format } from '../../../helpers';
+
 const usersTableColumns = [
     {
         title: '#',
@@ -57,24 +93,47 @@ const usersTableColumns = [
     {
         title: 'Tên',
         dataIndex: 'name',
+        scopedSlots: {
+            filterDropdown: 'filterSearchBox',
+            filterIcon: 'filterSearchBoxIcon',
+        },
     },
     {
         title: 'Chức vụ',
         dataIndex: 'role',
-        scopedSlots: { customRender: 'role' },
+        scopedSlots: {
+            customRender: 'role',
+        },
     },
     {
         title: 'Số điện thoại',
         dataIndex: 'phone',
+        scopedSlots: {
+            filterDropdown: 'filterSearchBox',
+            filterIcon: 'filterSearchBoxIcon',
+        },
     },
     {
         title: 'Mạng xã hội',
         dataIndex: 'sns_info',
-        scopedSlots: { customRender: 'sns_info' },
+        scopedSlots: {
+            customRender: 'sns_info',
+            filterDropdown: 'filterSearchBox',
+            filterIcon: 'filterSearchBoxIcon',
+        },
     },
     {
         title: 'Email',
         dataIndex: 'email',
+        scopedSlots: {
+            filterDropdown: 'filterSearchBox',
+            filterIcon: 'filterSearchBoxIcon',
+        },
+    },
+    {
+        title: 'Thời gian',
+        key: 'time',
+        scopedSlots: { customRender: 'time' },
     },
     {
         title: 'Hành động',
@@ -99,9 +158,18 @@ export default {
             usersTableData: [],
             usersTablePagination: {
                 position: 'both',
+                change: (page, pageSize) => {
+                    this.loadUserList({
+                        page,
+                        limit: pageSize,
+                    });
+                },
+                showSizeChanger: true,
             },
 
             editPageVisible: false,
+
+            userTableFilters: {},
         };
     },
     mounted() {
@@ -116,12 +184,20 @@ export default {
         },
     },
     methods: {
-        loadUserList({page}) {
+        date_format,
+        loadUserList({page, limit, filters}) {
+            this.userTableFilters = {
+                ...this.userTableFilters,
+                ...filters,
+            };
+
             this.usersTableLoading = true;
 
             axios.get('/api/users', {
                 params: {
                     page,
+                    limit,
+                    ...this.userTableFilters,
                 }
             })
                 .then(res => {

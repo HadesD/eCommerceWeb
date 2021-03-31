@@ -19,12 +19,30 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $userQuery = new User;
+
         if (!Auth::user()->hasPermission(User::ROLE_ADMIN_MASTER)) {
             $userQuery = $userQuery->where('role', '<', User::ROLE_ADMIN_MANAGER);
         }
+
+        if (isset($request->name)) {
+            $userQuery = $userQuery->where('name', 'LIKE', '%'.$request->name.'%');
+        }
+
+        if (isset($request->phone)) {
+            $userQuery = $userQuery->where('name', 'LIKE', '%'.$request->phone.'%');
+        }
+
+        if (isset($request->email)) {
+            $userQuery = $userQuery->where('name', 'LIKE', '%'.$request->email.'%');
+        }
+
+        if (isset($request->sns_info)) {
+            $userQuery = $userQuery->where('name', 'LIKE', '%'.$request->sns_info.'%');
+        }
+
         return new JsonResource( $userQuery->paginate());
     }
 
