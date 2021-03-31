@@ -4,5 +4,4 @@
 *.js linguist-vendored
 CHANGELOG.md export-ignore
 
-*.vue eol=lf
-.gitattributes eol=lf
+* eol=lf

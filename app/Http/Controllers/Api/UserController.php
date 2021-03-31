@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
@@ -45,7 +46,7 @@ class UserController extends Controller
             }
 
             $data = $request->toArray();
-            $data['password'] = $data['password'] ?? rand();
+            $data['password'] = Hash::make($data['password'] ?? rand());
             $data['email'] = $data['email'] ?? time() . '@rinphone.vn';
             $data['role'] = $authUser->hasPermission(User::ROLE_ADMIN_MASTER) ? $data['role'] : User::ROLE_USER_NORMAL;
 

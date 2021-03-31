@@ -9,7 +9,7 @@
             :model="formData"
             :rules="rules"
             style="width: 400px;margin:0 auto;"
-            >
+        >
             <a-form-model-item ref="email" prop="email" :validateStatus="validErrors.email ? 'error' : 'validating'">
                 <a-input
                     autoFocus
@@ -18,7 +18,7 @@
                     placeholder="E-mail"
                     v-model="formData.email"
                     @blur="() => $refs.email.onFieldBlur()"
-                    >
+                >
                     <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
                 </a-input>
             </a-form-model-item>
@@ -29,7 +29,7 @@
                     placeholder="Mật khẩu"
                     v-model="formData.password"
                     @blur="() => $refs.password.onFieldBlur()"
-                    >
+                >
                     <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }"/>
                 </a-input-password>
             </a-form-model-item>
@@ -40,20 +40,15 @@
                     :to="{ name: 'recover', params: { user: 'aaa'} }"
                     class="forge-password"
                     style="float: right;"
-                    >Quên mật khẩu?</router-link>
+                >Quên mật khẩu?</router-link>
             </a-form-model-item>
 
             <a-form-model-item style="margin-top:24px">
                 <a-button
-                    size="large"
-                    type="primary"
-                    htmlType="submit"
-                    block
-                    class="login-button"
+                    size="large" type="primary" htmlType="submit" block class="login-button"
                     :loading="loggingIn"
-                    :disabled="refreshingCsrf"
-                    @click="onSubmit"
-                    >Đăng nhập</a-button>
+                    @click="() => $refs.ruleForm.validate(valid => {if (valid) onFinish()})"
+                >Đăng nhập</a-button>
             </a-form-model-item>
         </a-form-model>
     </div>
@@ -64,13 +59,11 @@ import User from '../../utils/User';
 export default {
     data(){
         return {
-            refreshingCsrf: false,
             loggingIn: false,
 
-            csrf: '',
             formData: {
-                email: '',
-                password: '',
+                email: undefined,
+                password: undefined,
                 remember: true,
             },
             rules: {
@@ -81,71 +74,49 @@ export default {
                     { required: true, trigger: 'blur' },
                 ],
             },
-            validErrors: {},
-        }
+        };
     },
     mounted(){
     },
     methods: {
-        onSubmit(){
-            this.$refs.ruleForm.validate(valid => {
-                if (!valid) {
-                    return false;
-                }
-                this.refreshingCsrf = true;
+        async onFinish(){
+            try {
                 this.$Progress.start();
-                axios.get('/sanctum/csrf-cookie').then(response => {
-                    this.loggingIn = true;
-                    axios.post('/login', this.formData).then(res => {
-                        axios.get('/api/user').then(userRes => {
-                            const userData = userRes.data;
-                            if (userData.role >= 100) {
-                                User.setInfo(userData);
-                                this.$Progress.finish();
-                                this.$router.push({path: '/'});
-                            } else {
-                                this.$message.error('Bạn không có quyền hạn truy cập trang này');
-                                this.$Progress.fail();
-                            }
-                        }).catch(res => {
-                            console.log(res);
 
-                            this.$Progress.fail();
+                // Refresh CSRF
+                await axios.get('/sanctum/csrf-cookie');
 
-                            if (err.response && err.response.message) {
-                                this.$message.error(err.response.message);
-                                return;
-                            }
+                // Login
+                await axios.post('/login', this.formData);
 
-                            this.$message.error(err.message || 'Thất bại');
-                        }).then(()=> {
-                            this.loggingIn = false;
-                            this.$Progress.stop();
-                        });
-                    }).catch(error => {
-                        const res = error.response;
-                        const resData = res.data;
-                        this.$message.error('Login thất bại: ' + resData.message);
-                        this.validErrors = resData.errors;
-                        this.$Progress.fail();
-                    }).finally(()=> {
-                        this.loggingIn = false;
-                        this.$Progress.stop();
-                    });
-                }).catch(error => {
-                    this.$message.error('Get CSRF thất bại');
+                // Check permission
+                const userData = await axios.get('/api/user');
+                if (userData.role >= 100) {
+                    User.setInfo(userData);
+
+                    this.$Progress.finish();
+                    this.$router.push({path: '/'});
+                } else {
+                    this.$message.error('Bạn không có quyền hạn truy cập trang này');
                     this.$Progress.fail();
-                }).finally(()=> {
-                    this.refreshingCsrf = false;
-                    this.loggingIn = false;
-                    this.$Progress.stop();
-                });
+                }
+            } catch (err) {
+                this.$Progress.fail();
 
-                return false;
-            });
+                if (err.response && err.response.message) {
+                    this.$message.error(err.response.message);
+                    return;
+                }
+
+                this.$message.error(err.message || 'Thất bại');
+            } finally {
+                this.$Progress.stop();
+
+                this.loggingIn = false;
+            }
 
             return false;
-        },
-    }
+        }
+    },
 }
 </script>

@@ -300,10 +300,8 @@ export default {
                     .then(res => {
                         this.formData.id = res.data.data.id;
 
-                        if (!this.formData.id)
-                        {
+                        if (!this.formData.id) {
                             throw res;
-                            return;
                         }
 
                         this.$message.success('Đã thêm sản phẩm thành công');
