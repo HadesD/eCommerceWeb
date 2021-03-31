@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\ApiErrorException;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\Category;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CategoryController extends Controller
 {
@@ -21,16 +24,6 @@ class CategoryController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -38,12 +31,29 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        return new JsonResource(Category::create([
-            'name' => $request->name,
-            'slug' => $request->slug,
-            'description' => $request->description,
-            'parent_id' => $request->parent_id,
-        ]));
+        try {
+            DB::beginTransaction();
+
+            $category = new Category;
+            $category->fill($request->toArray());
+            $category->save();
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            if ($e instanceof ApiErrorException) {
+                return response([
+                    'message' => $e->getMessage()
+                ], 400);
+            }
+
+            Log::error($e);
+
+            return response(null, 500);
+        }
+
+        return $this->show($category);
     }
 
     /**
@@ -52,20 +62,9 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Category $category)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        return new JsonResource($category);
     }
 
     /**
@@ -75,9 +74,30 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Category $category)
     {
-        //
+        try {
+            DB::beginTransaction();
+
+            $category->fill($request->toArray());
+            $category->save();
+
+            DB::commit();
+        } catch(\Throwable $e) {
+            DB::rollback();
+
+            if ($e instanceof ApiErrorException) {
+                return response([
+                    'message' => $e->getMessage()
+                ], 400);
+            }
+
+            Log::error($e);
+
+            return response(null, 500);
+        }
+
+        return $this->show($order);
     }
 
     /**
