@@ -56,14 +56,15 @@
                     style="padding: 8px"
                 >
                     <a-input
+                        :ref="`filterSearchBox.${column.dataIndex}.input`"
                         :placeholder="`Tìm ${column.title}`"
                         :value="selectedKeys[0]"
                         style="width: 188px; margin-bottom: 8px; display: block;"
                         @change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
-                        @pressEnter="() => $refs[`filterSearchBoxSubmit.${column.dataIndex}`].$el.click()"
+                        @pressEnter="() => $refs[`filterSearchBox.${column.dataIndex}.btn`].$el.click()"
                     />
                     <a-button
-                        :ref="`filterSearchBoxSubmit.${column.dataIndex}`"
+                        :ref="`filterSearchBox.${column.dataIndex}.btn`"
                         type="primary"
                         icon="search"
                         size="small"
@@ -283,7 +284,7 @@ export default {
         },
         onCategoriesTreeSelect(keys, event) {
             this.currentCategoryId = keys[0];
-            this.productsTablePagination.current = 1;
+            this.stocksTablePagination.current = 1;
 
             this.loadStocks({});
         },
