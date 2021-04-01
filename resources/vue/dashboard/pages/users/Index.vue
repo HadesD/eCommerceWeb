@@ -190,7 +190,15 @@ export default {
                 }
             })
                 .then(res => {
-                    this.usersTableData = res.data.data;
+                    const resData = res.data;
+                    this.usersTableData = resData.data;
+
+                    const newPagi = {
+                        total: resData.total,
+                        current: resData.current_page,
+                        pageSize: resData.per_page,
+                    };
+                    this.usersTablePagination = {...newPagi};
                 })
                 .catch(err => {
                     if (err.response && err.response.data.message) {
