@@ -248,7 +248,7 @@ export default {
             const stockId = this.id;
 
             axios({
-                url: '/api/stocks/' + (stockId ? `/${stockId}` : ''),
+                url: '/api/stocks' + (stockId ? `/${stockId}` : ''),
                 method: stockId ? 'put' : 'post',
                 data: {
                     ...this.formData,
