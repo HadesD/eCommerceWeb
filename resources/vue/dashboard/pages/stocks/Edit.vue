@@ -81,6 +81,7 @@
                         show-time
                         type="date"
                         @blur="() => $refs.in_date.onFieldBlur()"
+                        :disabled="id && (authUser.role < UserRole.ROLE_ADMIN_MASTER)"
                     />
                 </a-form-model-item>
                 <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
@@ -96,6 +97,8 @@
 <script>
 import moment from 'moment';
 import { number_format } from '../../../helpers';
+import UserRole from '../../configs/UserRole';
+import User from '../../utils/User';
 
 export default {
     props: {
@@ -140,6 +143,9 @@ export default {
                     { required: true }
                 ],
             },
+
+            authUser: User.info(),
+            UserRole,
         }
     },
     computed: {

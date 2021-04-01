@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Stock;
 use App\Models\Category;
 use App\Models\StockCategory;
+use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -113,7 +114,7 @@ class StockController extends Controller
             $stock->quantity = ($request->quantity < 0) ? 0 : $request->quantity;
             $stock->cost_price = ($request->cost_price < 0) ? 0 : $request->cost_price;
             $stock->updated_user_id = $request->user()->id;
-            $stock->in_date = $request->in_date;
+            $stock->in_date = $request->user()->hasPermission(User::ROLE_ADMIN_MASTER) ? $request->in_date : $stock->in_date;
             $stock->note = $request->note;
             $stock->save();
 
