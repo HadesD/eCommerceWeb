@@ -193,13 +193,14 @@ export default {
     },
     watch: {
         id() {
+            console.log(this.id, this.productId);
             this.loadProduct(this.id);
         },
     },
     mounted(){
         this.reloadCategoriesTree();
 
-        this.loadProduct(this.id)
+        this.loadProduct(this.id);
     },
     methods: {
         number_format,

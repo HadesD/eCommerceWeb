@@ -339,10 +339,10 @@ export default {
         PaidAmount,
         UserIndex: () => import('../users/Index'),
         UserEdit: () => import('../users/Edit'),
-        StockIndex: () => import('../products/Index'),
-        StockEdit: () => import('../products/Edit'),
-        ProductIndex: () => import('../stocks/Index'),
-        ProductEdit: () => import('../stocks/Edit'),
+        ProductIndex: () => import('../products/Index'),
+        ProductEdit: () => import('../products/Edit'),
+        StockIndex: () => import('../stocks/Index'),
+        StockEdit: () => import('../stocks/Edit'),
     },
     data() {
         return {

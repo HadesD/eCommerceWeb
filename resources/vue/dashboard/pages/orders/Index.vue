@@ -155,8 +155,8 @@ export default {
     },
     components: {
         UserEdit: () => import('../users/Edit'),
-        StockEdit: () => import('../products/Edit'),
-        ProductEdit: () => import('../stocks/Edit'),
+        StockEdit: () => import('../stocks/Edit'),
+        ProductEdit: () => import('../products/Edit'),
     },
     data() {
         return {
