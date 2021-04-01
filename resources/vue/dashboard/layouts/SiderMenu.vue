@@ -19,14 +19,10 @@
           <a-icon type="shopping-cart" /><span>Sản phẩm</span>
         </span>
         <a-menu-item key="/products/">
-          <router-link to="/products/">
-            Danh sách
-          </router-link>
+          <router-link to="/products/">Danh sách</router-link>
         </a-menu-item>
         <a-menu-item key="/products/new">
-          <router-link to="/products/new">
-            Đăng bán
-          </router-link>
+          <router-link to="/products/new">Đăng bán</router-link>
         </a-menu-item>
       </a-sub-menu>
       <a-sub-menu key="/orders">
@@ -34,14 +30,10 @@
           <a-icon type="shopping-cart" /><span>Hoá Đơn</span>
         </span>
         <a-menu-item key="/orders/">
-          <router-link to="/orders/">
-            Danh sách
-          </router-link>
+          <router-link to="/orders/">Danh sách</router-link>
         </a-menu-item>
         <a-menu-item key="/orders/new">
-          <router-link to="/orders/new">
-            Tạo đơn
-          </router-link>
+          <router-link to="/orders/new">Tạo đơn</router-link>
         </a-menu-item>
       </a-sub-menu>
       <a-sub-menu key="/stocks">
@@ -49,14 +41,10 @@
           <a-icon type="bank" /><span>Kho hàng</span>
         </span>
         <a-menu-item key="/stocks/">
-          <router-link to="/stocks/">
-            Danh sách
-          </router-link>
+          <router-link to="/stocks/">Danh sách</router-link>
         </a-menu-item>
         <a-menu-item key="/stocks/new">
-          <router-link to="/stocks/new">
-            Nhập kho
-          </router-link>
+          <router-link to="/stocks/new">Nhập kho</router-link>
         </a-menu-item>
       </a-sub-menu>
       <a-sub-menu key="/users">
@@ -64,9 +52,7 @@
           <a-icon type="user" /><span>Khách hàng</span>
         </span>
         <a-menu-item key="/users/">
-          <router-link to="/users/">
-            Danh sách
-          </router-link>
+          <router-link to="/users/">Danh sách</router-link>
         </a-menu-item>
       </a-sub-menu>
     </a-menu>
