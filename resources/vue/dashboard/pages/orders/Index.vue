@@ -19,8 +19,15 @@
             :pagination="ordersTablePagination"
             @change="(pagination) => loadOrders(pagination.current)"
         >
+            <template slot="customer" slot-scope="value, record">
+                <div v-if="value">
+                    <div>#{{ value }}. {{ record.customer.name }}</div>
+                    <div>Phone: {{ record.customer.phone || 'Chưa có' }}</div>
+                    <a-button icon="search" @click="() => { currentCustomerId = value; userEditPageVisible = true; }" size="small" block>Xem thêm</a-button>
+                </div>
+            </template>
             <template slot="status" slot-scope="record">
-                <a-tag :color="configOrderStatus[record.status].color">{{ configOrderStatus[record.status].name }}</a-tag>
+                <a-tag v-if="configOrderStatus[record.status]" :color="configOrderStatus[record.status].color">{{ configOrderStatus[record.status].name }}</a-tag>
             </template>
             <template slot="total_amount" slot-scope="record">
                 <span>{{ totalAmount(record) }}</span>
@@ -42,9 +49,6 @@
                     {{ addon_tnx.description }} ({{ number_format(addon_tnx.amount) }})
                 </div>
             </template>
-            <template slot="customer" slot-scope="record">
-                {{ record.customer ? record.customer.name : record.customer_id }}
-            </template>
             <template slot="time" slot-scope="record">
                 <div>Tạo: {{ date_format(record.created_at) }}</div>
                 <div>Update: {{ date_format(record.updated_at) }}</div>
@@ -64,6 +68,15 @@
                 </template>
             </template>
         </a-table>
+
+        <a-modal
+            :visible="userEditPageVisible"
+            @cancel="() => userEditPageVisible = false"
+            :footer="false"
+            :width="800"
+        >
+            <UserEdit :userId="currentCustomerId" />
+        </a-modal>
     </div>
 </template>
 
@@ -71,57 +84,65 @@
 import OrderStatus, { Config as configOrderStatus } from '../../configs/OrderStatus';
 import { number_format, date_format } from '../../../helpers';
 
+import UserEdit from '../users/Edit';
+
 const ordersTableColumns = [
-  {
-    title: '#',
-    dataIndex: 'id',
-    key: 'id',
-    fixed: 'left',
-  },
-  {
-    title: 'Trạng thái',
-    key: 'status',
-    scopedSlots: { customRender: 'status' },
-    fixed: 'left',
-  },
-  {
-    title: 'Ghi chú',
-    dataIndex: 'note',
-  },
-  {
-    title: 'Tổng Thu/Giá Nhập',
-    key: 'total_amount',
-    scopedSlots: { customRender: 'total_amount' },
-  },
-  {
-    title: 'Đặt hàng',
-    key: 'order_product',
-    scopedSlots: { customRender: 'order_product' },
-  },
-  /*{
-    title: 'Khách hàng',
-    key: 'customer',
-    scopedSlots: { customRender: 'customer' },
-  },*/
-  {
-    title: 'Thời gian',
-    key: 'time',
-    scopedSlots: { customRender: 'time' },
-  },
-  {
-    title: 'Hành động',
-    key: 'action',
-    scopedSlots: { customRender: 'action' },
-    fixed: 'right',
-  },
+    {
+        title: '#',
+        dataIndex: 'id',
+        key: 'id',
+    },
+    {
+        title: 'Trạng thái',
+        key: 'status',
+        scopedSlots: { customRender: 'status' },
+    },
+    {
+        title: 'Ghi chú',
+        dataIndex: 'note',
+    },
+    {
+        title: 'Tổng Thu/Giá Nhập',
+        key: 'total_amount',
+        scopedSlots: { customRender: 'total_amount' },
+    },
+    {
+        title: 'Đặt hàng',
+        key: 'order_product',
+        scopedSlots: { customRender: 'order_product' },
+    },
+    {
+        title: 'Khách hàng',
+        dataIndex: 'customer_id',
+        scopedSlots: {
+            customRender: 'customer',
+        },
+    },
+    {
+        title: 'Thời gian',
+        key: 'time',
+        scopedSlots: { customRender: 'time' },
+    },
+    {
+        title: 'Hành động',
+        key: 'action',
+        scopedSlots: { customRender: 'action' },
+        fixed: 'right',
+    },
 ];
 
 export default {
     props: {
         onFinishSelect: Function,
     },
+    components: {
+        UserEdit,
+    },
     data() {
         return {
+            userEditPageVisible: false,
+            currentCustomerId: undefined,
+
             orders: [],
             ordersTableLoading: false,
             ordersTableColumns,

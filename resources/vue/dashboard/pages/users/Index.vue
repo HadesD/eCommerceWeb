@@ -51,7 +51,9 @@
             />
             <!-- Block Search: END -->
 
-            <a-tag slot="role" slot-scope="value" :color="configUserRole[value].color">{{ configUserRole[value].name }}</a-tag>
+            <template slot="role" slot-scope="value">
+                <a-tag v-if="configUserRole[value]" :color="configUserRole[value].color">{{ configUserRole[value].name }}</a-tag>
+            </template>
             <template slot="action" slot-scope="record">
                 <template v-if="!onFinishSelect">
                     <a-button type="primary" icon="edit" @click="() => {userId = record.id; editPageVisible = true;}" />

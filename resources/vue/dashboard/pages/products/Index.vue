@@ -80,37 +80,37 @@
                 />
                 <!-- Block Search: END -->
 
-                <span slot="name" slot-scope="value, record">
+                <template slot="name" slot-scope="value, record">
                     <div>{{ value }}</div>
                     <a-tag>{{ record.slug }}</a-tag>
-                </span>
-                <span slot="status" slot-scope="value">
-                    <a-tag :color="configProductStatus[value].color">{{ configProductStatus[value].name }}</a-tag>
-                </span>
-                <span slot="price" slot-scope="value" style="display:block;text-align:right;">
-                    {{ number_format(value) }}
-                </span>
-                <span slot="time" slot-scope="record">
+                </template>
+                <template slot="status" slot-scope="value">
+                    <a-tag v-if="configProductStatus[value]" :color="configProductStatus[value].color">{{ configProductStatus[value].name }}</a-tag>
+                </template>
+                <template slot="price" slot-scope="value" style="display:block;text-align:right;">
+                    <div>{{ number_format(value) }}</div>
+                </template>
+                <template slot="time" slot-scope="record">
                     <div>Tạo: {{ date_format(record.created_at) }}</div>
                     <div>Update: {{ date_format(record.updated_at) }}</div>
-                </span>
-                <span slot="action" slot-scope="record">
-                <template v-if="!onFinishSelect">
-                    <router-link :to="`/products/${record.id}/edit`">
-                        <a-button type="primary" icon="edit">Sửa</a-button>
-                    </router-link>
-                    <a-popconfirm title="Chắc chưa?" @confirm="() => onDeleteConfirmed(record)">
-                        <a-icon slot="icon" type="question-circle-o" style="color: red" />
-                        <a-button type="danger" icon="delete">Xóa</a-button>
-                    </a-popconfirm>
                 </template>
-                <template v-else>
-                    <a-button
-                        type="primary" icon="shopping-cart" @click="() => onFinishSelect(record)"
-                        :disabled="record.status === ProductStatus.STS_SOLDOUT"
-                    >Chọn</a-button>
+                <template slot="action" slot-scope="record">
+                    <template v-if="!onFinishSelect">
+                        <router-link :to="`/products/${record.id}/edit`">
+                            <a-button type="primary" icon="edit">Sửa</a-button>
+                        </router-link>
+                        <a-popconfirm title="Chắc chưa?" @confirm="() => onDeleteConfirmed(record)">
+                            <a-icon slot="icon" type="question-circle-o" style="color: red" />
+                            <a-button type="danger" icon="delete">Xóa</a-button>
+                        </a-popconfirm>
+                    </template>
+                    <template v-else>
+                        <a-button
+                            type="primary" icon="shopping-cart" @click="() => onFinishSelect(record)"
+                            :disabled="record.status === ProductStatus.STS_SOLDOUT"
+                        >Chọn</a-button>
+                    </template>
                 </template>
-                </span>
             </a-table>
         </a-col>
     </a-row>

@@ -37,11 +37,19 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
+        $this->validate($request, [
+            'note' => 'required',
+            'status' => 'required',
+            'customer_id' => 'required',
+        ]);
+
         try {
             DB::beginTransaction();
 
             $order = new Order;
-            $order->fill($request->only(['note', 'status', 'customer_id']));
+            $order->note = $request->note;
+            $order->status = $request->status;
+            $order->customer_id = $request->customer_id;
             $order->save();
 
             foreach ($request['order_products'] as $_order_product) {

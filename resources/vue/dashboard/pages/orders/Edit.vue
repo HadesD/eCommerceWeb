@@ -17,7 +17,10 @@
                         <a-select-option v-for="stsCode in Object.keys(configOrderStatus)" :key="stsCode" :value="parseInt(stsCode)">{{ configOrderStatus[stsCode].name }}</a-select-option>
                     </a-select>
                 </a-form-model-item>
-                <a-form-model-item label="Khách hàng" ref="customer_id" prop="customer_id" help="Click nút 'Tìm kiếm' để xem thông tin khách hàng">
+                <a-form-model-item
+                    label="Khách hàng" ref="customer_id" prop="customer_id"
+                    :help="orderInfo.customer ? `Đang chọn: #${orderInfo.customer_id}. ${orderInfo.customer.name} (Phone: ${orderInfo.customer.phone || 'Chưa có'})` : false"
+                >
                     <a-row :gutter="8">
                         <a-col :span="12">
                             <a-input-search v-model="formData.customer_id" readOnly enter-button @search="() => userEditPageVisible = true" />
@@ -596,6 +599,8 @@ export default {
                         this.loadOrder(orderData.id);
                     } else {
                         this.$message.success('Đã thêm sản phẩm thành công');
+
+                        this.orderInfoLoading = false;
 
                         this.$router.push({ path: `/orders/${orderData.id}/edit` });
                     }
