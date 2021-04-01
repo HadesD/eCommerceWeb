@@ -56,10 +56,10 @@
             </template>
             <template slot="action" slot-scope="record">
                 <template v-if="!onFinishSelect">
-                    <a-button type="primary" icon="edit" size="small" @click="() => {userId = record.id; editPageVisible = true;}" />
+                    <a-button type="primary" icon="edit" @click="() => {userId = record.id; editPageVisible = true;}" />
                 </template>
                 <template v-else>
-                    <a-button type="primary" icon="user" size="small" @click="() => onFinishSelect(record)">Chọn</a-button>
+                    <a-button type="primary" icon="user" @click="() => onFinishSelect(record)">Chọn</a-button>
                 </template>
             </template>
             <template slot="time" slot-scope="record">

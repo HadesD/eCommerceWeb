@@ -97,11 +97,11 @@
                 <template slot="action" slot-scope="record">
                     <template v-if="!onFinishSelect">
                         <router-link :to="`/products/${record.id}/edit`">
-                            <a-button type="primary" icon="edit">Sửa</a-button>
+                            <a-button type="primary" icon="edit" />
                         </router-link>
                         <a-popconfirm title="Chắc chưa?" @confirm="() => onDeleteConfirmed(record)">
                             <a-icon slot="icon" type="question-circle-o" style="color: red" />
-                            <a-button type="danger" icon="delete">Xóa</a-button>
+                            <a-button type="danger" icon="delete" />
                         </a-popconfirm>
                     </template>
                     <template v-else>
