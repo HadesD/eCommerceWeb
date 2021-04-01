@@ -344,6 +344,12 @@ export default {
     props: {
         orderId: Number,
     },
+    components: {
+        PaidAmount,
+        UserIndex, UserEdit,
+        StockIndex, StockEdit,
+        ProductIndex, ProductEdit,
+    },
     data() {
         return {
             labelCol: { span: 4 },
@@ -382,12 +388,6 @@ export default {
                 customer_id: {required: true},
             },
         }
-    },
-    components: {
-        PaidAmount,
-        UserIndex, UserEdit,
-        StockIndex, StockEdit,
-        ProductIndex, ProductEdit,
     },
     mounted() {
         this.loadCategoriesTree();
@@ -459,9 +459,7 @@ export default {
     },
     methods: {
         number_format,
-        // CategoriesTree
         loadCategoriesTree(){
-            // this.categoriesTreeLoading = true;
             axios.get('/api/categories')
                 .then(res => {
                     this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);

@@ -34,14 +34,14 @@
             </template>
             <template slot="order_product" slot-scope="record">
                 <div v-for="(p) in record.order_products" :key="p.id">
-                    <a-tooltip title="Xem" v-if="p.product ? true : false">
-                        <RouterLink :to="`/products/${p.product.id}/edit`">{{ p.product.name }} [Số lượng: {{ p.quantity }}]</RouterLink>
-                    </a-tooltip>
+                    <div>
+                        <span>{{ p.product.name }} [Số lượng: {{ p.quantity }}]</span>
+                        <a-button icon="search" @click="() => { currentProductId = p.product.id; productEditPageVisible = true; }" size="small">Xem</a-button>
+                    </div>
                     <ul>
                         <li v-for="(ps) in p.order_product_stocks" :key="ps.id">
-                            <a-tooltip title="Xem" v-if="ps.stock ? true : false">
-                                <RouterLink :to="`/stocks/${ps.stock.id}/edit`">{{ ps.stock.name }} ({{ ps.stock.idi }})</RouterLink>
-                            </a-tooltip>
+                            <span>{{ ps.stock.name }} ({{ ps.stock.idi }})</span>
+                            <a-button icon="search" @click="() => { currentStockId = ps.stock.id; stockEditPageVisible = true; }" size="small">Xem</a-button>
                         </li>
                     </ul>
                 </div>
@@ -77,6 +77,24 @@
         >
             <UserEdit :userId="currentCustomerId" />
         </a-modal>
+
+        <a-modal
+            :visible="stockEditPageVisible"
+            @cancel="() => stockEditPageVisible = false"
+            :footer="false"
+            width="95vw"
+        >
+            <StockEdit :stockId="currentStockId" />
+        </a-modal>
+
+        <a-modal
+            :visible="productEditPageVisible"
+            @cancel="() => productEditPageVisible = false"
+            :footer="false"
+            width="95vw"
+        >
+            <ProductEdit :productId="currentProductId" />
+        </a-modal>
     </div>
 </template>
 
@@ -85,6 +103,10 @@ import OrderStatus, { Config as configOrderStatus } from '../../configs/OrderSta
 import { number_format, date_format } from '../../../helpers';
 
 import UserEdit from '../users/Edit';
+
+import ProductEdit from '../products/Edit';
+
+import StockEdit from '../stocks/Edit';
 
 const ordersTableColumns = [
     {
@@ -137,11 +159,19 @@ export default {
     },
     components: {
         UserEdit,
+        StockEdit,
+        ProductEdit,
     },
     data() {
         return {
             userEditPageVisible: false,
             currentCustomerId: undefined,
+
+            stockEditPageVisible: false,
+            currentStockId: undefined,
+
+            productEditPageVisible: false,
+            currentProductId: undefined,
 
             orders: [],
             ordersTableLoading: false,

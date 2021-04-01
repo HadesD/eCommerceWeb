@@ -116,7 +116,7 @@
                         </a-form-model-item>
                     </a-tab-pane>
                 </a-tabs>
-                <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }" v-if="productId === undefined">
+                <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
                     <a-button
                         type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate(valid => { if (valid) onFinish() })"
                     >{{ id ? 'Sửa' : 'Đăng bán' }}</a-button>
@@ -282,46 +282,41 @@ export default {
             this.productInfoLoading = true;
 
             const productId = this.id;
-            if (productId) {
-                axios.put(`/api/products/${productId}`, this.formData)
-                    .then(res => {
+            axios({
+                url: '/api/products' + (productId ? `/${productId}` : ''),
+                method: productId ? 'put' : 'post',
+                data: {
+                    ...this.formData,
+                },
+            })
+                .then(res => {
+                    this.formData.id = res.data.data.id;
+
+                    if (!this.formData.id) {
+                        throw res;
+                    }
+
+                    if (productId) {
                         this.$message.success('Đã sửa sản phẩm thành công');
-                    })
-                    .catch(err => {
-                        if (err.response && err.response.data.message) {
-                            this.$message.error(err.response.data.message);
-                            return;
-                        }
-
-                        this.$message.error(err.message || 'Thất bại');
-                    })
-                    .finally(()=>{
-                        this.productInfoLoading = false;
-                    });
-            } else {
-                axios.post('/api/products', this.formData)
-                    .then(res => {
-                        this.formData.id = res.data.data.id;
-
-                        if (!this.formData.id) {
-                            throw res;
-                        }
-
+                    } else {
                         this.$message.success('Đã thêm sản phẩm thành công');
-                        this.$router.push({ path: `/products/${this.formData.id}/edit` });
-                    })
-                    .catch(err => {
-                        if (err.response && err.response.data.message) {
-                            this.$message.error(err.response.data.message);
-                            return;
-                        }
 
-                        this.$message.error(err.message || 'Thất bại');
-                    })
-                    .finally(()=>{
-                        this.productInfoLoading = false;
-                    });
-            }
+                        if (this.productId === undefined) {
+                            this.$router.push({ path: `/products/${this.formData.id}/edit` });
+                        }
+                    }
+                })
+                .catch(err => {
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
+                        return;
+                    }
+
+                    this.$message.error(err.message || 'Thất bại');
+                })
+                .finally(()=>{
+                    this.productInfoLoading = false;
+                });
         },
     },
 };

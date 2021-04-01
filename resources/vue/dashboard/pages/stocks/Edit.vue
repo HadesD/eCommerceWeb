@@ -83,7 +83,7 @@
                         @blur="() => $refs.in_date.onFieldBlur()"
                     />
                 </a-form-model-item>
-                <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }" v-if="stockId === undefined">
+                <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
                     <a-button
                         type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })"
                     >{{ id ? 'Sửa' : 'Nhập kho' }}</a-button>
@@ -248,7 +248,7 @@ export default {
             const stockId = this.id;
 
             axios({
-                url: stockId ? `/api/stocks/${stockId}` : '/api/stocks',
+                url: '/api/stocks/' + (stockId ? `/${stockId}` : ''),
                 method: stockId ? 'put' : 'post',
                 data: {
                     ...this.formData,
@@ -266,7 +266,9 @@ export default {
                     } else {
                         this.$message.success('Đã thêm sản phẩm thành công');
 
-                        this.$router.push({ path: `/stocks/${sData.id}/edit` });
+                        if (this.stockId === undefined) {
+                            this.$router.push({ path: `/stocks/${sData.id}/edit` });
+                        }
                     }
                 })
                 .catch(err => {
