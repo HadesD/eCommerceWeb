@@ -261,15 +261,6 @@ import OrderStatus, { Config as configOrderStatus } from '../../configs/OrderSta
 import PaymentMethod, { Config as configPaymentMethod } from '../../configs/PaymentMethod';
 import { number_format } from '../../../helpers';
 
-import UserIndex from '../users/Index';
-import UserEdit from '../users/Edit';
-
-import ProductIndex from '../products/Index';
-import ProductEdit from '../products/Edit';
-
-import StockIndex from '../stocks/Index';
-import StockEdit from '../stocks/Edit';
-
 const PaidAmount = {
     props: {
         amount: Number,
@@ -346,9 +337,12 @@ export default {
     },
     components: {
         PaidAmount,
-        UserIndex, UserEdit,
-        StockIndex, StockEdit,
-        ProductIndex, ProductEdit,
+        UserIndex: () => import('../users/Index'),
+        UserEdit: () => import('../users/Edit'),
+        StockIndex: () => import('../products/Index'),
+        StockEdit: () => import('../products/Edit'),
+        ProductIndex: () => import('../stocks/Index'),
+        ProductEdit: () => import('../stocks/Edit'),
     },
     data() {
         return {

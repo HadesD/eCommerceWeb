@@ -104,12 +104,6 @@
 import OrderStatus, { Config as configOrderStatus } from '../../configs/OrderStatus';
 import { number_format, date_format } from '../../../helpers';
 
-import UserEdit from '../users/Edit';
-
-import ProductEdit from '../products/Edit';
-
-import StockEdit from '../stocks/Edit';
-
 const ordersTableColumns = [
     {
         title: '#',
@@ -160,9 +154,9 @@ export default {
         onFinishSelect: Function,
     },
     components: {
-        UserEdit,
-        StockEdit,
-        ProductEdit,
+        UserEdit: () => import('../users/Edit'),
+        StockEdit: () => import('../products/Edit'),
+        ProductEdit: () => import('../stocks/Edit'),
     },
     data() {
         return {

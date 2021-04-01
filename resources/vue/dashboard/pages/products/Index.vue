@@ -90,6 +90,9 @@
                 <template slot="price" slot-scope="value" style="display:block;text-align:right;">
                     <div>{{ number_format(value) }}</div>
                 </template>
+                <template slot="categories" slot-scope="value">
+                    <a-tag v-for="category in value" :key="category.id">{{ category.name }}</a-tag>
+                </template>
                 <template slot="time" slot-scope="record">
                     <div>Tạo: {{ date_format(record.created_at) }}</div>
                     <div>Update: {{ date_format(record.updated_at) }}</div>
@@ -143,6 +146,13 @@ const productsTableColumns = [
         title: 'Giá (VND)',
         dataIndex: 'price',
         scopedSlots: { customRender: 'price' },
+    },
+    {
+        title: 'Chuyên mục',
+        dataIndex: 'categories',
+        scopedSlots: {
+            customRender: 'categories'
+        },
     },
     {
         title: 'Thời gian',

@@ -86,6 +86,9 @@
                     <div>Đã bán: {{ record.products.length }}</div>
                     <div>Tồn kho: {{ record.quantity }}</div>
                 </template>
+                <template slot="categories" slot-scope="value">
+                    <a-tag v-for="category in value" :key="category.id">{{ category.name }}</a-tag>
+                </template>
                 <template slot="time" slot-scope="record">
                     <div>Nhập kho: {{ date_format(record.in_date) }}</div>
                     <div>Tạo: {{ date_format(record.created_at) }}</div>
@@ -151,14 +154,16 @@ const stocksTableColumns = [
         scopedSlots: { customRender: 'quantity_info' },
     },
     {
+        title: 'Chuyên mục',
+        dataIndex: 'categories',
+        scopedSlots: {
+            customRender: 'categories'
+        },
+    },
+    {
         title: 'Thời gian',
         key: 'time',
         scopedSlots: { customRender: 'time' },
-    },
-    {
-        title: 'Người update',
-        key: 'update_user_id',
-        scopedSlots: { customRender: 'update_user' },
     },
     {
         title: 'Hành động',
