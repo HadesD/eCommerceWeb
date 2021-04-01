@@ -9,8 +9,8 @@
                 ref="ruleForm"
                 :model="formData"
                 :rules="rules"
-                :label-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? labelCol : {}"
-                :wrapper-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? wrapperCol : {}"
+                :label-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? { span: 4 } : {}"
+                :wrapper-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? { span: 14 } : {}"
             >
                 <a-form-model-item label="Trạng thái" prop="status">
                     <a-select v-model="formData.status">
@@ -346,9 +346,6 @@ export default {
     },
     data() {
         return {
-            labelCol: { span: 4 },
-            wrapperCol: { span: 14 },
-
             userIndexPageVisible: false,
             userEditPageVisible: false,
 
@@ -381,6 +378,11 @@ export default {
                 note: {required: true,},
                 customer_id: {required: true},
             },
+
+            OrderStatus,
+            configOrderStatus,
+            PaymentMethod,
+            configPaymentMethod,
         }
     },
     mounted() {
@@ -391,7 +393,7 @@ export default {
         }
     },
     watch: {
-        id (to, from) {
+        id(to, from) {
             if (to) {
                 this.loadOrder(to.params.id)
             } else {
@@ -438,18 +440,6 @@ export default {
             }
         },
 
-        OrderStatus() {
-            return OrderStatus;
-        },
-        configOrderStatus() {
-            return configOrderStatus;
-        },
-        PaymentMethod() {
-            return PaymentMethod;
-        },
-        configPaymentMethod() {
-            return configPaymentMethod;
-        },
     },
     methods: {
         number_format,
@@ -550,7 +540,7 @@ export default {
 
             const orderId = this.id;
             axios({
-                url: orderId ? `/api/orders/${orderId}` : '/api/orders',
+                url: '/api/orders' + (orderId ? `/${orderId}` : ''),
                 method: orderId ? 'put' : 'post',
                 data: {
                     ...this.formData,

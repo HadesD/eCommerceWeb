@@ -52,6 +52,7 @@ export default {
     data() {
         return {
             isLoadingUserInfo: false,
+
             formData: {
                 name: undefined,
                 email: undefined,
@@ -78,29 +79,24 @@ export default {
                     ],
                 },
             },
+
+            UserRole,
+            configUserRole,
+
+            authUser: User.info(),
         };
     },
     mounted: function() {
         this.loadUserInfo();
     },
     watch: {
-        id: function () {
+        id() {
             this.loadUserInfo();
         },
     },
     computed: {
         id() {
             return this.userId;
-        },
-        UserRole() {
-            return UserRole;
-        },
-        configUserRole() {
-            return configUserRole;
-        },
-
-        authUser() {
-            return User.info();
         },
     },
     methods: {
@@ -139,7 +135,7 @@ export default {
             const userId = this.id;
 
             axios({
-                url: userId ? `/api/users/${userId}` : '/api/users',
+                url: '/api/users' + (userId ? `/${userId}` : ''),
                 method: userId ? 'put' : 'post',
                 data: {
                     ...this.formData,

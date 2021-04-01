@@ -188,6 +188,9 @@ export default {
                 position: 'both',
             },
             productsTableFilters: {},
+
+            ProductStatus,
+            configProductStatus,
         };
     },
     mounted(){
@@ -245,12 +248,6 @@ export default {
             return this.products;
         },
 
-        ProductStatus() {
-            return ProductStatus;
-        },
-        configProductStatus() {
-            return configProductStatus;
-        },
     },
     methods: {
         number_format,
@@ -311,14 +308,15 @@ export default {
             })
                 .then(res => {
                     const resData = res.data;
+
                     this.products = resData.data || [];
 
-                    const newPagi = {
+                    this.productsTablePagination = {
+                        ...this.productsTablePagination,
                         total: resData.total,
                         current: resData.current_page,
                         pageSize: resData.per_page,
                     };
-                    this.productsTablePagination = {...newPagi};
 
                     //   if ((this.$route.query.page != resData.current_page) || (this.$route.query.category_id != category_id)) {
                     //     this.$router.push('/products/index?page='+resData.current_page+'&category_id='+category_id);

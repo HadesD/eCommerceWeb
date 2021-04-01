@@ -17,8 +17,8 @@
                 ref="ruleForm"
                 :model="formData"
                 :rules="rules"
-                :label-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? labelCol : {}"
-                :wrapper-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? wrapperCol : {}"
+                :label-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? {span: 4} : {}"
+                :wrapper-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? {span: 14} : {}"
             >
                 <a-form-model-item label="Tên sản phẩm" ref="name" prop="name">
                     <a-input v-model="formData.name" />
@@ -94,7 +94,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import moment from 'moment';
 import { number_format } from '../../../helpers';
 
@@ -107,9 +106,6 @@ export default {
     },
     data() {
         return {
-            labelCol: { span: 4 },
-            wrapperCol: { span: 14 },
-
             categoriesTreeLoading: false,
             addCategoryModalVisible: false,
             categories: [],

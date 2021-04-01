@@ -84,8 +84,6 @@
 </template>
 <script>
 import UserRole, { Config as configUserRole } from '../../configs/UserRole';
-import Edit from './Edit';
-
 import { date_format } from '../../../helpers';
 
 const usersTableColumns = [
@@ -150,7 +148,7 @@ export default {
         onFinishSelect: Function,
     },
     components: {
-        Edit,
+        Edit: () => import('./Edit'),
     },
     data() {
         return {
@@ -165,18 +163,15 @@ export default {
             usersTableFilters: {},
 
             editPageVisible: false,
+
+            UserRole,
+            configUserRole,
         };
     },
     mounted() {
         this.loadUsers({page: 1});
     },
     computed: {
-        UserRole() {
-            return UserRole;
-        },
-        configUserRole() {
-            return configUserRole;
-        },
     },
     methods: {
         date_format,
@@ -191,14 +186,15 @@ export default {
             })
                 .then(res => {
                     const resData = res.data;
+
                     this.usersTableData = resData.data;
 
-                    const newPagi = {
+                    this.usersTablePagination = {
+                        ...this.usersTablePagination,
                         total: resData.total,
                         current: resData.current_page,
                         pageSize: resData.per_page,
                     };
-                    this.usersTablePagination = {...newPagi};
                 })
                 .catch(err => {
                     if (err.response && err.response.data.message) {

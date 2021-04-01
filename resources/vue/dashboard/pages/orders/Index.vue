@@ -175,6 +175,9 @@ export default {
             ordersTablePagination: {
                 position: 'both',
             },
+
+            OrderStatus,
+            configOrderStatus,
         }
     },
     mounted() {
@@ -185,13 +188,6 @@ export default {
     computed: {
         ordersTableData(){
             return this.orders;
-        },
-
-        OrderStatus() {
-            return OrderStatus;
-        },
-        configOrderStatus() {
-            return configOrderStatus;
         },
     },
     methods: {
@@ -207,14 +203,15 @@ export default {
         })
             .then(res => {
             const resData = res.data;
+
             this.orders = resData.data || [];
 
-            const newPagi = {
+            this.ordersTablePagination = {
+                ...this.ordersTablePagination,
                 total: resData.total,
                 current: resData.current_page,
                 pageSize: resData.per_page,
             };
-            this.ordersTablePagination = {...newPagi};
 
             //   if (this.$route.query.page != resData.current_page) {
                 // this.$router.push('/orders/index?page='+resData.current_page);
@@ -256,22 +253,22 @@ export default {
         },
 
         onDeleteConfirmed(record){
-        return axios.delete(`/api/orders/${record.id}`)
-            .then(res => {
-            this.$message.success('Xóa thành công');
+            return axios.delete(`/api/orders/${record.id}`)
+                .then(res => {
+                    this.$message.success('Xóa thành công');
 
-            this.loadOrders(this.ordersTablePagination.current);
-            })
-            .catch(err => {
-                if (err.response && err.response.data.message) {
-                    this.$message.error(err.response.data.message);
-                    return;
-                }
+                    this.loadOrders(this.ordersTablePagination.current);
+                })
+                .catch(err => {
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
+                        return;
+                    }
 
-                this.$message.error(err.message || 'Xóa thất bại');
-            })
-            .finally(()=>{
-            });
+                    this.$message.error(err.message || 'Xóa thất bại');
+                })
+                .finally(()=>{
+                });
         },
     },
 }

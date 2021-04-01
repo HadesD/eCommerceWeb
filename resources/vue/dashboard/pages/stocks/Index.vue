@@ -117,7 +117,6 @@
 </template>
 
 <script>
-import StockStatus from '../../configs/StockStatus';
 import { number_format, date_format } from '../../../helpers';
 
 const stocksTableColumns = [
@@ -251,9 +250,6 @@ export default {
         stocksTableData(){
             return this.stocks;
         },
-        configStockStatus(){
-            return StockStatus;
-        },
     },
     methods: {
         number_format,
@@ -314,14 +310,15 @@ export default {
             })
                 .then(res => {
                     const resData = res.data;
+
                     this.stocks = resData.data || [];
 
-                    const newPagi = {
+                    this.stocksTablePagination = {
+                        ...this.stocksTablePagination,
                         total: resData.total,
                         current: resData.current_page,
                         pageSize: resData.per_page,
                     };
-                    this.stocksTablePagination = {...newPagi};
 
                     //   if ((this.$route.query.page != resData.current_page) || (this.$route.query.category_id != category_id)) {
                     //     this.$router.push('/stocks/index?page='+resData.current_page+'&category_id='+category_id);
