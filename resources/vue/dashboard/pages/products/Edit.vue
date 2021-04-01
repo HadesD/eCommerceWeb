@@ -193,7 +193,6 @@ export default {
     },
     watch: {
         id() {
-            console.log(this.id, this.productId);
             this.loadProduct(this.id);
         },
     },
