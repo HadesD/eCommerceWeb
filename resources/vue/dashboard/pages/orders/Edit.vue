@@ -2,7 +2,7 @@
     <div>
         <a-spin :spinning="orderInfoLoading">
             <a-page-header
-                :title="id ? 'Chỉnh sửa hóa đơn' : 'Tạo hóa đơn đặt hàng'"
+                :title="id ? 'Chỉnh sửa hóa đơn' : 'Tạo hóa đơn'"
                 :sub-title="id ? `#${id}` : false"
             />
             <a-form-model

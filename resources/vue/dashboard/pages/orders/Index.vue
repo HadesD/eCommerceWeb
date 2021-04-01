@@ -1,15 +1,15 @@
 <template>
     <div>
         <h2>
-        Đơn đặt hàng
-        <a-tooltip title="Làm mới">
-            <a-button type="primary" icon="reload" :loading="ordersTableLoading" @click="() => loadOrders(ordersTablePagination.current)" />
-        </a-tooltip>
-        <router-link to="/orders/new">
-            <a-tooltip title="Thêm đơn hàng">
-            <a-button type="primary" icon="plus" style="float:right;" />
+            <span>Hoá Đơn</span>
+            <a-tooltip title="Làm mới">
+                <a-button type="primary" icon="reload" :loading="ordersTableLoading" @click="() => loadOrders(ordersTablePagination.current)" />
             </a-tooltip>
-        </router-link>
+            <router-link to="/orders/new">
+                <a-tooltip title="Thêm đơn">
+                <a-button type="primary" icon="plus" style="float:right;" />
+                </a-tooltip>
+            </router-link>
         </h2>
         <a-table
             :columns="ordersTableColumns"

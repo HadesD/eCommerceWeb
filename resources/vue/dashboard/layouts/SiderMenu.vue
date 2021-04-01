@@ -31,7 +31,7 @@
       </a-sub-menu>
       <a-sub-menu key="/orders">
         <span slot="title">
-          <a-icon type="shopping-cart" /><span>Đơn đặt hàng</span>
+          <a-icon type="shopping-cart" /><span>Hoá Đơn</span>
         </span>
         <a-menu-item key="/orders/">
           <router-link to="/orders/">
@@ -40,7 +40,7 @@
         </a-menu-item>
         <a-menu-item key="/orders/new">
           <router-link to="/orders/new">
-            Tạo đơn đặt hàng
+            Tạo đơn
           </router-link>
         </a-menu-item>
       </a-sub-menu>
