@@ -300,19 +300,19 @@ export default {
                 },
             })
                 .then(res => {
-                const resData = res.data;
-                this.products = resData.data || [];
+                    const resData = res.data;
+                    this.products = resData.data || [];
 
-                const newPagi = {
-                    total: resData.total,
-                    current: resData.current_page,
-                    pageSize: resData.per_page,
-                };
-                this.productsTablePagination = {...newPagi};
+                    const newPagi = {
+                        total: resData.total,
+                        current: resData.current_page,
+                        pageSize: resData.per_page,
+                    };
+                    this.productsTablePagination = {...newPagi};
 
-                //   if ((this.$route.query.page != resData.current_page) || (this.$route.query.category_id != category_id)) {
-                //     this.$router.push('/products/index?page='+resData.current_page+'&category_id='+category_id);
-                //   }
+                    //   if ((this.$route.query.page != resData.current_page) || (this.$route.query.category_id != category_id)) {
+                    //     this.$router.push('/products/index?page='+resData.current_page+'&category_id='+category_id);
+                    //   }
                 })
                 .catch(err => {
                     if (err.response && err.response.data.message) {
