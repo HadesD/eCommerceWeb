@@ -1,6 +1,6 @@
 <template>
     <div>
-1. Hoá đơn bán hàng:
+1. Tạo hoá đơn khi Bán hàng:
 - Truy cập trang Tạo Đơn
 - Điền thông tin đơn hàng:
 	- Thông tin sản phẩm muốn mua

@@ -20,6 +20,7 @@ class Stock extends Model
     protected $appends = [
         'products',
         'categories',
+        'transactions',
     ];
 
     /**
