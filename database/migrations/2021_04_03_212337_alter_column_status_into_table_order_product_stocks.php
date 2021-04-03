@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateStockBuyTransactionsTable extends Migration
+class AlterColumnStatusIntoTableOrderProductStocks extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,8 @@ class CreateStockBuyTransactionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('stock_buy_transactions', function (Blueprint $table) {
+        Schema::table('order_product_stocks', function (Blueprint $table) {
+            $table->unsignedTinyInteger('status')->after('stock_id')->nullable();
         });
     }
 
@@ -24,6 +25,8 @@ class CreateStockBuyTransactionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('stock_buy_transactions');
+        Schema::table('order_product_stocks', function (Blueprint $table) {
+            $table->dropColumn('status');
+        });
     }
 }

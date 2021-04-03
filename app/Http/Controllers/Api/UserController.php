@@ -23,7 +23,9 @@ class UserController extends Controller
     {
         $userQuery = new User;
 
-        if (!Auth::user()->hasPermission(User::ROLE_ADMIN_MASTER)) {
+        $authUser = $request->user();
+
+        if (!$authUser->hasPermission(User::ROLE_ADMIN_MASTER)) {
             $userQuery = $userQuery->where('role', '<', User::ROLE_ADMIN_MANAGER);
         }
 
@@ -47,7 +49,7 @@ class UserController extends Controller
         try {
             DB::beginTransaction();
 
-            $authUser = Auth::user();
+            $authUser = $request->user();
 
             if (!$authUser->hasPermission(User::ROLE_ADMIN_MANAGER)) {
                 throw new ApiErrorException('Bạn không có quyền chỉnh sửa người dùng này');
@@ -107,7 +109,7 @@ class UserController extends Controller
                 throw new ApiErrorException('Bạn không có quyền chỉnh sửa người dùng này');
             }
 
-            $authUser = Auth::user();
+            $authUser = $request->user();
 
             $data = $request->toArray();
             $data['role'] = $authUser->hasPermission(User::ROLE_ADMIN_MASTER) ? $data['role'] : User::ROLE_USER_NORMAL;

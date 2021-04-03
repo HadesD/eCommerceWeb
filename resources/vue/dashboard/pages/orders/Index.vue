@@ -60,10 +60,6 @@
                     <router-link :to="`/orders/${record.id}/edit`">
                         <a-button type="primary" icon="edit" />
                     </router-link>
-                    <a-popconfirm title="Chắc chưa?" @confirm="() => onDeleteConfirmed(record)">
-                        <a-icon slot="icon" type="question-circle-o" style="color: red" />
-                        <a-button type="danger" icon="delete" />
-                    </a-popconfirm>
                 </template>
                 <template v-else>
                     <a-button type="primary" icon="shopping-cart" @click="() => onFinishSelect(record)">Chọn</a-button>
@@ -250,25 +246,6 @@ export default {
             });
 
             return `${number_format(amount)} / ${number_format(cost)}`;
-        },
-
-        onDeleteConfirmed(record){
-            return axios.delete(`/api/orders/${record.id}`)
-                .then(res => {
-                    this.$message.success('Xóa thành công');
-
-                    this.loadOrders(this.ordersTablePagination.current);
-                })
-                .catch(err => {
-                    if (err.response && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || 'Xóa thất bại');
-                })
-                .finally(()=>{
-                });
         },
     },
 }

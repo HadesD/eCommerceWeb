@@ -97,7 +97,7 @@ class CategoryController extends Controller
             return response(null, 500);
         }
 
-        return $this->show($order);
+        return $this->show($category);
     }
 
     /**

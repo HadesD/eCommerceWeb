@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Carbon\Carbon;
+use CreateStocksTable;
 use DateTimeInterface;
 
 class Stock extends Model
@@ -56,6 +57,15 @@ class Stock extends Model
             $query->select('category_id')
                   ->from(with(new StockCategory)->getTable())
                   ->where('stock_id', $this->id);
+        })->get();
+    }
+
+    public function getTransactionsAttribute()
+    {
+        return Transaction::whereIn('id', function($query) {
+            $query->select('transaction_id')
+                ->from(with(new StockTransaction)->getTable())
+                ->where('stock_id', $this->id);
         })->get();
     }
 }

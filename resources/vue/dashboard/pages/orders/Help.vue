@@ -13,19 +13,13 @@
 	- Chiết khấu/giảm giá: Số âm
 
 2. Thu hồi sản phẩm / trả hàng
-
 - Truy cập vào Đơn hàng lúc trước (ở 1.)
-- Thêm giao dịch ở [Giao dịch thêm]:
-	- Giao dịch khoản 1:
-	* Đối với trường hợp khách trả góp, số giao dịch thêm vào khoản 1 sẽ bằng số giao dịch khách trả góp
-		- Nội dung: Mua sản phẩm XX
-		- Số tiền: =Tổng số tiền tiệm đã nhận từ khách
-		- Ngày thanh toán: Ngày ứng với giao dịch lúc trước khách trả
-
-	- Giao dịch khoản 2:
-		- Nội dung: Trả sản phẩm XXX (imei/tên)
-		- Số tiền: =Tổng số tiền phải trả khách
-		- Ngày thanh toán: Ngày trả tiền
+- Trong mục [Xuất kho] của hàng khách muốn trả:
+    - Chuyển trạng thái từ [Đã bán] thành [Đã thu hồi]
+    - Thêm giao dịch
+        - Nội dung: Thu hồi máy
+        - Số tiền: (Số âm) số tiền trả lại đến tay khách
+        - Ngày thanh toán: Ngày trả lại số tiền
 
 - Xoá [Mặt hàng xuất kho] mà khách trả
 

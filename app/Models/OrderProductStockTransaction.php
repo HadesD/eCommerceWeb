@@ -11,4 +11,3 @@ class OrderProductStockTransaction extends Model
 
     public $timestamps = false;
 }
-

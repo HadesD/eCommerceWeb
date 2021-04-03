@@ -163,33 +163,6 @@ class StockController extends Controller
      */
     public function destroy(Stock $stock)
     {
-        try {
-            DB::beginTransaction();
-
-            if ($stock->products) {
-                throw new ApiErrorException('Không thể xoá sản phâm đã bán');
-            }
-
-            StockCategory::where('stock_id', $stock->id)
-                ->delete();
-
-            $stock->delete();
-
-            DB::commit();
-        } catch(\Throwable $e) {
-            DB::rollback();
-
-            if ($e instanceof ApiErrorException) {
-                return response([
-                    'message' => $e->getMessage()
-                ], 400);
-            }
-
-            Log::error($e);
-
-            return response(null, 500);
-        }
-
-        return response(null, 204);
+        //
     }
 }

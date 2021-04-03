@@ -99,10 +99,6 @@
                         <router-link :to="`/stocks/${record.id}/edit`">
                             <a-button type="primary" icon="edit" />
                         </router-link>
-                        <a-popconfirm title="Chắc chưa?" @confirm="() => onDeleteConfirmed(record)">
-                            <a-icon slot="icon" type="question-circle-o" style="color: red" />
-                            <a-button type="danger" icon="delete" />
-                        </a-popconfirm>
                     </template>
                     <template v-else>
                         <a-button
@@ -334,25 +330,6 @@ export default {
                 })
                 .finally(()=>{
                     this.stocksTableLoading = false;
-                });
-        },
-
-        onDeleteConfirmed(record){
-            return axios.delete(`/api/stocks/${record.id}`)
-                .then(res => {
-                    this.$message.success('Xóa thành công');
-
-                    this.loadStocks({});
-                })
-                .catch(err => {
-                    if (err.response && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || 'Xóa thất bại');
-                })
-                .finally(()=>{
                 });
         },
     },

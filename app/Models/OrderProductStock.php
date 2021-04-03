@@ -6,7 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 // use Illuminate\Database\Eloquent\SoftDeletes;
 
+interface OrderProductStockStatus
+{
+    const STS_SOLD = 1;
+    const STS_REFUND = 2;
+}
+
 class OrderProductStock extends Model
+    implements OrderProductStockStatus
 {
     use HasFactory;
     // use SoftDeletes;

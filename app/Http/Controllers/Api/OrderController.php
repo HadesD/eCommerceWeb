@@ -10,6 +10,7 @@ use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\OrderTransaction;
 use App\Models\OrderProductStock;
+use App\Models\OrderProductStockStatus;
 use App\Models\OrderProductStockTransaction;
 use App\Models\Transaction;
 use App\Models\Stock;
@@ -62,6 +63,7 @@ class OrderController extends Controller
 
                 foreach ($_order_product['order_product_stocks'] as $_order_product_stock) {
                     $stock_id = $_order_product_stock['stock_id'];
+                    $status = $_order_product_stock['status'];
 
                     $stock = Stock::find($stock_id);
 
@@ -69,12 +71,15 @@ class OrderController extends Controller
                         throw new ApiErrorException('Stock not avalable');
                     }
 
-                    $stock->quantity -= 1;
+                    if ($status === OrderProductStock::STS_SOLD) {
+                        $stock->quantity -= 1;
+                    }
                     $stock->save();
 
                     $order_product_stock = new OrderProductStock;
                     $order_product_stock->order_product_id = $order_product->id;
-                    $order_product_stock->stock_id = $stock_id;;
+                    $order_product_stock->stock_id = $stock_id;
+                    $order_product_stock->status = $status;
                     $order_product_stock->amount = $_order_product_stock['amount'];
                     $order_product_stock->save();
 
@@ -147,6 +152,12 @@ class OrderController extends Controller
      */
     public function update(Request $request, Order $order)
     {
+        $this->validate($request, [
+            'note' => 'required',
+            'status' => 'required',
+            'customer_id' => 'required',
+        ]);
+
         try {
             DB::beginTransaction();
 
@@ -155,15 +166,10 @@ class OrderController extends Controller
             $order->customer_id = $request->customer_id;
             $order->save();
 
-            $order_product_ids_keep = [];
-            $order_product_stock_ids_keep = [];
-            $order_product_stock_transaction_ids_keep = [];
-
             foreach ($request['order_products'] as $_order_product) {
                 $order_product_id = $_order_product['id'] ?? null;
                 $order_product = $order_product_id ? OrderProduct::find($order_product_id) : new OrderProduct;
-                if (!$order_product_id)
-                {
+                if (!$order_product_id) {
                     $order_product->order_id = $order->id;
                 }
                 $order_product->product_id = $_order_product['product_id'];
@@ -171,9 +177,6 @@ class OrderController extends Controller
                 $order_product->quantity = $order_product_id ? $order_product->quantity
                     : ($_order_product['quantity'] ?? count($_order_product['order_product_stocks']));
                 $order_product->save();
-
-                // Push to keep
-                $order_product_ids_keep[] = $order_product->id;
 
                 foreach ($_order_product['order_product_stocks'] as $_order_product_stock) {
                     $order_product_stock_id = $_order_product_stock['id'] ?? null;
@@ -185,22 +188,19 @@ class OrderController extends Controller
                     if (!$order_product_stock || ($order_product_stock->stock_id !== $stock_id)) {
                         $stock = Stock::find($stock_id);
 
-                        if ($stock->quantity <= 0)
-                        {
-                            throw new ApiErrorException('Stock not avalable');
+                        if ($stock->quantity <= 0) {
+                            throw new ApiErrorException('Stock not available');
                         }
+
                         $stock->quantity -= 1;
                         $stock->save();
                     }
 
                     $order_product_stock = $order_product_stock ? $order_product_stock : new OrderProductStock;
                     $order_product_stock->order_product_id = $order_product->id;
-                    $order_product_stock->stock_id = $stock_id;;
+                    $order_product_stock->stock_id = $stock_id;
                     $order_product_stock->amount = $_order_product_stock['amount'];
                     $order_product_stock->save();
-
-                    // Push to keep
-                    $order_product_stock_ids_keep[] = $order_product_stock->id;
 
                     // Transactions
                     foreach ($_order_product_stock['transactions'] as $_transaction) {
@@ -212,8 +212,6 @@ class OrderController extends Controller
                         $transaction->cashier_id = $request->user()->id;
                         $transaction->save();
 
-                        $order_product_stock_transaction_ids_keep[] = $transaction->id;
-
                         if (!$transaction_id) {
                             $order_product_stock_transaction = new OrderProductStockTransaction;
                             $order_product_stock_transaction->order_product_stock_id = $order_product_stock->id;
@@ -224,66 +222,22 @@ class OrderController extends Controller
                 }
             }
 
-            $transaction_ids_keep = [];
-
             $_transactions = $request['transactions'];
 
             foreach ($_transactions as $_transaction) {
                 $transaction_id = $_transaction['id'] ?? null;
                 $transaction = $transaction_id ? Transaction::find($transaction_id) : new Transaction;
-                $transaction->amount = $_transaction['amount'];
+                // $transaction->amount = $_transaction['amount'];
                 $transaction->description = $_transaction['description'];
-                $transaction->paid_date = $_transaction['paid_date'];
+                // $transaction->paid_date = $_transaction['paid_date'];
                 $transaction->cashier_id = $request->user()->id;
                 $transaction->save();
-
-                $transaction_ids_keep[] = $transaction->id;
 
                 if (!$transaction_id) {
                     $order_transaction = new OrderTransaction;
                     $order_transaction->order_id = $order->id;
                     $order_transaction->transaction_id = $transaction->id;
                     $order_transaction->save();
-                }
-            }
-
-            // Delete order_product
-            foreach ($order->order_products as $_order_product) {
-                // Delete order_product_stock
-                foreach ($_order_product->order_product_stocks as $_order_product_stock) {
-                    // Delete transactions
-                    foreach ($_order_product_stock->transactions as $_transaction) {
-                        if (!in_array($_transaction->id, $order_product_stock_transaction_ids_keep)) {
-                            OrderProductStockTransaction::where('order_product_stock_id', $_order_product_stock->id)
-                                ->where('transaction_id', $_transaction->id)
-                                ->delete();
-                            $_transaction->delete();
-                        }
-                    }
-
-                    // Delete order_product_stocks
-                    if (!in_array($_order_product_stock->id, $order_product_stock_ids_keep)) {
-                        // Reset item
-                        $stock = Stock::find($_order_product_stock->stock_id);
-                        $stock->quantity += 1;
-                        $stock->save();
-
-                        $_order_product_stock->delete();
-                    }
-                }
-
-                if (!in_array($_order_product->id, $order_product_ids_keep)) {
-                    $_order_product->delete();
-                }
-            }
-
-            // Delete transactions
-            foreach ($order->transactions as $_transaction) {
-                if (!in_array($_transaction->id, $transaction_ids_keep)) {
-                    OrderTransaction::where('order_id', $order->id)
-                        ->where('transaction_id', $_transaction->id)
-                        ->delete();
-                    $_transaction->delete();
                 }
             }
 
