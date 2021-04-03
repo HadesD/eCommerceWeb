@@ -26,6 +26,7 @@ Route::middleware(['auth:sanctum', 'role.manager'])->group(function(){
         'products' => App\Http\Controllers\Api\ProductController::class,
         'users' => App\Http\Controllers\Api\UserController::class,
         'statistics' => App\Http\Controllers\Api\StatisticController::class,
+        'transactions' => App\Http\Controllers\Api\TransactionController::class,
     ]);
 });
 

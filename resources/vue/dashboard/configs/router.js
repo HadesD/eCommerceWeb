@@ -81,13 +81,15 @@ let routes = [
                         path: '/',
                         component: () => import('../pages/users/Index.vue'),
                     },
+                ],
+            },
+            {
+                path: '/transactions',
+                component: RouteView,
+                children: [
                     {
-                        path: 'new',
-                        component: () => import('../pages/users/Edit.vue'),
-                    },
-                    {
-                        path: ':id/edit',
-                        component: () => import('../pages/users/Edit.vue'),
+                        path: '/',
+                        component: () => import('../pages/transactions/Index.vue'),
                     },
                 ],
             },

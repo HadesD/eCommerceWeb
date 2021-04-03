@@ -26,6 +26,8 @@ class MigrateOrderProductStockStatus extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('order_product_stocks', function (Blueprint $table) {
+            DB::statement('UPDATE order_product_stocks SET status=NULL;');
+        });
     }
 }
