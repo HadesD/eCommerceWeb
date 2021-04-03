@@ -60,7 +60,7 @@
                                     </a-input-search>
                                 </a-col>
                                 <a-col :span="8">
-                                    <a-tooltip title="Chọn từ danh sách">
+                                    <a-tooltip v-if="!p.id || (p.id <= 0) || (authUser.role === UserRole.ROLE_ADMIN_MASTER)" title="Chọn từ danh sách">
                                         <a-button type="primary" icon="shopping-cart" @click="() => {order_product = p;productIndexPageVisible = true}">Chọn</a-button>
                                     </a-tooltip>
                                 </a-col>
@@ -106,7 +106,7 @@
                                                 </a-input-search>
                                             </a-col>
                                             <a-col :span="8">
-                                                <a-tooltip title="Chọn từ danh sách">
+                                                <a-tooltip v-if="!ps.id || (ps.id <= 0)" title="Chọn từ danh sách">
                                                     <a-button type="primary" icon="bank" @click="() => {order_product_stock = ps;stockIndexPageVisible = true}">Chọn</a-button>
                                                 </a-tooltip>
                                             </a-col>
@@ -115,7 +115,7 @@
                                 </template>
                                 <template slot="status" slot-scope="value, ps, psIdx">
                                     <a-form-model-item :prop="`order_products.${pIdx}.order_product_stocks.${psIdx}.status`" style="min-width: 150px;">
-                                        <a-select v-model="ps.status">
+                                        <a-select v-model="ps.status" :disabled="!ps.id || (ps.id <= 0)">
                                             <a-select-option v-for="stsCode in Object.keys(configOrderProductStockStatus)" :key="stsCode" :value="parseInt(stsCode)">{{ configOrderProductStockStatus[stsCode].name }}</a-select-option>
                                         </a-select>
                                     </a-form-model-item>
@@ -129,7 +129,7 @@
                                     >
                                         <a-input-number v-model="ps.amount" style="width: 100%;" :min="0" :max="2000000000" />
                                     </a-form-model-item>
-                                    <div>Đã thanh toán: <PaidAmount :needAmount="ps.id ? ((ps.stock.cost_price > ps.amount) ? ps.stock.cost_price : ps.amount) : ps.amount" :amount="ps.transactions.reduce((a, b) => a + (b.amount || 0), 0)" /></div>
+                                    <div>Đã thanh toán: <PaidAmount :needAmount="ps.id ? ((ps.stock.cost_price > ps.amount) ? ps.stock.cost_price : ps.amount) : ps.amount" :amount="ps.transactions.reduce((a, b) => parseInt(a) + (parseInt(b.amount) || 0), 0)" /></div>
                                 </template>
                                 <template slot="action" slot-scope="text, ps, psIdx">
                                     <a @click="() => ps.transactions.push(Object.assign({}, transaction_obj))">
@@ -165,7 +165,7 @@
                                             :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.amount'" style="margin-bottom:0;"
                                             :help="`VND: ${number_format(pst.amount || 0)}`"
                                         >
-                                            <a-input-number v-model="pst.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" />
+                                            <a-input-number v-model="pst.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="pst.id && (pst.id >= 0)" />
                                         </a-form-model-item>
                                     </template>
                                     <template slot="paid_date" slot-scope="value, pst, pstIdx">
@@ -174,7 +174,7 @@
                                             :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.paid_date'" style="margin-bottom:0;"
                                             help="Ngày thanh toán sẽ liên kết trực tiếp tới tiền lãi/thu của tháng đó"
                                         >
-                                            <a-date-picker v-model="pst.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" />
+                                            <a-date-picker v-model="pst.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" :disabled="pst.id && (pst.id >= 0)" />
                                         </a-form-model-item>
                                     </template>
                                     <template slot="action" slot-scope="value, pst, pstIdx">
@@ -216,7 +216,7 @@
                                 style="margin-bottom:0;"
                                 :help="`VND: ${number_format(record.amount || 0)}`"
                             >
-                                <a-input-number v-model="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" />
+                                <a-input-number v-model="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="record.id && (record.id >= 0)" />
                             </a-form-model-item>
                         </template>
                         <template slot="paid_date" slot-scope="text, record, index">
@@ -225,7 +225,7 @@
                                 :prop="'transactions.'+index+'.paid_date'" style="margin-bottom:0;"
                                 help="Ngày thanh toán sẽ liên kết trực tiếp tới tiền lãi/thu của tháng đó"
                             >
-                                <a-date-picker v-model="record.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" />
+                                <a-date-picker v-model="record.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" :disabled="record.id && (record.id >= 0)" />
                             </a-form-model-item>
                         </template>
                         <template slot="action" slot-scope="text, record, index">
@@ -235,9 +235,11 @@
                         </template>
                     </a-table>
                 </a-card>
-                <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
+                <a-form-model-item :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }">
                     <a-button
                         type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })"
+                        block
+                        size="large"
                     >{{ id ? 'Sửa' : 'Tạo đơn' }}</a-button>
                 </a-form-model-item>
             </a-form-model>
@@ -299,10 +301,13 @@
 <script>
 import moment from 'moment';
 
+import UserRole from '../../configs/UserRole';
 import OrderStatus, { Config as configOrderStatus } from '../../configs/OrderStatus';
 import OrderProductStockStatus, { Config as configOrderProductStockStatus } from '../../configs/OrderProductStockStatus';
 import PaymentMethod, { Config as configPaymentMethod } from '../../configs/PaymentMethod';
+
 import { number_format } from '../../../helpers';
+import User from '../../utils/User';
 
 const PaidAmount = {
     props: {
@@ -447,6 +452,9 @@ export default {
             configOrderProductStockStatus,
             PaymentMethod,
             configPaymentMethod,
+            UserRole,
+
+            authUser: User.info(),
         }
     },
     mounted() {

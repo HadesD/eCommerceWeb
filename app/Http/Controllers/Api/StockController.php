@@ -56,7 +56,7 @@ class StockController extends Controller
             $stock->note = $request->note;
             $stock->save();
 
-            // EAV
+            // Category
             foreach ($request->categories_id as $category_id) {
                 $stock_category = new StockCategory;
                 $stock_category->stock_id = $stock->id;
