@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use App\Models\Stock;
 use App\Models\Category;
 use App\Models\StockCategory;
+use App\Models\StockTransaction;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
@@ -52,7 +54,6 @@ class StockController extends Controller
             $stock->quantity = ($request->quantity < 0) ? 0 : $request->quantity;
             $stock->cost_price = ($request->cost_price < 0) ? 0 : $request->cost_price;
             $stock->updated_user_id = $request->user()->id;
-            $stock->in_date = $request->in_date;
             $stock->note = $request->note;
             $stock->save();
 
@@ -63,6 +64,18 @@ class StockController extends Controller
                 $stock_category->category_id = $category_id;
                 $stock_category->save();
             }
+
+            $transaction = new Transaction;
+            $transaction->description = "Kho #{$stock->id}: Nhập {$stock->quantity} cái (VND)";
+            $transaction->amount = -($stock->quantity * $stock->cost_price);
+            $transaction->paid_date = $request->inout_date;
+            $transaction->cashier_id = $request->user()->id;
+            $transaction->save();
+
+            $stock_transaction = new StockTransaction;
+            $stock_transaction->stock_id = $stock->id;
+            $stock_transaction->transaction_id = $transaction->id;
+            $stock_transaction->save();
 
             DB::commit();
         } catch(\Throwable $e) {
@@ -105,20 +118,16 @@ class StockController extends Controller
         try {
             DB::beginTransaction();
 
-            if ($stock->products->count() && ($stock->cost_price !== $request->cost_price)) {
-                throw new ApiErrorException('Can not change price of sold item');
-            }
+            $prev_quantity = $stock->quantity;
 
             $stock->name = $request->name;
             $stock->idi = $request->idi;
             $stock->quantity = ($request->quantity < 0) ? 0 : $request->quantity;
-            $stock->cost_price = ($request->cost_price < 0) ? 0 : $request->cost_price;
             $stock->updated_user_id = $request->user()->id;
-            $stock->in_date = $request->user()->hasPermission(User::ROLE_ADMIN_MASTER) ? $request->in_date : $stock->in_date;
             $stock->note = $request->note;
             $stock->save();
 
-            // EAV
+            // Category
             foreach ($request->categories_id as $category_id) {
                 $stock_category = StockCategory::where('stock_id', $stock->id)
                     ->where('category_id', $category_id)
@@ -132,10 +141,46 @@ class StockController extends Controller
                 $stock_category->category_id = $category_id;
                 $stock_category->save();
             }
-
             StockCategory::where('stock_id', $stock->id)
                 ->whereNotIn('category_id', $request->categories_id)
                 ->delete();
+
+            $diff_quantity = $prev_quantity - $stock->quantity;
+
+            // Import / Export Transaction
+            if ($diff_quantity !== 0) {
+                $transaction = new Transaction;
+                $transaction->description = "Kho #{$stock->id}: " .
+                    (($diff_quantity < 0) ? 'Nhập '.abs($diff_quantity).' cái (VND)' : 'Trả '.abs($diff_quantity).' cái (VND)');
+                $transaction->amount = $diff_quantity * $stock->cost_price;
+                $transaction->paid_date = $request->inout_date;
+                $transaction->cashier_id = $request->user()->id;
+                $transaction->save();
+
+                $stock_transaction = new StockTransaction;
+                $stock_transaction->stock_id = $stock->id;
+                $stock_transaction->transaction_id = $transaction->id;
+                $stock_transaction->save();
+            }
+
+            // Addon Transactions
+            foreach ($request->transactions as $_transaction) {
+                if (isset($_transaction['id'])) {
+                    continue;
+                }
+
+                $transaction = new Transaction;
+                $transaction->description = $_transaction['description'];
+                $transaction->amount = $_transaction['amount'];
+                $transaction->paid_date = $_transaction['paid_date'];
+                $transaction->cashier_id = $request->user()->id;
+                $transaction->save();
+
+                $stock_transaction = new StockTransaction;
+                $stock_transaction->stock_id = $stock->id;
+                $stock_transaction->transaction_id = $transaction->id;
+                $stock_transaction->save();
+            }
 
             DB::commit();
         } catch(\Throwable $e) {

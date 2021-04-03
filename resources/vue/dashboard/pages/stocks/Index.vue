@@ -90,7 +90,6 @@
                     <a-tag v-for="category in value" :key="category.id">{{ category.name }}</a-tag>
                 </template>
                 <template slot="time" slot-scope="record">
-                    <div>Nhập kho: {{ date_format(record.in_date) }}</div>
                     <div>Tạo: {{ date_format(record.created_at) }}</div>
                     <div>Update: {{ date_format(record.updated_at) }}</div>
                 </template>

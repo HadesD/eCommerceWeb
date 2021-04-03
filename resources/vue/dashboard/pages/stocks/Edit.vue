@@ -20,26 +20,25 @@
                 :label-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? {span: 4} : {}"
                 :wrapper-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? {span: 14} : {}"
             >
-                <a-form-model-item label="Tên sản phẩm" ref="name" prop="name">
+                <a-form-model-item label="Tên sản phẩm" prop="name">
                     <a-input v-model="formData.name" />
                 </a-form-model-item>
-                <a-form-model-item label="Id/imei/mã phân biệt" ref="idi" prop="idi">
-                    <a-input v-model="formData.idi" @blur="() => $refs.idi.onFieldBlur()" />
+                <a-form-model-item label="Id/imei/mã phân biệt" prop="idi">
+                    <a-input v-model="formData.idi" />
                 </a-form-model-item>
-                <a-form-model-item label="Số lượng" ref="quantity" prop="quantity">
-                    <a-input-number v-model="formData.quantity" @blur="() => $refs.quantity.onFieldBlur()" :min="-200" :max="200" />
+                <a-form-model-item label="Số lượng" prop="quantity">
+                    <a-input-number v-model="formData.quantity" :min="id ? 0 : 1" :max="200" />
                 </a-form-model-item>
-                <a-form-model-item label="Giá lúc nhập (Đơn giá)" ref="cost_price" prop="cost_price" :help="`VND: ${number_format(formData.cost_price || 0)}`">
+                <a-form-model-item label="Giá lúc nhập (Đơn giá)" prop="cost_price" :help="`VND: ${number_format(formData.cost_price || 0)}`">
                     <a-input-number
                         v-model="formData.cost_price"
-                        @blur="() => $refs.cost_price.onFieldBlur()"
                         style="width: 100%;"
-                        :min="-2000000000"
+                        :min="1"
                         :max="2000000000"
-                        :disabled="cost_priceDisabled"
+                        :disabled="id && (id > 0)"
                     />
                 </a-form-model-item>
-                <a-form-model-item label="Chuyên mục cha" ref="categories_id" prop="categories_id">
+                <a-form-model-item label="Chuyên mục cha" prop="categories_id">
                     <a-form-model-item style="display: inline-block; margin-right: 5px;">
                         <a-tooltip title="Thêm chuyên mục">
                             <a-button type="primary" icon="plus" @click="showAddCategoryModal" />
@@ -60,8 +59,6 @@
                                 :tree-data="categoriesTreeData"
                                 placeholder="Chuyên mục"
                                 :replaceFields="{ pId:'parent_id',title:'name',value:'id' }"
-                                @blur="() => $refs.categories_id.onFieldBlur()"
-                                @change="() => $refs.categories_id.onFieldBlur()"
                             />
                         </a-spin>
                     </a-form-model-item>
@@ -74,19 +71,73 @@
                 <a-form-model-item label="Ghi chú">
                     <a-textarea v-model="formData.note" />
                 </a-form-model-item>
-                <a-form-model-item label="Ngày nhập" ref="in_date" prop="in_date" help="Ngày nhập sẽ liên kết trực tiếp tới tiền vốn của tháng đó">
+                <a-form-model-item
+                    label="Ngày nhập / trả"
+                    prop="inout_date"
+                    help="Ngày nhập sẽ liên kết trực tiếp tới tiền vốn của tháng đó"
+                    :rules="{required:true}"
+                    v-if="formData.quantity !== prev_quantity"
+                >
                     <a-date-picker
-                        v-model="formData.in_date"
+                        v-model="formData.inout_date"
                         format="YYYY-MM-DD HH:mm:ss"
                         show-time
                         type="date"
-                        @blur="() => $refs.in_date.onFieldBlur()"
-                        :disabled="id && (authUser.role < UserRole.ROLE_ADMIN_MASTER)"
                     />
                 </a-form-model-item>
-                <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
+                <a-card title="Giao dịch thêm" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#9800ab',color:'#FFF'}" :bodyStyle="{padding:0}">
+                    <a slot="extra" @click="() => formData.transactions.push(Object.assign({}, transaction_obj))">
+                        <a-tooltip v-if="id && (id > 0)" title="Thêm giao dịch">
+                            <a-button type="primary" icon="plus" />
+                        </a-tooltip>
+                    </a>
+                    <a-table
+                        :columns="addon_transactionsTableColumns"
+                        :data-source="formData.transactions"
+                        :pagination="false"
+                        :row-key="record => `addon-tnx-${record.id || Math.random()}`"
+                        size="small"
+                        bordered
+                    >
+                        <template slot="description" slot-scope="text, record, index">
+                            <a-form-model-item
+                                :rules="{required:true,message:'Không được để trống'}"
+                                :prop="`transactions.${index}.description`" style="margin-bottom:0;"
+                            >
+                                <a-input v-model="record.description" placeholder="Mã giảm giá, phí ship, v..v" type="textarea" :disabled="record.id && (record.id >= 0)" />
+                            </a-form-model-item>
+                        </template>
+                        <template slot="amount" slot-scope="text, record, index">
+                            <a-form-model-item
+                                :rules="{required:true,message:'Không được để trống'}"
+                                :prop="`transactions.${index}.amount`"
+                                style="margin-bottom:0;"
+                                :help="`VND: ${number_format(record.amount || 0)}`"
+                            >
+                                <a-input-number v-model="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="record.id && (record.id >= 0)" />
+                            </a-form-model-item>
+                        </template>
+                        <template slot="paid_date" slot-scope="text, record, index">
+                            <a-form-model-item
+                                :rules="{required:true,message:'Không được để trống'}"
+                                :prop="'transactions.'+index+'.paid_date'" style="margin-bottom:0;"
+                                help="Ngày thanh toán sẽ liên kết trực tiếp tới tiền lãi/thu của tháng đó"
+                            >
+                                <a-date-picker v-model="record.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" :disabled="record.id && (record.id >= 0)" />
+                            </a-form-model-item>
+                        </template>
+                        <template slot="action" slot-scope="text, record, index">
+                            <a-popconfirm v-if="!record.id" title="Chắc chắn muốn xóa?" @confirm="() => formData.transactions.splice(index,1)">
+                                <a-button type="danger" icon="delete" />
+                            </a-popconfirm>
+                        </template>
+                    </a-table>
+                </a-card>
+                <a-form-model-item :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }">
                     <a-button
                         type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })"
+                        block
+                        size="large"
                     >{{ id ? 'Sửa' : 'Nhập kho' }}</a-button>
                 </a-form-model-item>
             </a-form-model>
@@ -99,6 +150,41 @@ import moment from 'moment';
 import { number_format } from '../../../helpers';
 import UserRole from '../../configs/UserRole';
 import User from '../../utils/User';
+
+const addon_transactionsTableColumns = [
+    {
+        title: '#',
+        dataIndex: 'id',
+    },
+    {
+        title: '* Nội dung',
+        dataIndex: 'description',
+        scopedSlots: {
+            customRender: 'description',
+        },
+    },
+    {
+        title: '* Số tiền',
+        dataIndex: 'amount',
+        scopedSlots: {
+            customRender: 'amount',
+        },
+    },
+    {
+        title: '* Ngày thanh toán',
+        dataIndex: 'paid_date',
+        scopedSlots: {
+            customRender: 'paid_date',
+        },
+    },
+    {
+        title: 'Hành động',
+        key: 'action',
+        scopedSlots: {
+            customRender: 'action',
+        },
+    },
+];
 
 export default {
     props: {
@@ -113,19 +199,22 @@ export default {
             addCategoryModalVisible: false,
             categories: [],
 
+            addon_transactionsTableColumns,
+
             stockInfoLoading: false,
             stockInfo: {},
             formData: {
                 name: undefined,
                 idi: undefined,
-                cost_price: 0,
+                cost_price: undefined,
                 quantity: 1,
                 note: undefined,
-                in_date: undefined,
-                addon_transactions: [],
-                order_products: [],
+                inout_date: undefined,
+                transactions: [],
                 categories_id: [],
             },
+            prev_quantity: undefined,
+
             rules: {
                 idi: [
                     { required: true },
@@ -139,9 +228,6 @@ export default {
                 categories_id: [
                     { required: true },
                 ],
-                in_date: [
-                    { required: true }
-                ],
             },
 
             authUser: User.info(),
@@ -152,6 +238,14 @@ export default {
         id() {
             return (this.stockId !== undefined) ? this.stockId : this.$route.params.id;
         },
+        transaction_obj() {
+            return {
+                id: undefined,
+                description: undefined,
+                amount: undefined,
+                paid_date: undefined,
+            }
+        },
         categoriesTreeData(){
             let data = this.categories;
 
@@ -161,12 +255,16 @@ export default {
 
             return data;
         },
-        cost_priceDisabled(){
-            return (this.stockInfo.products && (this.stockInfo.products.length > 0));
-        },
     },
     watch: {
-        id() {
+        id(to, from) {
+            if (!to) {
+                this.formData.transactions.splice(0);
+            }
+
+            this.formData.inout_date = undefined;
+            this.prev_quantity = undefined;
+
             this.loadStock(this.id);
         },
     },
@@ -226,9 +324,16 @@ export default {
                     _.assign(this.formData, _.pick(sData, _.keys(this.formData)));
 
                     this.formData.categories_id = sData.categories.map((item) => item.id);
-                    this.formData.in_date = moment(this.formData.in_date);
+                    this.formData.inout_date = undefined;
+                    this.formData.transactions = this.formData.transactions.map(value => {
+                        return {
+                            ...value,
+                            paid_date: moment(value.paid_date),
+                        }
+                    });
 
                     this.stockInfo = sData;
+                    this.prev_quantity = sData.quantity;
 
                     this.stockInfoLoading = false;
                 })
@@ -254,17 +359,22 @@ export default {
                 method: stockId ? 'put' : 'post',
                 data: {
                     ...this.formData,
-                    in_date: moment(this.formData.in_date).format('YYYY-MM-DD HH:mm:ss'),
+                    inout_date: moment(this.formData.inout_date).format('YYYY-MM-DD HH:mm:ss'),
+                    transactions: this.formData.transactions.map(value => {
+                        return {
+                            ...value,
+                            paid_date: moment(value.paid_date).format("YYYY-MM-DD HH:mm:ss"),
+                        };
+                    }),
                 }
             })
                 .then(res => {
                     const sData = res.data.data;
-                    if (!sData.id) {
-                        throw res;
-                    }
 
                     if (stockId) {
                         this.$message.success('Đã sửa sản phẩm thành công');
+
+                        this.loadStock(sData.id);
                     } else {
                         this.$message.success('Đã thêm sản phẩm thành công');
 
@@ -274,6 +384,7 @@ export default {
                     }
                 })
                 .catch(err => {
+                    this.stockInfoLoading = false;
                     if (err.response && err.response.data.message) {
                         this.$message.error(err.response.data.message);
                         return;
@@ -282,7 +393,6 @@ export default {
                     this.$message.error(err.message || 'Thất bại');
                 })
                 .finally(()=>{
-                    this.stockInfoLoading = false;
                 });
         },
     },
