@@ -68,6 +68,10 @@ const transactionsTableColumns = [
     {
         title: 'Nội dung',
         dataIndex: 'description',
+        scopedSlots: {
+            filterDropdown: 'filterSearchBox',
+            filterIcon: 'filterSearchBoxIcon',
+        },
     },
     {
         title: 'Số tiền',

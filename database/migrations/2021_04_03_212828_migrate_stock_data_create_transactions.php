@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\StockTransaction;
+use App\Models\Transaction;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,21 +15,26 @@ class MigrateStockDataCreateTransactions extends Migration
      */
     public function up()
     {
-        throw 1;
         Schema::table('stocks', function (Blueprint $table) {
             $allStocks = \App\Models\Stock::all();
-            $cleared = [];
-            foreach ($allStocks as $stock)
-            {
-                if (isset($cleared[$stock->idi]) && ($cleared[$stock->idi] == $stock->cost_price))
-                {
-                    $stock->delete();
-                    continue;
+            foreach ($allStocks as $stock) {
+                $quantity = $stock->quantity;
+
+                foreach ($stock->products as $product) {
+                    $quantity += 1;
                 }
 
-                $stock->quantity = \App\Models\Stock::where('idi', $stock->idi)->where('cost_price', $stock->cost_price)->sum('quantity');
-                $stock->save();
-                $cleared[$stock->idi] = $stock->cost_price;
+                $transaction = new Transaction;
+                $transaction->description = "Kho #{$stock->id}: Nhập {$quantity} cái (VND)";
+                $transaction->amount = -($quantity * $stock->cost_price);
+                $transaction->paid_date = $stock->in_date;
+                $transaction->cashier_id = $stock->updated_user_id;
+                $transaction->save();
+
+                $stock_transaction = new StockTransaction;
+                $stock_transaction->stock_id = $stock->id;
+                $stock_transaction->transaction_id = $transaction->id;
+                $stock_transaction->save();
             }
         });
     }

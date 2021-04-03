@@ -12,6 +12,7 @@ use App\Models\Order;
 use App\Models\Transaction;
 use App\Models\OrderProductStock;
 use App\Models\OrderProductStockTransaction;
+use Illuminate\Support\Facades\DB;
 
 class StatisticController extends Controller
 {
@@ -38,14 +39,16 @@ class StatisticController extends Controller
             'stock' => [
                 'count' => Stock::count(),
                 'avail_count' => Stock::sum('quantity'),
-                'cost_price_total' => Stock::sum('cost_price'),
-                'this_month_cost_price_total' => Stock::where('in_date', '>=', date('Y-m-01'))->sum('cost_price'),
+                //'cost_price_total' => Stock::sum('cost_price'),
+                //'this_month_cost_price_total' => Stock::where('in_date', '>=', date('Y-m-01'))->sum('cost_price'),
             ],
             'transaction' => [
                 'amount_total' => Transaction::sum('amount'),
                 'this_month_amount_total' => Transaction::where('paid_date', '>=', date('Y-m-01'))->sum('amount'),
+                'chart' => Transaction::select(DB::raw('(YEAR(paid_date)*100+MONTH(paid_date)) AS ym'), DB::raw('SUM(amount) AS amount'))->orderBy('ym', 'DESC')->groupBy('ym')->get(),
 
                 // = sell_price - cost_price
+                /*
                 'this_month_earning_total' => (function(){
                     $sold_stock_elo = OrderProductStock::select('id', 'stock_id')->whereIn('id', function($q_ops){
                         $q_ops->select('order_product_stock_id')
@@ -71,6 +74,7 @@ class StatisticController extends Controller
 
                     return ($sold_price - $cost_price);
                 })(),
+                */
             ],
         ];
     }

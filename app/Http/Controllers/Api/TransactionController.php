@@ -14,9 +14,16 @@ class TransactionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new JsonResource(Transaction::orderBy('paid_date', 'DESC')->paginate());
+        $transactionQuery = new Transaction;
+
+        foreach (['description'] as $value) {
+            if (isset($request->{$value})) {
+                $transactionQuery = $transactionQuery->where($value, 'LIKE', '%'.(is_array($request->{$value}) ? $request->{$value}[0] : $request->{$value}).'%');
+            }
+        }
+        return new JsonResource($transactionQuery->orderBy('paid_date', 'DESC')->paginate());
     }
 
     /**

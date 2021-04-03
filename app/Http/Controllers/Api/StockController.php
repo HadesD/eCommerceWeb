@@ -25,8 +25,8 @@ class StockController extends Controller
      */
     public function index(Request $request)
     {
-        $stockQuery = isset($request->category_id) ? Category::find($request->category_id)->stocks->orderBy('in_date', 'DESC')
-                : Stock::orderBy('in_date', 'DESC');
+        $stockQuery = isset($request->category_id) ? Category::find($request->category_id)->stocks->orderBy('id', 'DESC')
+                : Stock::orderBy('id', 'DESC');
 
         foreach (['name', 'idi'] as $value) {
             if (isset($request->{$value})) {
