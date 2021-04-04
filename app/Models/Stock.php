@@ -6,10 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-use Carbon\Carbon;
-use CreateStocksTable;
-use DateTimeInterface;
-
 class Stock extends Model
 {
     use HasFactory, SoftDeletes;
@@ -19,25 +15,10 @@ class Stock extends Model
     ];
 
     protected $appends = [
-        'products',
+        // 'products',
         'categories',
-        'transactions',
+        // 'transactions',
     ];
-
-    /**
-     * Prepare a date for array / JSON serialization.
-     *
-     * @param  \DateTimeInterface  $date
-     * @return string
-     **/
-    // protected function serializeDate(DateTimeInterface $date)
-    // {
-    //     return $date->format('Y-m-d H:i:s');
-    // }
-
-    public function setInDateAttribute($value){
-        $this->attributes['in_date'] = Carbon::parse($value)->format('Y-m-d H:i:s');
-    }
 
     public function getProductsAttribute(){
         return Product::whereIn('id', function($query){

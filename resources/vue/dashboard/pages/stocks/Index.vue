@@ -82,9 +82,8 @@
                 <!-- Block Search: END -->
 
                 <template slot="cost_price" slot-scope="value" style="display:block;text-align:right;">{{ number_format(value) }}</template>
-                <template slot="quantity_info" slot-scope="record">
-                    <div>Đã bán: {{ record.products.length }}</div>
-                    <div>Tồn kho: {{ record.quantity }}</div>
+                <template slot="quantity" slot-scope="value">
+                    <a-tag :color="(value > 0) ? 'green' : 'red'">{{ value }}</a-tag>
                 </template>
                 <template slot="categories" slot-scope="value">
                     <a-tag v-for="category in value" :key="category.id">{{ category.name }}</a-tag>
@@ -143,9 +142,11 @@ const stocksTableColumns = [
         },
     },
     {
-        title: 'Số lượng',
-        key: 'quantity_info',
-        scopedSlots: { customRender: 'quantity_info' },
+        title: 'Tồn kho',
+        dataIndex: 'quantity',
+        scopedSlots: {
+            customRender: 'quantity'
+        },
     },
     {
         title: 'Chuyên mục',

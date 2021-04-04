@@ -103,7 +103,7 @@ class StockController extends Controller
      */
     public function show(Stock $stock)
     {
-        return new JsonResource($stock);
+        return new JsonResource($stock->append(['transactions']));
     }
 
     /**
