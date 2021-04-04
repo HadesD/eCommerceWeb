@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import { number_format } from '../../helpers';
 
 export default {
     components: {
@@ -86,21 +87,33 @@ export default {
     },
     mounted(){
         this.loading = true;
+
+        this.chartOptions = {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Chart.js Line Chart'
+                },
+            },
+            tooltips: {
+                callbacks: {
+                    label: function(t, d) {
+                        // return t.datasetIndex;
+                        // console.log(t,d);
+                        return number_format(t.yLabel);
+                    },
+                },
+            },
+        };
+
         axios.get('/api/statistics')
             .then(res => {
                 this.statistics = {...res.data}
-                this.chartOptions = {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        title: {
-                            display: true,
-                            text: 'Chart.js Line Chart'
-                        }
-                    },
-                }
+
                 this.datacollection = {
                     labels: this.statistics.transaction.chart?.map(value => value.ym),
                     datasets: [
