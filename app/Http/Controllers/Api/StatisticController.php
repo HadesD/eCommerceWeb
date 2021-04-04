@@ -44,7 +44,7 @@ class StatisticController extends Controller
             ],
             'transaction' => [
                 'amount_total' => DB::select('SELECT SUM(amount) AS total FROM transactions')[0]->total,
-                'this_month_amount_total' => Transaction::where('paid_date', '>=', date('Y-m-01'))->sum('amount'),
+                'this_month_amount_total' => DB::select('SELECT SUM(amount) AS total FROM transactions WHERE paid_date >= :paid_date', ['paid_date'=>date('Y-m-01')])[0]->total,
                 // 'chart' => Transaction::selectRaw('(YEAR(paid_date)*100+MONTH(paid_date)) AS ym, SUM(amount) AS amount')->orderBy('ym', 'ASC')->groupBy('ym')->query(),
                 'chart' => DB::select('SELECT (YEAR(paid_date)*100+MONTH(paid_date)) AS ym, SUM(amount) AS amount FROM transactions GROUP BY ym ORDER BY ym ASC'),
 
