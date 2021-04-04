@@ -3,7 +3,7 @@
         <h2>
             <span>Hoá Đơn</span>
             <a-tooltip title="Làm mới">
-                <a-button type="primary" icon="reload" :loading="ordersTableLoading" @click="() => loadOrders(ordersTablePagination.current)" />
+                <a-button type="primary" icon="reload" :loading="ordersTableLoading" @click="() => loadOrders({})" />
             </a-tooltip>
             <router-link to="/orders/new">
                 <a-tooltip title="Thêm đơn">
@@ -17,7 +17,7 @@
             :loading="ordersTableLoading"
             :row-key="record => record.id"
             :pagination="ordersTablePagination"
-            @change="(pagination) => loadOrders(pagination.current)"
+            @change="(pagination, filters) => {ordersTableFilters = filters;loadOrders({page: pagination.current});}"
         >
             <template slot="customer" slot-scope="value, record">
                 <div v-if="value && record.customer">
@@ -110,6 +110,12 @@ const ordersTableColumns = [
         title: 'Trạng thái',
         key: 'status',
         scopedSlots: { customRender: 'status' },
+        filters: Object.keys(configOrderStatus).map(value => {
+            return {
+                text: configOrderStatus[value].name,
+                value,
+            };
+        }),
     },
     {
         title: 'Ghi chú',
@@ -171,6 +177,7 @@ export default {
             ordersTablePagination: {
                 position: 'both',
             },
+            productsTableFilters: {},
 
             OrderStatus,
             configOrderStatus,
@@ -179,7 +186,7 @@ export default {
     mounted() {
         this.ordersTablePagination.current = (parseInt(this.$route.query.page) || 1)
 
-        this.loadOrders(this.ordersTablePagination.current);
+        this.loadOrders({});
     },
     computed: {
         ordersTableData(){
@@ -190,40 +197,41 @@ export default {
         number_format,
         date_format,
 
-        loadOrders(page){
-        this.ordersTableLoading = true;
-        axios.get('/api/orders', {
-            params: {
-                page,
-            }
-        })
-            .then(res => {
-            const resData = res.data;
-
-            this.orders = resData.data || [];
-
-            this.ordersTablePagination = {
-                ...this.ordersTablePagination,
-                total: resData.total,
-                current: resData.current_page,
-                pageSize: resData.per_page,
-            };
-
-            //   if (this.$route.query.page != resData.current_page) {
-                // this.$router.push('/orders/index?page='+resData.current_page);
-            //   }
-            })
-            .catch(err => {
-                if (err.response && err.response.data.message) {
-                    this.$message.error(err.response.data.message);
-                    return;
+        loadOrders({page}){
+            this.ordersTableLoading = true;
+            axios.get('/api/orders', {
+                params: {
+                    page: page || this.ordersTablePagination.current,
+                    ...this.ordersTableFilters,
                 }
-
-                this.$message.error(err.message || 'Thất bại');
             })
-            .finally(()=>{
-            this.ordersTableLoading = false;
-            });
+                .then(res => {
+                    const resData = res.data;
+
+                    this.orders = resData.data || [];
+
+                    this.ordersTablePagination = {
+                        ...this.ordersTablePagination,
+                        total: resData.total,
+                        current: resData.current_page,
+                        pageSize: resData.per_page,
+                    };
+
+                    //   if (this.$route.query.page != resData.current_page) {
+                        // this.$router.push('/orders/index?page='+resData.current_page);
+                    //   }
+                })
+                .catch(err => {
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
+                        return;
+                    }
+
+                    this.$message.error(err.message || 'Thất bại');
+                })
+                .finally(()=>{
+                    this.ordersTableLoading = false;
+                });
         },
 
         totalAmount(record) {
