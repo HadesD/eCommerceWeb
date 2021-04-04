@@ -35,6 +35,12 @@
             <a-menu-item key="/orders/new">
                 <router-link to="/orders/new">Tạo đơn</router-link>
             </a-menu-item>
+            <a-menu-item key="/orders/help">
+                <router-link to="/orders/help">
+                    <a-icon type="question-circle" />
+                    <span>Hướng dẫn</span>
+                </router-link>
+            </a-menu-item>
         </a-sub-menu>
         <a-sub-menu key="/stocks">
             <span slot="title">

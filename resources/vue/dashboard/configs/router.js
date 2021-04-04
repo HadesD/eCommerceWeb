@@ -71,6 +71,10 @@ let routes = [
                         path: ':id/edit',
                         component: () => import('../pages/orders/Edit.vue'),
                     },
+                    {
+                        path: 'help',
+                        component: () => import('../pages/orders/Help.vue'),
+                    },
                 ],
             },
             {
