@@ -19,6 +19,37 @@
             :pagination="ordersTablePagination"
             @change="(pagination, filters) => {ordersTableFilters = filters;loadOrders({page: pagination.current});}"
         >
+            <!-- Block Search: BEGIN -->
+            <div
+                slot="filterSearchBox"
+                slot-scope="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }"
+                style="padding: 8px"
+            >
+                <a-input
+                    :placeholder="`Tìm ${column.title}`"
+                    :value="selectedKeys[0]"
+                    style="width: 188px; margin-bottom: 8px; display: block;"
+                    @change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
+                    @pressEnter="() => $refs[`filterSearchBoxSubmit.${column.dataIndex}`].$el.click()"
+                />
+                <a-button
+                    :ref="`filterSearchBoxSubmit.${column.dataIndex}`"
+                    type="primary"
+                    icon="search"
+                    size="small"
+                    style="width: 90px; margin-right: 8px"
+                    @click="() => {confirm();}"
+                >Tìm</a-button>
+                <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);clearFilters();}">Reset</a-button>
+            </div>
+            <a-icon
+                slot="filterSearchBoxIcon"
+                slot-scope="filtered"
+                type="search"
+                :style="{ color: filtered ? '#108ee9' : undefined }"
+            />
+            <!-- Block Search: END -->
+
             <template slot="customer" slot-scope="value, record">
                 <div v-if="value && record.customer">
                     <div>
@@ -120,6 +151,10 @@ const ordersTableColumns = [
     {
         title: 'Ghi chú',
         dataIndex: 'note',
+        scopedSlots: {
+            filterDropdown: 'filterSearchBox',
+            filterIcon: 'filterSearchBoxIcon',
+        },
     },
     {
         title: 'Tổng Thu/Giá Nhập',
