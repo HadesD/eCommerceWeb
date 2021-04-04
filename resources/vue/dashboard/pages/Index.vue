@@ -31,15 +31,26 @@
                 </a-col>
             </a-row>
             <a-card title="Thu chi" style="margin-top: 15px;">
-                <a-statistic title="Tổng thu (VND)" :value="statistics.transaction.amount_total" />
-                <a-statistic title="Tổng thu tháng này (VND)" :value="statistics.transaction.this_month_amount_total" />
+                <a-row :gutter="8">
+                    <a-col :span="5" :lg="5" :md="24" :sm="24" :xs="24">
+                        <a-statistic title="Tổng thu (VND)" :value="statistics.transaction.amount_total" />
+                        <a-statistic title="Tổng thu tháng này (VND)" :value="statistics.transaction.this_month_amount_total" />
+                    </a-col>
+                    <a-col :span="19" :lg="19" :md="24" :sm="24" :xs="24">
+                        <line-chart :height="150" type="line" :chart-data="datacollection" :options="chartOptions"></line-chart>
+                    </a-col>
+                </a-row>
             </a-card>
         </a-spin>
     </div>
 </template>
 
 <script>
+
 export default {
+    components: {
+        LineChart: () => import('../utils/LineChart'),
+    },
     data(){
         return {
             loading: false,
@@ -67,14 +78,40 @@ export default {
                     amount_total: undefined,
                     this_month_amount_total: undefined,
                 },
-            }
-        }
+            },
+
+            datacollection: {},
+            chartOptions: null,
+        };
     },
     mounted(){
         this.loading = true;
         axios.get('/api/statistics')
             .then(res => {
                 this.statistics = {...res.data}
+                this.chartOptions = {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Chart.js Line Chart'
+                        }
+                    },
+                }
+                this.datacollection = {
+                    labels: this.statistics.transaction.chart?.map(value => value.ym),
+                    datasets: [
+                        {
+                            label: 'Lãi',
+                            backgroundColor: '#ffb1c1',
+                            borderColor: '#f87979',
+                            data: this.statistics.transaction.chart?.map(value => value.amount)
+                        },
+                    ]
+                };
             })
             .catch(err => {
                 if (err.response && err.response.data.message) {
@@ -87,6 +124,11 @@ export default {
             .finally(() => {
                 this.loading = false;
             });
+    },
+    methods: {
+        getRandomInt () {
+            return Math.floor(Math.random() * (50 - 5 + 1)) + 5
+        },
     },
 }
 </script>
