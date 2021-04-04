@@ -33,8 +33,8 @@
             <a-card title="Thu chi" style="margin-top: 15px;">
                 <a-row :gutter="8">
                     <a-col :span="5" :lg="5" :md="24" :sm="24" :xs="24">
-                        <a-statistic title="Tổng thu (VND)" :value="statistics.transaction.amount_total" />
-                        <a-statistic title="Tổng thu tháng này (VND)" :value="statistics.transaction.this_month_amount_total" />
+                        <a-statistic title="Tổng Lãi (VND)" :value="statistics.transaction.amount_total" />
+                        <a-statistic title="Tổng Lãi tháng này (VND)" :value="statistics.transaction.this_month_amount_total" />
                     </a-col>
                     <a-col :span="19" :lg="19" :md="24" :sm="24" :xs="24">
                         <line-chart :height="150" type="line" :chart-data="datacollection" :options="chartOptions"></line-chart>
