@@ -327,7 +327,7 @@ export default {
                                 return `+${value}`;
                             }
                             default: {
-                                return;
+                                return '';
                             }
                         }
                     }),
