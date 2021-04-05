@@ -37,10 +37,10 @@ class StatisticController extends Controller
                 'selling_count' => Product::where('status', Product::STS_SELLING)->count(),
             ],
             'stock' => [
-                'count' => DB::select('SELECT COUNT(*) AS total FROM stocks')[0]->total,
-                'avail_count' => DB::select('SELECT COUNT(*) AS total FROM stocks WHERE quantity > 0')[0]->total,
+                'count' => DB::select('SELECT COUNT(*) AS total FROM stocks WHERE deleted_at IS NULL')[0]->total,
+                'avail_count' => DB::select('SELECT COUNT(*) AS total FROM stocks WHERE deleted_at IS NULL AND quantity > 0')[0]->total,
                 // 'avail_count_quantity' => DB::select('SELECT SUM(quantity) AS total FROM stocks WHERE quantity > 0')[0]->total,
-                'avail_cost_price' => DB::select('SELECT SUM(cost_price * quantity) AS total FROM stocks')[0]->total,
+                'avail_cost_price' => DB::select('SELECT SUM(cost_price * quantity) AS total FROM stocks WHERE deleted_at IS NULL')[0]->total,
                 //'this_month_cost_price_total' => Stock::where('in_date', '>=', date('Y-m-01'))->sum('cost_price'),
             ],
             'transaction' => [
