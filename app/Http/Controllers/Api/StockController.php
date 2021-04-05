@@ -11,7 +11,6 @@ use App\Models\Category;
 use App\Models\StockCategory;
 use App\Models\StockTransaction;
 use App\Models\Transaction;
-use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

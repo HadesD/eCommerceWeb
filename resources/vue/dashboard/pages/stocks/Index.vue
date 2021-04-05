@@ -50,6 +50,7 @@
                 :pagination="stocksTablePagination"
                 @change="(pagination, filters, sorter) => {
                     stocksTableFilters = filters;
+                    // TODO: Check if disabled sorter
                     stocksTableSorts = {
                         ...stocksTableSorts,
                         [sorter.field]: sorter.order,
@@ -202,7 +203,7 @@ export default {
                 position: 'both',
             },
             stocksTableFilters: {},
-            stocksTableSorts: undefined,
+            stocksTableSorts: {},
         };
     },
     mounted() {
