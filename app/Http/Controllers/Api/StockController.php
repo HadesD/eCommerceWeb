@@ -24,8 +24,8 @@ class StockController extends Controller
      */
     public function index(Request $request)
     {
-        $stockQuery = isset($request->category_id) ? Category::find($request->category_id)->stocks->orderBy('id', 'DESC')
-                : Stock::orderBy('id', 'DESC');
+        $stockQuery = isset($request->category_id) ? Category::find($request->category_id)->stocks
+                : (new Stock);
 
         foreach (['name', 'idi'] as $value) {
             if (isset($request->{$value})) {
@@ -34,12 +34,14 @@ class StockController extends Controller
         }
 
         if (isset($request->sort_by)) {
-            foreach ($request->sort_by as $sorter) {
+            foreach (explode(',', $request->sort_by) as $sorter) {
                 $col = substr($sorter, 1);
                 $sortType = ($sorter[0] === '-') ? 'DESC' : 'ASC';
                 $stockQuery = $stockQuery->orderBy($col, $sortType);
             }
         }
+
+        $stockQuery = $stockQuery->orderBy('id', 'DESC');
 
         return new JsonResource($stockQuery->paginate());
     }

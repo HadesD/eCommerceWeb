@@ -47,7 +47,11 @@
                 :loading="productsTableLoading"
                 :row-key="record => record.id"
                 :pagination="productsTablePagination"
-                @change="(pagination, filters) => {productsTableFilters = filters;loadProducts({page: pagination.current});}"
+                @change="(pagination, filters, sorter) => {
+                    productsTableFilters = filters;
+                    productsTableSorts = (sorter.column && sorter.columnKey) ? ((sorter.order === 'descend' ? '-' : '+') + sorter.columnKey) : undefined;
+                    loadProducts({page: pagination.current});
+                }"
             >
                 <!-- Block Search: BEGIN -->
                 <div
@@ -137,11 +141,18 @@ const productsTableColumns = [
         title: 'Trạng thái',
         dataIndex: 'status',
         scopedSlots: { customRender: 'status' },
+        filters: Object.keys(configProductStatus).map(value => {
+            return {
+                text: configProductStatus[value].name,
+                value,
+            };
+        }),
     },
     {
         title: 'Giá (VND)',
         dataIndex: 'price',
         scopedSlots: { customRender: 'price' },
+        sorter: true,
     },
     {
         title: 'Chuyên mục',
@@ -184,6 +195,7 @@ export default {
                 position: 'both',
             },
             productsTableFilters: {},
+            productsTableSorts: undefined,
 
             ProductStatus,
             configProductStatus,
@@ -300,6 +312,7 @@ export default {
                     category_id: category_id || this.currentCategoryId,
                     page: page || this.productsTablePagination.current,
                     ...this.productsTableFilters,
+                    sort_by: this.productsTableSorts,
                 },
             })
                 .then(res => {

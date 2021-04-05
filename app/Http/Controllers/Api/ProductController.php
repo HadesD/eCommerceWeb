@@ -21,14 +21,24 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $productQuery = isset($request->category_id) ? Category::find($request->category_id)->products->orderBy('updated_at', 'DESC')
-                : Product::orderBy('updated_at', 'DESC');
+        $productQuery = isset($request->category_id) ? Category::find($request->category_id)->products
+                : (new Product);
 
         foreach (['name'] as $value) {
             if (isset($request->{$value})) {
                 $productQuery = $productQuery->where($value, 'LIKE', '%'.(is_array($request->{$value}) ? $request->{$value}[0] : $request->{$value}).'%');
             }
         }
+
+        if (isset($request->sort_by)) {
+            foreach (explode(',', $request->sort_by) as $sorter) {
+                $col = substr($sorter, 1);
+                $sortType = ($sorter[0] === '-') ? 'DESC' : 'ASC';
+                $productQuery = $productQuery->orderBy($col, $sortType);
+            }
+        }
+
+        $productQuery = $productQuery->orderBy('id', 'DESC');
 
         return new JsonResource($productQuery->paginate());
     }

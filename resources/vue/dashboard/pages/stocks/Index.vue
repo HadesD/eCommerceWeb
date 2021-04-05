@@ -50,12 +50,7 @@
                 :pagination="stocksTablePagination"
                 @change="(pagination, filters, sorter) => {
                     stocksTableFilters = filters;
-                    if (sorter.field) {
-                        stocksTableSorts = {
-                            ...stocksTableSorts,
-                            [sorter.field]: sorter.order,
-                        };
-                    }
+                    stocksTableSorts = (sorter.column && sorter.columnKey) ? ((sorter.order === 'descend' ? '-' : '+') + sorter.columnKey) : undefined;
                     loadStocks({page: pagination.current});
                 }"
             >
@@ -204,7 +199,7 @@ export default {
                 position: 'both',
             },
             stocksTableFilters: {},
-            stocksTableSorts: {},
+            stocksTableSorts: undefined,
         };
     },
     mounted() {
@@ -318,19 +313,7 @@ export default {
                     category_id: category_id || this.currentCategoryId,
                     page: page || this.stocksTablePagination.current,
                     ...this.stocksTableFilters,
-                    sort_by: Object.keys(this.stocksTableSorts).map(value => {
-                        switch (this.stocksTableSorts[value].order) {
-                            case 'descend': {
-                                return `-${value}`;
-                            }
-                            case 'ascend': {
-                                return `+${value}`;
-                            }
-                            default: {
-                                return '';
-                            }
-                        }
-                    }),
+                    sort_by: this.stocksTableSorts,
                 },
             })
                 .then(res => {
