@@ -48,7 +48,11 @@
                 :loading="stocksTableLoading"
                 :row-key="record => record.id"
                 :pagination="stocksTablePagination"
-                @change="(pagination, filters) => {stocksTableFilters = filters;loadStocks({page: pagination.current});}"
+                @change="(pagination, filters, sorts) => {
+                    stocksTableFilters = filters;
+                    stocksTableSorts = sorts;
+                    loadStocks({page: pagination.current});
+                }"
             >
                 <!-- Block Search: BEGIN -->
                 <div
@@ -138,32 +142,37 @@ const stocksTableColumns = [
         title: 'Giá lúc nhập (VND)',
         dataIndex: 'cost_price',
         scopedSlots: {
-            customRender: 'cost_price'
+            customRender: 'cost_price',
         },
     },
     {
         title: 'Tồn kho',
         dataIndex: 'quantity',
         scopedSlots: {
-            customRender: 'quantity'
+            customRender: 'quantity',
         },
+        sorter: true,
     },
     {
         title: 'Chuyên mục',
         dataIndex: 'categories',
         scopedSlots: {
-            customRender: 'categories'
+            customRender: 'categories',
         },
     },
     {
         title: 'Thời gian',
         key: 'time',
-        scopedSlots: { customRender: 'time' },
+        scopedSlots: {
+            customRender: 'time',
+        },
     },
     {
         title: 'Hành động',
         key: 'action',
-        scopedSlots: { customRender: 'action' },
+        scopedSlots: {
+            customRender: 'action',
+        },
     },
 ];
 
@@ -189,6 +198,7 @@ export default {
                 position: 'both',
             },
             stocksTableFilters: {},
+            stocksTableSorts: {},
         };
     },
     mounted() {
@@ -302,6 +312,7 @@ export default {
                     category_id: category_id || this.currentCategoryId,
                     page: page || this.stocksTablePagination.current,
                     ...this.stocksTableFilters,
+                    sorts: this.stocksTableSorts,
                 },
             })
                 .then(res => {

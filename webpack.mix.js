@@ -20,8 +20,11 @@ mix.webpackConfig({
 mix.js('resources/vue/dashboard/app.js', 'public/js/dashboard').vue();
 mix.sass('resources/vue/assets/dashboard/app.scss', 'public/css/dashboard');
 
+const HOST = 'rinphone.local'
 mix.browserSync({
-    proxy: 'rinphone.local',
+    host: HOST,
+    proxy: HOST,
+    open: 'external',
 });
 
 if (mix.inProduction()) {
