@@ -166,7 +166,7 @@
                                 >
                                     <template slot="description" slot-scope="value, pst, pstIdx">
                                         <a-form-model-item
-                                            :rules="{required:true,message:'Không được để trống'}"
+                                            :rules="[{required:true,message:'Không được để trống'}, {min:10,message:'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 10 ký tự)'}]"
                                             :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.description'" style="margin-bottom:0;"
                                         >
                                             <a-input v-model="pst.description" placeholder="Trả góp, trả thẳng, thanh toán sản phẩm ABC, vv..vv" type="textarea" />
@@ -216,7 +216,7 @@
                     >
                         <template slot="description" slot-scope="text, record, index">
                             <a-form-model-item
-                                :rules="{required:true,message:'Không được để trống'}"
+                                :rules="[{required:true,message:'Không được để trống'}, {min:10,message:'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 10 ký tự)'}]"
                                 :prop="`transactions.${index}.description`" style="margin-bottom:0;"
                             >
                                 <a-input v-model="record.description" placeholder="Mã giảm giá, phí ship, v..v" type="textarea" />
