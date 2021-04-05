@@ -40,15 +40,14 @@ class StatisticController extends Controller
                 'count' => Stock::count(),
                 'avail_count' => Stock::where('quantity', '>', 0)->count(),
                 // 'avail_count_quantity' => DB::select('SELECT SUM(quantity) AS total FROM stocks WHERE quantity > 0')[0]->total,
-                // 'avail_cost_price' => DB::select('SELECT SUM(cost_price * quantity) AS total FROM stocks WHERE deleted_at IS NULL')[0]->total,
                 'avail_cost_price' => Stock::sum(DB::raw('cost_price * quantity')),
                 // 'this_month_cost_price_total' => Stock::where('in_date', '>=', date('Y-m-01'))->sum('cost_price'),
             ],
             'transaction' => [
                 'amount_total' => Transaction::sum('amount'),
                 'this_month_amount_total' => Transaction::where('paid_date', '>=', date('Y-m-01'))->sum('amount'),
-                // 'chart' => Transaction::selectRaw('(YEAR(paid_date)*100+MONTH(paid_date)) AS ym, SUM(amount) AS amount')->orderBy('ym', 'ASC')->groupBy('ym')->query(),
-                'chart' => DB::select('SELECT (YEAR(paid_date)*100+MONTH(paid_date)) AS ym, SUM(amount) AS amount FROM transactions WHERE deleted_at IS NOT NULL GROUP BY ym ORDER BY ym ASC'),
+                'chart' => Transaction::select(DB::raw('(YEAR(paid_date)*100+MONTH(paid_date)) AS ym'), DB::raw('SUM(amount) AS amount'))->groupBy('ym')->orderBy('ym', 'ASC')->get(),
+                // 'chart' => DB::select('SELECT (YEAR(paid_date)*100+MONTH(paid_date)) AS ym, SUM(amount) AS amount FROM transactions WHERE deleted_at IS NOT NULL GROUP BY ym ORDER BY ym ASC'),
 
                 // = sell_price - cost_price
                 /*
