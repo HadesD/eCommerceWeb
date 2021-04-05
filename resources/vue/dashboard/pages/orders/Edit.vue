@@ -4,7 +4,13 @@
             <a-page-header
                 :title="id ? 'Chỉnh sửa hóa đơn' : 'Tạo hóa đơn'"
                 :sub-title="id ? `#${id}` : false"
-            />
+            >
+                <template slot="extra">
+                    <a-tooltip title="In hoá đơn" v-if="id">
+                        <a-button type="primary" icon="printer" @click="() => printOrder()" style="float:right;" />
+                    </a-tooltip>
+                </template>
+            </a-page-header>
             <a-form-model
                 ref="ruleForm"
                 :model="formData"
@@ -701,6 +707,50 @@ export default {
 
             this.stockIndexPageVisible = false;
         },
+
+        printOrder() {
+            // Fixes dual-screen position                             Most browsers      Firefox
+            const dualScreenLeft = window.screenLeft !==  undefined ? window.screenLeft : window.screenX;
+            const dualScreenTop = window.screenTop !==  undefined   ? window.screenTop  : window.screenY;
+
+            const width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+            const height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+
+            const systemZoom = width / window.screen.availWidth;
+            const left = (width - w) / 2 / systemZoom + dualScreenLeft
+            const top = (height - h) / 2 / systemZoom + dualScreenTop
+
+            const w = width;
+            const h = height;
+
+            const newWindow = window.open('', '', `
+                scrollbars=yes,
+                width=${w / systemZoom},
+                height=${h / systemZoom},
+                top=${top},
+                left=${left}
+            `);
+
+            const newDoc = newWindow.document;
+
+            newDoc.write('<html><body>');
+
+            newDoc.write(`Hoá đơn #${this.id} (${configOrderStatus[this.formData.status].name})`);
+            newDoc.write('<table><thead><tr>');
+            newDoc.write('<td>STT</td>');
+            newDoc.write('<td>STT</td>');
+            newDoc.write('<td>STT</td>');
+            newDoc.write('</tr></thead>')
+            newDoc.write('<tbody>');
+            newDoc.write('</tbody></table>');
+
+            newDoc.write('</body></html>');
+
+            // window.onclose = newWindow.close;
+            newWindow.focus();
+            newWindow.print();
+            newWindow.close();
+        }
     },
 }
 </script>
