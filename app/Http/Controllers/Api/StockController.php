@@ -34,6 +34,12 @@ class StockController extends Controller
             }
         }
 
+        if (isset($request->sort_by)) {
+            foreach ($request->sort_by as $sorter) {
+                // TODO
+            }
+        }
+
         return new JsonResource($stockQuery->paginate());
     }
 

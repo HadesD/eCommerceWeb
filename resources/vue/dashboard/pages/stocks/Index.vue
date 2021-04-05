@@ -48,9 +48,12 @@
                 :loading="stocksTableLoading"
                 :row-key="record => record.id"
                 :pagination="stocksTablePagination"
-                @change="(pagination, filters, sorts) => {
+                @change="(pagination, filters, sorter) => {
                     stocksTableFilters = filters;
-                    stocksTableSorts = sorts;
+                    stocksTableSorts = {
+                        ...stocksTableSorts,
+                        [sorter.field]: sorter.order,
+                    };
                     loadStocks({page: pagination.current});
                 }"
             >
@@ -144,6 +147,7 @@ const stocksTableColumns = [
         scopedSlots: {
             customRender: 'cost_price',
         },
+        sorter: true,
     },
     {
         title: 'Tồn kho',
@@ -198,7 +202,7 @@ export default {
                 position: 'both',
             },
             stocksTableFilters: {},
-            stocksTableSorts: {},
+            stocksTableSorts: undefined,
         };
     },
     mounted() {
@@ -312,7 +316,19 @@ export default {
                     category_id: category_id || this.currentCategoryId,
                     page: page || this.stocksTablePagination.current,
                     ...this.stocksTableFilters,
-                    sorts: this.stocksTableSorts,
+                    sort_by: Object.keys(this.stocksTableSorts).map(value => {
+                        switch (this.stocksTableSorts[value].order) {
+                            case 'descend': {
+                                return `-${value}`;
+                            }
+                            case 'ascend': {
+                                return `+${value}`;
+                            }
+                            default: {
+                                return;
+                            }
+                        }
+                    }),
                 },
             })
                 .then(res => {
