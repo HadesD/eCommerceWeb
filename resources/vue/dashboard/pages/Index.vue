@@ -105,6 +105,8 @@ export default {
                 },
             },
         };
+
+        this.loadStatistic();
     },
     methods: {
         loadStatistic() {
