@@ -39,6 +39,10 @@ class OrderController extends Controller
             }
         }
 
+        if (isset($request->deal_date)) {
+            $orderQuery = $orderQuery->where('deal_date', '>=', $request->deal_date[0])->where('deal_date', '<=', $request->deal_date[1]);
+        }
+
         $orderQuery = $orderQuery->orderBy('deal_date', 'DESC');
 
         return new JsonResource($orderQuery->paginate());

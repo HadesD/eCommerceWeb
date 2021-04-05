@@ -50,6 +50,30 @@
             />
             <!-- Block Search: END -->
 
+            <!-- Block Filter RangeDate: BEGIN -->
+            <div
+                slot="filterRangeDate"
+                slot-scope="{ setSelectedKeys, confirm, clearFilters }"
+                style="padding: 8px"
+            >
+                <a-range-picker
+                    format="YYYY/MM/DD"
+                    type="date"
+                    style="width: 250px; margin-bottom: 8px; display: block;"
+                    :ranges="{ 'Hôm nay': [moment(), moment()], 'Tháng này': [moment().startOf('month'), moment().endOf('month')] }"
+                    @change="(date, dateStrings) => setSelectedKeys(dateStrings ? dateStrings : [])"
+                />
+                <a-button
+                    type="primary"
+                    icon="search"
+                    size="small"
+                    style="width: 90px; margin-right: 8px"
+                    @click="() => {confirm();}"
+                >Tìm</a-button>
+                <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);clearFilters();}">Reset</a-button>
+            </div>
+            <!-- Block Filter RangeDate: END -->
+
             <template slot="customer" slot-scope="value, record">
                 <div v-if="value && record.customer">
                     <div>
@@ -130,6 +154,7 @@
 <script>
 import OrderStatus, { Config as configOrderStatus } from '../../configs/OrderStatus';
 import { number_format, date_format } from '../../../helpers';
+import moment from 'moment';
 
 const ordersTableColumns = [
     {
@@ -170,6 +195,7 @@ const ordersTableColumns = [
         title: 'Ngày xuất đơn',
         dataIndex: 'deal_date',
         scopedSlots: {
+            filterDropdown: 'filterRangeDate',
             customRender: (text) => date_format(text),
         },
     },
@@ -237,6 +263,7 @@ export default {
     methods: {
         number_format,
         date_format,
+        moment,
 
         loadOrders({page}){
             this.ordersTableLoading = true;

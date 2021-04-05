@@ -18,6 +18,19 @@
                     </a-select>
                 </a-form-model-item>
                 <a-form-model-item
+                    label="Ngày xuất đơn"
+                    prop="deal_date"
+                    help="Ngày xuât đơn cho khách hàng"
+                    :rules="{required:true}"
+                >
+                    <a-date-picker
+                        v-model="formData.deal_date"
+                        format="YYYY-MM-DD HH:mm:ss"
+                        show-time
+                        type="date"
+                    />
+                </a-form-model-item>
+                <a-form-model-item
                     label="Khách hàng" ref="customer_id" prop="customer_id"
                     :help="orderInfo.customer ? `Đang chọn: #${orderInfo.customer_id}. ${orderInfo.customer.name} (Phone: ${orderInfo.customer.phone || 'Chưa có'})` : false"
                 >
@@ -434,6 +447,7 @@ export default {
 
             orderInfoLoading: false,
             formData: {
+                deal_date: undefined,
                 note: undefined,
                 customer_id: undefined,
                 order_products: [],
@@ -567,6 +581,8 @@ export default {
                     }
 
                     _.assign(this.formData, _.pick(orderData, _.keys(this.formData)));
+                    const deal_date = moment(orderData.deal_date);
+                    this.formData.deal_date = deal_date.isValid() ? deal_date : undefined;
                     this.formData.transactions = this.formData.transactions.map(value => {
                         return {
                             ...value,
@@ -617,6 +633,7 @@ export default {
                 method: orderId ? 'put' : 'post',
                 data: {
                     ...this.formData,
+                    deal_date: moment(this.formData.deal_date).format("YYYY-MM-DD HH:mm:ss"),
                     transactions: this.formData.transactions.map(value => {
                         return {
                             ...value,

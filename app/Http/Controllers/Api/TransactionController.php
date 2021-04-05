@@ -23,7 +23,15 @@ class TransactionController extends Controller
                 $transactionQuery = $transactionQuery->where($value, 'LIKE', '%'.(is_array($request->{$value}) ? $request->{$value}[0] : $request->{$value}).'%');
             }
         }
-        return new JsonResource($transactionQuery->orderBy('paid_date', 'DESC')->paginate());
+
+        if (isset($request->paid_date)) {
+            $transactionQuery = $transactionQuery->where('paid_date', '>=', $request->paid_date[0])->where('paid_date', '<=', $request->paid_date[1]);
+        } else {
+            $transactionQuery = $transactionQuery->orderBy('paid_date', 'DESC');
+        }
+
+
+        return new JsonResource($transactionQuery->paginate());
     }
 
     /**
