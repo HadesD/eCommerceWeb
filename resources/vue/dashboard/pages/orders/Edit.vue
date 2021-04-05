@@ -447,7 +447,7 @@ export default {
 
             orderInfoLoading: false,
             formData: {
-                deal_date: undefined,
+                deal_date: moment(),
                 note: undefined,
                 customer_id: undefined,
                 order_products: [],
