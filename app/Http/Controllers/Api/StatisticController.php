@@ -44,10 +44,10 @@ class StatisticController extends Controller
                 //'this_month_cost_price_total' => Stock::where('in_date', '>=', date('Y-m-01'))->sum('cost_price'),
             ],
             'transaction' => [
-                'amount_total' => DB::select('SELECT SUM(amount) AS total FROM transactions')[0]->total,
-                'this_month_amount_total' => DB::select('SELECT SUM(amount) AS total FROM transactions WHERE paid_date >= :paid_date', ['paid_date'=>date('Y-m-01')])[0]->total,
+                'amount_total' => DB::select('SELECT SUM(amount) AS total FROM transactions WHERE deleted_at IS NOT NULL')[0]->total,
+                'this_month_amount_total' => DB::select('SELECT SUM(amount) AS total FROM transactions WHERE deleted_at IS NOT NULL AND paid_date >= :paid_date', ['paid_date'=>date('Y-m-01')])[0]->total,
                 // 'chart' => Transaction::selectRaw('(YEAR(paid_date)*100+MONTH(paid_date)) AS ym, SUM(amount) AS amount')->orderBy('ym', 'ASC')->groupBy('ym')->query(),
-                'chart' => DB::select('SELECT (YEAR(paid_date)*100+MONTH(paid_date)) AS ym, SUM(amount) AS amount FROM transactions GROUP BY ym ORDER BY ym ASC'),
+                'chart' => DB::select('SELECT (YEAR(paid_date)*100+MONTH(paid_date)) AS ym, SUM(amount) AS amount FROM transactions WHERE deleted_at IS NOT NULL GROUP BY ym ORDER BY ym ASC'),
 
                 // = sell_price - cost_price
                 /*
