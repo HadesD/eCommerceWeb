@@ -17,9 +17,10 @@
                 </a-col>
                 <a-col :span="6">
                     <a-card title="Kho hàng">
-                        <a-statistic title="Tổng" :value="statistics.stock.count" />
-                        <a-statistic title="Có sẵn" :value="statistics.stock.avail_count" />
-                        <!-- <a-statistic title="Tổng vốn (VND)" :value="statistics.stock.cost_price_total" /> -->
+                        <a-statistic title="Tổng số mặt hàng" :value="statistics.stock.count" />
+                        <a-statistic title="Tổng số mặt hàng có sẵn" :value="statistics.stock.avail_count" />
+                        <!-- <a-statistic title="Tổng có sẵn" :value="statistics.stock.avail_count_quantity" /> -->
+                        <a-statistic title="Tổng giá trị hàng có sẵn trong kho (VND)" :value="statistics.stock.avail_cost_price" />
                         <!-- <a-statistic title="Vốn tháng này (VND)" :value="statistics.stock.this_month_cost_price_total" /> -->
                     </a-card>
                 </a-col>
@@ -72,6 +73,7 @@ export default {
                 stock: {
                     count: undefined,
                     avail_count: undefined,
+                    avail_count_quantity: undefined,
                     cost_price_total: undefined,
                     this_month_cost_price_total: undefined,
                 },
