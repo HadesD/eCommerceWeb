@@ -85,7 +85,9 @@
                 />
                 <!-- Block Search: END -->
 
-                <template slot="cost_price" slot-scope="value" style="display:block;text-align:right;">{{ number_format(value) }}</template>
+                <template slot="cost_price" slot-scope="value">
+                    <div style="display:block;text-align:right;">{{ number_format(value) }}</div>
+                </template>
                 <template slot="quantity" slot-scope="value">
                     <a-tag :color="(value > 0) ? 'green' : 'red'">{{ value }}</a-tag>
                 </template>

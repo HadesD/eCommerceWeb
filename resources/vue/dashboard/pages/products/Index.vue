@@ -91,8 +91,8 @@
                 <template slot="status" slot-scope="value">
                     <a-tag v-if="configProductStatus[value]" :color="configProductStatus[value].color">{{ configProductStatus[value].name }}</a-tag>
                 </template>
-                <template slot="price" slot-scope="value" style="display:block;text-align:right;">
-                    <div>{{ number_format(value) }}</div>
+                <template slot="price" slot-scope="value">
+                    <div style="display:block;text-align:right;">{{ number_format(value) }}</div>
                 </template>
                 <template slot="categories" slot-scope="value">
                     <a-tag v-for="category in value" :key="category.id">{{ category.name }}</a-tag>

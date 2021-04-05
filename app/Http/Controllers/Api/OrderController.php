@@ -27,7 +27,7 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $orderQuery = Order::orderBy('updated_at', 'DESC');
+        $orderQuery = new Order;
 
         if (isset($request->status)) {
             $orderQuery = $orderQuery->whereIn('status', $request->status);
@@ -38,6 +38,8 @@ class OrderController extends Controller
                 $orderQuery = $orderQuery->where($value, 'LIKE', '%'.(is_array($request->{$value}) ? $request->{$value}[0] : $request->{$value}).'%');
             }
         }
+
+        $orderQuery = $orderQuery->orderBy('deal_date', 'DESC');
 
         return new JsonResource($orderQuery->paginate());
     }

@@ -62,8 +62,8 @@
             <template slot="status" slot-scope="record">
                 <a-tag v-if="configOrderStatus[record.status]" :color="configOrderStatus[record.status].color">{{ configOrderStatus[record.status].name }}</a-tag>
             </template>
-            <template slot="total_amount" slot-scope="record">
-                <span>{{ totalAmount(record) }}</span>
+            <template slot="total_amount" slot-scope="value">
+                <span style="display:block;text-align:right;">{{ totalAmount(value) }}</span>
             </template>
             <template slot="order_product" slot-scope="record">
                 <div v-for="(p) in record.order_products" :key="p.id">
@@ -167,6 +167,13 @@ const ordersTableColumns = [
         scopedSlots: { customRender: 'order_product' },
     },
     {
+        title: 'Ngày xuất đơn',
+        dataIndex: 'deal_date',
+        scopedSlots: {
+            customRender: (text) => date_format(text),
+        },
+    },
+    {
         title: 'Khách hàng',
         dataIndex: 'customer_id',
         scopedSlots: {
@@ -182,7 +189,6 @@ const ordersTableColumns = [
         title: 'Hành động',
         key: 'action',
         scopedSlots: { customRender: 'action' },
-        fixed: 'right',
     },
 ];
 
