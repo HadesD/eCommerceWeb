@@ -479,18 +479,15 @@ export default {
         }
     },
     watch: {
-        id(to, from) {
+        id(to) {
             if (to) {
-                this.loadOrder(to.params.id)
+                this.loadOrder(to);
             } else {
-                this.formData.order_products.forEach((p) => {
-                    p.id = undefined;
-                    p.order_product_stocks = [];
-                });
+                this.$refs.ruleForm.resetFields();
 
-                this.formData.transactions.forEach((t) => {
-                    t.id = undefined;
-                });
+                this.formData.order_products = [];
+
+                this.formData.transactions = [];
             }
         },
     },
@@ -568,10 +565,6 @@ export default {
         },
 
         loadOrder(id) {
-            if (!id) {
-                return;
-            }
-
             this.orderInfoLoading = true;
             axios.get(`/api/orders/${id}`)
                 .then(res => {

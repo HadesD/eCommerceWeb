@@ -257,21 +257,24 @@ export default {
         },
     },
     watch: {
-        id(to, from) {
-            if (!to) {
-                this.formData.transactions.splice(0);
-            }
-
-            this.formData.inout_date = undefined;
+        id(to) {
             this.prev_quantity = undefined;
 
-            this.loadStock(this.id);
+            if (to) {
+                this.loadStock(to);
+            } else {
+                this.$refs.ruleForm.resetFields();
+
+                this.formData.transactions = [];
+            }
         },
     },
     mounted() {
         this.reloadCategoriesTree();
 
-        this.loadStock(this.id);
+        if (this.id) {
+            this.loadStock(this.id);
+        }
     },
     methods: {
         number_format,
@@ -310,10 +313,8 @@ export default {
         },
 
         loadStock(id) {
-            if (!id) {
-                return;
-            }
             this.stockInfoLoading = true;
+
             axios.get(`/api/stocks/${id}`)
                 .then(res => {
                     const sData = res.data.data;

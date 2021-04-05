@@ -86,12 +86,18 @@ export default {
             authUser: User.info(),
         };
     },
-    mounted: function() {
-        this.loadUserInfo();
+    mounted() {
+        if (this.id) {
+            this.loadUser(this.id);
+        }
     },
     watch: {
-        id() {
-            this.loadUserInfo();
+        id(to) {
+            if (to) {
+                this.loadUser(to);
+            } else {
+                this.$refs.ruleForm.resetFields();
+            }
         },
     },
     computed: {
@@ -100,13 +106,9 @@ export default {
         },
     },
     methods: {
-        loadUserInfo() {
-            this.$refs.ruleForm.resetFields();
-            if (!this.id) {
-                return;
-            }
+        loadUser(id) {
             this.isLoadingUserInfo = true;
-            axios.get(`/api/users/${this.id}`)
+            axios.get(`/api/users/${id}`)
                 .then(res => {
                     const uData = res.data.data;
 
@@ -151,9 +153,9 @@ export default {
                         this.$message.success('Đã sửa thành công');
                     } else {
                         this.$message.success('Đã thêm thành công');
-
-                        // this.$router.push({ path: `/stocks/${sData.id}/edit` });
                     }
+
+                    this.loadUser(sData.id);
                 })
                 .catch(err => {
                     if (err.response && err.response.data.message) {

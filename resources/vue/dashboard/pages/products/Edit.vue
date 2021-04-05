@@ -192,14 +192,21 @@ export default {
         },
     },
     watch: {
-        id() {
-            this.loadProduct(this.id);
+        id(to) {
+            if (to) {
+                this.loadProduct(to);
+            } else {
+                this.$refs.ruleForm.resetFields();
+            }
+
         },
     },
     mounted(){
         this.reloadCategoriesTree();
 
-        this.loadProduct(this.id);
+        if (this.id) {
+            this.loadProduct(this.id);
+        }
     },
     methods: {
         number_format,
@@ -238,10 +245,6 @@ export default {
         },
 
         loadProduct(id){
-            if (!id) {
-                return;
-            }
-
             this.productInfoLoading = true;
             axios.get(`/api/products/${id}`)
                 .then(res => {
