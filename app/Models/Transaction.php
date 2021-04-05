@@ -21,19 +21,45 @@ class Transaction extends Model
 {
     use HasFactory, SoftDeletes;
 
-    public function setPaidDateAttribute($value){
+    public function setPaidDateAttribute($value)
+    {
         $this->attributes['paid_date'] = Carbon::parse($value)->format('Y-m-d H:i:s');
     }
 
-    /**
-     * Prepare a date for array / JSON serialization.
-     *
-     * @param  \DateTimeInterface  $date
-     * @return string
-     **/
-    // protected function serializeDate(DateTimeInterface $date)
-    // {
-    //     return $date->format('Y-m-d H:i:s');
-    // }
+    public function getStockAttribute()
+    {
+        return Stock::where('id', function($query) {
+            $query->select('stock_id')
+                ->from((new StockTransaction)->getTable())
+                ->where('transaction_id', $this->id);
+        })->first();
+    }
+
+    public function getOrderAttribute()
+    {
+        $order = Order::where('id', function($query) {
+            $query->select('order_id')
+                ->from((new OrderTransaction)->getTable())
+                ->where('transaction_id', $this->id);
+        })->first();
+
+        if (!$order) {
+            $order = Order::where('id', function($query) {
+                $query->select('order_id')
+                    ->from((new OrderProduct)->getTable())
+                    ->where('id', function($query) {
+                        $query->select('order_product_id')
+                            ->from((new OrderProductStock)->getTable())
+                            ->where('id', function($query) {
+                                $query->select('order_product_stock_id')
+                                    ->from((new OrderProductStockTransaction)->getTable())
+                                    ->where('transaction_id', $this->id);
+                            });
+                    });
+            })->first();
+        }
+
+        return $order;
+    }
 }
 

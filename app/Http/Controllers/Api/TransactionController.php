@@ -30,8 +30,11 @@ class TransactionController extends Controller
             $transactionQuery = $transactionQuery->orderBy('paid_date', 'DESC');
         }
 
+        $transactionQuery = $transactionQuery->paginate();
 
-        return new JsonResource($transactionQuery->paginate());
+        $transactionQuery->append(['stock', 'order']);
+
+        return new JsonResource($transactionQuery);
     }
 
     /**

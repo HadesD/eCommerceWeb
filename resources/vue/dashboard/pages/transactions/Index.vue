@@ -70,6 +70,12 @@
             </div>
             <!-- Block Filter RangeDate: END -->
 
+            <template slot="description" slot-scope="value, record">
+                <span>{{ value }}</span>
+                <a-button v-if="record.order" size="small" icon="shopping-cart" @click="() => { currentOrderId = record.order.id; orderEditPageVisible = true; }" />
+                <a-button v-if="record.stock" size="small" icon="bank" @click="() => { currentStockId = record.stock.id; stockEditPageVisible = true; }" />
+            </template>
+
             <template slot="amount" slot-scope="value">
                 <div style="float:right;">
                     <a-tag :color="(value >= 0) ? 'green' : 'red'">{{ number_format(value) }}</a-tag>
@@ -81,6 +87,24 @@
                 <div>Update: {{ date_format(record.updated_at) }}</div>
             </template>
         </a-table>
+
+        <a-modal
+            :visible="stockEditPageVisible"
+            @cancel="() => stockEditPageVisible = false"
+            :footer="false"
+            width="95vw"
+        >
+            <StockEdit :stockId="currentStockId" />
+        </a-modal>
+
+        <a-modal
+            :visible="orderEditPageVisible"
+            @cancel="() => orderEditPageVisible = false"
+            :footer="false"
+            width="95vw"
+        >
+            <OrderEdit :orderId="currentOrderId" />
+        </a-modal>
     </div>
 </template>
 <script>
@@ -96,6 +120,7 @@ const transactionsTableColumns = [
         title: 'Nội dung',
         dataIndex: 'description',
         scopedSlots: {
+            customRender: 'description',
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
         },
@@ -124,9 +149,17 @@ const transactionsTableColumns = [
 ];
 
 export default {
+    components: {
+        StockEdit: () => import('../stocks/Edit'),
+        OrderEdit: () => import('../orders/Edit'),
+    },
     data() {
         return {
-            transactionId: undefined,
+            stockEditPageVisible: false,
+            currentStockId: undefined,
+
+            orderEditPageVisible: false,
+            currentOrderId: undefined,
 
             transactionsTableColumns,
             transactionsTableLoading: false,
