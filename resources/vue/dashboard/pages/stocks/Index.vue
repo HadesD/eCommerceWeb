@@ -50,11 +50,12 @@
                 :pagination="stocksTablePagination"
                 @change="(pagination, filters, sorter) => {
                     stocksTableFilters = filters;
-                    // TODO: Check if disabled sorter
-                    stocksTableSorts = {
-                        ...stocksTableSorts,
-                        [sorter.field]: sorter.order,
-                    };
+                    if (sorter.field) {
+                        stocksTableSorts = {
+                            ...stocksTableSorts,
+                            [sorter.field]: sorter.order,
+                        };
+                    }
                     loadStocks({page: pagination.current});
                 }"
             >

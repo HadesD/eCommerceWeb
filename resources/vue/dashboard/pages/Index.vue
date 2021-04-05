@@ -1,12 +1,16 @@
 <template>
     <div>
+        <a-row :gutter="8" style="margin-bottom: 15px;">
+            <a-col :offset="20" :span="4">
+                <a-button type="primary" icon="reload" :loading="loading" style="float: right;" @click="() => loadStatistic()" />
+            </a-col>
+        </a-row>
         <a-spin :spinning="loading">
             <a-row :gutter="8">
                 <a-col :span="6">
                     <a-card title="Đơn hàng">
                         <a-statistic title="Tổng" :value="statistics.order.count" />
                         <a-statistic title="Chưa hoàn tất" :value="statistics.order.uncompleted_count" />
-                        <!-- <a-statistic title="Tổng lãi tháng này (VND)" :value="statistics.transaction.this_month_earning_total" /> -->
                     </a-card>
                 </a-col>
                 <a-col :span="6">
@@ -19,9 +23,7 @@
                     <a-card title="Kho hàng">
                         <a-statistic title="Tổng số mặt hàng" :value="statistics.stock.count" />
                         <a-statistic title="Tổng số mặt hàng có sẵn" :value="statistics.stock.avail_count" />
-                        <!-- <a-statistic title="Tổng có sẵn" :value="statistics.stock.avail_count_quantity" /> -->
                         <a-statistic title="Tổng giá trị hàng có sẵn trong kho (VND)" :value="statistics.stock.avail_cost_price" />
-                        <!-- <a-statistic title="Vốn tháng này (VND)" :value="statistics.stock.this_month_cost_price_total" /> -->
                     </a-card>
                 </a-col>
                 <a-col :span="6">
@@ -88,61 +90,53 @@ export default {
         };
     },
     mounted(){
-        this.loading = true;
-
         this.chartOptions = {
             responsive: true,
             plugins: {
                 legend: {
                     position: 'top',
                 },
-                title: {
-                    display: true,
-                    text: 'Chart.js Line Chart'
-                },
             },
             tooltips: {
                 callbacks: {
                     label: function(t, d) {
-                        // return t.datasetIndex;
-                        // console.log(t,d);
                         return number_format(t.yLabel);
                     },
                 },
             },
         };
-
-        axios.get('/api/statistics')
-            .then(res => {
-                this.statistics = {...res.data}
-
-                this.datacollection = {
-                    labels: this.statistics.transaction.chart?.map(value => value.ym),
-                    datasets: [
-                        {
-                            label: 'Lãi',
-                            backgroundColor: '#ffb1c1',
-                            borderColor: '#f87979',
-                            data: this.statistics.transaction.chart?.map(value => value.amount)
-                        },
-                    ]
-                };
-            })
-            .catch(err => {
-                if (err.response && err.response.data.message) {
-                    this.$message.error(err.response.data.message);
-                    return;
-                }
-
-                this.$message.error(err.message || 'Thất bại');
-            })
-            .finally(() => {
-                this.loading = false;
-            });
     },
     methods: {
-        getRandomInt () {
-            return Math.floor(Math.random() * (50 - 5 + 1)) + 5
+        loadStatistic() {
+            this.loading = true;
+
+            axios.get('/api/statistics')
+                .then(res => {
+                    this.statistics = {...res.data}
+
+                    this.datacollection = {
+                        labels: this.statistics.transaction.chart?.map(value => value.ym),
+                        datasets: [
+                            {
+                                label: 'Lãi',
+                                backgroundColor: '#ffb1c1',
+                                borderColor: '#f87979',
+                                data: this.statistics.transaction.chart?.map(value => value.amount),
+                            },
+                        ]
+                    };
+                })
+                .catch(err => {
+                    if (err.response && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
+                        return;
+                    }
+
+                    this.$message.error(err.message || 'Thất bại');
+                })
+                .finally(() => {
+                    this.loading = false;
+                });
         },
     },
 }

@@ -10,8 +10,6 @@ use App\Models\Stock;
 use App\Models\Product;
 use App\Models\Order;
 use App\Models\Transaction;
-use App\Models\OrderProductStock;
-use App\Models\OrderProductStockTransaction;
 use Illuminate\Support\Facades\DB;
 
 class StatisticController extends Controller
@@ -39,44 +37,12 @@ class StatisticController extends Controller
             'stock' => [
                 'count' => Stock::count(),
                 'avail_count' => Stock::where('quantity', '>', 0)->count(),
-                // 'avail_count_quantity' => DB::select('SELECT SUM(quantity) AS total FROM stocks WHERE quantity > 0')[0]->total,
                 'avail_cost_price' => Stock::sum(DB::raw('cost_price * quantity')),
-                // 'this_month_cost_price_total' => Stock::where('in_date', '>=', date('Y-m-01'))->sum('cost_price'),
             ],
             'transaction' => [
                 'amount_total' => Transaction::sum('amount'),
                 'this_month_amount_total' => Transaction::where('paid_date', '>=', date('Y-m-01'))->sum('amount'),
                 'chart' => Transaction::select(DB::raw('(YEAR(paid_date)*100+MONTH(paid_date)) AS ym'), DB::raw('SUM(amount) AS amount'))->groupBy('ym')->orderBy('ym', 'ASC')->get(),
-                // 'chart' => DB::select('SELECT (YEAR(paid_date)*100+MONTH(paid_date)) AS ym, SUM(amount) AS amount FROM transactions WHERE deleted_at IS NOT NULL GROUP BY ym ORDER BY ym ASC'),
-
-                // = sell_price - cost_price
-                /*
-                'this_month_earning_total' => (function(){
-                    $sold_stock_elo = OrderProductStock::select('id', 'stock_id')->whereIn('id', function($q_ops){
-                        $q_ops->select('order_product_stock_id')
-                            ->from((new OrderProductStockTransaction)->getTable())
-                            ->whereIn('transaction_id', function($q_t){
-                                $q_t->select('id')
-                                    ->from((new Transaction)->getTable())
-                                    ->where('paid_date', '>=', date('Y-m-01'));
-                            });
-                    })->whereIn('id', function($q_ops){
-                        $q_ops->select('id')
-                            ->from((new Order)->getTable())
-                            ->whereIn('status', [Order::STS_PAID, Order::STS_COMPLETED]);
-                    });
-                    $sold_price = Transaction::whereIn('id', function($q_t) use ($sold_stock_elo){
-                        $q_t->select('transaction_id')
-                            ->from((new OrderProductStockTransaction)->getTable())
-                            ->whereIn('order_product_stock_id', (clone $sold_stock_elo)->pluck('id')->toArray());
-                    })//->where('paid_date', '>=', date('Y-m-01'))
-                        ->sum('amount');
-
-                    $cost_price = Stock::whereIn('id', (clone $sold_stock_elo)->pluck('stock_id')->toArray())->sum('cost_price');
-
-                    return ($sold_price - $cost_price);
-                })(),
-                */
             ],
         ];
     }

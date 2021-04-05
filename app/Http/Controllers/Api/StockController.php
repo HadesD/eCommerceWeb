@@ -35,7 +35,9 @@ class StockController extends Controller
 
         if (isset($request->sort_by)) {
             foreach ($request->sort_by as $sorter) {
-                // TODO
+                $col = substr($sorter, 1);
+                $sortType = ($sorter[0] === '-') ? 'DESC' : 'ASC';
+                $stockQuery = $stockQuery->orderBy($col, $sortType);
             }
         }
 
