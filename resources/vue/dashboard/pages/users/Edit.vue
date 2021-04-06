@@ -104,6 +104,7 @@ export default {
                 this.loadUser(to);
             } else {
                 this.$refs.ruleForm.resetFields();
+                this.userInfo = {};
             }
         },
     },
