@@ -23,19 +23,13 @@ class UserController extends Controller
     {
         $userQuery = new User;
 
-        $authUser = $request->user();
-
-        if (!$authUser->hasPermission(User::ROLE_ADMIN_MASTER)) {
-            $userQuery = $userQuery->where('role', '<', User::ROLE_ADMIN_MANAGER);
-        }
-
         foreach (['name', 'phone', 'email', 'sns_info'] as $value) {
             if (isset($request->{$value})) {
                 $userQuery = $userQuery->where($value, 'LIKE', '%'.(is_array($request->{$value}) ? $request->{$value}[0] : $request->{$value}).'%');
             }
         }
 
-        return new JsonResource( $userQuery->paginate());
+        return new JsonResource($userQuery->paginate());
     }
 
     /**
@@ -90,7 +84,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return new JsonResource($this->canModify($user) ? $user : null);
+        return new JsonResource($user);
     }
 
     /**
@@ -105,11 +99,11 @@ class UserController extends Controller
         try {
             DB::beginTransaction();
 
-            if (!$this->canModify($user)) {
+            $authUser = $request->user();
+
+            if (!$authUser->hasPermission(User::ROLE_ADMIN_MASTER) && !$authUser->hasPermission($user->role)) {
                 throw new ApiErrorException('Bạn không có quyền chỉnh sửa người dùng này');
             }
-
-            $authUser = $request->user();
 
             $data = $request->toArray();
             $data['role'] = $authUser->hasPermission(User::ROLE_ADMIN_MASTER) ? $data['role'] : User::ROLE_USER_NORMAL;
@@ -144,12 +138,5 @@ class UserController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    private function canModify(User $user)
-    {
-        $authUser = Auth::user();
-        return ($authUser->hasPermission(User::ROLE_ADMIN_MASTER)
-                || ($user && ($authUser->role > $user->role)));
     }
 }

@@ -45,7 +45,11 @@ class OrderController extends Controller
 
         $orderQuery = $orderQuery->orderBy('deal_date', 'DESC');
 
-        return new JsonResource($orderQuery->paginate());
+        $orderQuery = $orderQuery->paginate();
+
+        $orderQuery->append(['transactions', 'order_products']);
+
+        return new JsonResource($orderQuery);
     }
 
     /**
@@ -158,6 +162,8 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
+        $order->append(['transactions', 'order_products']);
+
         return new JsonResource($order);
     }
 

@@ -1,8 +1,11 @@
 <template>
     <div>
-        <h1>Hướng dẫn quản lí các loại Hoá đơn / Giao dịch trong tiệm</h1>
+        <a-page-header
+            title="Hướng dẫn quản lí các loại Hoá đơn / Giao dịch trong tiệm"
+            sub-title="Cập nhật: 2021/04/06"
+        />
         <h2>1. Tạo hoá đơn khi Bán hàng</h2>
-        <h3>Truy cập trang Tạo Đơn</h3>
+        <h3>Truy cập trang <router-link to="/orders/new">Tạo đơn</router-link></h3>
         <ul>
             <li>
                 <span>Điền thông tin đơn hàng</span>

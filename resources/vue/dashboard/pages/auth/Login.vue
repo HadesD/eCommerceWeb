@@ -8,7 +8,7 @@
             ref="ruleForm"
             :model="formData"
             :rules="rules"
-            style="width: 400px;margin:0 auto;"
+            style="width: 400px;margin:0 auto;padding: 30px;"
         >
             <a-form-model-item ref="email" prop="email">
                 <a-input

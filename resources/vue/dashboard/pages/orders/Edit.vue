@@ -268,7 +268,7 @@
             :visible="userIndexPageVisible"
             @cancel="() => userIndexPageVisible = false"
             :footer="false"
-            :width="1000"
+            width="95vw"
         >
             <UserIndex :onFinishSelect="onFinishSelectUser" />
         </a-modal>

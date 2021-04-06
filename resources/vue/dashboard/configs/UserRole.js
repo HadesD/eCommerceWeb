@@ -31,4 +31,8 @@ const Config = {
     },
 };
 
-export { Config };
+function hasPermission(myRole, role) {
+    return myRole >= role;
+}
+
+export { Config, hasPermission };

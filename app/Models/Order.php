@@ -24,8 +24,8 @@ class Order extends Model
     protected $fillable = ['customer_id', 'note'];
 
     protected $appends = [
-        'order_products',
-        'transactions', // Addon fee,..
+        // 'order_products',
+        // 'transactions', // Addon fee,..
         'customer',
     ];
 

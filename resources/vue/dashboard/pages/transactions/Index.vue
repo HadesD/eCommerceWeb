@@ -82,6 +82,13 @@
                 </div>
             </template>
 
+            <template slot="cashier_id" slot-scope="value, record">
+                <div v-if="record.cashier">
+                    <span>#{{ value }}. {{ record.cashier.name }}</span>
+                    <a-button icon="search" @click="() => { currentUserId = value; userEditPageVisible = true; }" size="small" />
+                </div>
+            </template>
+
             <template slot="time" slot-scope="record">
                 <div>Tạo: {{ date_format(record.created_at) }}</div>
                 <div>Update: {{ date_format(record.updated_at) }}</div>
@@ -104,6 +111,15 @@
             width="95vw"
         >
             <OrderEdit :orderId="currentOrderId" />
+        </a-modal>
+
+        <a-modal
+            :visible="userEditPageVisible"
+            @cancel="() => userEditPageVisible = false"
+            :footer="false"
+            :width="800"
+        >
+            <UserEdit :userId="currentUserId" />
         </a-modal>
     </div>
 </template>
@@ -140,6 +156,13 @@ const transactionsTableColumns = [
         },
     },
     {
+        title: 'Thu ngân',
+        dataIndex: 'cashier_id',
+        scopedSlots: {
+            customRender: 'cashier_id',
+        },
+    },
+    {
         title: 'Thời gian',
         key: 'time',
         scopedSlots: {
@@ -152,11 +175,15 @@ export default {
     components: {
         StockEdit: () => import('../stocks/Edit'),
         OrderEdit: () => import('../orders/Edit'),
+        UserEdit: () => import('../users/Edit'),
     },
     data() {
         return {
             stockEditPageVisible: false,
             currentStockId: undefined,
+
+            userEditPageVisible: false,
+            currentUserId: undefined,
 
             orderEditPageVisible: false,
             currentOrderId: undefined,

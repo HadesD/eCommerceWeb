@@ -94,9 +94,13 @@
                 <template slot="categories" slot-scope="value">
                     <a-tag v-for="category in value" :key="category.id">{{ category.name }}</a-tag>
                 </template>
-                <template slot="time" slot-scope="record">
+                <template slot="update_info" slot-scope="record">
                     <div>Tạo: {{ date_format(record.created_at) }}</div>
                     <div>Update: {{ date_format(record.updated_at) }}</div>
+                    <div v-if="record.updated_user">
+                        <span>Cuối bởi: {{ record.updated_user.name }}</span>
+                        <a-button icon="search" @click="() => { currentUserId = record.updated_user_id; userEditPageVisible = true; }" size="small" />
+                    </div>
                 </template>
                 <template slot="action" slot-scope="record">
                     <template v-if="!onFinishSelect">
@@ -113,6 +117,15 @@
                 </template>
             </a-table>
         </a-col>
+
+        <a-modal
+            :visible="userEditPageVisible"
+            @cancel="() => userEditPageVisible = false"
+            :footer="false"
+            :width="800"
+        >
+            <UserEdit :userId="currentUserId" />
+        </a-modal>
     </a-row>
 </template>
 
@@ -164,10 +177,10 @@ const stocksTableColumns = [
         },
     },
     {
-        title: 'Thời gian',
-        key: 'time',
+        title: 'Cập nhật',
+        key: 'update_info',
         scopedSlots: {
-            customRender: 'time',
+            customRender: 'update_info',
         },
     },
     {
@@ -185,9 +198,13 @@ export default {
     },
     components: {
         AddCategoryModal: () => import('../../components/AddCategoryModal.vue'),
+        UserEdit: () => import('../users/Edit'),
     },
     data() {
         return {
+            userEditPageVisible: false,
+            currentUserId: undefined,
+
             categories: [],
             addCategoryModalVisible: false,
             categoriesTreeLoading: false,
