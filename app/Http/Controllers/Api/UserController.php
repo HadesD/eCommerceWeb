@@ -106,7 +106,17 @@ class UserController extends Controller
             }
 
             $data = $request->toArray();
-            $data['role'] = $authUser->hasPermission(User::ROLE_ADMIN_MASTER) ? $data['role'] : User::ROLE_USER_NORMAL;
+
+            if ($request->role !== $user->role) {
+                $canSetRequestRole = $authUser->hasPermission(User::ROLE_ADMIN_MASTER);
+                if (!$canSetRequestRole) {
+                    $canSetRequestRole = ($request->role !== User::ROLE_ADMIN_MASTER) && $authUser->hasPermission($user->role);
+                }
+
+                if (!$canSetRequestRole) {
+                    throw new ApiErrorException('Bạn không có quyền chỉnh sửa chức vụ người dùng này');
+                }
+            }
 
             $user->fill($data);
             $user->save();
