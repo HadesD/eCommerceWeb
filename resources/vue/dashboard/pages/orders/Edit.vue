@@ -7,7 +7,7 @@
             >
                 <template slot="extra">
                     <a-tooltip title="In hoá đơn" v-if="id">
-                        <a-button type="primary" icon="printer" @click="() => printOrder()" style="float:right;" />
+                        <a-button type="primary" icon="printer" @click="() => printOrder()" />
                     </a-tooltip>
                 </template>
             </a-page-header>
@@ -268,7 +268,7 @@
             :visible="userIndexPageVisible"
             @cancel="() => userIndexPageVisible = false"
             :footer="false"
-            :width="1000"
+            width="95vw"
         >
             <UserIndex :onFinishSelect="onFinishSelectUser" />
         </a-modal>

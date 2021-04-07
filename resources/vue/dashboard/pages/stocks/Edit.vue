@@ -266,6 +266,8 @@ export default {
                 this.$refs.ruleForm.resetFields();
 
                 this.formData.transactions = [];
+
+                this.stockInfo = {};
             }
         },
     },

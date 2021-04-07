@@ -29,11 +29,16 @@
                 </a-form-model-item>
                 <a-form-model-item label="Chức vụ" prop="role">
                     <a-select v-model="formData.role">
-                        <a-select-option v-for="userRole in Object.keys(configUserRole)" :key="userRole" :value="parseInt(userRole)" :disabled="((authUser.role < UserRole.ROLE_ADMIN_MASTER) && (parseInt(userRole) >= UserRole.ROLE_ADMIN_MASTER))">{{ configUserRole[userRole].name }}</a-select-option>
+                        <a-select-option v-for="userRole in Object.keys(configUserRole)" :key="userRole" :value="parseInt(userRole)" :disabled="!authUser.hasPermission(UserRole.ROLE_ADMIN_MASTER) && (parseInt(userRole) >= UserRole.ROLE_ADMIN_MASTER)">{{ configUserRole[userRole].name }}</a-select-option>
                     </a-select>
                 </a-form-model-item>
-                <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
-                    <a-button type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })">
+                <a-form-model-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: 4 }">
+                    <a-button
+                        type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })"
+                        block
+                        size="large"
+                        :disabled="id && (!authUser.hasPermission(UserRole.ROLE_ADMIN_MASTER) || !authUser.hasPermission(this.userInfo.role))"
+                    >
                         {{ id ? 'Sửa' : 'Tạo' }}
                     </a-button>
                 </a-form-model-item>
@@ -52,6 +57,8 @@ export default {
     data() {
         return {
             isLoadingUserInfo: false,
+
+            userInfo: {},
 
             formData: {
                 name: undefined,
@@ -97,6 +104,7 @@ export default {
                 this.loadUser(to);
             } else {
                 this.$refs.ruleForm.resetFields();
+                this.userInfo = {};
             }
         },
     },
@@ -111,6 +119,8 @@ export default {
             axios.get(`/api/users/${id}`)
                 .then(res => {
                     const uData = res.data.data;
+
+                    this.userInfo = uData;
 
                     _.assign(this.formData, _.pick(uData, _.keys(this.formData)));
 
@@ -155,7 +165,7 @@ export default {
                         this.$message.success('Đã thêm thành công');
                     }
 
-                    this.loadUser(sData.id);
+                    this.loadUser(uData.id);
                 })
                 .catch(err => {
                     if (err.response && err.response.data.message) {

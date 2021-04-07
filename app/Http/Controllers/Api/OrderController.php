@@ -48,21 +48,29 @@ class OrderController extends Controller
         if (isset($request->download)) {
             $orderQuery = $orderQuery->get();
 
-            $csv = \League\Csv\Writer::createFromFileObject(new \SplTempFileObject);
-            $csv->insertOne(array_keys($orderQuery[0]->getAttributes()));
+            switch ($request->download) {
+                case 'csv': {
+                    $csv = \League\Csv\Writer::createFromFileObject(new \SplTempFileObject);
+                    $csv->insertOne(array_keys($orderQuery[0]->getAttributes()));
 
-            foreach ($orderQuery as $order) {
-                $csv->insertOne($order->toArray());
+                    foreach ($orderQuery as $order) {
+                        $csv->insertOne($order->toArray());
+                    }
+
+                    return response((string)$csv, 200, [
+                        'Content-Type' => 'text/csv',
+                        'Content-Transfer-Encoding' => 'binary',
+                        'Content-Disposition' => 'attachment; filename="'.parse_url(env('APP_URL'))['host'].'_orders_'.date('Y-m-d_H-i-s').'.csv"',
+                    ]);
+                } break;
             }
-
-            return response((string)$csv, 200, [
-                'Content-Type' => 'text/csv',
-                'Content-Transfer-Encoding' => 'binary',
-                'Content-Disposition' => 'attachment; filename="'.parse_url(env('APP_URL'))['host'].'_orders_'.date('Y-m-d_H-i-s').'.csv"',
-            ]);
         }
 
-        return new JsonResource($orderQuery->paginate());
+        $orderQuery = $orderQuery->paginate();
+
+        $orderQuery->append(['transactions', 'order_products', 'customer']);
+
+        return new JsonResource($orderQuery);
     }
 
     /**
@@ -175,6 +183,8 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
+        $order->append(['transactions', 'order_products', 'customer']);
+
         return new JsonResource($order);
     }
 

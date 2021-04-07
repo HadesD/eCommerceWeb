@@ -43,7 +43,32 @@ class StockController extends Controller
 
         $stockQuery = $stockQuery->orderBy('id', 'DESC');
 
-        return new JsonResource($stockQuery->paginate());
+        if (isset($request->download)) {
+            $stockQuery = $stockQuery->get();
+
+            switch ($request->download) {
+                case 'csv': {
+                    $csv = \League\Csv\Writer::createFromFileObject(new \SplTempFileObject);
+                    $csv->insertOne(array_keys($stockQuery[0]->getAttributes()));
+
+                    foreach ($stockQuery as $stock) {
+                        $csv->insertOne($stock->toArray());
+                    }
+
+                    return response((string)$csv, 200, [
+                        'Content-Type' => 'text/csv',
+                        'Content-Transfer-Encoding' => 'binary',
+                        'Content-Disposition' => 'attachment; filename="'.parse_url(env('APP_URL'))['host'].'_stocks_'.date('Y-m-d_H-i-s').'.csv"',
+                    ]);
+                } break;
+            }
+        }
+
+        $stockQuery = $stockQuery->paginate();
+
+        $stockQuery->append(['categories', 'updated_user']);
+
+        return new JsonResource($stockQuery);
     }
 
     /**
@@ -112,7 +137,7 @@ class StockController extends Controller
      */
     public function show(Stock $stock)
     {
-        return new JsonResource($stock->append(['transactions']));
+        return new JsonResource($stock->append(['transactions', 'categories', 'updated_user']));
     }
 
     /**

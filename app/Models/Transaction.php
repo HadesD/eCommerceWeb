@@ -21,6 +21,10 @@ class Transaction extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $appends = [
+        'cashier',
+    ];
+
     public function setPaidDateAttribute($value)
     {
         $this->attributes['paid_date'] = Carbon::parse($value)->format('Y-m-d H:i:s');
@@ -60,6 +64,11 @@ class Transaction extends Model
         }
 
         return $order;
+    }
+
+    public function getCashierAttribute()
+    {
+        return User::find($this->cashier_id);
     }
 }
 

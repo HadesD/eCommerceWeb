@@ -12,7 +12,7 @@
         <a-page-header title="Chuyên mục">
             <template slot="extra">
                 <a-tooltip title="Thêm chuyên mục">
-                <a-button type="primary" icon="plus" @click="showAddCategoryModal" style="float:right;" />
+                    <a-button type="primary" icon="plus" @click="showAddCategoryModal" />
                 </a-tooltip>
             </template>
         </a-page-header>
@@ -35,10 +35,13 @@
                     </a-tooltip>
                 </template>
                 <template slot="extra">
-                    <router-link to="/stocks/new">
-                    <a-tooltip title="Nhập kho">
-                        <a-button type="primary" icon="plus" style="float:right;" />
+                    <a-tooltip title="Tải CSV">
+                        <a-button type="primary" icon="download" :disabled="stocks.length <= 0" @click="() => download()" />
                     </a-tooltip>
+                    <router-link to="/stocks/new">
+                        <a-tooltip title="Nhập kho">
+                            <a-button type="primary" icon="plus" style="float:right;" />
+                        </a-tooltip>
                     </router-link>
                 </template>
             </a-page-header>
@@ -94,9 +97,13 @@
                 <template slot="categories" slot-scope="value">
                     <a-tag v-for="category in value" :key="category.id">{{ category.name }}</a-tag>
                 </template>
-                <template slot="time" slot-scope="record">
+                <template slot="update_info" slot-scope="record">
                     <div>Tạo: {{ date_format(record.created_at) }}</div>
                     <div>Update: {{ date_format(record.updated_at) }}</div>
+                    <div v-if="record.updated_user">
+                        <span>Cuối bởi: {{ record.updated_user.name }}</span>
+                        <a-button icon="search" @click="() => { currentUserId = record.updated_user_id; userEditPageVisible = true; }" size="small" />
+                    </div>
                 </template>
                 <template slot="action" slot-scope="record">
                     <template v-if="!onFinishSelect">
@@ -113,6 +120,15 @@
                 </template>
             </a-table>
         </a-col>
+
+        <a-modal
+            :visible="userEditPageVisible"
+            @cancel="() => userEditPageVisible = false"
+            :footer="false"
+            :width="800"
+        >
+            <UserEdit :userId="currentUserId" />
+        </a-modal>
     </a-row>
 </template>
 
@@ -164,10 +180,10 @@ const stocksTableColumns = [
         },
     },
     {
-        title: 'Thời gian',
-        key: 'time',
+        title: 'Cập nhật',
+        key: 'update_info',
         scopedSlots: {
-            customRender: 'time',
+            customRender: 'update_info',
         },
     },
     {
@@ -185,9 +201,13 @@ export default {
     },
     components: {
         AddCategoryModal: () => import('../../components/AddCategoryModal.vue'),
+        UserEdit: () => import('../users/Edit'),
     },
     data() {
         return {
+            userEditPageVisible: false,
+            currentUserId: undefined,
+
             categories: [],
             addCategoryModalVisible: false,
             categoriesTreeLoading: false,
@@ -346,6 +366,25 @@ export default {
                     this.stocksTableLoading = false;
                 });
         },
+
+        download() {
+            const filters = this.stocksTableFilters;
+            const downloadUrl = new URL(window.location.href);
+            downloadUrl.pathname = '/api/stocks';
+            downloadUrl.searchParams.append('download', 'csv');
+            Object.keys(filters).forEach(value => {
+                const filterVal = filters[value];
+                if (Array.isArray(filterVal)) {
+                    filterVal.forEach(aVal => {
+                        downloadUrl.searchParams.append(`${value}[]`, aVal);
+                    });
+                } else {
+                    downloadUrl.searchParams.append(value, filters[value]);
+                }
+            });
+            window.open(downloadUrl.href, '_blank');
+        },
+
     },
 }
 </script>

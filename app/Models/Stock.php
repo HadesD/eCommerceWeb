@@ -15,8 +15,9 @@ class Stock extends Model
     ];
 
     protected $appends = [
+        // 'categories',
+        // 'updated_user',
         // 'products',
-        'categories',
         // 'transactions',
     ];
 
@@ -48,6 +49,11 @@ class Stock extends Model
                 ->from(with(new StockTransaction)->getTable())
                 ->where('stock_id', $this->id);
         })->get();
+    }
+
+    public function getUpdatedUserAttribute()
+    {
+        return User::find($this->updated_user_id);
     }
 }
 

@@ -1,16 +1,22 @@
 <template>
     <div>
-        <h2>
-            <span>Hoá Đơn</span>
-            <a-tooltip title="Làm mới">
-                <a-button type="primary" icon="reload" :loading="ordersTableLoading" @click="() => loadOrders({})" />
-            </a-tooltip>
-            <router-link to="/orders/new">
-                <a-tooltip title="Thêm đơn">
-                <a-button type="primary" icon="plus" style="float:right;" />
+        <a-page-header title="Hoá Đơn">
+            <template slot="tags">
+                <a-tooltip title="Làm mới">
+                    <a-button type="primary" icon="reload" :loading="ordersTableLoading" @click="() => loadOrders({})" />
                 </a-tooltip>
-            </router-link>
-        </h2>
+            </template>
+            <template slot="extra">
+                <a-tooltip title="Tải CSV">
+                    <a-button type="primary" icon="download" :disabled="orders.length <= 0" @click="() => download()" />
+                </a-tooltip>
+                <router-link to="/orders/new">
+                    <a-tooltip title="Thêm đơn">
+                        <a-button type="primary" icon="plus" />
+                    </a-tooltip>
+                </router-link>
+            </template>
+        </a-page-header>
         <a-table
             :columns="ordersTableColumns"
             :data-source="ordersTableData"
@@ -78,7 +84,7 @@
                 <div v-if="value && record.customer">
                     <div>
                         <span>#{{ value }}. {{ record.customer.name }}</span>
-                        <a-button icon="search" @click="() => { currentCustomerId = value; userEditPageVisible = true; }" size="small" />
+                        <a-button icon="search" @click="() => { currentUserId = value; userEditPageVisible = true; }" size="small" />
                     </div>
                     <div>Phone: {{ record.customer.phone || 'Chưa có' }}</div>
                 </div>
@@ -128,7 +134,7 @@
             :footer="false"
             :width="800"
         >
-            <UserEdit :userId="currentCustomerId" />
+            <UserEdit :userId="currentUserId" />
         </a-modal>
 
         <a-modal
@@ -230,7 +236,7 @@ export default {
     data() {
         return {
             userEditPageVisible: false,
-            currentCustomerId: undefined,
+            currentUserId: undefined,
 
             stockEditPageVisible: false,
             currentStockId: undefined,
@@ -244,7 +250,7 @@ export default {
             ordersTablePagination: {
                 position: 'both',
             },
-            productsTableFilters: {},
+            ordersTableFilters: {},
 
             OrderStatus,
             configOrderStatus,
@@ -300,6 +306,24 @@ export default {
                 .finally(()=>{
                     this.ordersTableLoading = false;
                 });
+        },
+
+        download() {
+            const filters = this.ordersTableFilters;
+            const downloadUrl = new URL(window.location.href);
+            downloadUrl.pathname = '/api/orders';
+            downloadUrl.searchParams.append('download', 'csv');
+            Object.keys(filters).forEach(value => {
+                const filterVal = filters[value];
+                if (Array.isArray(filterVal)) {
+                    filterVal.forEach(aVal => {
+                        downloadUrl.searchParams.append(`${value}[]`, aVal);
+                    });
+                } else {
+                    downloadUrl.searchParams.append(value, filters[value]);
+                }
+            });
+            window.open(downloadUrl.href, '_blank');
         },
 
         totalAmount(record) {

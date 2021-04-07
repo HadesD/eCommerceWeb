@@ -12,7 +12,7 @@
             <a-page-header title="Chuyên mục">
                 <template slot="extra">
                     <a-tooltip title="Thêm chuyên mục">
-                        <a-button type="primary" icon="plus" @click="showAddCategoryModal" style="float:right;" />
+                        <a-button type="primary" icon="plus" @click="showAddCategoryModal" />
                     </a-tooltip>
                 </template>
             </a-page-header>
