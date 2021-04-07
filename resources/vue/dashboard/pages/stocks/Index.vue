@@ -372,6 +372,9 @@ export default {
             const downloadUrl = new URL(window.location.href);
             downloadUrl.pathname = '/api/stocks';
             downloadUrl.searchParams.append('download', 'csv');
+            if (this.stocksTableSorts) {
+                downloadUrl.searchParams.append('sort_by', this.stocksTableSorts);
+            }
             Object.keys(filters).forEach(value => {
                 const filterVal = filters[value];
                 if (Array.isArray(filterVal)) {
