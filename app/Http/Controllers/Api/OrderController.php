@@ -45,6 +45,23 @@ class OrderController extends Controller
 
         $orderQuery = $orderQuery->orderBy('deal_date', 'DESC');
 
+        if (isset($request->download)) {
+            $orderQuery = $orderQuery->get();
+
+            $csv = \League\Csv\Writer::createFromFileObject(new \SplTempFileObject);
+            $csv->insertOne(array_keys($orderQuery[0]->getAttributes()));
+
+            foreach ($orderQuery as $order) {
+                $csv->insertOne($order->toArray());
+            }
+
+            return response((string)$csv, 200, [
+                'Content-Type' => 'text/csv',
+                'Content-Transfer-Encoding' => 'binary',
+                'Content-Disposition' => 'attachment; filename="'.parse_url(env('APP_URL'))['host'].'_orders_'.date('Y-m-d_H-i-s').'.csv"',
+            ]);
+        }
+
         return new JsonResource($orderQuery->paginate());
     }
 

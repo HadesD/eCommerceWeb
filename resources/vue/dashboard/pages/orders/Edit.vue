@@ -737,9 +737,9 @@ export default {
 
             newDoc.write(`Hoá đơn #${this.id} (${configOrderStatus[this.formData.status].name})`);
             newDoc.write('<table><thead><tr>');
-            newDoc.write('<td>STT</td>');
-            newDoc.write('<td>STT</td>');
-            newDoc.write('<td>STT</td>');
+            newDoc.write('<th>STT</th>');
+            newDoc.write('<th>STT</th>');
+            newDoc.write('<th>STT</th>');
             newDoc.write('</tr></thead>')
             newDoc.write('<tbody>');
             newDoc.write('</tbody></table>');
