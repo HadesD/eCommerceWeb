@@ -196,7 +196,6 @@ export default {
             transactions: [],
             transactionsTableColumns,
             transactionsTableLoading: false,
-            transactionsTableData: [],
             transactionsTablePagination: {
                 position: 'both',
             },
