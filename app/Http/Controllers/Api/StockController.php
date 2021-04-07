@@ -58,7 +58,7 @@ class StockController extends Controller
                     return response((string)$csv, 200, [
                         'Content-Type' => 'text/csv',
                         'Content-Transfer-Encoding' => 'binary',
-                        'Content-Disposition' => 'attachment; filename="'.parse_url(config('APP_URL'))['host'].'_stocks_'.date('Y-m-d_H-i-s').'.csv"',
+                        'Content-Disposition' => 'attachment; filename="'.parse_url(config('url'))['host'].'_stocks_'.date('Y-m-d_H-i-s').'.csv"',
                     ]);
                 } break;
             }
