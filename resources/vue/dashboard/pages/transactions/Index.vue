@@ -8,7 +8,7 @@
             </template>
             <template slot="extra">
                 <a-tooltip title="Tải CSV">
-                    <a-button type="primary" icon="download" :disabled="stocks.length <= 0" @click="() => download()" />
+                    <a-button type="primary" icon="download" :disabled="transactions.length <= 0" @click="() => download()" />
                 </a-tooltip>
             </template>
         </a-page-header>
@@ -193,6 +193,7 @@ export default {
             orderEditPageVisible: false,
             currentOrderId: undefined,
 
+            transactions: [],
             transactionsTableColumns,
             transactionsTableLoading: false,
             transactionsTableData: [],
@@ -206,6 +207,9 @@ export default {
         this.loadTransactions({page: 1});
     },
     computed: {
+        transactionsTableData() {
+            return this.transactions;
+        },
     },
     methods: {
         number_format,
