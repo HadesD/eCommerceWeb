@@ -25,7 +25,9 @@ class TransactionController extends Controller
         }
 
         if (isset($request->paid_date)) {
-            $transactionQuery = $transactionQuery->where('paid_date', '>=', $request->paid_date[0])->where('paid_date', '<=', $request->paid_date[1]);
+            $transactionQuery = $transactionQuery
+                ->where('paid_date', '>=', date('Y-m-d 00:00:00', strtotime($request->paid_date[0])))
+                ->where('paid_date', '<=', date('Y-m-d 23:59:59', strtotime($request->paid_date[1])));
         } else {
             $transactionQuery = $transactionQuery->orderBy('paid_date', 'DESC');
         }

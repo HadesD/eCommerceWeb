@@ -40,7 +40,9 @@ class OrderController extends Controller
         }
 
         if (isset($request->deal_date)) {
-            $orderQuery = $orderQuery->where('deal_date', '>=', $request->deal_date[0])->where('deal_date', '<=', $request->deal_date[1]);
+            $orderQuery = $orderQuery
+                ->where('deal_date', '>=', date('Y-m-d 00:00:00', strtotime($request->deal_date[0])))
+                ->where('deal_date', '<=', date('Y-m-d 23:59:59', strtotime($request->deal_date[1])));
         }
 
         $orderQuery = $orderQuery->orderBy('deal_date', 'DESC');
