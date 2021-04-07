@@ -6,6 +6,11 @@
                     <a-button type="primary" icon="reload" :loading="transactionsTableLoading" @click="() => loadTransactions({})" />
                 </a-tooltip>
             </template>
+            <template slot="extra">
+                <a-tooltip title="Tải CSV">
+                    <a-button type="primary" icon="download" :disabled="stocks.length <= 0" @click="() => download()" />
+                </a-tooltip>
+            </template>
         </a-page-header>
         <a-table
             :columns="transactionsTableColumns"
@@ -239,6 +244,27 @@ export default {
                 .finally(() => {
                     this.transactionsTableLoading = false;
                 });
+        },
+
+        download() {
+            const filters = this.transactionsTableFilters;
+            const downloadUrl = new URL(window.location.href);
+            downloadUrl.pathname = '/api/transactions';
+            downloadUrl.searchParams.append('download', 'csv');
+            if (this.transactionsTableSorts) {
+                downloadUrl.searchParams.append('sort_by', this.transactionsTableSorts);
+            }
+            Object.keys(filters).forEach(value => {
+                const filterVal = filters[value];
+                if (Array.isArray(filterVal)) {
+                    filterVal.forEach(aVal => {
+                        downloadUrl.searchParams.append(`${value}[]`, aVal);
+                    });
+                } else {
+                    downloadUrl.searchParams.append(value, filters[value]);
+                }
+            });
+            window.open(downloadUrl.href, '_blank');
         },
     },
 };
