@@ -30,9 +30,30 @@ class TransactionController extends Controller
             $transactionQuery = $transactionQuery->orderBy('paid_date', 'DESC');
         }
 
+        if (isset($request->download)) {
+            $transactionQuery = $transactionQuery->get();
+
+            switch ($request->download) {
+                case 'csv': {
+                    $csv = \League\Csv\Writer::createFromFileObject(new \SplTempFileObject);
+                    $csv->insertOne(array_keys($transactionQuery[0]->getAttributes()));
+
+                    foreach ($transactionQuery as $transaction) {
+                        $csv->insertOne($transaction->toArray());
+                    }
+
+                    return response((string)$csv, 200, [
+                        'Content-Type' => 'text/csv',
+                        'Content-Transfer-Encoding' => 'binary',
+                        'Content-Disposition' => 'attachment; filename="'.parse_url(config('app.url'))['host'].'_transactions_'.date('Y-m-d_H-i-s').'.csv"',
+                    ]);
+                } break;
+            }
+        }
+
         $transactionQuery = $transactionQuery->paginate();
 
-        $transactionQuery->append(['stock', 'order']);
+        $transactionQuery->append(['stock', 'order', 'cashier']);
 
         return new JsonResource($transactionQuery);
     }

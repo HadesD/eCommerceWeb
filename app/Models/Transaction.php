@@ -22,7 +22,7 @@ class Transaction extends Model
     use HasFactory, SoftDeletes;
 
     protected $appends = [
-        'cashier',
+        // 'cashier',
     ];
 
     public function setPaidDateAttribute($value)
