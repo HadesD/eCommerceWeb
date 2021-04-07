@@ -228,7 +228,7 @@ export default {
                 .then(res => {
                     const resData = res.data;
 
-                    this.transactionsTableData = resData.data;
+                    this.transactions = resData.data;
 
                     this.transactionsTablePagination = {
                         ...this.transactionsTablePagination,
