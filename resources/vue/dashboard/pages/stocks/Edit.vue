@@ -38,13 +38,13 @@
                         :disabled="id && (id > 0)"
                     />
                 </a-form-model-item>
-                <a-form-model-item label="Chuyên mục cha" prop="categories_id">
+                <a-form-model-item label="Chuyên mục cha">
                     <a-form-model-item style="display: inline-block; margin-right: 5px;">
                         <a-tooltip title="Thêm chuyên mục">
                             <a-button type="primary" icon="plus" @click="showAddCategoryModal" />
                         </a-tooltip>
                     </a-form-model-item>
-                    <a-form-model-item :style="{ display: 'inline-block', width: 'calc(100% - 80px)' }">
+                    <a-form-model-item prop="categories_id" :style="{ display: 'inline-block', width: 'calc(100% - 80px)' }">
                         <a-spin :spinning="categoriesTreeLoading">
                             <a-tree-select
                                 show-search
