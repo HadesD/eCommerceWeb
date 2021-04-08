@@ -45,7 +45,7 @@ class OrderController extends Controller
                 ->where('deal_date', '<=', date('Y-m-d 23:59:59', strtotime($request->deal_date[1])));
         }
 
-        $orderQuery = $orderQuery->orderBy('deal_date', 'DESC');
+        $orderQuery = $orderQuery->orderBy('updated_at', 'DESC');
 
         if (isset($request->download)) {
             $orderQuery = $orderQuery->get();
@@ -56,6 +56,11 @@ class OrderController extends Controller
                     $csv->insertOne(array_keys($orderQuery[0]->getAttributes()));
 
                     foreach ($orderQuery as $order) {
+                        $stock_cost_total = 0;
+                        $earn_amount = 0;
+
+                        $order->push('AA', $earn_amount);
+                        $order->push('BB', $stock_cost_total);
                         $csv->insertOne($order->toArray());
                     }
 

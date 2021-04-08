@@ -21,6 +21,17 @@ class Stock extends Model
         // 'transactions',
     ];
 
+    public function getCostTotalAttribute()
+    {
+        $cost_total = random_int(0,100);
+
+        // foreach ($this->transactions as $tnx) {
+        //     $cost_total += $tnx->amount;
+        // }
+
+        return $cost_total;
+    }
+
     public function getProductsAttribute(){
         return Product::whereIn('id', function($query){
             $query->select('product_id')

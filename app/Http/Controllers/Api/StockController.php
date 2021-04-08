@@ -39,17 +39,18 @@ class StockController extends Controller
                 $sortType = ($sorter[0] === '-') ? 'DESC' : 'ASC';
                 $stockQuery = $stockQuery->orderBy($col, $sortType);
             }
+        } else {
+            $stockQuery = $stockQuery->orderBy('updated_at', 'DESC');
         }
 
-        $stockQuery = $stockQuery->orderBy('id', 'DESC');
 
         if (isset($request->download)) {
-            $stockQuery = $stockQuery->get();
+            $stockQuery = $stockQuery->get()->each->append('cost_total');
 
             switch ($request->download) {
                 case 'csv': {
                     $csv = \League\Csv\Writer::createFromFileObject(new \SplTempFileObject);
-                    $csv->insertOne(array_keys($stockQuery[0]->getAttributes()));
+                    $csv->insertOne(array_keys($stockQuery[0]->toArray()));
 
                     foreach ($stockQuery as $stock) {
                         $csv->insertOne($stock->toArray());

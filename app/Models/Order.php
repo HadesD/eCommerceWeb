@@ -29,6 +29,24 @@ class Order extends Model
         // 'customer',
     ];
 
+    public function getStockCostTotalAttribute()
+    {
+        $cost_total = 0;
+
+        foreach ($this->order_products as $op) {
+
+        }
+
+        return $cost_total;
+    }
+
+    public function getAmountTotalAttribute()
+    {
+        $amount_total = 0;
+
+        return $amount_total;
+    }
+
     public function getCustomerAttribute()
     {
         return User::find($this->customer_id);
