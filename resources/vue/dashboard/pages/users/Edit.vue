@@ -68,7 +68,7 @@ export default {
                 sns_info: {
                     facebook: undefined,
                 },
-                role: 50,
+                role: UserRole.ROLE_USER_NORMAL,
             },
             rules: {
                 name: [
@@ -100,10 +100,11 @@ export default {
     },
     watch: {
         id(to) {
+            this.$refs.ruleForm.resetFields();
+
             if (to) {
                 this.loadUser(to);
             } else {
-                this.$refs.ruleForm.resetFields();
                 this.userInfo = {};
             }
         },
