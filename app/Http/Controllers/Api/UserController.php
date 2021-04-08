@@ -105,7 +105,6 @@ class UserController extends Controller
                 throw new ApiErrorException('Bạn không có quyền chỉnh sửa người dùng này');
             }
 
-            $data = $request->toArray();
 
             if ($request->role !== $user->role) {
                 $canSetRequestRole = $authUser->hasPermission(User::ROLE_ADMIN_MASTER);
@@ -116,6 +115,12 @@ class UserController extends Controller
                 if (!$canSetRequestRole) {
                     throw new ApiErrorException('Bạn không có quyền chỉnh sửa chức vụ người dùng này');
                 }
+            }
+
+            $data = $request->toArray();
+
+            if (isset($request->password) && !empty($request->password)) {
+                $data['password'] = Hash::make($request->password);
             }
 
             $user->fill($data);
