@@ -83,6 +83,7 @@
                         format="YYYY-MM-DD HH:mm:ss"
                         show-time
                         type="date"
+                        :disabledDate="disabledLastMonthAndTomorrow"
                     />
                 </a-form-model-item>
                 <a-card title="Giao dịch thêm" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#9800ab',color:'#FFF'}" :bodyStyle="{padding:0}">
@@ -104,7 +105,7 @@
                                 :rules="[{required:true,message:'Không được để trống'}, {min:10,message:'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 10 ký tự)'}]"
                                 :prop="`transactions.${index}.description`" style="margin-bottom:0;"
                             >
-                                <a-input v-model="record.description" placeholder="Mã giảm giá, phí ship, v..v" type="textarea" :disabled="record.id && (record.id >= 0)" />
+                                <a-input v-model="record.description" placeholder="Mã giảm giá, phí ship, v..v" type="textarea" :disabled="disabledField(record)" />
                             </a-form-model-item>
                         </template>
                         <template slot="amount" slot-scope="text, record, index">
@@ -114,7 +115,7 @@
                                 style="margin-bottom:0;"
                                 :help="`VND: ${number_format(record.amount || 0)}`"
                             >
-                                <a-input-number v-model="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="record.id && (record.id >= 0)" />
+                                <a-input-number v-model="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(record)" />
                             </a-form-model-item>
                         </template>
                         <template slot="paid_date" slot-scope="text, record, index">
@@ -123,7 +124,10 @@
                                 :prop="'transactions.'+index+'.paid_date'" style="margin-bottom:0;"
                                 help="Ngày thanh toán sẽ liên kết trực tiếp tới tiền lãi/thu của tháng đó"
                             >
-                                <a-date-picker v-model="record.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" :disabled="record.id && (record.id >= 0)" />
+                                <a-date-picker
+                                    v-model="record.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" :disabled="disabledField(record)"
+                                    :disabledDate="disabledLastMonthAndTomorrow"
+                                />
                             </a-form-model-item>
                         </template>
                         <template slot="action" slot-scope="text, record, index">
@@ -280,6 +284,15 @@ export default {
     },
     methods: {
         number_format,
+
+        disabledLastMonthAndTomorrow(current) {
+            return !this.authUser.hasPermission(UserRole.ROLE_ADMIN_MASTER) &&
+                current && ((current < moment().startOf('month')) || (current > moment().endOf('day')));
+        },
+        disabledField(record) {
+            return !this.authUser.hasPermission(UserRole.ROLE_ADMIN_MASTER) && record.id && (record.id >= 0);
+        },
+
         loadCategoriesTree(){
             this.reloadCategoriesTree();
         },

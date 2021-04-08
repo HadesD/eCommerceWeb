@@ -34,6 +34,7 @@
                         format="YYYY-MM-DD HH:mm:ss"
                         show-time
                         type="date"
+                        :disabledDate="disabledLastMonthAndTomorrow"
                     />
                 </a-form-model-item>
                 <a-form-model-item
@@ -184,7 +185,7 @@
                                             :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.amount'" style="margin-bottom:0;"
                                             :help="`VND: ${number_format(pst.amount || 0)}`"
                                         >
-                                            <a-input-number v-model="pst.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="pst.id && (pst.id >= 0)" />
+                                            <a-input-number v-model="pst.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(pst)" />
                                         </a-form-model-item>
                                     </template>
                                     <template slot="paid_date" slot-scope="value, pst, pstIdx">
@@ -193,7 +194,10 @@
                                             :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.paid_date'" style="margin-bottom:0;"
                                             help="Ngày thanh toán sẽ liên kết trực tiếp tới tiền lãi/thu của tháng đó"
                                         >
-                                            <a-date-picker v-model="pst.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" :disabled="pst.id && (pst.id >= 0)" />
+                                            <a-date-picker
+                                                v-model="pst.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" :disabled="disabledField(pst)"
+                                                :disabledDate="disabledLastMonthAndTomorrow"
+                                            />
                                         </a-form-model-item>
                                     </template>
                                     <template slot="action" slot-scope="value, pst, pstIdx">
@@ -235,7 +239,7 @@
                                 style="margin-bottom:0;"
                                 :help="`VND: ${number_format(record.amount || 0)}`"
                             >
-                                <a-input-number v-model="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="record.id && (record.id >= 0)" />
+                                <a-input-number v-model="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(record)" />
                             </a-form-model-item>
                         </template>
                         <template slot="paid_date" slot-scope="text, record, index">
@@ -244,7 +248,11 @@
                                 :prop="'transactions.'+index+'.paid_date'" style="margin-bottom:0;"
                                 help="Ngày thanh toán sẽ liên kết trực tiếp tới tiền lãi/thu của tháng đó"
                             >
-                                <a-date-picker v-model="record.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" :disabled="record.id && (record.id >= 0)" />
+                                <a-date-picker
+                                    v-model="record.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date"
+                                    :disabled="disabledField(record)"
+                                    :disabledDate="disabledLastMonthAndTomorrow"
+                                />
                             </a-form-model-item>
                         </template>
                         <template slot="action" slot-scope="text, record, index">
@@ -533,6 +541,15 @@ export default {
     },
     methods: {
         number_format,
+
+        disabledLastMonthAndTomorrow(current) {
+            return !this.authUser.hasPermission(UserRole.ROLE_ADMIN_MASTER) &&
+                current && ((current < moment().startOf('month')) || (current > moment().endOf('day')));
+        },
+        disabledField(record) {
+            return !this.authUser.hasPermission(UserRole.ROLE_ADMIN_MASTER) && record.id && (record.id >= 0);
+        },
+
         loadCategoriesTree(){
             axios.get('/api/categories')
                 .then(res => {
