@@ -45,7 +45,7 @@ class StockController extends Controller
 
 
         if (isset($request->download)) {
-            $stockQuery = $stockQuery->get()->each->append('cost_total');
+            $stockQuery = $stockQuery->get()->append('cost_total');
 
             switch ($request->download) {
                 case 'csv': {

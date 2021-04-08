@@ -23,11 +23,11 @@ class Stock extends Model
 
     public function getCostTotalAttribute()
     {
-        $cost_total = random_int(0,100);
+        $cost_total = 0;
 
-        // foreach ($this->transactions as $tnx) {
-        //     $cost_total += $tnx->amount;
-        // }
+        foreach ($this->transactions as $tnx) {
+            $cost_total += $tnx->amount;
+        }
 
         return $cost_total;
     }

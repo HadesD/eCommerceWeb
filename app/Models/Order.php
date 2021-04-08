@@ -34,15 +34,29 @@ class Order extends Model
         $cost_total = 0;
 
         foreach ($this->order_products as $op) {
-
+            foreach ($op->order_product_stocks as $ops) {
+                $cost_total += $ops->stock->cost_price;
+            }
         }
 
         return $cost_total;
     }
 
-    public function getAmountTotalAttribute()
+    public function getEarnAmountTotalAttribute()
     {
         $amount_total = 0;
+
+        foreach ($this->transactions as $tnx) {
+            $amount_total += $tnx->amount;
+        }
+
+        foreach ($this->order_products as $op) {
+            foreach ($op->order_product_stocks as $ops) {
+                foreach ($ops->transactions as $tnx) {
+                    $amount_total += $tnx->amount;
+                }
+            }
+        }
 
         return $amount_total;
     }

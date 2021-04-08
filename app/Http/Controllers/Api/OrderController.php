@@ -48,19 +48,14 @@ class OrderController extends Controller
         $orderQuery = $orderQuery->orderBy('updated_at', 'DESC');
 
         if (isset($request->download)) {
-            $orderQuery = $orderQuery->get();
+            $orderQuery = $orderQuery->get()->append(['stock_cost_total', 'earn_amount_total']);
 
             switch ($request->download) {
                 case 'csv': {
                     $csv = \League\Csv\Writer::createFromFileObject(new \SplTempFileObject);
-                    $csv->insertOne(array_keys($orderQuery[0]->getAttributes()));
+                    $csv->insertOne(array_keys($orderQuery[0]->toArray()));
 
                     foreach ($orderQuery as $order) {
-                        $stock_cost_total = 0;
-                        $earn_amount = 0;
-
-                        $order->push('AA', $earn_amount);
-                        $order->push('BB', $stock_cost_total);
                         $csv->insertOne($order->toArray());
                     }
 
