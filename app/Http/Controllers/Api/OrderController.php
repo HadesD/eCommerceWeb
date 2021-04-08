@@ -87,6 +87,7 @@ class OrderController extends Controller
             'note' => 'required',
             'status' => 'required',
             'customer_id' => 'required',
+            'deal_date' => 'required',
         ]);
 
         try {
@@ -96,6 +97,7 @@ class OrderController extends Controller
             $order->note = $request->note;
             $order->status = $request->status;
             $order->customer_id = $request->customer_id;
+            $order->deal_date = $request->deal_date;
             $order->save();
 
             foreach ($request['order_products'] as $_order_product) {
