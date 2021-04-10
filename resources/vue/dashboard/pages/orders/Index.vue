@@ -168,6 +168,7 @@
 
 <script>
 import OrderStatus, { Config as configOrderStatus } from '../../configs/OrderStatus';
+import OrderProductStockStatus from '../../configs/OrderProductStockStatus';
 import { number_format, date_format } from '../../../helpers';
 import moment from 'moment';
 
@@ -352,7 +353,9 @@ export default {
             record.order_products.forEach(op_elm => {
                 op_elm.order_product_stocks.forEach(ops_elm => {
                     ops_elm.transactions.forEach(tnx_eml => {
-                        amount += tnx_eml.amount;
+                        if (ops_elm.status === OrderProductStockStatus.STS_SOLD) {
+                            amount += tnx_eml.amount;
+                        }
                     });
 
                     // stock.cost_amount
