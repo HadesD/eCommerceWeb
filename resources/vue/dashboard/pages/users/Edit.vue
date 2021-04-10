@@ -3,8 +3,22 @@
         <a-page-header
             :title="id ? 'Sửa thông tin người dùng' : 'Thêm khách hàng / người dùng mới'"
             :subTitle="id ? `#${id}` : null"
-        />
-        <a-spin :spinning="isLoadingUserInfo">
+        >
+            <template slot="tags">
+                <a-tooltip title="Lấy dữ liệu mới nhất" v-if="id">
+                    <a-button type="primary" size="small" icon="reload" :loading="userInfoLoading" @click="() => loadUser(id)" />
+                </a-tooltip>
+            </template>
+            <a-descriptions size="small" :column="1" v-if="id">
+                <a-descriptions-item label="Ngày tạo">
+                    <span>{{ userInfo.created_at }}</span>
+                </a-descriptions-item>
+                <a-descriptions-item label="Ngày cập nhật">
+                    <span>{{ userInfo.updated_at }}</span>
+                </a-descriptions-item>
+            </a-descriptions>
+        </a-page-header>
+        <a-spin :spinning="userInfoLoading">
             <a-form-model
                 ref="ruleForm"
                 :model="formData"
@@ -56,7 +70,7 @@ export default {
     },
     data() {
         return {
-            isLoadingUserInfo: false,
+            userInfoLoading: false,
 
             userInfo: {},
 
@@ -120,7 +134,7 @@ export default {
     },
     methods: {
         loadUser(id) {
-            this.isLoadingUserInfo = true;
+            this.userInfoLoading = true;
             axios.get(`/api/users/${id}`)
                 .then(res => {
                     const uData = res.data.data;
@@ -142,12 +156,12 @@ export default {
                     this.$message.error(err.message || 'Thất bại');
                 })
                 .finally(() => {
-                    this.isLoadingUserInfo = false;
+                    this.userInfoLoading = false;
                 });
         },
 
         onFinish() {
-            this.isLoadingUserInfo = true;
+            this.userInfoLoading = true;
 
             const userId = this.id;
 
@@ -177,7 +191,7 @@ export default {
                     this.$message.error(err.message || 'Thất bại');
                 })
                 .finally(()=>{
-                    this.isLoadingUserInfo = false;
+                    this.userInfoLoading = false;
                 });
         },
     },

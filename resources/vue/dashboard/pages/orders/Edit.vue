@@ -4,12 +4,32 @@
             <a-page-header
                 :title="id ? 'Chỉnh sửa hóa đơn' : 'Tạo hóa đơn'"
                 :sub-title="id ? `#${id}` : false"
+                :ghost="false"
             >
-                <template slot="extra">
-                    <a-tooltip title="In hoá đơn" v-if="id">
-                        <a-button type="primary" icon="printer" @click="() => printOrder()" />
+                <template slot="tags">
+                    <a-tooltip title="Lấy dữ liệu mới nhất" v-if="id">
+                        <a-button type="primary" size="small" icon="reload" :loading="orderInfoLoading" @click="() => loadOrder(id)" />
                     </a-tooltip>
                 </template>
+                <template slot="extra">
+                    <template v-if="id">
+                        <a-tooltip title="In hoá đơn">
+                            <a-button type="primary" icon="printer" @click="() => printOrder()" />
+                        </a-tooltip>
+                    </template>
+                </template>
+                <a-descriptions size="small" :column="1" v-if="id">
+                    <a-descriptions-item label="Ngày tạo">
+                        <span>{{ orderInfo.created_at }}</span>
+                    </a-descriptions-item>
+                    <a-descriptions-item label="Ngày cập nhật">
+                        <span>{{ orderInfo.updated_at }}</span>
+                    </a-descriptions-item>
+                    <a-descriptions-item label="Người cập nhật" v-if="orderInfo.updated_user">
+                        <span>{{ orderInfo.updated_user_id }}. {{ orderInfo.updated_user.name }}</span>
+                        <a-button icon="search" size="small" @click="() => { currentUserId = orderInfo.updated_user_id; userEditPageVisible = true; }" />
+                    </a-descriptions-item>
+                </a-descriptions>
             </a-page-header>
             <a-form-model
                 ref="ruleForm"
@@ -43,7 +63,7 @@
                 >
                     <a-row :gutter="8">
                         <a-col :span="12">
-                            <a-input-search v-model="formData.customer_id" readOnly @search="() => userEditPageVisible = true">
+                            <a-input-search v-model="formData.customer_id" readOnly @search="() => { currentUserId = formData.customer_id; userEditPageVisible = true; }">
                                 <a-button icon="search" slot="enterButton" />
                             </a-input-search>
                         </a-col>
@@ -286,7 +306,7 @@
             :footer="false"
             :width="800"
         >
-            <UserEdit :userId="formData.customer_id" />
+            <UserEdit :userId="currentUserId" />
         </a-modal>
 
         <a-modal
@@ -442,6 +462,7 @@ export default {
         return {
             userIndexPageVisible: false,
             userEditPageVisible: false,
+            currentUserId: undefined,
 
             productIndexPageVisible: false,
             productEditPageVisible: false,

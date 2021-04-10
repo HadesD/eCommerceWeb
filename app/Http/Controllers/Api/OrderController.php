@@ -198,7 +198,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->append(['transactions', 'order_products', 'customer']);
+        $order->append(['transactions', 'order_products', 'customer', 'updated_user']);
 
         return new JsonResource($order);
     }

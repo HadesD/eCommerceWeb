@@ -12,7 +12,25 @@
             <a-page-header
                 :title="id ? `Tên hàng: ${formData.name}` : 'Nhập hàng mới vào kho'"
                 :sub-title="id ? `#${id}` : false"
-            />
+            >
+                <template slot="tags">
+                    <a-tooltip title="Lấy dữ liệu mới nhất" v-if="id">
+                        <a-button type="primary" size="small" icon="reload" :loading="stockInfoLoading" @click="() => loadStock(id)" />
+                    </a-tooltip>
+                </template>
+                <a-descriptions size="small" :column="3" v-if="id">
+                    <a-descriptions-item label="Ngày tạo">
+                        <span>{{ stockInfo.created_at }}</span>
+                    </a-descriptions-item>
+                    <a-descriptions-item label="Ngày cập nhật">
+                        <span>{{ stockInfo.updated_at }}</span>
+                    </a-descriptions-item>
+                    <a-descriptions-item label="Người cập nhật" v-if="stockInfo.updated_user">
+                        <span>{{ stockInfo.updated_user_id }}. {{ stockInfo.updated_user.name }}</span>
+                        <a-button icon="search" size="small" @click="() => { currentUserId = stockInfo.updated_user_id; userEditPageVisible = true; }" />
+                    </a-descriptions-item>
+                </a-descriptions>
+            </a-page-header>
             <a-form-model
                 ref="ruleForm"
                 :model="formData"
@@ -146,6 +164,14 @@
                 </a-form-model-item>
             </a-form-model>
         </a-spin>
+        <a-modal
+            :visible="userEditPageVisible"
+            @cancel="() => userEditPageVisible = false"
+            :footer="false"
+            :width="800"
+        >
+            <UserEdit :userId="currentUserId" />
+        </a-modal>
     </div>
 </template>
 
@@ -196,9 +222,13 @@ export default {
     },
     components: {
         AddCategoryModal: () => import('../../components/AddCategoryModal.vue'),
+        UserEdit: () => import('../users/Edit'),
     },
     data() {
         return {
+            userEditPageVisible: false,
+            currentUserId: undefined,
+
             categoriesTreeLoading: false,
             addCategoryModalVisible: false,
             categories: [],

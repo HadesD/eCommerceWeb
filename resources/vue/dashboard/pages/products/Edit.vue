@@ -12,7 +12,21 @@
             <a-page-header
                 :title="id ? `Sản phẩm: ${formData.name}` : 'Đăng bán sản phẩm mới'"
                 :sub-title="id ? `#${id}` : false"
-            />
+            >
+                <template slot="tags">
+                    <a-tooltip title="Lấy dữ liệu mới nhất" v-if="id">
+                        <a-button type="primary" size="small" icon="reload" :loading="productInfoLoading" @click="() => loadProduct(id)" />
+                    </a-tooltip>
+                </template>
+                <a-descriptions size="small" :column="1" v-if="id">
+                    <a-descriptions-item label="Ngày tạo">
+                        <span>{{ productInfo.created_at }}</span>
+                    </a-descriptions-item>
+                    <a-descriptions-item label="Ngày cập nhật">
+                        <span>{{ productInfo.updated_at }}</span>
+                    </a-descriptions-item>
+                </a-descriptions>
+            </a-page-header>
             <a-form-model
                 ref="ruleForm"
                 :model="formData"
@@ -140,6 +154,7 @@ export default {
             addCategoryModalVisible: false,
             categories: [],
 
+            productInfo: {},
             productInfoLoading: false,
             formData: {
                 id: undefined,
@@ -198,7 +213,7 @@ export default {
             if (to) {
                 this.loadProduct(to);
             } else {
-                // this.productInfo = {};
+                this.productInfo = {};
 
                 this.$refs.ruleForm.resetFields();
             }
@@ -257,6 +272,8 @@ export default {
                     if (!pData.id) {
                         throw res;
                     }
+
+                    this.productInfo = pData;
 
                     _.assign(this.formData, _.pick(pData, _.keys(this.formData)));
 
