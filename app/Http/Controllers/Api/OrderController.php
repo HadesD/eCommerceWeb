@@ -70,7 +70,7 @@ class OrderController extends Controller
 
         $orderQuery = $orderQuery->paginate();
 
-        $orderQuery->append(['transactions', 'order_products', 'customer']);
+        $orderQuery->append(['transactions', 'order_products', 'customer', 'updated_user']);
 
         return new JsonResource($orderQuery);
     }
@@ -93,11 +93,14 @@ class OrderController extends Controller
         try {
             DB::beginTransaction();
 
+            $authUser = $request->user();
+
             $order = new Order;
             $order->note = $request->note;
             $order->status = $request->status;
             $order->customer_id = $request->customer_id;
             $order->deal_date = $request->deal_date;
+            $order->updated_user_id = $authUser->id;
             $order->save();
 
             foreach ($request['order_products'] as $_order_product) {
@@ -215,6 +218,8 @@ class OrderController extends Controller
             $order->note = $request->note;
             $order->status = $request->status;
             $order->customer_id = $request->customer_id;
+            $order->deal_date = $request->deal_date;
+            $order->updated_user_id = $authUser->id;
             $order->save();
 
             foreach ($request['order_products'] as $_order_product) {

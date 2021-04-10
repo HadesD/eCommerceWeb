@@ -66,6 +66,11 @@ class Order extends Model
         return User::find($this->customer_id);
     }
 
+    public function getUpdatedUserAttribute()
+    {
+        return User::find($this->updated_user_id);
+    }
+
     public function getOrderProductsAttribute()
     {
         return OrderProduct::where('order_id', $this->id)->get();

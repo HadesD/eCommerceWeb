@@ -113,6 +113,10 @@
             <template slot="time" slot-scope="record">
                 <div>Tạo: {{ date_format(record.created_at) }}</div>
                 <div>Update: {{ date_format(record.updated_at) }}</div>
+                <div v-if="record.updated_user">
+                    <span>Cuối bởi: {{ record.updated_user.name }}</span>
+                    <a-button icon="search" @click="() => { currentUserId = record.updated_user_id; userEditPageVisible = true; }" size="small" />
+                </div>
             </template>
             <template slot="action" slot-scope="record">
                 <template v-if="!onFinishSelect">
