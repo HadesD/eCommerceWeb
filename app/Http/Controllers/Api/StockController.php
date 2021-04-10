@@ -11,6 +11,7 @@ use App\Models\Category;
 use App\Models\StockCategory;
 use App\Models\StockTransaction;
 use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -153,6 +154,8 @@ class StockController extends Controller
         try {
             DB::beginTransaction();
 
+            $authUser = $request->user();
+
             $prev_quantity = $stock->quantity;
 
             $stock->name = $request->name;
@@ -200,21 +203,29 @@ class StockController extends Controller
 
             // Addon Transactions
             foreach ($request->transactions as $_transaction) {
-                if (isset($_transaction['id'])) {
+                if (isset($_transaction['id']) && !$authUser->hasPermission(User::ROLE_ADMIN_SUB_MASTER)) {
                     continue;
                 }
 
-                $transaction = new Transaction;
+                $transaction = Transaction::find($_transaction['id']);
+
+                $tnx_exists = $transaction ? true : false;
+                if (!$tnx_exists) {
+                    $transaction = new Transaction;
+                }
+
                 $transaction->description = $_transaction['description'];
                 $transaction->amount = $_transaction['amount'];
                 $transaction->paid_date = $_transaction['paid_date'];
                 $transaction->cashier_id = $request->user()->id;
                 $transaction->save();
 
-                $stock_transaction = new StockTransaction;
-                $stock_transaction->stock_id = $stock->id;
-                $stock_transaction->transaction_id = $transaction->id;
-                $stock_transaction->save();
+                if (!$tnx_exists) {
+                    $stock_transaction = new StockTransaction;
+                    $stock_transaction->stock_id = $stock->id;
+                    $stock_transaction->transaction_id = $transaction->id;
+                    $stock_transaction->save();
+                }
             }
 
             DB::commit();

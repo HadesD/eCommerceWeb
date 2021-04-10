@@ -78,9 +78,6 @@ export default {
                 email: [
                     { type: 'email' },
                 ],
-                phone: [
-                    { required: true },
-                ],
                 sns_info: {
                     facebook: [
                         { type: 'url' },

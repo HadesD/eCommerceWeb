@@ -275,9 +275,13 @@ class OrderController extends Controller
                         if (!$st_exists) {
                             $transaction = new Transaction;
                             $transaction->amount = $_transaction['amount'];
-                            $transaction->paid_date = $_transaction['paid_date'];
                             $transaction->cashier_id = $request->user()->id;
                         }
+
+                        if (!$st_exists || $authUser->hasPermission(User::ROLE_ADMIN_SUB_MASTER)) {
+                            $transaction->paid_date = $_transaction['paid_date'];
+                        }
+
                         $transaction->description = $_transaction['description'];
                         $transaction->save();
 
@@ -299,9 +303,13 @@ class OrderController extends Controller
                 if (!$at_exists) {
                     $transaction = new Transaction;
                     $transaction->amount = $addon_transaction['amount'];
-                    $transaction->paid_date = $addon_transaction['paid_date'];
                     $transaction->cashier_id = $request->user()->id;
                 }
+
+                if (!$at_exists || $authUser->hasPermission(User::ROLE_ADMIN_SUB_MASTER)) {
+                    $transaction->paid_date = $addon_transaction['paid_date'];
+                }
+
                 $transaction->description = $addon_transaction['description'];
                 $transaction->save();
 
