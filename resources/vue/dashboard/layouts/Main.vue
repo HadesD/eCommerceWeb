@@ -18,9 +18,9 @@
 </template>
 
 <script>
-import Breadcrumb from '../components/Breadcrumb.vue'
-import SiderMenu from '../layouts/SiderMenu.vue'
-import Header from '../layouts/Header.vue'
+import Breadcrumb from '../components/Breadcrumb';
+import SiderMenu from '../layouts/SiderMenu';
+import Header from '../layouts/Header';
 
 export default {
     data() {
@@ -44,8 +44,7 @@ export default {
         this.$on('asyncComponentLoading', this.$Progress.start);
         this.$on('asyncComponentLoaded', this.$Progress.finish);
 
-        if (this.isMobileSize)
-        {
+        if (this.isMobileSize) {
             this.sideBarCollapsed = true;
         }
     },

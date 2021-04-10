@@ -37,7 +37,7 @@
                         type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })"
                         block
                         size="large"
-                        :disabled="id && (!authUser.hasPermission(UserRole.ROLE_ADMIN_MASTER) || !authUser.hasPermission(this.userInfo.role))"
+                        :disabled="id && !authUser.hasPermission(this.userInfo.role)"
                     >
                         {{ id ? 'Sửa' : 'Tạo' }}
                     </a-button>

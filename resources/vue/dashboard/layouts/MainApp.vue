@@ -8,26 +8,58 @@ import locale from 'ant-design-vue/lib/locale-provider/vi_VN';
 import moment from 'moment';
 import 'moment/locale/vi';
 
+import User from '../utils/User';
+
 moment.locale('vi');
 
 export default {
     data(){
         return {
             locale,
+
+            authUser: User.info(),
         };
     },
 
     mounted() {
+        this.reloadUserInfo();
+
         this.checkUpdate();
     },
 
     methods: {
+        reloadUserInfo() {
+            this.$message.loading('Đang đồng bộ thông tin...');
+
+            axios.get('/api/user')
+                .then(res => {
+                    User.setInfo(res.data);
+
+                    this.$message.success('Đồng bộ thông tin người dùng thành công');
+                })
+                .catch(err => {
+                    if (this.authUser.id) {
+                        if (err.response && (err.response.status === 401)) {
+                            User.clear();
+                            return;
+                        }
+                        if (err.response && err.response.data.message) {
+                            this.$message.error(err.response.data.message);
+                            return;
+                        }
+
+                        this.$message.error(err.message || 'Đồng bộ thông tin người dùng thất bại');
+                    }
+                });
+        },
+
         getAppVer(fromDoc) {
             return {
                 css: fromDoc.getElementById('app-css').getAttribute('href').split('?id=')[1],
                 script: fromDoc.getElementById('app-script').getAttribute('src').split('?id=')[1],
             };
         },
+
         checkUpdate() {
             let hasNewVer = false;
 
@@ -54,12 +86,14 @@ export default {
                     }
                 })
                 .catch(err => {
-                    if (err.response && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
+                    if (User.info().id) {
+                        if (err.response && err.response.data.message) {
+                            this.$message.error(err.response.data.message);
+                            return;
+                        }
 
-                    this.$message.error(err.message || 'Kiểm tra phiên bản mới thất bại');
+                        this.$message.error(err.message || 'Kiểm tra phiên bản mới thất bại');
+                    }
                 })
                 .finally(() => {
                     if (!hasNewVer) {
