@@ -14,6 +14,7 @@ interface UserRole
     const ROLE_USER_UNACTIVE = 10;
     const ROLE_USER_NORMAL = 50;
     const ROLE_ADMIN_MANAGER = 100;
+    const ROLE_ADMIN_SUB_MASTER = 190;
     const ROLE_ADMIN_MASTER = 200;
 }
 

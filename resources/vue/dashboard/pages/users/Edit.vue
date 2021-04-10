@@ -61,6 +61,7 @@ export default {
             userInfo: {},
 
             formData: {
+                id: undefined,
                 name: undefined,
                 email: undefined,
                 phone: undefined,
@@ -99,19 +100,25 @@ export default {
         }
     },
     watch: {
+        userId() {
+            this.formData.id = undefined;
+        },
+
         id(to) {
-            this.$refs.ruleForm.resetFields();
+            this.formData.password = undefined;
 
             if (to) {
                 this.loadUser(to);
             } else {
                 this.userInfo = {};
+
+                this.$refs.ruleForm.resetFields();
             }
         },
     },
     computed: {
         id() {
-            return this.userId;
+            return this.userId || this.formData.id;
         },
     },
     methods: {
@@ -160,11 +167,7 @@ export default {
                         throw res;
                     }
 
-                    if (userId) {
-                        this.$message.success('Đã sửa thành công');
-                    } else {
-                        this.$message.success('Đã thêm thành công');
-                    }
+                    this.$message.success(userId ? 'Đã sửa thành công' : 'Đã thêm thành công');
 
                     this.loadUser(uData.id);
                 })

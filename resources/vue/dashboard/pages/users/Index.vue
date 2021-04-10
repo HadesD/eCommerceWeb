@@ -8,7 +8,7 @@
             </template>
             <template slot="extra">
                 <a-tooltip title="Thêm người dùng">
-                    <a-button type="primary" icon="plus" @click="() => {userId = undefined; editPageVisible = true;}" />
+                    <a-button type="primary" icon="plus" @click="() => {currentUserId = undefined; editPageVisible = true;}" />
                 </a-tooltip>
             </template>
         </a-page-header>
@@ -56,7 +56,7 @@
             </template>
             <template slot="action" slot-scope="record">
                 <template v-if="!onFinishSelect">
-                    <a-button type="primary" icon="edit" @click="() => {userId = record.id; editPageVisible = true;}" />
+                    <a-button type="primary" icon="edit" @click="() => {currentUserId = record.id; editPageVisible = true;}" />
                 </template>
                 <template v-else>
                     <a-button type="primary" icon="user" @click="() => onFinishSelect(record)">Chọn</a-button>
@@ -78,7 +78,7 @@
             :footer="false"
             :width="700"
         >
-            <Edit :userId="userId" />
+            <Edit :userId="currentUserId" />
         </a-modal>
     </div>
 </template>
@@ -152,7 +152,7 @@ export default {
     },
     data() {
         return {
-            userId: undefined,
+            currentUserId: undefined,
 
             usersTableColumns,
             usersTableLoading: false,

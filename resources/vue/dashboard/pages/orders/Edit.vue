@@ -185,7 +185,7 @@
                                             :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.amount'" style="margin-bottom:0;"
                                             :help="`VND: ${number_format(pst.amount || 0)}`"
                                         >
-                                            <a-input-number v-model="pst.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(pst)" />
+                                            <a-input-number v-model="pst.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(pst, UserRole.ROLE_ADMIN_MASTER)" />
                                         </a-form-model-item>
                                     </template>
                                     <template slot="paid_date" slot-scope="value, pst, pstIdx">
@@ -239,7 +239,7 @@
                                 style="margin-bottom:0;"
                                 :help="`VND: ${number_format(record.amount || 0)}`"
                             >
-                                <a-input-number v-model="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(record)" />
+                                <a-input-number v-model="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(record, UserRole.ROLE_ADMIN_MASTER)" />
                             </a-form-model-item>
                         </template>
                         <template slot="paid_date" slot-scope="text, record, index">
@@ -276,7 +276,7 @@
             :visible="userIndexPageVisible"
             @cancel="() => userIndexPageVisible = false"
             :footer="false"
-            width="95vw"
+            width="98vw"
         >
             <UserIndex :onFinishSelect="onFinishSelectUser" />
         </a-modal>
@@ -293,7 +293,7 @@
             :visible="stockIndexPageVisible"
             @cancel="() => stockIndexPageVisible = false"
             :footer="false"
-            width="95vw"
+            width="98vw"
         >
             <StockIndex :onFinishSelect="onFinishSelectStock" />
         </a-modal>
@@ -301,7 +301,7 @@
             :visible="stockEditPageVisible"
             @cancel="() => stockEditPageVisible = false"
             :footer="false"
-            width="95vw"
+            width="98vw"
         >
             <StockEdit :stockId="order_product_stock.stock_id" />
         </a-modal>
@@ -310,7 +310,7 @@
             :visible="productIndexPageVisible"
             @cancel="() => productIndexPageVisible = false"
             :footer="false"
-            width="95vw"
+            width="98vw"
         >
             <ProductIndex :onFinishSelect="onFinishSelectProduct" />
         </a-modal>
@@ -318,7 +318,7 @@
             :visible="productEditPageVisible"
             @cancel="() => productEditPageVisible = false"
             :footer="false"
-            width="95vw"
+            width="98vw"
         >
             <ProductEdit :productId="order_product.product_id" />
         </a-modal>
@@ -461,6 +461,7 @@ export default {
 
             orderInfoLoading: false,
             formData: {
+                id: undefined,
                 deal_date: moment(),
                 note: undefined,
                 customer_id: undefined,
@@ -489,25 +490,31 @@ export default {
         this.loadCategoriesTree();
 
         if (this.id) {
-            this.loadOrder(this.id)
+            this.loadOrder(this.id);
         }
     },
     watch: {
+        orderId() {
+            this.formData.id = undefined;
+        },
+
         id(to) {
             if (to) {
                 this.loadOrder(to);
             } else {
-                this.$refs.ruleForm.resetFields();
+                this.orderInfo = {};
 
                 this.formData.order_products = [];
 
                 this.formData.transactions = [];
+
+                this.$refs.ruleForm.resetFields();
             }
         },
     },
     computed: {
         id() {
-            return this.orderId || this.$route.params.id;
+            return this.orderId || this.formData.id;
         },
         transaction_obj() {
             return {
@@ -543,11 +550,11 @@ export default {
         number_format,
 
         disabledLastMonthAndTomorrow(current) {
-            return !this.authUser.hasPermission(UserRole.ROLE_ADMIN_MASTER) &&
+            return !this.authUser.hasPermission(UserRole.ROLE_ADMIN_SUB_MASTER) &&
                 current && ((current < moment().startOf('month')) || (current > moment().endOf('day')));
         },
-        disabledField(record) {
-            return !this.authUser.hasPermission(UserRole.ROLE_ADMIN_MASTER) && record.id && (record.id >= 0);
+        disabledField(record, needRole = UserRole.ROLE_ADMIN_SUB_MASTER) {
+            return !this.authUser.hasPermission(needRole) && record.id && (record.id >= 0);
         },
 
         loadCategoriesTree(){
@@ -681,17 +688,9 @@ export default {
                         throw res;
                     }
 
-                    if (orderId) {
-                        this.$message.success('Đã sửa sản phẩm thành công');
+                    this.$message.success(orderId ? 'Đã sửa sản phẩm thành công' : 'Đã thêm sản phẩm thành công');
 
-                        this.loadOrder(orderData.id);
-                    } else {
-                        this.$message.success('Đã thêm sản phẩm thành công');
-
-                        this.orderInfoLoading = false;
-
-                        this.$router.push({ path: `/orders/${orderData.id}/edit` });
-                    }
+                    this.loadOrder(orderData.id);
                 })
                 .catch(err => {
                     this.orderInfoLoading = false;

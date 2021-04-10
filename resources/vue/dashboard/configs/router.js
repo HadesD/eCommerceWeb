@@ -31,10 +31,6 @@ let routes = [
                         path: 'new',
                         component: () => import('../pages/products/Edit.vue'),
                     },
-                    {
-                        path: ':id/edit',
-                        component: () => import('../pages/products/Edit.vue'),
-                    },
                 ],
             },
             {
@@ -49,10 +45,6 @@ let routes = [
                         path: 'new',
                         component: () => import('../pages/stocks/Edit.vue'),
                     },
-                    {
-                        path: ':id/edit',
-                        component: () => import('../pages/stocks/Edit.vue'),
-                    },
                 ],
             },
             {
@@ -65,10 +57,6 @@ let routes = [
                     },
                     {
                         path: 'new',
-                        component: () => import('../pages/orders/Edit.vue'),
-                    },
-                    {
-                        path: ':id/edit',
                         component: () => import('../pages/orders/Edit.vue'),
                     },
                     {

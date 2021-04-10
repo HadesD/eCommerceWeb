@@ -3,6 +3,7 @@ const Role = {
     ROLE_USER_UNACTIVE: 10,
     ROLE_USER_NORMAL: 50,
     ROLE_ADMIN_MANAGER: 100,
+    ROLE_ADMIN_SUB_MASTER: 190,
     ROLE_ADMIN_MASTER: 200,
 };
 
@@ -19,11 +20,15 @@ const Config = {
     },
     [Role.ROLE_USER_NORMAL]: {
         name: 'Người dùng',
-        color: 'blue',
+        color: 'green',
     },
     [Role.ROLE_ADMIN_MANAGER]: {
         name: 'Quản trị viên',
         color: 'red',
+    },
+    [Role.ROLE_ADMIN_SUB_MASTER]: {
+        name: 'Lao công',
+        color: 'blue',
     },
     [Role.ROLE_ADMIN_MASTER]: {
         name: 'Một vị Thần',

@@ -77,7 +77,7 @@
 
             <template slot="description" slot-scope="value, record">
                 <span>{{ value }}</span>
-                <a-button v-if="record.order" size="small" icon="shopping-cart" @click="() => { currentOrderId = record.order.id; orderEditPageVisible = true; }" />
+                <a-button v-if="record.order" size="small" icon="account-book" @click="() => { currentOrderId = record.order.id; orderEditPageVisible = true; }" />
                 <a-button v-if="record.stock" size="small" icon="bank" @click="() => { currentStockId = record.stock.id; stockEditPageVisible = true; }" />
             </template>
 

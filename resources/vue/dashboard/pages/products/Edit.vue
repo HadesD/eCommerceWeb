@@ -176,10 +176,10 @@ export default {
     },
     computed:{
         id() {
-            return (this.productId !== undefined) ? this.productId : this.$route.params.id;
+            return this.productId || this.formData.id;
         },
 
-        categoriesTreeData(){
+        categoriesTreeData() {
             let data = this.categories;
 
             for (let i = 0; i < data.length; i++) {
@@ -190,13 +190,18 @@ export default {
         },
     },
     watch: {
+        productId() {
+            this.formData.id = undefined;
+        },
+
         id(to) {
             if (to) {
                 this.loadProduct(to);
             } else {
+                // this.productInfo = {};
+
                 this.$refs.ruleForm.resetFields();
             }
-
         },
     },
     mounted(){
@@ -208,6 +213,7 @@ export default {
     },
     methods: {
         number_format,
+
         loadCategoriesTree(){
             this.reloadCategoriesTree();
         },
@@ -244,6 +250,7 @@ export default {
 
         loadProduct(id){
             this.productInfoLoading = true;
+
             axios.get(`/api/products/${id}`)
                 .then(res => {
                     const pData = res.data.data;
@@ -290,15 +297,9 @@ export default {
                         throw res;
                     }
 
-                    if (productId) {
-                        this.$message.success('Đã sửa sản phẩm thành công');
-                    } else {
-                        this.$message.success('Đã thêm sản phẩm thành công');
+                    this.$message.success(productId ? 'Đã sửa sản phẩm thành công' : 'Đã thêm sản phẩm thành công');
 
-                        if (this.productId === undefined) {
-                            this.$router.push({ path: `/products/${this.formData.id}/edit` });
-                        }
-                    }
+                    this.loadProduct(this.formData.id);
                 })
                 .catch(err => {
                     if (err.response && err.response.data.message) {

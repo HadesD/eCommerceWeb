@@ -3,7 +3,7 @@
         <a-menu
         theme="dark"
         mode="inline"
-        :defaultOpenKeys="['/products', '/stocks', '/orders', '/statistics']"
+        :defaultOpenKeys="['/', '/statistics']"
         :selectedKeys="[$route.path]"
         :style="{ height: '100%', borderRight: 0 }"
         >
@@ -14,43 +14,34 @@
             </router-link>
             </div>
         </a-menu-item>
-        <a-sub-menu key="/products">
+        <a-sub-menu key="/">
             <span slot="title">
-                <a-icon type="shopping-cart" /><span>Sản phẩm</span>
+                <a-icon type="shop" />
+                <span>Quản lý tiệm</span>
             </span>
             <a-menu-item key="/products/">
-                <router-link to="/products/">Danh sách</router-link>
-            </a-menu-item>
-            <a-menu-item key="/products/new">
-                <router-link to="/products/new">Đăng bán</router-link>
-            </a-menu-item>
-        </a-sub-menu>
-        <a-sub-menu key="/orders">
-            <span slot="title">
-                <a-icon type="shopping-cart" /><span>Hoá Đơn</span>
-            </span>
-            <a-menu-item key="/orders/">
-                <router-link to="/orders/">Danh sách</router-link>
-            </a-menu-item>
-            <a-menu-item key="/orders/new">
-                <router-link to="/orders/new">Tạo đơn</router-link>
-            </a-menu-item>
-            <a-menu-item key="/orders/help">
-                <router-link to="/orders/help">
-                    <a-icon type="question-circle" />
-                    <span>Hướng dẫn</span>
+                <router-link to="/products/">
+                    <a-icon type="shopping-cart" />
+                    <span>Sản phẩm</span>
                 </router-link>
             </a-menu-item>
-        </a-sub-menu>
-        <a-sub-menu key="/stocks">
-            <span slot="title">
-                <a-icon type="bank" /><span>Kho hàng</span>
-            </span>
-            <a-menu-item key="/stocks/">
-                <router-link to="/stocks/">Danh sách</router-link>
+            <a-menu-item key="/orders/">
+                <router-link to="/orders/">
+                    <a-icon type="account-book" />
+                    <span>Hoá Đơn</span>
+                </router-link>
             </a-menu-item>
-            <a-menu-item key="/stocks/new">
-                <router-link to="/stocks/new">Nhập kho</router-link>
+            <a-menu-item key="/stocks/">
+                <router-link to="/stocks/">
+                    <a-icon type="bank" />
+                    <span>Kho hàng</span>
+                </router-link>
+            </a-menu-item>
+            <a-menu-item key="/users/">
+                <router-link to="/users/">
+                    <a-icon type="user" />
+                    <span>Khách hàng</span>
+                </router-link>
             </a-menu-item>
         </a-sub-menu>
         <a-sub-menu key="/statistics">
@@ -58,12 +49,6 @@
                 <a-icon type="pie-chart" />
                 <span>Thống kê</span>
             </span>
-            <a-menu-item key="/users/">
-                <router-link to="/users/">
-                    <a-icon type="user" />
-                    <span>Khách hàng</span>
-                </router-link>
-            </a-menu-item>
             <a-menu-item key="/transactions/">
                 <router-link to="/transactions/">
                     <a-icon type="transaction" />

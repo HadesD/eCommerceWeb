@@ -34,11 +34,9 @@
                     </a-tooltip>
                 </template>
                 <template slot="extra">
-                    <router-link to="/products/new">
-                        <a-tooltip title="Thêm sản phẩm">
-                            <a-button type="primary" icon="plus" style="float:right;" />
-                        </a-tooltip>
-                    </router-link>
+                    <a-tooltip title="Thêm sản phẩm">
+                        <a-button type="primary" icon="plus" @click="() => { currentProductId = undefined; productEditPageVisible = true; }" />
+                    </a-tooltip>
                 </template>
             </a-page-header>
             <a-table
@@ -103,9 +101,7 @@
                 </template>
                 <template slot="action" slot-scope="record">
                     <template v-if="!onFinishSelect">
-                        <router-link :to="`/products/${record.id}/edit`">
-                            <a-button type="primary" icon="edit" />
-                        </router-link>
+                        <a-button type="primary" icon="edit" @click="() => { currentProductId = record.id; productEditPageVisible = true; }" />
                     </template>
                     <template v-else>
                         <a-button
@@ -116,6 +112,14 @@
                 </template>
             </a-table>
         </a-col>
+        <a-modal
+            :visible="productEditPageVisible"
+            @cancel="() => productEditPageVisible = false"
+            :footer="false"
+            width="98vw"
+        >
+            <ProductEdit :productId="currentProductId" />
+        </a-modal>
     </a-row>
 </template>
 
@@ -179,14 +183,20 @@ export default {
     },
     components: {
         AddCategoryModal: () => import('../../components/AddCategoryModal.vue'),
+        ProductEdit: () => import('../products/Edit'),
     },
     data() {
         return {
+            productEditPageVisible: false,
+            currentProductId: undefined,
+
             categories: [],
             addCategoryModalVisible: false,
             categoriesTreeLoading: false,
             currentCategoryId: 0,
             categoriesTreeExpandedKeys: [],
+
+            edittingId: undefined,
 
             products: [],
             productsTableLoading: false,
@@ -205,7 +215,7 @@ export default {
         this.loadCategoriesTree();
 
         this.currentCategoryId = (parseInt(this.$route.query.category_id) || undefined);
-        this.productsTablePagination.current = (parseInt(this.$route.query.page) || 1);
+        this.productsTablePagination.current = 1;
 
         this.loadProducts({});
     },

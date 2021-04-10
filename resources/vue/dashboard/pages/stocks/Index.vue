@@ -38,11 +38,9 @@
                     <a-tooltip title="Tải CSV">
                         <a-button type="primary" icon="download" :disabled="stocks.length <= 0" @click="() => download()" />
                     </a-tooltip>
-                    <router-link to="/stocks/new">
-                        <a-tooltip title="Nhập kho">
-                            <a-button type="primary" icon="plus" style="float:right;" />
-                        </a-tooltip>
-                    </router-link>
+                    <a-tooltip title="Nhập kho">
+                        <a-button type="primary" icon="plus" @click="() => { currentStockId = undefined; stockEditPageVisible = true; }" />
+                    </a-tooltip>
                 </template>
             </a-page-header>
             <a-table
@@ -107,9 +105,7 @@
                 </template>
                 <template slot="action" slot-scope="record">
                     <template v-if="!onFinishSelect">
-                        <router-link :to="`/stocks/${record.id}/edit`">
-                            <a-button type="primary" icon="edit" />
-                        </router-link>
+                        <a-button type="primary" icon="edit" @click="() => { currentStockId = record.id; stockEditPageVisible = true; }" />
                     </template>
                     <template v-else>
                         <a-button
@@ -120,6 +116,15 @@
                 </template>
             </a-table>
         </a-col>
+
+        <a-modal
+            :visible="stockEditPageVisible"
+            @cancel="() => stockEditPageVisible = false"
+            :footer="false"
+            width="98vw"
+        >
+            <StockEdit :stockId="currentStockId" />
+        </a-modal>
 
         <a-modal
             :visible="userEditPageVisible"
@@ -202,9 +207,13 @@ export default {
     components: {
         AddCategoryModal: () => import('../../components/AddCategoryModal.vue'),
         UserEdit: () => import('../users/Edit'),
+        StockEdit: () => import('../stocks/Edit'),
     },
     data() {
         return {
+            stockEditPageVisible: false,
+            currentStockId: undefined,
+
             userEditPageVisible: false,
             currentUserId: undefined,
 

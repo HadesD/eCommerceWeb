@@ -115,7 +115,7 @@
                                 style="margin-bottom:0;"
                                 :help="`VND: ${number_format(record.amount || 0)}`"
                             >
-                                <a-input-number v-model="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(record)" />
+                                <a-input-number v-model="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(record, UserRole.ROLE_ADMIN_MASTER)" />
                             </a-form-model-item>
                         </template>
                         <template slot="paid_date" slot-scope="text, record, index">
@@ -208,6 +208,7 @@ export default {
             stockInfoLoading: false,
             stockInfo: {},
             formData: {
+                id: undefined,
                 name: undefined,
                 idi: undefined,
                 cost_price: undefined,
@@ -261,17 +262,21 @@ export default {
         },
     },
     watch: {
+        stockId() {
+            this.formData.id = undefined;
+        },
+
         id(to) {
             this.prev_quantity = undefined;
 
             if (to) {
                 this.loadStock(to);
             } else {
-                this.$refs.ruleForm.resetFields();
-
                 this.formData.transactions = [];
 
                 this.stockInfo = {};
+
+                this.$refs.ruleForm.resetFields();
             }
         },
     },
@@ -286,11 +291,11 @@ export default {
         number_format,
 
         disabledLastMonthAndTomorrow(current) {
-            return !this.authUser.hasPermission(UserRole.ROLE_ADMIN_MASTER) &&
+            return !this.authUser.hasPermission(UserRole.ROLE_ADMIN_SUB_MASTER) &&
                 current && ((current < moment().startOf('month')) || (current > moment().endOf('day')));
         },
-        disabledField(record) {
-            return !this.authUser.hasPermission(UserRole.ROLE_ADMIN_MASTER) && record.id && (record.id >= 0);
+        disabledField(record, needRole = UserRole.ROLE_ADMIN_SUB_MASTER) {
+            return !this.authUser.hasPermission(needRole) && record.id && (record.id >= 0);
         },
 
         loadCategoriesTree(){

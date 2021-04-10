@@ -10,11 +10,9 @@
                 <a-tooltip title="Tải CSV">
                     <a-button type="primary" icon="download" :disabled="orders.length <= 0" @click="() => download()" />
                 </a-tooltip>
-                <router-link to="/orders/new">
-                    <a-tooltip title="Thêm đơn">
-                        <a-button type="primary" icon="plus" />
-                    </a-tooltip>
-                </router-link>
+                <a-tooltip title="Thêm đơn">
+                    <a-button type="primary" icon="plus" @click="() => { currentOrderId = undefined; orderEditPageVisible = true; }" />
+                </a-tooltip>
             </template>
         </a-page-header>
         <a-table
@@ -96,13 +94,13 @@
                 <span style="display:block;text-align:right;">{{ totalAmount(value) }}</span>
             </template>
             <template slot="order_product" slot-scope="record">
-                <div v-for="(p) in record.order_products" :key="p.id">
+                <div v-for="p in record.order_products" :key="p.id">
                     <div>
                         <span>{{ p.product.name }} [Số lượng: {{ p.quantity }}]</span>
                         <a-button icon="search" @click="() => { currentProductId = p.product.id; productEditPageVisible = true; }" size="small" />
                     </div>
                     <ul>
-                        <li v-for="(ps) in p.order_product_stocks" :key="ps.id">
+                        <li v-for="ps in p.order_product_stocks" :key="ps.id">
                             <span>{{ ps.stock.name }} ({{ ps.stock.idi }})</span>
                             <a-button icon="search" @click="() => { currentStockId = ps.stock.id; stockEditPageVisible = true; }" size="small" />
                         </li>
@@ -118,9 +116,7 @@
             </template>
             <template slot="action" slot-scope="record">
                 <template v-if="!onFinishSelect">
-                    <router-link :to="`/orders/${record.id}/edit`">
-                        <a-button type="primary" icon="edit" />
-                    </router-link>
+                    <a-button type="primary" icon="edit" @click="() => { currentOrderId = record.id; orderEditPageVisible = true; }" />
                 </template>
                 <template v-else>
                     <a-button type="primary" icon="shopping-cart" @click="() => onFinishSelect(record)">Chọn</a-button>
@@ -141,7 +137,7 @@
             :visible="stockEditPageVisible"
             @cancel="() => stockEditPageVisible = false"
             :footer="false"
-            width="95vw"
+            width="98vw"
         >
             <StockEdit :stockId="currentStockId" />
         </a-modal>
@@ -150,9 +146,18 @@
             :visible="productEditPageVisible"
             @cancel="() => productEditPageVisible = false"
             :footer="false"
-            width="95vw"
+            width="98vw"
         >
             <ProductEdit :productId="currentProductId" />
+        </a-modal>
+
+        <a-modal
+            :visible="orderEditPageVisible"
+            @cancel="() => orderEditPageVisible = false"
+            :footer="false"
+            width="98vw"
+        >
+            <OrderEdit :orderId="currentOrderId" />
         </a-modal>
     </div>
 </template>
@@ -232,6 +237,7 @@ export default {
         UserEdit: () => import('../users/Edit'),
         StockEdit: () => import('../stocks/Edit'),
         ProductEdit: () => import('../products/Edit'),
+        OrderEdit: () => import('../orders/Edit'),
     },
     data() {
         return {
@@ -243,6 +249,9 @@ export default {
 
             productEditPageVisible: false,
             currentProductId: undefined,
+
+            orderEditPageVisible: false,
+            currentOrderId: undefined,
 
             orders: [],
             ordersTableLoading: false,
@@ -262,7 +271,7 @@ export default {
         this.loadOrders({});
     },
     computed: {
-        ordersTableData(){
+        ordersTableData() {
             return this.orders;
         },
     },
@@ -291,9 +300,11 @@ export default {
                         pageSize: resData.per_page,
                     };
 
-                    //   if (this.$route.query.page != resData.current_page) {
-                        // this.$router.push('/orders/index?page='+resData.current_page);
-                    //   }
+                    // const newUrl = new URL(window.location.href);
+                    // console.log(newUrl);
+                    // newUrl.searchParams.append('page', resData.current_page);
+                    // newUrl.searchParams.push('page', resData.current_page);
+                    // this.$router.push(newUrl.pathname.replace(/\/dashboard/, '') + newUrl.search);
                 })
                 .catch(err => {
                     if (err.response && err.response.data.message) {
