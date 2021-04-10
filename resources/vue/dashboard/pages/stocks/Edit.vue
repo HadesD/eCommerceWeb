@@ -53,7 +53,7 @@
                         style="width: 100%;"
                         :min="1"
                         :max="2000000000"
-                        :disabled="disabledField(record, UserRole.ROLE_ADMIN_MASTER)"
+                        :disabled="disabledField(formData, UserRole.ROLE_ADMIN_MASTER)"
                     />
                 </a-form-model-item>
                 <a-form-model-item label="Chuyên mục cha">
