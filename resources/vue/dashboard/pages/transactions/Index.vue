@@ -138,8 +138,12 @@ import moment from 'moment';
 
 const transactionsTableColumns = [
     {
-        title: '#',
+        title: '#ID',
         dataIndex: 'id',
+        scopedSlots: {
+            filterDropdown: 'filterSearchBox',
+            filterIcon: 'filterSearchBoxIcon',
+        },
     },
     {
         title: 'Nội dung',

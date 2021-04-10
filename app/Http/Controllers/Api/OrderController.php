@@ -33,7 +33,7 @@ class OrderController extends Controller
             $orderQuery = $orderQuery->whereIn('status', $request->status);
         }
 
-        foreach (['note'] as $value) {
+        foreach (['note', 'id'] as $value) {
             if (isset($request->{$value})) {
                 $orderQuery = $orderQuery->where($value, 'LIKE', '%'.(is_array($request->{$value}) ? $request->{$value}[0] : $request->{$value}).'%');
             }

@@ -178,9 +178,12 @@ import moment from 'moment';
 
 const ordersTableColumns = [
     {
-        title: '#',
+        title: '#ID',
         dataIndex: 'id',
-        key: 'id',
+        scopedSlots: {
+            filterDropdown: 'filterSearchBox',
+            filterIcon: 'filterSearchBoxIcon',
+        },
     },
     {
         title: 'Trạng thái',

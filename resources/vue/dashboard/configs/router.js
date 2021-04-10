@@ -59,10 +59,6 @@ let routes = [
                         path: 'new',
                         component: () => import('../pages/orders/Edit.vue'),
                     },
-                    {
-                        path: 'help',
-                        component: () => import('../pages/orders/Help.vue'),
-                    },
                 ],
             },
             {
@@ -84,6 +80,10 @@ let routes = [
                         component: () => import('../pages/transactions/Index.vue'),
                     },
                 ],
+            },
+            {
+                path: '/help',
+                component: () => import('../pages/Help.vue'),
             },
         ],
     },

@@ -142,8 +142,12 @@ import { number_format, date_format } from '../../../helpers';
 
 const stocksTableColumns = [
     {
-        title: '#',
+        title: '#ID',
         dataIndex: 'id',
+        scopedSlots: {
+            filterDropdown: 'filterSearchBox',
+            filterIcon: 'filterSearchBoxIcon',
+        },
     },
     {
         title: 'Tên',

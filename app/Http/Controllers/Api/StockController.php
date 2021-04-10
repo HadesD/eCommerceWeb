@@ -28,7 +28,7 @@ class StockController extends Controller
         $stockQuery = isset($request->category_id) ? Category::find($request->category_id)->stocks
                 : (new Stock);
 
-        foreach (['name', 'idi'] as $value) {
+        foreach (['name', 'idi', 'id'] as $value) {
             if (isset($request->{$value})) {
                 $stockQuery = $stockQuery->where($value, 'LIKE', '%'.(is_array($request->{$value}) ? $request->{$value}[0] : $request->{$value}).'%');
             }

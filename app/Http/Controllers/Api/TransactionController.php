@@ -18,7 +18,7 @@ class TransactionController extends Controller
     {
         $transactionQuery = new Transaction;
 
-        foreach (['description'] as $value) {
+        foreach (['description', 'id'] as $value) {
             if (isset($request->{$value})) {
                 $transactionQuery = $transactionQuery->where($value, 'LIKE', '%'.(is_array($request->{$value}) ? $request->{$value}[0] : $request->{$value}).'%');
             }

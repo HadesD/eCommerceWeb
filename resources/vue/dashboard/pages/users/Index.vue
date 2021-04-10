@@ -91,8 +91,12 @@ import { date_format } from '../../../helpers';
 
 const usersTableColumns = [
     {
-        title: '#',
+        title: '#ID',
         dataIndex: 'id',
+        scopedSlots: {
+            filterDropdown: 'filterSearchBox',
+            filterIcon: 'filterSearchBoxIcon',
+        },
     },
     {
         title: 'Tên',

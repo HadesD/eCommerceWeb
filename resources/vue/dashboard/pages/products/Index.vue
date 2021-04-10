@@ -129,8 +129,12 @@ import { number_format, date_format } from '../../../helpers';
 
 const productsTableColumns = [
     {
-        title: '#',
+        title: '#ID',
         dataIndex: 'id',
+        scopedSlots: {
+            filterDropdown: 'filterSearchBox',
+            filterIcon: 'filterSearchBoxIcon',
+        },
     },
     {
         title: 'Tên',

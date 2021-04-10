@@ -41,7 +41,7 @@
                 <a-form-model-item label="Tên sản phẩm" prop="name">
                     <a-input v-model="formData.name" />
                 </a-form-model-item>
-                <a-form-model-item label="Id/imei/mã phân biệt" prop="idi">
+                <a-form-model-item label="Id/Imei/Mã phân biệt" prop="idi">
                     <a-input v-model="formData.idi" />
                 </a-form-model-item>
                 <a-form-model-item label="Số lượng" prop="quantity">
@@ -53,7 +53,7 @@
                         style="width: 100%;"
                         :min="1"
                         :max="2000000000"
-                        :disabled="id && (id > 0)"
+                        :disabled="disabledField(record, UserRole.ROLE_ADMIN_MASTER)"
                     />
                 </a-form-model-item>
                 <a-form-model-item label="Chuyên mục cha">
@@ -183,7 +183,7 @@ import User from '../../utils/User';
 
 const addon_transactionsTableColumns = [
     {
-        title: '#',
+        title: '#ID',
         dataIndex: 'id',
     },
     {

@@ -28,7 +28,7 @@ class ProductController extends Controller
             $productQuery = $productQuery->whereIn('status', $request->status);
         }
 
-        foreach (['name'] as $value) {
+        foreach (['name', 'id'] as $value) {
             if (isset($request->{$value})) {
                 $productQuery = $productQuery->where($value, 'LIKE', '%'.(is_array($request->{$value}) ? $request->{$value}[0] : $request->{$value}).'%');
             }

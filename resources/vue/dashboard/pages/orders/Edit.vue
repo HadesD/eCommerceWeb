@@ -377,7 +377,7 @@ const PaidAmount = {
 
 const addon_transactionsTableColumns = [
     {
-        title: '#',
+        title: '#ID',
         dataIndex: 'id',
     },
     {
@@ -412,7 +412,7 @@ const addon_transactionsTableColumns = [
 
 const product_stockTableColumns = [
     {
-        title: '#',
+        title: '#ID',
         dataIndex: 'id',
     },
     {
