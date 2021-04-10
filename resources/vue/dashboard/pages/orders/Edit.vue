@@ -170,7 +170,6 @@
                                     :row-key="ps => `p-addon-tnx-${ps.id || Math.random()}`"
                                     size="small"
                                     bordered
-                                    expanded
                                 >
                                     <template slot="description" slot-scope="value, pst, pstIdx">
                                         <a-form-model-item
