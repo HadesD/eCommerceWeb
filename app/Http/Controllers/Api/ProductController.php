@@ -24,6 +24,10 @@ class ProductController extends Controller
         $productQuery = isset($request->category_id) ? Category::find($request->category_id)->products
                 : (new Product);
 
+        if (isset($request->status)) {
+            $productQuery = $productQuery->whereIn('status', $request->status);
+        }
+
         foreach (['name'] as $value) {
             if (isset($request->{$value})) {
                 $productQuery = $productQuery->where($value, 'LIKE', '%'.(is_array($request->{$value}) ? $request->{$value}[0] : $request->{$value}).'%');
