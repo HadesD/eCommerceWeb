@@ -293,6 +293,13 @@ export default {
 
         loadOrders({page}){
             this.ordersTableLoading = true;
+
+            // Reset popup data
+            this.currentUserId = undefined;
+            this.currentStockId = undefined;
+            this.currentProductId = undefined;
+            this.currentOrderId = undefined;
+
             axios.get('/api/orders', {
                 params: {
                     page: page || this.ordersTablePagination.current,

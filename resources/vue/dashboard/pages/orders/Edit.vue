@@ -617,6 +617,10 @@ export default {
 
         loadOrder(id) {
             this.orderInfoLoading = true;
+
+            // Reset popup data
+            this.currentUserId = undefined;
+
             axios.get(`/api/orders/${id}`)
                 .then(res => {
                     const orderData = res.data.data;

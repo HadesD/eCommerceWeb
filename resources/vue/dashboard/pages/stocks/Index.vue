@@ -339,6 +339,10 @@ export default {
         loadStocks({category_id, page}) {
             this.stocksTableLoading = true;
 
+            // Reset popup data
+            this.currentUserId = undefined;
+            this.currentStockId = undefined;
+
             axios.get('/api/stocks', {
                 params: {
                     category_id: category_id || this.currentCategoryId,

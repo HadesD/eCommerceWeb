@@ -225,6 +225,11 @@ export default {
         loadTransactions({page}) {
             this.transactionsTableLoading = true;
 
+            // Reset popup data
+            this.currentUserId = undefined;
+            this.currentStockId = undefined;
+            this.currentOrderId = undefined;
+
             axios.get('/api/transactions', {
                 params: {
                     page: page || this.transactionsTablePagination.current,

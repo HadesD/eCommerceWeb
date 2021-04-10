@@ -8,7 +8,7 @@
             </template>
             <template slot="extra">
                 <a-tooltip title="Thêm người dùng">
-                    <a-button type="primary" icon="plus" @click="() => {currentUserId = undefined; editPageVisible = true;}" />
+                    <a-button type="primary" icon="plus" @click="() => { currentUserId = undefined; editPageVisible = true; }" />
                 </a-tooltip>
             </template>
         </a-page-header>
@@ -18,7 +18,10 @@
             :loading="usersTableLoading"
             :row-key="record => record.id"
             :pagination="usersTablePagination"
-            @change="(pagination, filters) => {usersTableFilters = filters;loadUsers({page: pagination.current});}"
+            @change="(pagination, filters) => {
+                usersTableFilters = filters;
+                loadUsers({page: pagination.current});
+            }"
         >
             <!-- Block Search: BEGIN -->
             <div

@@ -270,6 +270,7 @@ export default {
     methods: {
         number_format,
         date_format,
+
         // CategoriesTree
         loadCategoriesTree() {
             this.categoriesTreeLoading = true;
@@ -316,6 +317,9 @@ export default {
         // Product
         loadProducts({category_id, page}){
             this.productsTableLoading = true;
+
+            // Reset popup data
+            this.currentProductId = undefined;
 
             axios.get('/api/products', {
                 params: {
