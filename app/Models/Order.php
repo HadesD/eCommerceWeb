@@ -35,7 +35,9 @@ class Order extends Model
 
         foreach ($this->order_products as $op) {
             foreach ($op->order_product_stocks as $ops) {
-                $cost_total += $ops->stock->cost_price;
+                if ($ops->status === OrderProductStock::STS_SOLD) {
+                    $cost_total += $ops->stock->cost_price;
+                }
             }
         }
 
