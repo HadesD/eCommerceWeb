@@ -18,7 +18,7 @@
                         <a-button type="primary" size="small" icon="reload" :loading="stockInfoLoading" @click="() => loadStock(id)" />
                     </a-tooltip>
                 </template>
-                <a-descriptions size="small" :column="3" v-if="id">
+                <a-descriptions size="small" :column="1" v-if="id">
                     <a-descriptions-item label="Ngày tạo">
                         <span>{{ stockInfo.created_at }}</span>
                     </a-descriptions-item>
