@@ -18,7 +18,11 @@
             :loading="transactionsTableLoading"
             :row-key="record => record.id"
             :pagination="transactionsTablePagination"
-            @change="(pagination, filters) => {transactionsTableFilters = filters;loadTransactions({page: pagination.current});}"
+            @change="(pagination, filters, sorter) => {
+                transactionsTableFilters = filters;
+                transactionsTableSorts = (sorter.column && sorter.columnKey) ? ((sorter.order === 'descend' ? '-' : '+') + sorter.columnKey) : undefined;
+                loadTransactions({page: pagination.current});
+            }"
         >
             <!-- Block Search: BEGIN -->
             <div
@@ -152,6 +156,7 @@ const transactionsTableColumns = [
         scopedSlots: {
             customRender: 'amount',
         },
+        sorter: true,
     },
     {
         title: 'Ngày thanh toán',
@@ -200,6 +205,7 @@ export default {
                 position: 'both',
             },
             transactionsTableFilters: {},
+            transactionsTableSorts: undefined,
         };
     },
     mounted() {
@@ -222,6 +228,7 @@ export default {
                 params: {
                     page: page || this.transactionsTablePagination.current,
                     ...this.transactionsTableFilters,
+                    sort_by: this.transactionsTableSorts,
                 }
             })
                 .then(res => {

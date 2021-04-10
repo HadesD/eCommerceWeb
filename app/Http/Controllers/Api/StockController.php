@@ -44,7 +44,6 @@ class StockController extends Controller
             $stockQuery = $stockQuery->orderBy('updated_at', 'DESC');
         }
 
-
         if (isset($request->download)) {
             $stockQuery = $stockQuery->get()->append('cost_total');
 

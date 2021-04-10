@@ -28,9 +28,18 @@ class TransactionController extends Controller
             $transactionQuery = $transactionQuery
                 ->where('paid_date', '>=', date('Y-m-d 00:00:00', strtotime($request->paid_date[0])))
                 ->where('paid_date', '<=', date('Y-m-d 23:59:59', strtotime($request->paid_date[1])));
+        }
+
+        if (isset($request->sort_by)) {
+            foreach (explode(',', $request->sort_by) as $sorter) {
+                $col = substr($sorter, 1);
+                $sortType = ($sorter[0] === '-') ? 'DESC' : 'ASC';
+                $transactionQuery = $transactionQuery->orderBy($col, $sortType);
+            }
         } else {
             $transactionQuery = $transactionQuery->orderBy('paid_date', 'DESC');
         }
+
 
         if (isset($request->download)) {
             $transactionQuery = $transactionQuery->get();
