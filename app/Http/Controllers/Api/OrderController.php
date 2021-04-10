@@ -45,7 +45,15 @@ class OrderController extends Controller
                 ->where('deal_date', '<=', date('Y-m-d 23:59:59', strtotime($request->deal_date[1])));
         }
 
-        $orderQuery = $orderQuery->orderBy('updated_at', 'DESC');
+        if (isset($request->sort_by)) {
+            foreach (explode(',', $request->sort_by) as $sorter) {
+                $col = substr($sorter, 1);
+                $sortType = ($sorter[0] === '-') ? 'DESC' : 'ASC';
+                $orderQuery = $orderQuery->orderBy($col, $sortType);
+            }
+        } else {
+            $orderQuery = $orderQuery->orderBy('updated_at', 'DESC');
+        }
 
         if (isset($request->download)) {
             $orderQuery = $orderQuery->get()->append(['stock_cost_total', 'earn_amount_total']);

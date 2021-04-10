@@ -164,6 +164,7 @@ const transactionsTableColumns = [
         scopedSlots: {
             filterDropdown: 'filterRangeDate',
         },
+        sorter: true,
     },
     {
         title: 'Thu ngân',

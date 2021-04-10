@@ -21,7 +21,11 @@
             :loading="ordersTableLoading"
             :row-key="record => record.id"
             :pagination="ordersTablePagination"
-            @change="(pagination, filters) => {ordersTableFilters = filters;loadOrders({page: pagination.current});}"
+            @change="(pagination, filters, sorter) => {
+                ordersTableFilters = filters;
+                ordersTableSorts = (sorter.column && sorter.columnKey) ? ((sorter.order === 'descend' ? '-' : '+') + sorter.columnKey) : undefined;
+                loadOrders({page: pagination.current});
+            }"
         >
             <!-- Block Search: BEGIN -->
             <div
@@ -214,6 +218,7 @@ const ordersTableColumns = [
             filterDropdown: 'filterRangeDate',
             customRender: (text) => date_format(text),
         },
+        sorter: true,
     },
     {
         title: 'Khách hàng',
@@ -264,6 +269,7 @@ export default {
             ordersTablePagination: {
                 position: 'both',
             },
+            ordersTableSorts: undefined,
             ordersTableFilters: {},
 
             OrderStatus,
@@ -291,6 +297,7 @@ export default {
                 params: {
                     page: page || this.ordersTablePagination.current,
                     ...this.ordersTableFilters,
+                    sort_by: this.ordersTableSorts,
                 }
             })
                 .then(res => {
