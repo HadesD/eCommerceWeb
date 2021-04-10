@@ -353,13 +353,13 @@ export default {
             record.order_products.forEach(op_elm => {
                 op_elm.order_product_stocks.forEach(ops_elm => {
                     ops_elm.transactions.forEach(tnx_eml => {
-                        if (ops_elm.status === OrderProductStockStatus.STS_SOLD) {
-                            amount += tnx_eml.amount;
-                        }
+                        amount += tnx_eml.amount;
                     });
 
                     // stock.cost_amount
-                    cost += ops_elm.stock.cost_price;
+                    if (ops_elm.status === OrderProductStockStatus.STS_SOLD) {
+                        cost += ops_elm.stock.cost_price;
+                    }
                 });
             });
 
