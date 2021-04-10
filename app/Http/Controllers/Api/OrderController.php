@@ -290,7 +290,8 @@ class OrderController extends Controller
                             $transaction->cashier_id = $request->user()->id;
                         }
 
-                        if ($st_exists || $authUser->hasPermission(User::ROLE_ADMIN_MASTER)) {
+                        if (($st_exists && $authUser->hasPermission(User::ROLE_ADMIN_MASTER))
+                            || (!$st_exists || $authUser->hasPermission(User::ROLE_ADMIN_SUB_MASTER))) {
                             $transaction->amount = $_transaction['amount'];
                         }
 
@@ -321,7 +322,8 @@ class OrderController extends Controller
                     $transaction->cashier_id = $request->user()->id;
                 }
 
-                if ($at_exists || $authUser->hasPermission(User::ROLE_ADMIN_MASTER)) {
+                if (($at_exists && $authUser->hasPermission(User::ROLE_ADMIN_MASTER))
+                    || (!$at_exists || $authUser->hasPermission(User::ROLE_ADMIN_SUB_MASTER))) {
                     $transaction->amount = $addon_transaction['amount'];
                 }
 
