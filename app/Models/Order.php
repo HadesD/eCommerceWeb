@@ -29,7 +29,7 @@ class Order extends Model
         // 'customer',
     ];
 
-    public function getNeedPaidTotal() {
+    public function getNeedPaidTotalAttribute() {
         $total = 0;
 
         foreach ($this->order_products as $op) {
