@@ -29,38 +29,52 @@ class Order extends Model
         // 'customer',
     ];
 
-    public function getStockCostTotalAttribute()
-    {
-        $cost_total = 0;
+    public function getNeedPaidTotal() {
+        $total = 0;
 
         foreach ($this->order_products as $op) {
             foreach ($op->order_product_stocks as $ops) {
                 if ($ops->status === OrderProductStock::STS_SOLD) {
-                    $cost_total += $ops->stock->cost_price;
+                    $total += $ops->amount;
                 }
             }
         }
 
-        return $cost_total;
+        return $total;
+    }
+
+    public function getStockCostTotalAttribute()
+    {
+        $total = 0;
+
+        foreach ($this->order_products as $op) {
+            foreach ($op->order_product_stocks as $ops) {
+                if ($ops->status === OrderProductStock::STS_SOLD) {
+                    $total += $ops->stock->cost_price;
+                }
+            }
+        }
+
+        return $total;
     }
 
     public function getEarnAmountTotalAttribute()
     {
-        $amount_total = 0;
+        $total = 0;
 
         foreach ($this->transactions as $tnx) {
-            $amount_total += $tnx->amount;
+            $total += $tnx->amount;
         }
 
         foreach ($this->order_products as $op) {
             foreach ($op->order_product_stocks as $ops) {
                 foreach ($ops->transactions as $tnx) {
-                    $amount_total += $tnx->amount;
+                    $total += $tnx->amount;
                 }
             }
         }
 
-        return $amount_total;
+        return $total;
     }
 
     public function getCustomerAttribute()
