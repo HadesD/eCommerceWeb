@@ -162,6 +162,9 @@ class StockController extends Controller
             $stock->quantity = ($request->quantity < 0) ? 0 : $request->quantity;
             $stock->updated_user_id = $request->user()->id;
             $stock->note = $request->note;
+            if ($authUser->hasPermission(User::ROLE_ADMIN_MASTER)) {
+                $stock->cost_price = $request->cost_price;
+            }
             $stock->save();
 
             // Category
