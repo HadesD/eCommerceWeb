@@ -210,6 +210,8 @@ const ordersTableColumns = [
         dataIndex: 'customer_id',
         scopedSlots: {
             customRender: 'customer',
+            filterDropdown: 'filterSearchBox',
+            filterIcon: 'filterSearchBoxIcon',
         },
     },
     {

@@ -39,6 +39,10 @@ class OrderController extends Controller
             }
         }
 
+        if (isset($request->customer_id)) {
+            $orderQuery = $orderQuery->where('customer_id', $request->customer_id);
+        }
+
         if (isset($request->deal_date)) {
             $orderQuery = $orderQuery
                 ->where('deal_date', '>=', date('Y-m-d 00:00:00', strtotime($request->deal_date[0])))
