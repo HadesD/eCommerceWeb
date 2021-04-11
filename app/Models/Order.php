@@ -58,7 +58,7 @@ class Order extends Model
         return $total;
     }
 
-    public function getEarnAmountTotalAttribute()
+    public function getEarnedAmountTotalAttribute()
     {
         $total = 0;
 
