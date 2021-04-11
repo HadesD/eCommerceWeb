@@ -29,6 +29,11 @@ class Order extends Model
         // 'customer',
     ];
 
+    public function getRemainingNeedPaidTotalAttribute()
+    {
+        return $this->need_paid_total - $this->stock_earned_total;
+    }
+
     public function getNeedPaidTotalAttribute() {
         $total = 0;
 
