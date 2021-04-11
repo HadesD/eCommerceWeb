@@ -60,7 +60,7 @@ class OrderController extends Controller
         }
 
         if (isset($request->download)) {
-            $orderQuery = $orderQuery->get()->append(['need_paid_total', 'stock_cost_total', 'earned_total']);
+            $orderQuery = $orderQuery->get()->append(['need_paid_total', 'stock_cost_total', 'stock_earned_total']);
 
             switch ($request->download) {
                 case 'csv': {

@@ -58,13 +58,9 @@ class Order extends Model
         return $total;
     }
 
-    public function getEarnedTotalAttribute()
+    public function getStockEarnedTotalAttribute()
     {
         $total = 0;
-
-        foreach ($this->transactions as $tnx) {
-            $total += $tnx->amount;
-        }
 
         foreach ($this->order_products as $op) {
             foreach ($op->order_product_stocks as $ops) {

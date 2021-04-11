@@ -41,6 +41,10 @@ class StatisticController extends Controller
             ],
             'transaction' => [
                 'amount_total' => Transaction::sum('amount'),
+                'remaining_need_paid_total' => (function() {
+                    $orders = Order::where('status', Order::STS_PAYING)->get()->append(['need_paid_total', 'stock_earned_total']);
+                    return (clone $orders)->sum('need_paid_total') - (clone $orders)->sum('stock_earned_total');
+                })(),
                 'this_month_amount_total' => Transaction::where('paid_date', '>=', date('Y-m-01'))->sum('amount'),
                 'chart' => Transaction::select(DB::raw('(YEAR(paid_date)*100+MONTH(paid_date)) AS ym'), DB::raw('SUM(amount) AS amount'))->groupBy('ym')->orderBy('ym', 'ASC')->get(),
             ],
