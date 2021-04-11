@@ -66,5 +66,17 @@ class Stock extends Model
     {
         return User::find($this->updated_user_id);
     }
-}
 
+    public function getOrdersHistoryAttribute()
+    {
+        return Order::whereIn('id', function ($query) {
+            $query->select('order_id')
+                ->from(with(new OrderProduct)->getTable())
+                ->whereIn('id', function ($query) {
+                    $query->select('order_product_id')
+                        ->from(with(new OrderProductStock)->getTable())
+                        ->where('stock_id', $this->id);
+                });
+        })->get();
+    }
+}

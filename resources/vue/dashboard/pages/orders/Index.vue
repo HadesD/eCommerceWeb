@@ -197,24 +197,6 @@ const ordersTableColumns = [
         }),
     },
     {
-        title: 'Ghi chú',
-        dataIndex: 'note',
-        scopedSlots: {
-            filterDropdown: 'filterSearchBox',
-            filterIcon: 'filterSearchBoxIcon',
-        },
-    },
-    {
-        title: 'Tổng Thu/Giá Nhập',
-        key: 'total_amount',
-        scopedSlots: { customRender: 'total_amount' },
-    },
-    {
-        title: 'Đặt hàng',
-        key: 'order_product',
-        scopedSlots: { customRender: 'order_product' },
-    },
-    {
         title: 'Ngày xuất đơn',
         dataIndex: 'deal_date',
         scopedSlots: {
@@ -228,6 +210,24 @@ const ordersTableColumns = [
         dataIndex: 'customer_id',
         scopedSlots: {
             customRender: 'customer',
+        },
+    },
+    {
+        title: 'Đặt hàng',
+        key: 'order_product',
+        scopedSlots: { customRender: 'order_product' },
+    },
+    {
+        title: 'Tổng Thu/Giá Nhập',
+        key: 'total_amount',
+        scopedSlots: { customRender: 'total_amount' },
+    },
+    {
+        title: 'Ghi chú',
+        dataIndex: 'note',
+        scopedSlots: {
+            filterDropdown: 'filterSearchBox',
+            filterIcon: 'filterSearchBoxIcon',
         },
     },
     {

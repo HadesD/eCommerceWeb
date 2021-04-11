@@ -155,6 +155,14 @@
                         </template>
                     </a-table>
                 </a-card>
+                <a-collapse :activeKey="['1']" style="margin-bottom: 15px;">
+                    <a-collapse-panel key="1" header="Lịch sử xuất đơn">
+                        <div v-for="order in stockInfo.orders_history" :key="order.id">
+                            <span>#{{ order.id }} ({{ configOrderStatus[order.status].name }})</span>
+                            <a-button icon="search" size="small" @click="() => { currentOrderId = order.id; orderEditPageVisible = true; }" />
+                        </div>
+                    </a-collapse-panel>
+                </a-collapse>
                 <a-form-model-item :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }">
                     <a-button
                         type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })"
@@ -164,6 +172,16 @@
                 </a-form-model-item>
             </a-form-model>
         </a-spin>
+
+        <a-modal
+            :visible="orderEditPageVisible"
+            @cancel="() => orderEditPageVisible = false"
+            :footer="false"
+            width="95vw"
+        >
+            <OrderEdit :orderId="currentOrderId" />
+        </a-modal>
+
         <a-modal
             :visible="userEditPageVisible"
             @cancel="() => userEditPageVisible = false"
@@ -180,6 +198,7 @@ import moment from 'moment';
 import { number_format } from '../../../helpers';
 import UserRole from '../../configs/UserRole';
 import User from '../../utils/User';
+import { Config as configOrderStatus } from '../../configs/OrderStatus';
 
 const addon_transactionsTableColumns = [
     {
@@ -223,9 +242,13 @@ export default {
     components: {
         AddCategoryModal: () => import('../../components/AddCategoryModal.vue'),
         UserEdit: () => import('../users/Edit'),
+        OrderEdit: () => import('../orders/Edit'),
     },
     data() {
         return {
+            orderEditPageVisible: false,
+            currentOrderId: undefined,
+
             userEditPageVisible: false,
             currentUserId: undefined,
 
@@ -267,11 +290,12 @@ export default {
 
             authUser: User.info(),
             UserRole,
+            configOrderStatus,
         }
     },
     computed: {
         id() {
-            return (this.stockId !== undefined) ? this.stockId : this.$route.params.id;
+            return this.stockId || this.formData.id;
         },
         transaction_obj() {
             return {
@@ -302,11 +326,11 @@ export default {
             if (to) {
                 this.loadStock(to);
             } else {
+                this.$refs.ruleForm.resetFields();
+
                 this.formData.transactions = [];
 
                 this.stockInfo = {};
-
-                this.$refs.ruleForm.resetFields();
             }
         },
     },
@@ -367,6 +391,7 @@ export default {
 
             // Reset popup data
             this.currentUserId = undefined;
+            this.currentOrderId = undefined,
 
             axios.get(`/api/stocks/${id}`)
                 .then(res => {

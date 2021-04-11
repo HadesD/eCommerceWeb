@@ -213,9 +213,9 @@ export default {
             if (to) {
                 this.loadProduct(to);
             } else {
-                this.productInfo = {};
-
                 this.$refs.ruleForm.resetFields();
+
+                this.productInfo = {};
             }
         },
     },

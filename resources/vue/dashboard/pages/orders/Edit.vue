@@ -523,13 +523,13 @@ export default {
             if (to) {
                 this.loadOrder(to);
             } else {
+                this.$refs.ruleForm.resetFields();
+
                 this.orderInfo = {};
 
                 this.formData.order_products = [];
 
                 this.formData.transactions = [];
-
-                this.$refs.ruleForm.resetFields();
             }
         },
     },
