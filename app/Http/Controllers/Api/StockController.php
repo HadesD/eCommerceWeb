@@ -222,11 +222,12 @@ class StockController extends Controller
 
             // Addon Transactions
             foreach ($request->transactions as $_transaction) {
-                if (isset($_transaction['id']) && !$authUser->hasPermission(User::ROLE_ADMIN_SUB_MASTER)) {
+                $transaction_id = $_transaction['id'] ?? null;
+                if ($transaction_id && !$authUser->hasPermission(User::ROLE_ADMIN_SUB_MASTER)) {
                     continue;
                 }
 
-                $transaction = Transaction::find($_transaction['id']);
+                $transaction = Transaction::find($transaction_id);
 
                 $tnx_exists = $transaction ? true : false;
                 if (!$tnx_exists) {
