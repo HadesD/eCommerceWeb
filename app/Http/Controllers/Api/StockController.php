@@ -83,12 +83,14 @@ class StockController extends Controller
         try {
             DB::beginTransaction();
 
+            $authUser = $request->user();
+
             $stock = new Stock;
             $stock->name = $request->name;
             $stock->idi = $request->idi;
             $stock->quantity = ($request->quantity < 0) ? 0 : $request->quantity;
             $stock->cost_price = ($request->cost_price < 0) ? 0 : $request->cost_price;
-            $stock->updated_user_id = $request->user()->id;
+            $stock->updated_user_id = $authUser->id;
             $stock->note = $request->note;
             $stock->save();
 
@@ -100,17 +102,32 @@ class StockController extends Controller
                 $stock_category->save();
             }
 
+            // Import Addon transaction
             $transaction = new Transaction;
             $transaction->description = "Kho #{$stock->id}: Nhập {$stock->quantity} cái (VND)";
             $transaction->amount = -($stock->quantity * $stock->cost_price);
             $transaction->paid_date = $request->inout_date;
-            $transaction->cashier_id = $request->user()->id;
+            $transaction->cashier_id = $authUser->id;
             $transaction->save();
-
             $stock_transaction = new StockTransaction;
             $stock_transaction->stock_id = $stock->id;
             $stock_transaction->transaction_id = $transaction->id;
             $stock_transaction->save();
+
+            // Addon transactions
+            foreach ($request->transactions as $_transaction) {
+                $transaction = new Transaction;
+                $transaction->description = $_transaction['description'];
+                $transaction->amount = $_transaction['amount'];
+                $transaction->paid_date = $_transaction['paid_date'];
+                $transaction->cashier_id = $authUser->id;
+                $transaction->save();
+
+                $stock_transaction = new StockTransaction;
+                $stock_transaction->stock_id = $stock->id;
+                $stock_transaction->transaction_id = $transaction->id;
+                $stock_transaction->save();
+            }
 
             DB::commit();
         } catch(\Throwable $e) {

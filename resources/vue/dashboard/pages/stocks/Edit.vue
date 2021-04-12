@@ -106,7 +106,7 @@
                 </a-form-model-item>
                 <a-card title="Giao dịch thêm" style="margin-bottom:16px;" :headStyle="{ backgroundColor:'#9800ab',color:'#FFF' }" :bodyStyle="{padding:0}">
                     <a slot="extra" @click="() => formData.transactions.push(Object.assign({}, transaction_obj))">
-                        <a-tooltip v-if="id && (id > 0)" title="Thêm giao dịch">
+                        <a-tooltip title="Thêm giao dịch">
                             <a-button type="primary" icon="plus" />
                         </a-tooltip>
                     </a>
