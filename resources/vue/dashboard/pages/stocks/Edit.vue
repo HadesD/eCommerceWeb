@@ -44,7 +44,13 @@
                 <a-form-model-item label="Id/Imei/Mã phân biệt" prop="idi">
                     <a-input v-model="formData.idi" />
                 </a-form-model-item>
-                <a-form-model-item label="Số lượng" prop="quantity">
+                <a-form-model-item
+                    label="Số lượng"
+                    prop="quantity"
+                    :help="(id && (id > 0)) ?
+                        ((formData.quantity !== prev_quantity) ? 'Hệ thống sẽ tự động tạo giao dịch tương ứng với hành động tăng / giảm số lượng' : false)
+                        : 'Hệ thống sẽ tự động tạo giao dịch tương ứng với số lượng nhập vào kho'"
+                >
                     <a-input-number v-model="formData.quantity" :min="id ? 0 : 1" :max="200" />
                 </a-form-model-item>
                 <a-form-model-item label="Giá lúc nhập (Đơn giá)" prop="cost_price" :help="`VND: ${number_format(formData.cost_price || 0)}`">
