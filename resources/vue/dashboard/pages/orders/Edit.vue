@@ -131,6 +131,7 @@
                                 :row-key="record => `po-${record.id || Math.random()}`"
                                 size="small"
                                 bordered
+                                defaultExpandAllRows
                             >
                                 <template slot="stock" slot-scope="text, ps, psIdx">
                                     <a-form-model-item
