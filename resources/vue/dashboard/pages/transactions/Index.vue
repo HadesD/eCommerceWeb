@@ -13,6 +13,8 @@
             </template>
         </a-page-header>
         <a-table
+            :scroll="{ x: 800 }"
+            :size="['xs','sm','md'].indexOf($mq) !== -1 ? 'small' : false"
             :columns="transactionsTableColumns"
             :data-source="transactionsTableData"
             :loading="transactionsTableLoading"

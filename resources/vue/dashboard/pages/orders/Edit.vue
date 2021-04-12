@@ -125,6 +125,7 @@
                                 </a-tooltip>
                             </a>
                             <a-table
+                                :scroll="{ x: 800 }"
                                 :columns="product_stockTableColumns"
                                 :data-source="p.order_product_stocks"
                                 :pagination="false"
@@ -183,6 +184,7 @@
                                     </a-popconfirm>
                                 </template>
                                 <a-table
+                                    :scroll="{ x: 800 }"
                                     slot="expandedRowRender"
                                     slot-scope="ps, psIdx"
                                     :columns="addon_transactionsTableColumns"
@@ -238,6 +240,7 @@
                         </a-tooltip>
                     </a>
                     <a-table
+                        :scroll="{ x: 800 }"
                         :columns="addon_transactionsTableColumns"
                         :data-source="formData.transactions"
                         :pagination="false"

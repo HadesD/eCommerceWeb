@@ -7,26 +7,26 @@
         </a-row>
         <a-spin :spinning="loading">
             <a-row :gutter="8">
-                <a-col :span="6">
+                <a-col :span="6" :lg="6" :md="12" :sm="24" :xs="24">
                     <a-card title="Đơn hàng">
                         <a-statistic title="Tổng" :value="statistics.order.count" />
                         <a-statistic title="Chưa hoàn tất" :value="statistics.order.uncompleted_count" />
                     </a-card>
                 </a-col>
-                <a-col :span="6">
+                <a-col :span="6" :lg="6" :md="12" :sm="24" :xs="24">
                     <a-card title="Sản phẩm">
                         <a-statistic title="Tổng" :value="statistics.product.count" />
                         <a-statistic title="Đang bán" :value="statistics.product.selling_count" />
                     </a-card>
                 </a-col>
-                <a-col :span="6">
+                <a-col :span="6" :lg="6" :md="12" :sm="24" :xs="24">
                     <a-card title="Kho hàng">
                         <a-statistic title="Tổng số mặt hàng" :value="statistics.stock.count" />
                         <a-statistic title="Tổng số mặt hàng có sẵn" :value="statistics.stock.avail_count" />
                         <a-statistic title="Tổng giá trị hàng có sẵn trong kho (VND)" :value="statistics.stock.avail_cost_price" />
                     </a-card>
                 </a-col>
-                <a-col :span="6">
+                <a-col :span="6" :lg="6" :md="12" :sm="24" :xs="24">
                     <a-card title="Người dùng">
                         <a-statistic title="Tổng" :value="statistics.user.count" />
                         <a-statistic title="Admin" :value="statistics.user.admin_count" />

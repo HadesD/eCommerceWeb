@@ -111,11 +111,12 @@
                         </a-tooltip>
                     </a>
                     <a-table
+                        :scroll="{ x: 800 }"
+                        size="small"
                         :columns="addon_transactionsTableColumns"
                         :data-source="formData.transactions"
                         :pagination="false"
                         :row-key="record => `addon-tnx-${record.id || Math.random()}`"
-                        size="small"
                         bordered
                     >
                         <template slot="description" slot-scope="text, record, index">
