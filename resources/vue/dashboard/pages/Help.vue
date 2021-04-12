@@ -54,7 +54,7 @@
                     </li>
                 </ul>
             </a-collapse-panel>
-            <a-collapse-panel key="/refunds" header="Xuất Linh Kiện: Dùng khi Sửa máy nhập kho">
+            <a-collapse-panel key="/use-stock-fix-stock" header="Xuất Linh Kiện: Dùng khi Sửa máy nhập kho">
                 <h3>B1. Truy cập vào Kho Linh kiện, mở cửa sổ sửa thông tin linh kiện cần xuất</h3>
                 <ul>
                     <li>1. Mục [Số Lượng]: Giảm số lượng linh kiện cần dùng khi sửa máy</li>
@@ -70,7 +70,7 @@
                     <li>5. Lưu lại kho</li>
                 </ul>
             </a-collapse-panel>
-            <a-collapse-panel key="/refunds" header="Xuất Linh Kiện: Dùng khi sửa máy cho khách hàng">
+            <a-collapse-panel key="/use-stock-fix-for-customer" header="Xuất Linh Kiện: Dùng khi sửa máy cho khách hàng">
                 <h3>(TH: Khách mua linh kiện) Truy cập vào trang Hoá đơn </h3>
                 <ul>
                     <li>**0. Mục [Khách hàng] Đối với khách hàng đến thay trực tiếp ở quán, Khách của hoá đơn sẽ là tên thợ sửa</li>
