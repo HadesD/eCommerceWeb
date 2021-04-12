@@ -342,7 +342,7 @@ export default {
             this.addCategoryModalVisible = false;
         },
 
-        loadStocks({category_id, page}) {
+        loadStocks({page}) {
             this.stocksTableLoading = true;
 
             // Reset popup data
@@ -351,7 +351,7 @@ export default {
 
             axios.get('/api/stocks', {
                 params: {
-                    category_id: category_id || this.currentCategoryId,
+                    category_id: this.currentCategoryId,
                     page: page || this.stocksTablePagination.current,
                     ...this.stocksTableFilters,
                     sort_by: this.stocksTableSorts,

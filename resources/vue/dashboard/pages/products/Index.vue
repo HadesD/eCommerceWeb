@@ -321,7 +321,7 @@ export default {
         },
 
         // Product
-        loadProducts({category_id, page}){
+        loadProducts({page}){
             this.productsTableLoading = true;
 
             // Reset popup data
@@ -329,7 +329,7 @@ export default {
 
             axios.get('/api/products', {
                 params: {
-                    category_id: category_id || this.currentCategoryId,
+                    category_id: this.currentCategoryId,
                     page: page || this.productsTablePagination.current,
                     ...this.productsTableFilters,
                     sort_by: this.productsTableSorts,
