@@ -155,12 +155,17 @@
                         </template>
                     </a-table>
                 </a-card>
-                <a-collapse :activeKey="['1']" style="margin-bottom: 15px;">
+                <a-collapse :activeKey="['1']" style="margin-bottom: 15px;" v-if="id && (id > 0)">
                     <a-collapse-panel key="1" header="Lịch sử xuất đơn">
-                        <div v-for="order in stockInfo.orders_history" :key="order.id">
-                            <span>#{{ order.id }} ({{ configOrderStatus[order.status].name }})</span>
-                            <a-button icon="search" size="small" @click="() => { currentOrderId = order.id; orderEditPageVisible = true; }" />
-                        </div>
+                        <template v-if="stockInfo.orders_history && (stockInfo.orders_history.length > 0)">
+                            <div v-for="order in stockInfo.orders_history" :key="order.id">
+                                <span>#{{ order.id }} ({{ configOrderStatus[order.status].name }})</span>
+                                <a-button icon="search" size="small" @click="() => { currentOrderId = order.id; orderEditPageVisible = true; }" />
+                            </div>
+                        </template>
+                        <template v-else>
+                            <a-empty />
+                        </template>
                     </a-collapse-panel>
                 </a-collapse>
                 <a-form-model-item :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }">
