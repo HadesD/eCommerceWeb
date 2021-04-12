@@ -4,8 +4,8 @@
             title="Hướng dẫn quản lí các loại Hoá đơn / Giao dịch trong tiệm"
             sub-title="Cập nhật: 2021/04/06"
         />
-        <a-collapse :activeKey="['1']">
-            <a-collapse-panel key="1" header="Tạo hoá đơn khi Bán hàng">
+        <a-collapse :activeKey="['/orders/new']">
+            <a-collapse-panel key="/orders/new" header="Tạo hoá đơn khi Bán hàng">
                 <h3>Truy cập trang <router-link to="/orders/new">Tạo đơn</router-link></h3>
                 <ul>
                     <li>
@@ -35,7 +35,7 @@
                     </li>
                 </ul>
             </a-collapse-panel>
-            <a-collapse-panel key="2" header="Thu hồi sản phẩm / trả hàng">
+            <a-collapse-panel key="/refunds" header="Thu hồi sản phẩm / trả hàng">
                 <h3>Truy cập vào Đơn hàng lúc trước (ở 1.)</h3>
                 <ul>
                     <li>
@@ -54,7 +54,38 @@
                     </li>
                 </ul>
             </a-collapse-panel>
-            <a-collapse-panel key="3" header="Phí sinh hoạt / Tiền lương / ...">
+            <a-collapse-panel key="/refunds" header="Xuất Linh Kiện: Dùng khi Sửa máy nhập kho">
+                <h3>B1. Truy cập vào Kho Linh kiện, mở cửa sổ sửa thông tin linh kiện cần xuất</h3>
+                <ul>
+                    <li>1. Mục [Số Lượng]: Giảm số lượng linh kiện cần dùng khi sửa máy</li>
+                    <li>2. Mục [Ngày xuất / nhập]: Chọn đúng ngày xuất linh kiện khỏi kho</li>
+                    <li>3. Lưu lại kho</li>
+                </ul>
+                <h3>B2. Truy cập vào Kho máy, mở cửa sổ thông tin máy cần sửa</h3>
+                <ul>
+                    <li>1. Tạo thêm [Giao Dịch Thêm]</li>
+                    <li>2. Nội dung: Điền nội dung sửa máy (VD: Thay pin...)</li>
+                    <li>3. Số tiền: (Số âm) bằng số tiền của linh kiện xuất khỏi kho</li>
+                    <li>4. Mục [Ngày]: Chọn đúng ngày xuất linh kiện khỏi kho</li>
+                    <li>5. Lưu lại kho</li>
+                </ul>
+            </a-collapse-panel>
+            <a-collapse-panel key="/refunds" header="Xuất Linh Kiện: Dùng khi sửa máy cho khách hàng">
+                <h3>(TH: Khách mua linh kiện) Truy cập vào trang Hoá đơn </h3>
+                <ul>
+                    <li>**0. Mục [Khách hàng] Đối với khách hàng đến thay trực tiếp ở quán, Khách của hoá đơn sẽ là tên thợ sửa</li>
+                    <li>1. Mục [Xuất kho] sẽ xuất linh kiện sử dụng để thay / sửa cho khách</li>
+                    <li>2. Thêm [Giao dịch] ứng với linh kiện vừa xuất kho. Số tiên sẽ = 1.2 lần giá trị linh kiện</li>
+                    <li>3. Thợ sửa trả tiền cho tiệm rồi thu ngân lưu hoá đơn lại</li>
+                    <li>**. Chi phí sửa cho khách, thợ sửa sẽ được nhận 100% mà không phải đưa lại quán</li>
+                </ul>
+                <h3>(TH: Khách bảo trì máy lỗi) Truy cập vào trang Hoá đơn của máy khách muốn bảo trì</h3>
+                <ul>
+                    <li>1. Mục [Xuất kho] sẽ xuất linh kiện sử dụng để thay / sửa cho khách</li>
+                    <li>2. Thêm [Giao dịch] ứng với linh kiện vừa xuất kho. Số tiên sẽ = 0 hoặc tuỳ vào thời gian quá hạn bảo trì mà lấy tiền</li>
+                </ul>
+            </a-collapse-panel>
+            <a-collapse-panel key="/fee-salary" header="Phí sinh hoạt / Tiền lương / ...">
                 <h3>Truy cập vào trang Tạo Đơn</h3>
                 <ul>
                     <li>- ...</li>
