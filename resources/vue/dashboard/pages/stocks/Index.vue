@@ -394,6 +394,9 @@ export default {
             if (this.stocksTableSorts) {
                 downloadUrl.searchParams.append('sort_by', this.stocksTableSorts);
             }
+            if (this.currentCategoryId) {
+                downloadUrl.searchParams.append('category_id', this.currentCategoryId);
+            }
             Object.keys(filters).forEach(value => {
                 const filterVal = filters[value];
                 if (Array.isArray(filterVal)) {
