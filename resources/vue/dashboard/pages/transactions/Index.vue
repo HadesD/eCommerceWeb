@@ -13,7 +13,7 @@
             </template>
         </a-page-header>
         <a-table
-            :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300 } : false"
+            :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
             :size="['xs','sm','md'].indexOf($mq) !== -1 ? 'small' : 'default'"
             :columns="transactionsTableColumns"
             :data-source="transactionsTableData"
