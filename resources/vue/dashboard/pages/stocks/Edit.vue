@@ -168,7 +168,7 @@
                         </template>
                     </a-collapse-panel>
                 </a-collapse>
-                <a-form-model-item :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }">
+                <a-form-model-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: 4 }">
                     <a-button
                         type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })"
                         block
