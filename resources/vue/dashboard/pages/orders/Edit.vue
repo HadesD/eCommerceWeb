@@ -125,7 +125,7 @@
                                 </a-tooltip>
                             </a>
                             <a-table
-                                :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300 } : false"
+                                :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
                                 :columns="product_stockTableColumns"
                                 :data-source="p.order_product_stocks"
                                 :pagination="false"
@@ -184,7 +184,7 @@
                                     </a-popconfirm>
                                 </template>
                                 <a-table
-                                    :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300 } : false"
+                                    :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
                                     slot="expandedRowRender"
                                     slot-scope="ps, psIdx"
                                     :columns="addon_transactionsTableColumns"
@@ -240,7 +240,7 @@
                         </a-tooltip>
                     </a>
                     <a-table
-                        :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300 } : false"
+                        :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
                         :columns="addon_transactionsTableColumns"
                         :data-source="formData.transactions"
                         :pagination="false"
