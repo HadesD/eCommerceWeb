@@ -128,7 +128,7 @@
                         </a-form-model-item>
                     </a-tab-pane>
                 </a-tabs>
-                <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
+                <a-form-model-item :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }">
                     <a-button
                         type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate(valid => { if (valid) onFinish() })"
                     >{{ id ? 'Sửa' : 'Đăng bán' }}</a-button>
