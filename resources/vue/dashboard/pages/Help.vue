@@ -2,7 +2,7 @@
     <div>
         <a-page-header
             title="Hướng dẫn quản lí các loại Hoá đơn / Giao dịch trong tiệm"
-            sub-title="Cập nhật: 2021/04/06"
+            sub-title="Cập nhật: 2021/04/13"
         />
         <a-collapse :activeKey="['/orders/new']">
             <a-collapse-panel key="/orders/new" header="Tạo hoá đơn khi Bán hàng">
