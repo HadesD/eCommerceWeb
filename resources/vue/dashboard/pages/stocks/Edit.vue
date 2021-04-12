@@ -111,7 +111,7 @@
                         </a-tooltip>
                     </a>
                     <a-table
-                        :scroll="{ x: 800 }"
+                        :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300 } : false"
                         size="small"
                         :columns="addon_transactionsTableColumns"
                         :data-source="formData.transactions"

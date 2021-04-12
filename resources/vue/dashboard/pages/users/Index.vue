@@ -13,7 +13,7 @@
             </template>
         </a-page-header>
         <a-table
-            :scroll="{ x: 800 }"
+            :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300 } : false"
             :size="['xs','sm','md'].indexOf($mq) !== -1 ? 'small' : false"
             :columns="usersTableColumns"
             :data-source="usersTableData"
