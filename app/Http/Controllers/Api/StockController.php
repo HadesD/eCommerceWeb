@@ -211,7 +211,7 @@ class StockController extends Controller
                     (($diff_quantity < 0) ? 'Nhập '.abs($diff_quantity).' cái (VND)' : 'Trả '.abs($diff_quantity).' cái (VND)');
                 $transaction->amount = $diff_quantity * $stock->cost_price;
                 $transaction->paid_date = $request->inout_date;
-                $transaction->cashier_id = $request->user()->id;
+                $transaction->cashier_id = $authUser->id;
                 $transaction->save();
 
                 $stock_transaction = new StockTransaction;
@@ -237,7 +237,9 @@ class StockController extends Controller
                 $transaction->description = $_transaction['description'];
                 $transaction->amount = $_transaction['amount'];
                 $transaction->paid_date = $_transaction['paid_date'];
-                $transaction->cashier_id = $request->user()->id;
+                if (!$tnx_exists) {
+                    $transaction->cashier_id = $authUser->id;
+                }
                 $transaction->save();
 
                 if (!$tnx_exists) {

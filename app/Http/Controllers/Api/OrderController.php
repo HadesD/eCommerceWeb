@@ -151,7 +151,7 @@ class OrderController extends Controller
                         $transaction->amount = $_transaction['amount'];
                         $transaction->description = $_transaction['description'];
                         $transaction->paid_date = $_transaction['paid_date'];
-                        $transaction->cashier_id = $request->user()->id;
+                        $transaction->cashier_id = $authUser->id;
                         $transaction->save();
 
                         $order_product_stock_transaction = new OrderProductStockTransaction;
@@ -167,7 +167,7 @@ class OrderController extends Controller
                 $transaction->amount = $_transaction['amount'];
                 $transaction->description = $_transaction['description'];
                 $transaction->paid_date = $_transaction['paid_date'];
-                $transaction->cashier_id = $request->user()->id;
+                $transaction->cashier_id = $authUser->id;
                 $transaction->save();
 
                 $order_transaction = new OrderTransaction;
@@ -322,7 +322,7 @@ class OrderController extends Controller
                 $at_exists = $transaction ? true : false;
                 if (!$at_exists) {
                     $transaction = new Transaction;
-                    $transaction->cashier_id = $request->user()->id;
+                    $transaction->cashier_id = $authUser->id;
                 }
 
                 if (!$at_exists || ($at_exists && $authUser->hasPermission(User::ROLE_ADMIN_MASTER))) {
