@@ -26,8 +26,11 @@
                         <span>{{ stockInfo.updated_at }}</span>
                     </a-descriptions-item>
                     <a-descriptions-item label="Người cập nhật" v-if="stockInfo.updated_user">
-                        <span>{{ stockInfo.updated_user_id }}. {{ stockInfo.updated_user.name }}</span>
+                        <span>{{ stockInfo.updated_user_id }}. {{ stockInfo.updated_user.name }} </span>
                         <a-button icon="search" size="small" @click="() => { currentUserId = stockInfo.updated_user_id; userEditPageVisible = true; }" />
+                    </a-descriptions-item>
+                    <a-descriptions-item label="Tổng chi phí (VND)">
+                        <span>{{ number_format(stockInfo.transactions.reduce((accumlator, currentValue) => accumlator + currentValue.amount, 0)) }}</span>
                     </a-descriptions-item>
                 </a-descriptions>
             </a-page-header>
@@ -53,7 +56,7 @@
                 >
                     <a-input-number v-model="formData.quantity" :min="id ? 0 : 1" :max="200" />
                 </a-form-model-item>
-                <a-form-model-item label="Giá lúc nhập (Đơn giá)" prop="cost_price" :help="`VND: ${number_format(formData.cost_price || 0)}`">
+                <a-form-model-item label="Giá nhập (Đơn giá)" prop="cost_price" :help="`VND: ${number_format(formData.cost_price || 0)}`">
                     <a-input-number
                         v-model="formData.cost_price"
                         style="width: 100%;"
@@ -61,6 +64,31 @@
                         :max="2000000000"
                         :disabled="disabledField(formData, UserRole.ROLE_ADMIN_MASTER)"
                     />
+                </a-form-model-item>
+                <a-form-model-item label="Giá bán dự kiến tối thiểu (Đơn giá)" prop="sell_price" :help="`VND: ${number_format(formData.sell_price || 0)}`">
+                    <a-input-number
+                        v-model="formData.sell_price"
+                        style="width: 100%;"
+                        :min="formData.cost_price"
+                        :max="2000000000"
+                    />
+                </a-form-model-item>
+                <a-form-model-item
+                    label="Nhân viên chịu trách nhiệm kiểm thử" prop="tester_id"
+                    :help="stockInfo.tester_id ? `Đang chọn: #${orderInfo.tester_id}. ${orderInfo.customer.name} (Phone: ${orderInfo.customer.phone || 'Chưa có'})` : false"
+                >
+                    <a-row :gutter="8">
+                        <a-col :span="12">
+                            <a-input-search v-model="formData.tester_id" readOnly @search="() => { currentUserId = formData.tester_id; userEditPageVisible = true; }">
+                                <a-button icon="search" slot="enterButton" />
+                            </a-input-search>
+                        </a-col>
+                        <a-col :span="8">
+                            <a-tooltip title="Chọn từ danh sách" v-if="!id || disabledField(orderInfo, UserRole.ROLE_ADMIN_MANAGER)">
+                                <a-button type="primary" icon="user" @click="() => userIndexPageVisible = true">Chọn</a-button>
+                            </a-tooltip>
+                        </a-col>
+                    </a-row>
                 </a-form-model-item>
                 <a-form-model-item label="Chuyên mục cha">
                     <a-form-model-item style="display: inline-block; margin-right: 5px;">
@@ -277,6 +305,8 @@ export default {
                 name: undefined,
                 idi: undefined,
                 cost_price: undefined,
+                sell_price: undefined,
+                tester_id: undefined,
                 quantity: 1,
                 note: undefined,
                 inout_date: undefined,

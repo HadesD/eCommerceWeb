@@ -58,7 +58,8 @@
                     />
                 </a-form-model-item>
                 <a-form-model-item
-                    label="Khách hàng" ref="customer_id" prop="customer_id"
+                    label="Khách hàng"
+                    prop="customer_id"
                     :help="orderInfo.customer ? `Đang chọn: #${orderInfo.customer_id}. ${orderInfo.customer.name} (Phone: ${orderInfo.customer.phone || 'Chưa có'})` : false"
                 >
                     <a-row :gutter="8">
