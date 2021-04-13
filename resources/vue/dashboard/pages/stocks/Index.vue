@@ -88,14 +88,23 @@
                 />
                 <!-- Block Search: END -->
 
-                <template slot="cost_price" slot-scope="value">
-                    <div style="display:block;text-align:right;">{{ number_format(value) }}</div>
+                <template slot="price" slot-scope="value">
+                    <div style="text-align:right;">{{ number_format(value) }} ₫</div>
                 </template>
                 <template slot="quantity" slot-scope="value">
                     <a-tag :color="(value > 0) ? 'green' : 'red'">{{ value }}</a-tag>
                 </template>
                 <template slot="categories" slot-scope="value">
                     <a-tag v-for="category in value" :key="category.id">{{ category.name }}</a-tag>
+                </template>
+                <template slot="tester" slot-scope="value, record">
+                    <div v-if="value && record.tester">
+                        <div>
+                            <span>#{{ value }}. {{ record.tester.name }}</span>
+                            <a-button icon="search" @click="() => { currentUserId = value; userEditPageVisible = true; }" size="small" />
+                        </div>
+                        <div>Phone: {{ record.tester.phone || 'Chưa có' }}</div>
+                    </div>
                 </template>
                 <template slot="update_info" slot-scope="record">
                     <div>Tạo: {{ date_format(record.created_at) }}</div>
@@ -168,12 +177,29 @@ const stocksTableColumns = [
         },
     },
     {
-        title: 'Giá lúc nhập (VND)',
+        title: 'Giá nhập (Đơn giá)',
         dataIndex: 'cost_price',
         scopedSlots: {
-            customRender: 'cost_price',
+            customRender: 'price',
         },
         sorter: true,
+    },
+    {
+        title: 'Giá bán dự định (Đơn giá)',
+        dataIndex: 'sell_price',
+        scopedSlots: {
+            customRender: 'price',
+        },
+        sorter: true,
+    },
+    {
+        title: 'Người kiểm thử',
+        dataIndex: 'tester_id',
+        scopedSlots: {
+            customRender: 'tester',
+            filterDropdown: 'filterSearchBox',
+            filterIcon: 'filterSearchBoxIcon',
+        },
     },
     {
         title: 'Tồn kho',

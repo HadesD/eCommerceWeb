@@ -34,6 +34,10 @@ class StockController extends Controller
             }
         }
 
+        if (isset($request->tester_id)) {
+            $stockQuery = $stockQuery->where($value, $request->tester_id);
+        }
+
         if (isset($request->sort_by)) {
             foreach (explode(',', $request->sort_by) as $sorter) {
                 $col = substr($sorter, 1);
@@ -67,7 +71,7 @@ class StockController extends Controller
 
         $stockQuery = $stockQuery->paginate();
 
-        $stockQuery->append(['categories', 'updated_user']);
+        $stockQuery->append(['categories', 'updated_user', 'tester']);
 
         return new JsonResource($stockQuery);
     }
@@ -80,10 +84,10 @@ class StockController extends Controller
      */
     public function store(Request $request)
     {
-        $this->middleware('role.manager');
+        // $this->middleware('role.manager');
 
         $this->validate($request, [
-            'note' => 'required',
+            // 'note' => 'required',
             'name' => 'required',
             'sell_price' => 'required',
             'cost_price' => 'required',
@@ -168,7 +172,7 @@ class StockController extends Controller
      */
     public function show(Stock $stock)
     {
-        return new JsonResource($stock->append(['transactions', 'categories', 'updated_user', 'orders_history']));
+        return new JsonResource($stock->append(['transactions', 'categories', 'updated_user', 'orders_history', 'tester']));
     }
 
     /**
@@ -180,10 +184,10 @@ class StockController extends Controller
      */
     public function update(Request $request, Stock $stock)
     {
-        $this->middleware('role.manager');
+        // $this->middleware('role.manager');
 
         $this->validate($request, [
-            'note' => 'required',
+            // 'note' => 'required',
             'name' => 'required',
             'sell_price' => 'required',
             'cost_price' => 'required',

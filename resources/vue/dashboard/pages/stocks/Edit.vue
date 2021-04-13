@@ -18,7 +18,7 @@
                         <a-button type="primary" size="small" icon="reload" :loading="stockInfoLoading" @click="() => loadStock(id)" />
                     </a-tooltip>
                 </template>
-                <a-descriptions size="small" :column="1" v-if="id">
+                <a-descriptions size="small" :column="1" v-if="stockInfo.id">
                     <a-descriptions-item label="Ngày tạo">
                         <span>{{ stockInfo.created_at }}</span>
                     </a-descriptions-item>
@@ -74,7 +74,7 @@
                     />
                 </a-form-model-item>
                 <a-form-model-item
-                    label="Nhân viên chịu trách nhiệm kiểm thử" prop="tester_id"
+                    label="Người kiểm thử" prop="tester_id"
                     :help="stockInfo.tester_id ? `Đang chọn: #${stockInfo.tester_id}. ${stockInfo.tester.name} (Phone: ${stockInfo.tester.phone || 'Chưa có'})` : false"
                 >
                     <a-row :gutter="8">
@@ -84,7 +84,7 @@
                             </a-input-search>
                         </a-col>
                         <a-col :span="8">
-                            <a-tooltip title="Chọn từ danh sách" v-if="!id || disabledField(stockInfo, UserRole.ROLE_ADMIN_MANAGER)">
+                            <a-tooltip title="Chọn từ danh sách" v-if="!id || !disabledField(stockInfo, UserRole.ROLE_ADMIN_MANAGER)">
                                 <a-button type="primary" icon="user" @click="() => userIndexPageVisible = true">Chọn</a-button>
                             </a-tooltip>
                         </a-col>

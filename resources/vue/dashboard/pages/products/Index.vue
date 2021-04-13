@@ -92,7 +92,7 @@
                     <a-tag v-if="configProductStatus[value]" :color="configProductStatus[value].color">{{ configProductStatus[value].name }}</a-tag>
                 </template>
                 <template slot="price" slot-scope="value">
-                    <div style="display:block;text-align:right;">{{ number_format(value) }}</div>
+                    <div style="display:block;text-align:right;">{{ number_format(value) }} ₫</div>
                 </template>
                 <template slot="categories" slot-scope="value">
                     <a-tag v-for="category in value" :key="category.id">{{ category.name }}</a-tag>
@@ -159,27 +159,33 @@ const productsTableColumns = [
         }),
     },
     {
-        title: 'Giá (VND)',
+        title: 'Giá bán',
         dataIndex: 'price',
-        scopedSlots: { customRender: 'price' },
+        scopedSlots: {
+            customRender: 'price',
+        },
         sorter: true,
     },
     {
         title: 'Chuyên mục',
         dataIndex: 'categories',
         scopedSlots: {
-            customRender: 'categories'
+            customRender: 'categories',
         },
     },
     {
         title: 'Thời gian',
         key: 'time',
-        scopedSlots: { customRender: 'time' },
+        scopedSlots: {
+            customRender: 'time',
+        },
     },
     {
         title: 'Hành động',
         key: 'action',
-        scopedSlots: { customRender: 'action' },
+        scopedSlots: {
+            customRender: 'action',
+        },
     },
 ];
 
