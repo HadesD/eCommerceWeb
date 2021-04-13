@@ -75,7 +75,7 @@
                 </a-form-model-item>
                 <a-form-model-item
                     label="Nhân viên chịu trách nhiệm kiểm thử" prop="tester_id"
-                    :help="stockInfo.tester_id ? `Đang chọn: #${orderInfo.tester_id}. ${orderInfo.customer.name} (Phone: ${orderInfo.customer.phone || 'Chưa có'})` : false"
+                    :help="stockInfo.tester_id ? `Đang chọn: #${stockInfo.tester_id}. ${stockInfo.tester.name} (Phone: ${stockInfo.tester.phone || 'Chưa có'})` : false"
                 >
                     <a-row :gutter="8">
                         <a-col :span="12">
@@ -84,7 +84,7 @@
                             </a-input-search>
                         </a-col>
                         <a-col :span="8">
-                            <a-tooltip title="Chọn từ danh sách" v-if="!id || disabledField(orderInfo, UserRole.ROLE_ADMIN_MANAGER)">
+                            <a-tooltip title="Chọn từ danh sách" v-if="!id || disabledField(stockInfo, UserRole.ROLE_ADMIN_MANAGER)">
                                 <a-button type="primary" icon="user" @click="() => userIndexPageVisible = true">Chọn</a-button>
                             </a-tooltip>
                         </a-col>
@@ -223,6 +223,14 @@
         </a-modal>
 
         <a-modal
+            :visible="userIndexPageVisible"
+            @cancel="() => userIndexPageVisible = false"
+            :footer="false"
+            width="98vw"
+        >
+            <UserIndex :onFinishSelect="onFinishSelectUser" />
+        </a-modal>
+        <a-modal
             :visible="userEditPageVisible"
             @cancel="() => userEditPageVisible = false"
             :footer="false"
@@ -281,6 +289,7 @@ export default {
     },
     components: {
         AddCategoryModal: () => import('../../components/AddCategoryModal.vue'),
+        UserIndex: () => import('../users/Index'),
         UserEdit: () => import('../users/Edit'),
         OrderEdit: () => import('../orders/Edit'),
     },
@@ -289,6 +298,7 @@ export default {
             orderEditPageVisible: false,
             currentOrderId: undefined,
 
+            userIndexPageVisible: false,
             userEditPageVisible: false,
             currentUserId: undefined,
 
@@ -319,7 +329,16 @@ export default {
                 idi: [
                     { required: true },
                 ],
+                name: [
+                    { required: true },
+                ],
                 cost_price: [
+                    { required: true },
+                ],
+                sell_price: [
+                    { required: true },
+                ],
+                tester_id: [
                     { required: true },
                 ],
                 quantity: [
@@ -515,6 +534,12 @@ export default {
                 })
                 .finally(()=>{
                 });
+        },
+
+        onFinishSelectUser(recordData) {
+            this.formData.tester_id = recordData.id;
+
+            this.userIndexPageVisible = false;
         },
     },
 }

@@ -14,12 +14,12 @@ class Stock extends Model
         'name', 'idi', 'cost_price', 'updated_user_id', 'in_date'
     ];
 
-    protected $appends = [
+    // protected $appends = [
         // 'categories',
         // 'updated_user',
         // 'products',
         // 'transactions',
-    ];
+    // ];
 
     public function getCostTotalAttribute()
     {
@@ -65,6 +65,11 @@ class Stock extends Model
     public function getUpdatedUserAttribute()
     {
         return User::find($this->updated_user_id);
+    }
+
+    public function getTesterAttribute()
+    {
+        return User::find($this->tester_id);
     }
 
     public function getOrdersHistoryAttribute()

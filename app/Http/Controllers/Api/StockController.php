@@ -80,6 +80,17 @@ class StockController extends Controller
      */
     public function store(Request $request)
     {
+        $this->middleware('role.manager');
+
+        $this->validate($request, [
+            'note' => 'required',
+            'name' => 'required',
+            'sell_price' => 'required',
+            'cost_price' => 'required',
+            'tester_id' => 'required',
+            'quantity' => 'required',
+        ]);
+
         try {
             DB::beginTransaction();
 
@@ -92,6 +103,8 @@ class StockController extends Controller
             $stock->cost_price = ($request->cost_price < 0) ? 0 : $request->cost_price;
             $stock->updated_user_id = $authUser->id;
             $stock->note = $request->note;
+            $stock->tester_id = $request->tester_id;
+            $stock->sell_price = $request->sell_price;
             $stock->save();
 
             // Category
@@ -167,6 +180,17 @@ class StockController extends Controller
      */
     public function update(Request $request, Stock $stock)
     {
+        $this->middleware('role.manager');
+
+        $this->validate($request, [
+            'note' => 'required',
+            'name' => 'required',
+            'sell_price' => 'required',
+            'cost_price' => 'required',
+            'tester_id' => 'required',
+            'quantity' => 'required',
+        ]);
+
         try {
             DB::beginTransaction();
 
@@ -177,10 +201,14 @@ class StockController extends Controller
             $stock->name = $request->name;
             $stock->idi = $request->idi;
             $stock->quantity = ($request->quantity < 0) ? 0 : $request->quantity;
-            $stock->updated_user_id = $request->user()->id;
+            $stock->updated_user_id = $authUser->id;
             $stock->note = $request->note;
             if ($authUser->hasPermission(User::ROLE_ADMIN_MASTER)) {
                 $stock->cost_price = $request->cost_price;
+            }
+            if ($authUser->hasPermission(User::ROLE_ADMIN_MANAGER)) {
+                $stock->tester_id = $request->tester_id;
+                $stock->sell_price = $request->sell_price;
             }
             $stock->save();
 
