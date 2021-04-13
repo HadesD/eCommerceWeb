@@ -97,7 +97,7 @@
                 <a-tag v-if="configOrderStatus[record.status]" :color="configOrderStatus[record.status].color">{{ configOrderStatus[record.status].name }}</a-tag>
             </template>
             <template slot="total_amount" slot-scope="value">
-                <span style="display:block;text-align:right;">{{ totalAmount(value) }}</span>
+                <div style="text-align:right;">{{ totalAmount(value) }}</div>
             </template>
             <template slot="order_product" slot-scope="record">
                 <div v-for="p in record.order_products" :key="p.id">
@@ -384,7 +384,7 @@ export default {
                 });
             });
 
-            return `${number_format(amount)} / ${number_format(cost)}`;
+            return `${number_format(amount)} ₫ / ${number_format(cost)} ₫`;
         },
     },
 }
