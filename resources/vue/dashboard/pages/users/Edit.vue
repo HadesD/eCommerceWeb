@@ -89,6 +89,9 @@ export default {
                 name: [
                     { required: true },
                 ],
+                phone: [
+                    { required: true },
+                ],
                 email: [
                     { type: 'email' },
                 ],

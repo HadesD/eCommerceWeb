@@ -29,6 +29,8 @@ class UserController extends Controller
             }
         }
 
+        $userQuery = $userQuery->orderBy('role', 'DESC')->orderBy('updated_at', 'DESC');
+
         return new JsonResource($userQuery->paginate());
     }
 
