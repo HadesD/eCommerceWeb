@@ -29,28 +29,30 @@ export default {
 
     methods: {
         reloadUserInfo() {
-            this.$message.loading('Đang đồng bộ thông tin...');
+            const hide = this.$message.loading('Đang đồng bộ thông tin đăng nhập...', 0);
 
             axios.get('/api/user')
                 .then(res => {
                     User.setInfo(res.data);
-
-                    this.$message.success('Đồng bộ thông tin người dùng thành công');
                 })
                 .catch(err => {
                     if (this.authUser.id) {
-                        if (err.response && (err.response.status === 401)) {
-                            User.clear();
-                            return;
-                        }
-                        if (err.response && err.response.data.message) {
-                            this.$message.error(err.response.data.message);
-                            return;
+                        if (err.response) {
+                            if (err.response.status === 401) {
+                                User.clear();
+                                return;
+                            }
+
+                            if (err.response.data.message) {
+                                this.$message.error(err.response.data.message);
+                                return;
+                            }
                         }
 
                         this.$message.error(err.message || 'Đồng bộ thông tin người dùng thất bại');
                     }
-                });
+                })
+                .finally(() => setTimeout(hide, 1500));
         },
 
         getAppVer(fromDoc) {

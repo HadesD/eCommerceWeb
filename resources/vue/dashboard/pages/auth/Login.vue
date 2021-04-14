@@ -77,8 +77,10 @@ export default {
     mounted(){
     },
     methods: {
-        async onFinish(){
+        async onFinish() {
             try {
+                this.loggingIn = true;
+
                 this.$Progress.start();
 
                 // Refresh CSRF
@@ -94,9 +96,11 @@ export default {
                     User.setInfo(userData);
 
                     this.$Progress.finish();
+
                     this.$router.push({path: '/'});
                 } else {
                     this.$message.error('Bạn không có quyền hạn truy cập trang này');
+
                     this.$Progress.fail();
                 }
             } catch (err) {
@@ -109,13 +113,9 @@ export default {
 
                 this.$message.error(err.message || 'Thất bại');
             } finally {
-                this.$Progress.stop();
-
                 this.loggingIn = false;
             }
-
-            return false;
-        }
+        },
     },
 }
 </script>
