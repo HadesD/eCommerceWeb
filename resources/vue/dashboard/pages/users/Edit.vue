@@ -46,7 +46,7 @@
                         <a-select-option v-for="userRole in Object.keys(configUserRole)" :key="userRole" :value="parseInt(userRole)" :disabled="!authUser.hasPermission(UserRole.ROLE_ADMIN_MASTER) && (parseInt(userRole) >= UserRole.ROLE_ADMIN_MASTER)">{{ configUserRole[userRole].name }}</a-select-option>
                     </a-select>
                 </a-form-model-item>
-                <a-form-model-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: 4 }">
+                <a-form-model-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: (['xs','sm','md'].indexOf($mq) !== -1) ? 0 : 4 }">
                     <a-button
                         type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })"
                         block
