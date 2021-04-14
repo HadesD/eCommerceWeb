@@ -89,7 +89,7 @@
                 <!-- Block Search: END -->
 
                 <template slot="price" slot-scope="value">
-                    <div style="text-align:right;">{{ number_format(value) }} ₫</div>
+                    <div style="text-align:right;">{{ number_format(value || 0) }} ₫</div>
                 </template>
                 <template slot="quantity" slot-scope="value">
                     <a-tag :color="(value > 0) ? 'green' : 'red'">{{ value }}</a-tag>
