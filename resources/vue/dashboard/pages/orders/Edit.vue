@@ -84,25 +84,25 @@
                             <a-button type="primary" icon="plus" />
                         </a-tooltip>
                     </a>
-                    <a-card :title="`Sản phẩm #${pIdx}`" v-for="(p, pIdx) in formData.order_products" :key="p.id" style="margin-bottom: 16px;" :headStyle="{backgroundColor:'#f18e1f',color:'#FFF'}">
-                        <a-popconfirm v-if="!p.id" slot="extra" title="Chắc chắn muốn xóa?" @confirm="() => formData.order_products.splice(pIdx, 1)">
+                    <a-card :title="`Sản phẩm #${pIdx}`" v-for="(op, pIdx) in formData.order_products" :key="`op-${op.id || Math.random()}`" style="margin-bottom: 16px;" :headStyle="{backgroundColor:'#f18e1f',color:'#FFF'}">
+                        <a-popconfirm v-if="!op.id" slot="extra" title="Chắc chắn muốn xóa?" @confirm="() => formData.order_products.splice(pIdx, 1)">
                             <a-button type="danger" icon="delete"></a-button>
                         </a-popconfirm>
                         <a-form-model-item
                             label="Sản phẩm"
                             :rules="{required:true,message:'Không được để trống'}"
                             :prop="'order_products.'+pIdx+'.product_id'"
-                            :help="(p.id && p.product) ? `Đang chọn: #${p.product.id}. ${p.product.name} (${number_format(p.product.price)} VND)` : false"
+                            :help="(op.id && op.product) ? `Đang chọn: #${op.product.id}. ${op.product.name} (${number_format(op.product.price)} VND)` : false"
                         >
                             <a-row :gutter="8">
                                 <a-col :span="12">
-                                    <a-input-search v-model="p.product_id" readOnly @search="() => { order_product = p;productEditPageVisible = true; }">
+                                    <a-input-search v-model="op.product_id" readOnly @search="() => { order_product = op;productEditPageVisible = true; }">
                                         <a-button icon="search" slot="enterButton" />
                                     </a-input-search>
                                 </a-col>
                                 <a-col :span="8">
-                                    <a-tooltip v-if="!p.id || (p.id <= 0) || (authUser.role === UserRole.ROLE_ADMIN_MASTER)" title="Chọn từ danh sách">
-                                        <a-button type="primary" icon="shopping-cart" @click="() => {order_product = p;productIndexPageVisible = true}">Chọn</a-button>
+                                    <a-tooltip v-if="!op.id || (op.id <= 0) || (authUser.role === UserRole.ROLE_ADMIN_MASTER)" title="Chọn từ danh sách">
+                                        <a-button type="primary" icon="shopping-cart" @click="() => {order_product = op;productIndexPageVisible = true}">Chọn</a-button>
                                     </a-tooltip>
                                 </a-col>
                             </a-row>
@@ -112,15 +112,15 @@
                             :rules="{required:true,message:'Không được để trống'}"
                             :prop="'order_products.'+pIdx+'.payment_method'"
                         >
-                            <a-select v-model="p.payment_method">
+                            <a-select v-model="op.payment_method">
                                 <a-select-option v-for="methodCode in Object.keys(configPaymentMethod)" :key="methodCode" :value="parseInt(methodCode)">{{ configPaymentMethod[methodCode].name }}</a-select-option>
                             </a-select>
                         </a-form-model-item>
                         <a-form-model-item label="Số lượng muốn đặt ban đầu">
-                            <a-input-number v-model="p.quantity" style="width: 100%;" :min="1" :disabled="p.product ? true : false" />
+                            <a-input-number v-model="op.quantity" style="width: 100%;" :min="1" :disabled="op.product ? true : false" />
                         </a-form-model-item>
                         <a-card title="Xuất kho" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#680075',color:'#FFF'}" :bodyStyle="{padding:0}">
-                            <a slot="extra" @click="() => p.order_product_stocks.push(Object.assign({}, order_product_stock_obj))">
+                            <a slot="extra" @click="() => op.order_product_stocks.push({...order_product_stock_obj})">
                                 <a-tooltip title="Chọn thêm hàng từ kho">
                                     <a-button type="primary" icon="plus" />
                                 </a-tooltip>
@@ -128,9 +128,9 @@
                             <a-table
                                 :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
                                 :columns="product_stockTableColumns"
-                                :data-source="p.order_product_stocks"
+                                :data-source="op.order_product_stocks"
                                 :pagination="false"
-                                :row-key="record => `po-${record.id || Math.random()}`"
+                                :row-key="ops => `ops-${ops.id || Math.random()}`"
                                 size="small"
                                 bordered
                                 defaultExpandAllRows
@@ -175,7 +175,7 @@
                                     <div>Đã thanh toán: <PaidAmount :needAmount="ps.id ? ((ps.stock.cost_price > ps.amount) ? ps.stock.cost_price : ps.amount) : ps.amount" :amount="ps.transactions.reduce((a, b) => parseInt(a) + (parseInt(b.amount) || 0), 0)" /></div>
                                 </template>
                                 <template slot="action" slot-scope="text, ps, psIdx">
-                                    <a @click="() => ps.transactions.push(Object.assign({}, transaction_obj))">
+                                    <a @click="() => ps.transactions.push({...transaction_obj})">
                                         <a-tooltip title="Thêm giao dịch">
                                             <a-button type="primary" icon="plus" />
                                         </a-tooltip>
@@ -187,11 +187,11 @@
                                 <a-table
                                     :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
                                     slot="expandedRowRender"
-                                    slot-scope="ps, psIdx"
+                                    slot-scope="pst, psIdx"
                                     :columns="addon_transactionsTableColumns"
-                                    :data-source="ps.transactions"
+                                    :data-source="pst.transactions"
                                     :pagination="false"
-                                    :row-key="ps => `p-addon-tnx-${ps.id || Math.random()}`"
+                                    :row-key="opst => `opst-${pst.id || Math.random()}`"
                                     size="small"
                                     bordered
                                 >
