@@ -131,7 +131,7 @@
                             <a-table
                                 :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
                                 :columns="product_stockTableColumns"
-                                :data-source="formData.order_products[pIdx].order_product_stocks"
+                                :data-source="op.order_product_stocks"
                                 :pagination="false"
                                 :row-key="ops => `ops-${ops.id || Math.random()}`"
                                 size="small"
@@ -190,11 +190,11 @@
                                 <a-table
                                     :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
                                     slot="expandedRowRender"
-                                    slot-scope="pst, psIdx"
+                                    slot-scope="ops, psIdx"
                                     :columns="addon_transactionsTableColumns"
-                                    :data-source="formData.order_products[pIdx].order_product_stocks[psIdx].transactions"
+                                    :data-source="ops.transactions"
                                     :pagination="false"
-                                    :row-key="opst => `opst-${pst.id || Math.random()}`"
+                                    :row-key="opst => `opst-${opst.id || Math.random()}`"
                                     size="small"
                                     bordered
                                 >
@@ -504,6 +504,31 @@ export default {
                 customer_id: {required: true},
             },
 
+            transaction_obj: {
+                id: undefined,
+                description: undefined,
+                amount: undefined,
+                paid_date: undefined,
+            },
+
+            order_product_obj: {
+                id: undefined,
+                order_id: undefined,
+                product_id: null,
+                payment_method: PaymentMethod.PM_ONCE,
+                order_product_stocks: [],
+                quantity: undefined,
+            },
+            order_product_stock_obj: {
+                id: undefined,
+                order_product_id: undefined,
+                stock_id: null,
+                status: OrderProductStockStatus.STS_SOLD,
+                amount: undefined,
+                transactions: [],
+            },
+
+
             OrderStatus,
             configOrderStatus,
             OrderProductStockStatus,
@@ -545,35 +570,6 @@ export default {
         id() {
             return this.orderId || this.formData.id;
         },
-        transaction_obj() {
-            return {
-                id: undefined,
-                description: undefined,
-                amount: undefined,
-                paid_date: undefined,
-            }
-        },
-        order_product_obj() {
-            return {
-                id: undefined,
-                order_id: undefined,
-                product_id: null,
-                payment_method: PaymentMethod.PM_ONCE,
-                order_product_stocks: [],
-                quantity: undefined,
-            }
-        },
-        order_product_stock_obj() {
-            return {
-                id: undefined,
-                order_product_id: undefined,
-                stock_id: null,
-                status: OrderProductStockStatus.STS_SOLD,
-                amount: undefined,
-                transactions: [],
-            }
-        },
-
     },
     methods: {
         number_format,
@@ -630,6 +626,8 @@ export default {
 
             // Reset popup data
             this.currentUserId = undefined;
+            this.currentProductId = undefined;
+            this.currentStockId = undefined;
 
             axios.get(`/api/orders/${id}`)
                 .then(res => {
