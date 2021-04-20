@@ -79,15 +79,13 @@
                     <a-textarea v-model="formData.note" placeholder="Tên khách hàng, loại thanh toán, chi phí sinh hoạt, lương nhân viên, v..v" />
                 </a-form-model-item>
                 <a-card title="Sản phẩm đặt mua" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#9800ab',color:'#FFF'}">
-                    <a slot="extra" @click="() => {
-                        log();
-                        formData.order_products.push({...order_product_obj});
-                    }">
+                    <a slot="extra" @click="() => formData.order_products.push(cloneDeep(order_product_obj))">
                         <a-tooltip title="Thêm sản phẩm">
                             <a-button type="primary" icon="plus" />
                         </a-tooltip>
                     </a>
                     <a-card :title="`Sản phẩm #${pIdx}`" v-for="(op, pIdx) in formData.order_products" :key="`op-${op.id || Math.random()}`" style="margin-bottom: 16px;" :headStyle="{backgroundColor:'#f18e1f',color:'#FFF'}">
+                        {{ (() => {log(op)})() }}
                         <a-popconfirm v-if="!op.id" slot="extra" title="Chắc chắn muốn xóa?" @confirm="() => formData.order_products.splice(pIdx, 1)">
                             <a-button type="danger" icon="delete"></a-button>
                         </a-popconfirm>
@@ -123,7 +121,7 @@
                             <a-input-number v-model="op.quantity" style="width: 100%;" :min="1" :disabled="op.product ? true : false" />
                         </a-form-model-item>
                         <a-card title="Xuất kho" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#680075',color:'#FFF'}" :bodyStyle="{padding:0}">
-                            <a slot="extra" @click="() => op.order_product_stocks.push({...order_product_stock_obj})">
+                            <a slot="extra" @click="() => op.order_product_stocks.push(cloneDeep(order_product_stock_obj))">
                                 <a-tooltip title="Chọn thêm hàng từ kho">
                                     <a-button type="primary" icon="plus" />
                                 </a-tooltip>
@@ -238,7 +236,7 @@
                     </a-card>
                 </a-card>
                 <a-card title="Giao dịch thêm" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#9800ab',color:'#FFF'}" :bodyStyle="{padding:0}">
-                    <a slot="extra" @click="() => formData.transactions.push(Object.assign({}, transaction_obj))">
+                    <a slot="extra" @click="() => formData.transactions.push({...transaction_obj})">
                         <a-tooltip title="Thêm giao dịch">
                             <a-button type="primary" icon="plus" />
                         </a-tooltip>
@@ -361,7 +359,7 @@ import OrderStatus, { Config as configOrderStatus } from '../../configs/OrderSta
 import OrderProductStockStatus, { Config as configOrderProductStockStatus } from '../../configs/OrderProductStockStatus';
 import PaymentMethod, { Config as configPaymentMethod } from '../../configs/PaymentMethod';
 
-import { number_format } from '../../../helpers';
+import { number_format, cloneDeep, } from '../../../helpers';
 import User from '../../utils/User';
 
 const PaidAmount = {
@@ -572,6 +570,7 @@ export default {
         },
     },
     methods: {
+        cloneDeep,
         number_format,
 
         log: console.log,

@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import moment from 'moment';
 
 function vietnameseNormalize(str, toUpperCase = false) {
@@ -26,7 +27,11 @@ function date_format(dateStr, formatStr = 'YYYY-MM-DD HH:mm:ss') {
     return moment(dateStr).format(formatStr);
 }
 
+function cloneDeep(data) {
+    return _.cloneDeep(data);
+}
+
 export {
     vietnameseNormalize, number_format,
-    date_format,
+    date_format, cloneDeep,
 };
