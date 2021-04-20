@@ -85,7 +85,6 @@
                         </a-tooltip>
                     </a>
                     <a-card :title="`Sản phẩm #${pIdx}`" v-for="(op, pIdx) in formData.order_products" :key="`op-${op.id || Math.random()}`" style="margin-bottom: 16px;" :headStyle="{backgroundColor:'#f18e1f',color:'#FFF'}">
-                        {{ (() => {log(op)})() }}
                         <a-popconfirm v-if="!op.id" slot="extra" title="Chắc chắn muốn xóa?" @confirm="() => formData.order_products.splice(pIdx, 1)">
                             <a-button type="danger" icon="delete"></a-button>
                         </a-popconfirm>
@@ -573,8 +572,6 @@ export default {
         cloneDeep,
         number_format,
 
-        log: console.log,
-
         disabledLastMonthAndTomorrow(current) {
             return !this.authUser.hasPermission(UserRole.ROLE_ADMIN_SUB_MASTER) &&
                 current && ((current < moment().startOf('month')) || (current > moment().endOf('day')));
@@ -661,7 +658,7 @@ export default {
                         };
                     });
 
-                    this.orderInfo = {...orderData};
+                    this.orderInfo = cloneDeep(orderData);
 
                     // Load tree
 
