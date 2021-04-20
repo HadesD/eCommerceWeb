@@ -79,7 +79,10 @@
                     <a-textarea v-model="formData.note" placeholder="Tên khách hàng, loại thanh toán, chi phí sinh hoạt, lương nhân viên, v..v" />
                 </a-form-model-item>
                 <a-card title="Sản phẩm đặt mua" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#9800ab',color:'#FFF'}">
-                    <a slot="extra" @click="() => {formData.order_products.push(Object.assign({}, order_product_obj));}">
+                    <a slot="extra" @click="() => {
+                        log();
+                        formData.order_products.push({...order_product_obj});
+                    }">
                         <a-tooltip title="Thêm sản phẩm">
                             <a-button type="primary" icon="plus" />
                         </a-tooltip>
@@ -96,13 +99,13 @@
                         >
                             <a-row :gutter="8">
                                 <a-col :span="12">
-                                    <a-input-search v-model="op.product_id" readOnly @search="() => { order_product = op;productEditPageVisible = true; }">
+                                    <a-input-search v-model="op.product_id" readOnly @search="() => {currentProductId = op.product_id;productEditPageVisible = true;}">
                                         <a-button icon="search" slot="enterButton" />
                                     </a-input-search>
                                 </a-col>
                                 <a-col :span="8">
                                     <a-tooltip v-if="!op.id || (op.id <= 0) || (authUser.role === UserRole.ROLE_ADMIN_MASTER)" title="Chọn từ danh sách">
-                                        <a-button type="primary" icon="shopping-cart" @click="() => {order_product = op;productIndexPageVisible = true}">Chọn</a-button>
+                                        <a-button type="primary" icon="shopping-cart" @click="() => {productIndexPageVisible = true}">Chọn</a-button>
                                     </a-tooltip>
                                 </a-col>
                             </a-row>
@@ -128,7 +131,7 @@
                             <a-table
                                 :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
                                 :columns="product_stockTableColumns"
-                                :data-source="op.order_product_stocks"
+                                :data-source="formData.order_products[pIdx].order_product_stocks"
                                 :pagination="false"
                                 :row-key="ops => `ops-${ops.id || Math.random()}`"
                                 size="small"
@@ -144,13 +147,13 @@
                                     >
                                         <a-row :gutter="8">
                                             <a-col :span="12">
-                                                <a-input-search v-model="ps.stock_id" readOnly @search="() => { order_product_stock = ps;stockEditPageVisible = true; }">
+                                                <a-input-search v-model="ps.stock_id" readOnly @search="() => {currentStockId = ps.stock_id;stockEditPageVisible = true;}">
                                                     <a-button icon="search" slot="enterButton" />
                                                 </a-input-search>
                                             </a-col>
                                             <a-col :span="8">
                                                 <a-tooltip v-if="!ps.id || (ps.id <= 0)" title="Chọn từ danh sách">
-                                                    <a-button type="primary" icon="bank" @click="() => {order_product_stock = ps;stockIndexPageVisible = true}">Chọn</a-button>
+                                                    <a-button type="primary" icon="bank" @click="() => {stockIndexPageVisible = true}">Chọn</a-button>
                                                 </a-tooltip>
                                             </a-col>
                                         </a-row>
@@ -189,7 +192,7 @@
                                     slot="expandedRowRender"
                                     slot-scope="pst, psIdx"
                                     :columns="addon_transactionsTableColumns"
-                                    :data-source="pst.transactions"
+                                    :data-source="formData.order_products[pIdx].order_product_stocks[psIdx].transactions"
                                     :pagination="false"
                                     :row-key="opst => `opst-${pst.id || Math.random()}`"
                                     size="small"
@@ -328,7 +331,7 @@
             :footer="false"
             width="98vw"
         >
-            <StockEdit :stockId="order_product_stock.stock_id" />
+            <StockEdit :stockId="currentStockId" />
         </a-modal>
 
         <a-modal
@@ -345,7 +348,7 @@
             :footer="false"
             width="98vw"
         >
-            <ProductEdit :productId="order_product.product_id" />
+            <ProductEdit :productId="currentProductId" />
         </a-modal>
     </div>
 </template>
@@ -471,11 +474,11 @@ export default {
 
             productIndexPageVisible: false,
             productEditPageVisible: false,
-            order_product: {},
+            currentProductId: undefined,
 
             stockIndexPageVisible: false,
             stockEditPageVisible: false,
-            order_product_stock: {},
+            currentStockId: undefined,
 
             orderInfo: {},
             categories: [],
@@ -496,8 +499,8 @@ export default {
                 transactions: [],
             },
             rules: {
-                status: {required: true,},
-                note: {required: true,},
+                status: {required: true},
+                note: {required: true},
                 customer_id: {required: true},
             },
 
@@ -574,6 +577,8 @@ export default {
     },
     methods: {
         number_format,
+
+        log: console.log,
 
         disabledLastMonthAndTomorrow(current) {
             return !this.authUser.hasPermission(UserRole.ROLE_ADMIN_SUB_MASTER) &&
@@ -659,7 +664,7 @@ export default {
                         };
                     });
 
-                    this.orderInfo = orderData;
+                    this.orderInfo = {...orderData};
 
                     // Load tree
 
