@@ -21,13 +21,20 @@ class Transaction extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $appends = [
-        // 'cashier',
-    ];
-
     public function setPaidDateAttribute($value)
     {
         $this->attributes['paid_date'] = Carbon::parse($value)->format('Y-m-d H:i:s');
+    }
+
+    public function getParentAttribute()
+    {
+        if ($this->order) {
+            return 'Order-'.$this->order->id;
+        } else if ($this->stock) {
+            return 'Stock-'.$this->stock->id;
+        }
+
+        return '';
     }
 
     public function getStockAttribute()

@@ -56,7 +56,6 @@ class OrderController extends Controller
                 $orderQuery = $orderQuery->orderBy($col, $sortType);
             }
         } else {
-            // $orderQuery = $orderQuery->orderBy('updated_at', 'DESC');
             $orderQuery = $orderQuery->orderBy('deal_date', 'DESC');
         }
 

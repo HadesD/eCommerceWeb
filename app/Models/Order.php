@@ -23,12 +23,6 @@ class Order extends Model
 
     protected $fillable = ['customer_id', 'note'];
 
-    protected $appends = [
-        // 'order_products',
-        // 'transactions', // Addon fee,..
-        // 'customer',
-    ];
-
     public function getRemainingNeedPaidTotalAttribute()
     {
         return $this->need_paid_total - $this->stock_earned_total;

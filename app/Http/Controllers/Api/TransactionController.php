@@ -43,11 +43,12 @@ class TransactionController extends Controller
 
         if (isset($request->download)) {
             $transactionQuery = $transactionQuery->get();
+            $transactionQuery->append(['parent']);
 
             switch ($request->download) {
                 case 'csv': {
                     $csv = \League\Csv\Writer::createFromFileObject(new \SplTempFileObject);
-                    $csv->insertOne(array_keys($transactionQuery[0]->getAttributes()));
+                    $csv->insertOne(array_keys($transactionQuery[0]->toArray()));
 
                     foreach ($transactionQuery as $transaction) {
                         $csv->insertOne($transaction->toArray());

@@ -14,13 +14,6 @@ class Stock extends Model
         'name', 'idi', 'cost_price', 'updated_user_id', 'in_date'
     ];
 
-    // protected $appends = [
-        // 'categories',
-        // 'updated_user',
-        // 'products',
-        // 'transactions',
-    // ];
-
     public function getCostTotalAttribute()
     {
         $cost_total = 0;

@@ -45,7 +45,7 @@ class StockController extends Controller
                 $stockQuery = $stockQuery->orderBy($col, $sortType);
             }
         } else {
-            $stockQuery = $stockQuery->orderBy('updated_at', 'DESC');
+            $stockQuery = $stockQuery->orderBy('created_at', 'DESC');
         }
 
         if (isset($request->download)) {

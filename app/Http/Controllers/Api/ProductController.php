@@ -42,7 +42,7 @@ class ProductController extends Controller
             }
         }
 
-        $productQuery = $productQuery->orderBy('id', 'DESC');
+        $productQuery = $productQuery->orderBy('created_at', 'DESC');
 
         return new JsonResource($productQuery->paginate());
     }
