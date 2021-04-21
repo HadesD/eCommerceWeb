@@ -179,6 +179,7 @@
 
             <template slot="expandedRowRender" slot-scope="o">
                 <a-table
+                    v-if="o.order_products.length"
                     defaultExpandAllRows
                     :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
                     :columns="orderProductTableColumns"
@@ -200,6 +201,19 @@
                         >
                         </a-table>
                     </template>
+                </a-table>
+                <a-table
+                    v-if="o.transactions.length"
+                    :style="o.order_products.length ? 'margin-top: 25px;' : ''"
+                    :title="() => 'Giao dịch thêm'"
+                    :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
+                    :columns="transactionsTableColumns"
+                    :data-source="o.transactions"
+                    :pagination="false"
+                    :row-key="record => record.id"
+                    size="small"
+                    bordered
+                >
                 </a-table>
             </template>
         </a-table>
@@ -311,6 +325,22 @@ const ordersTableColumns = [
     },
 ];
 
+const transactionsTableColumns = [
+    {
+        title: 'Nội dung',
+        dataIndex: 'description',
+    },
+    {
+        title: 'Số tiền',
+        dataIndex: 'amount',
+        customRender: (value) => number_format(value),
+    },
+    {
+        title: 'Ngày thanh toán',
+        dataIndex: 'paid_date',
+    },
+];
+
 const orderProductTableColumns = [
     {
         title: 'Sản phẩm',
@@ -343,6 +373,20 @@ const orderProductStockTableColumns = [
         title: 'Giá bán',
         dataIndex: 'amount',
         customRender: (value) => number_format(value),
+    },
+    {
+        title: 'Đã thu',
+        key: 'total_received',
+        dataIndex: 'transactions',
+        customRender: (transactions) => {
+            let total = 0;
+
+            transactions.forEach(value => {
+                total += value.amount;
+            });
+
+            return number_format(total);
+        },
     },
 ];
 
@@ -381,6 +425,7 @@ export default {
 
             orderProductTableColumns,
             orderProductStockTableColumns,
+            transactionsTableColumns,
 
             OrderStatus,
             configOrderStatus,
