@@ -60,7 +60,7 @@
                 <a-form-model-item
                     label="Khách hàng"
                     prop="customer_id"
-                    :help="orderInfo.customer ? `Đang chọn: #${orderInfo.customer_id}. ${orderInfo.customer.name} (Phone: ${orderInfo.customer.phone || 'Chưa có'})` : false"
+                    :help="orderInfo.customer ? `Đang chọn: #${orderInfo.customer.id}. ${orderInfo.customer.name} (Phone: ${orderInfo.customer.phone || 'Chưa có'})` : false"
                 >
                     <a-row :gutter="8">
                         <a-col :span="12">
@@ -70,7 +70,13 @@
                         </a-col>
                         <a-col :span="8">
                             <a-tooltip title="Chọn từ danh sách">
-                                <a-button type="primary" icon="user" @click="() => userIndexPageVisible = true">Chọn</a-button>
+                                <a-button type="primary" icon="user" @click="() => {
+                                    userIndexPageFinish = (recordData) => {
+                                        formData.customer_id = recordData.id;
+                                        orderInfo.customer = recordData;
+                                    };
+                                    userIndexPageVisible = true;
+                                }">Chọn</a-button>
                             </a-tooltip>
                         </a-col>
                     </a-row>
@@ -92,17 +98,26 @@
                             label="Sản phẩm"
                             :rules="{required:true,message:'Không được để trống'}"
                             :prop="'order_products.'+pIdx+'.product_id'"
-                            :help="(op.id && op.product) ? `Đang chọn: #${op.product.id}. ${op.product.name} (${number_format(op.product.price)} VND)` : false"
+                            :help="op.product ? `Đang chọn: #${op.product.id}. ${op.product.name} (${number_format(op.product.price)} VND)` : false"
                         >
                             <a-row :gutter="8">
                                 <a-col :span="12">
-                                    <a-input-search v-model="op.product_id" readOnly @search="() => {currentProductId = op.product_id;productEditPageVisible = true;}">
+                                    <a-input-search v-model="op.product_id" readOnly @search="() => {
+                                        currentProductId = op.product_id;
+                                        productEditPageVisible = true;
+                                    }">
                                         <a-button icon="search" slot="enterButton" />
                                     </a-input-search>
                                 </a-col>
                                 <a-col :span="8">
                                     <a-tooltip v-if="!op.id || (op.id <= 0) || (authUser.role === UserRole.ROLE_ADMIN_MASTER)" title="Chọn từ danh sách">
-                                        <a-button type="primary" icon="shopping-cart" @click="() => {productIndexPageVisible = true}">Chọn</a-button>
+                                        <a-button type="primary" icon="shopping-cart" @click="() => {
+                                            productIndexPageFinish = (recordData) => {
+                                                op.product_id = recordData.id;
+                                                op.product = recordData;
+                                            };
+                                            productIndexPageVisible = true;
+                                        }">Chọn</a-button>
                                     </a-tooltip>
                                 </a-col>
                             </a-row>
@@ -140,17 +155,26 @@
                                         :rules="{required:true,message:'Không được để trống'}"
                                         :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.stock_id'"
                                         style="margin-bottom:0;"
-                                        :help="(ps.id && ps.stock) ? `Đang chọn: #${ps.stock_id}. ${ps.stock.name} (${ps.stock.idi}) (${number_format(ps.stock.cost_price)} VND)` : false"
+                                        :help="ps.stock ? `Đang chọn: #${ps.stock_id}. ${ps.stock.name} (${ps.stock.idi}) (${number_format(ps.stock.cost_price)} VND)` : false"
                                     >
                                         <a-row :gutter="8">
                                             <a-col :span="12">
-                                                <a-input-search v-model="ps.stock_id" readOnly @search="() => {currentStockId = ps.stock_id;stockEditPageVisible = true;}">
+                                                <a-input-search v-model="ps.stock_id" readOnly @search="() => {
+                                                    currentStockId = ps.stock_id;
+                                                    stockEditPageVisible = true;
+                                                }">
                                                     <a-button icon="search" slot="enterButton" />
                                                 </a-input-search>
                                             </a-col>
                                             <a-col :span="8">
                                                 <a-tooltip v-if="!ps.id || (ps.id <= 0)" title="Chọn từ danh sách">
-                                                    <a-button type="primary" icon="bank" @click="() => {stockIndexPageVisible = true}">Chọn</a-button>
+                                                    <a-button type="primary" icon="bank" @click="() => {
+                                                        stockIndexPageFinish = (recordData) => {
+                                                            ps.stock_id = recordData.id;
+                                                            ps.stock = recordData;
+                                                        };
+                                                        stockIndexPageVisible = true
+                                                    }">Chọn</a-button>
                                                 </a-tooltip>
                                             </a-col>
                                         </a-row>
@@ -303,7 +327,10 @@
             :footer="false"
             width="98vw"
         >
-            <UserIndex :onFinishSelect="onFinishSelectUser" />
+            <UserIndex :onFinishSelect="(recordData) => {
+                userIndexPageFinish(recordData);
+                userIndexPageVisible = false;
+            }" />
         </a-modal>
         <a-modal
             :visible="userEditPageVisible"
@@ -320,7 +347,10 @@
             :footer="false"
             width="98vw"
         >
-            <StockIndex :onFinishSelect="onFinishSelectStock" />
+            <StockIndex :onFinishSelect="(recordData) => {
+                stockIndexPageFinish(recordData);
+                stockIndexPageVisible = false;
+            }" />
         </a-modal>
         <a-modal
             :visible="stockEditPageVisible"
@@ -337,7 +367,10 @@
             :footer="false"
             width="98vw"
         >
-            <ProductIndex :onFinishSelect="onFinishSelectProduct" />
+            <ProductIndex :onFinishSelect="(recordData) => {
+                productIndexPageFinish(recordData);
+                productIndexPageVisible = false;
+            }" />
         </a-modal>
         <a-modal
             :visible="productEditPageVisible"
@@ -466,14 +499,17 @@ export default {
     data() {
         return {
             userIndexPageVisible: false,
+            userIndexPageFinish: null,
             userEditPageVisible: false,
             currentUserId: undefined,
 
             productIndexPageVisible: false,
+            productIndexPageFinish: null,
             productEditPageVisible: false,
             currentProductId: undefined,
 
             stockIndexPageVisible: false,
+            stockIndexPageFinish: null,
             stockEditPageVisible: false,
             currentStockId: undefined,
 
@@ -695,9 +731,11 @@ export default {
                     order_products: this.formData.order_products.map(op_value => {
                         return {
                             ...op_value,
+                            product: undefined,
                             order_product_stocks: op_value.order_product_stocks.map(ops_value => {
                                 return {
                                     ...ops_value,
+                                    stock: undefined,
                                     transactions: ops_value.transactions.map(opst_value => {
                                         return {
                                             ...opst_value,
