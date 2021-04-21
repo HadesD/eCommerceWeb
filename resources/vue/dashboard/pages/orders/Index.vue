@@ -16,6 +16,7 @@
             </template>
         </a-page-header>
         <a-table
+            defaultExpandAllRows
             :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
             :size="['xs','sm','md'].indexOf($mq) !== -1 ? 'small' : 'default'"
             :columns="ordersTableColumns"
@@ -175,6 +176,32 @@
                     <a-button type="primary" icon="shopping-cart" @click="() => onFinishSelect(record)">Chọn</a-button>
                 </template>
             </template>
+
+            <template slot="expandedRowRender" slot-scope="o">
+                <a-table
+                    defaultExpandAllRows
+                    :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
+                    :columns="orderProductTableColumns"
+                    :data-source="o.order_products"
+                    :pagination="false"
+                    :row-key="record => record.id"
+                    size="small"
+                    bordered
+                >
+                    <template slot="expandedRowRender" slot-scope="op">
+                        <a-table
+                            :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
+                            :columns="orderProductStockTableColumns"
+                            :data-source="op.order_product_stocks"
+                            :pagination="false"
+                            :row-key="record => record.id"
+                            size="small"
+                            bordered
+                        >
+                        </a-table>
+                    </template>
+                </a-table>
+            </template>
         </a-table>
 
         <a-modal
@@ -244,9 +271,9 @@ const ordersTableColumns = [
     {
         title: 'Ngày xuất đơn',
         dataIndex: 'deal_date',
+        customRender: (text) => date_format(text),
         scopedSlots: {
             filterDropdown: 'filterRangeDate',
-            customRender: (text) => date_format(text),
         },
         sorter: true,
     },
@@ -284,6 +311,41 @@ const ordersTableColumns = [
     },
 ];
 
+const orderProductTableColumns = [
+    {
+        title: 'Sản phẩm',
+        key: 'name',
+        dataIndex: 'product',
+        customRender: (product) => product.name,
+    },
+];
+
+const orderProductStockTableColumns = [
+    {
+        title: 'Tên hàng',
+        key: 'name',
+        dataIndex: 'stock',
+        customRender: (stock) => stock.name,
+    },
+    {
+        title: 'Idi/Imei',
+        key: 'idi',
+        dataIndex: 'stock',
+        customRender: (stock) => stock.idi,
+    },
+    {
+        title: 'Giá nhập',
+        key: 'cost_price',
+        dataIndex: 'stock',
+        customRender: (stock) => number_format(stock.cost_price),
+    },
+    {
+        title: 'Giá bán',
+        dataIndex: 'amount',
+        customRender: (value) => number_format(value),
+    },
+];
+
 export default {
     props: {
         onFinishSelect: Function,
@@ -316,6 +378,9 @@ export default {
             },
             ordersTableSorts: undefined,
             ordersTableFilters: {},
+
+            orderProductTableColumns,
+            orderProductStockTableColumns,
 
             OrderStatus,
             configOrderStatus,
