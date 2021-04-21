@@ -43,7 +43,7 @@ class TransactionController extends Controller
 
         if (isset($request->download)) {
             $transactionQuery = $transactionQuery->get();
-            $transactionQuery->append(['parent']);
+            $transactionQuery->append(['type']);
 
             switch ($request->download) {
                 case 'csv': {
@@ -65,7 +65,7 @@ class TransactionController extends Controller
 
         $transactionQuery = $transactionQuery->paginate();
 
-        $transactionQuery->append(['stock', 'order', 'cashier']);
+        $transactionQuery->append(['stock', 'order', 'cashier', 'type']);
 
         return new JsonResource($transactionQuery);
     }

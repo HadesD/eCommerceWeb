@@ -26,7 +26,7 @@ class Transaction extends Model
         $this->attributes['paid_date'] = Carbon::parse($value)->format('Y-m-d H:i:s');
     }
 
-    public function getParentAttribute()
+    public function getTypeAttribute()
     {
         if ($this->order) {
             return 'Order-'.$this->order->id;

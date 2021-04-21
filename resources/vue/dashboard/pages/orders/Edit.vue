@@ -196,7 +196,7 @@
                                     >
                                         <a-input-number v-model="ps.amount" style="width: 100%;" :min="0" :max="2000000000" />
                                     </a-form-model-item>
-                                    <div>Đã thanh toán: <PaidAmount :needAmount="ps.id ? ((ps.stock.cost_price > ps.amount) ? ps.stock.cost_price : ps.amount) : ps.amount" :amount="ps.transactions.reduce((a, b) => parseInt(a) + (parseInt(b.amount) || 0), 0)" /></div>
+                                    <div>Đã thanh toán: <a-tag :color="(ps.id ? ((ps.stock.cost_price > ps.amount) ? ps.stock.cost_price : ps.amount) : ps.amount) >= 0 ? 'green' : 'red'">{{ ps.transactions.reduce((a, b) => parseInt(a) + (parseInt(b.amount) || 0), 0) }}</a-tag></div>
                                 </template>
                                 <template slot="action" slot-scope="text, ps, psIdx">
                                     <a @click="() => ps.transactions.push({...transaction_obj})">
@@ -394,25 +394,6 @@ import PaymentMethod, { Config as configPaymentMethod } from '../../configs/Paym
 import { number_format, cloneDeep, } from '../../../helpers';
 import User from '../../utils/User';
 
-const PaidAmount = {
-    props: {
-        amount: Number,
-        needAmount: Number,
-    },
-
-    render: function(createElement) {
-        return createElement('a-tag', {
-            attrs: {
-                color: this.amount >= this.needAmount ? 'green' : 'red',
-            },
-
-            domProps: {
-                innerText: number_format(this.amount),
-            }
-        });
-    },
-};
-
 const addon_transactionsTableColumns = [
     {
         title: '#ID',
@@ -488,7 +469,6 @@ export default {
         orderId: Number,
     },
     components: {
-        PaidAmount,
         UserIndex: () => import('../users/Index'),
         UserEdit: () => import('../users/Edit'),
         ProductIndex: () => import('../products/Index'),

@@ -81,8 +81,8 @@
             </div>
             <!-- Block Filter RangeDate: END -->
 
-            <template slot="description" slot-scope="value, record">
-                <span>{{ value }}</span>
+            <template slot="type" slot-scope="value, record">
+                <a-tag>{{ value }}</a-tag>
                 <a-button v-if="record.order" size="small" icon="account-book" @click="() => { currentOrderId = record.order.id; orderEditPageVisible = true; }" />
                 <a-button v-if="record.stock" size="small" icon="bank" @click="() => { currentStockId = record.stock.id; stockEditPageVisible = true; }" />
             </template>
@@ -148,10 +148,16 @@ const transactionsTableColumns = [
         },
     },
     {
+        title: 'Loại giao dịch',
+        dataIndex: 'type',
+        scopedSlots: {
+            customRender: 'type',
+        },
+    },
+    {
         title: 'Nội dung',
         dataIndex: 'description',
         scopedSlots: {
-            customRender: 'description',
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
         },

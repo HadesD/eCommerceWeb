@@ -28,7 +28,19 @@ class Order extends Model
         return $this->need_paid_total - $this->stock_earned_total;
     }
 
-    public function getNeedPaidTotalAttribute() {
+    public function getAddonTransactionTotalAttribute()
+    {
+        $total = 0;
+
+        foreach ($this->transactions as $tnx) {
+            $total += $tnx->amount;
+        }
+
+        return $total;
+    }
+
+    public function getNeedPaidTotalAttribute()
+    {
         $total = 0;
 
         foreach ($this->order_products as $op) {

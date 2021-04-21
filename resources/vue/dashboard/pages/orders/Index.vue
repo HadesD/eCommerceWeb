@@ -96,24 +96,67 @@
             <template slot="status" slot-scope="record">
                 <a-tag v-if="configOrderStatus[record.status]" :color="configOrderStatus[record.status].color">{{ configOrderStatus[record.status].name }}</a-tag>
             </template>
-            <template slot="total_amount" slot-scope="value">
-                <div style="text-align:right;">{{ totalAmount(value) }}</div>
-            </template>
-            <template slot="order_product" slot-scope="record">
-                <div v-for="p in record.order_products" :key="p.id">
-                    <div>
-                        <span>{{ p.product.name }} [Số lượng: {{ p.quantity }}]</span>
-                        <a-button icon="search" @click="() => { currentProductId = p.product.id; productEditPageVisible = true; }" size="small" />
-                    </div>
-                    <ul>
-                        <li v-for="ps in p.order_product_stocks" :key="ps.id">
-                            <span>{{ ps.stock.name }} ({{ ps.stock.idi }})</span>
-                            <a-button icon="search" @click="() => { currentStockId = ps.stock.id; stockEditPageVisible = true; }" size="small" />
-                        </li>
-                    </ul>
+            <template slot="total_amount" slot-scope="record">
+                <div>
+                    <span>Nhập: </span>
+                    <span>{{ number_format((() => {
+                        let cost = 0;
+
+                        record.order_products.forEach(op_elm => {
+                            op_elm.order_product_stocks.forEach(ops_elm => {
+                                // stock.cost_amount
+                                if (ops_elm.status === OrderProductStockStatus.STS_SOLD) {
+                                    cost += ops_elm.stock.cost_price;
+                                }
+                            });
+                        });
+
+                        return cost;
+                    })()) }} ₫</span>
                 </div>
-                <div v-for="addon_tnx in record.transactions" :key="addon_tnx.id">
-                    {{ addon_tnx.description }} ({{ number_format(addon_tnx.amount) }})
+                <div>
+                    <span>Bán: </span>
+                    <span>{{ number_format((() => {
+                        let sell = 0;
+
+                        record.order_products.forEach(op_elm => {
+                            op_elm.order_product_stocks.forEach(ops_elm => {
+                                // stock.cost_amount
+                                if (ops_elm.status === OrderProductStockStatus.STS_SOLD) {
+                                    sell += ops_elm.amount;
+                                }
+                            });
+                        });
+
+                        return sell;
+                    })()) }} ₫</span>
+                </div>
+                <div>
+                    <span>Thu Kho: </span>
+                    <span>{{ number_format((() => {
+                        let amount = 0;
+                        record.order_products.forEach(op_elm => {
+                            op_elm.order_product_stocks.forEach(ops_elm => {
+                                ops_elm.transactions.forEach(tnx_eml => {
+                                    amount += tnx_eml.amount;
+                                });
+                            });
+                        });
+
+                        return amount;
+                    })()) }} ₫</span>
+                </div>
+                <div>
+                    <span>GD Thêm: </span>
+                    <span>{{ number_format((() => {
+                        let amount = 0;
+                        // addon transactions
+                        record.transactions.forEach(r_tnx_elm => {
+                            amount += r_tnx_elm.amount;
+                        });
+
+                        return amount;
+                    })()) }} ₫</span>
                 </div>
             </template>
             <template slot="time" slot-scope="record">
@@ -217,12 +260,7 @@ const ordersTableColumns = [
         },
     },
     {
-        title: 'Đặt hàng',
-        key: 'order_product',
-        scopedSlots: { customRender: 'order_product' },
-    },
-    {
-        title: 'Tổng Thu/Giá Nhập',
+        title: 'Tổng Tiền',
         key: 'total_amount',
         scopedSlots: { customRender: 'total_amount' },
     },
@@ -281,6 +319,7 @@ export default {
 
             OrderStatus,
             configOrderStatus,
+            OrderProductStockStatus,
         }
     },
     mounted() {
@@ -361,30 +400,6 @@ export default {
                 }
             });
             window.open(downloadUrl.href, '_blank');
-        },
-
-        totalAmount(record) {
-            let amount = 0;
-            let cost = 0;
-            // addon transactions
-            record.transactions.forEach(r_tnx_elm => {
-                amount += r_tnx_elm.amount;
-            });
-
-            record.order_products.forEach(op_elm => {
-                op_elm.order_product_stocks.forEach(ops_elm => {
-                    ops_elm.transactions.forEach(tnx_eml => {
-                        amount += tnx_eml.amount;
-                    });
-
-                    // stock.cost_amount
-                    if (ops_elm.status === OrderProductStockStatus.STS_SOLD) {
-                        cost += ops_elm.stock.cost_price;
-                    }
-                });
-            });
-
-            return `${number_format(amount)} ₫ / ${number_format(cost)} ₫`;
         },
     },
 }
