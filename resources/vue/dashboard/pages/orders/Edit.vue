@@ -581,6 +581,8 @@ export default {
                 this.formData.order_products = [];
 
                 this.formData.transactions = [];
+
+                this.formData.deal_date = moment();
             }
         },
     },
