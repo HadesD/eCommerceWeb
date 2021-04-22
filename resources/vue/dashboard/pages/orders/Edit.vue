@@ -155,7 +155,7 @@
                                         :rules="{required:true,message:'Không được để trống'}"
                                         :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.stock_id'"
                                         style="margin-bottom:0;"
-                                        :help="ps.stock ? `Đang chọn: #${ps.stock_id}. ${ps.stock.name} (${ps.stock.idi}) (${number_format(ps.stock.cost_price)} VND)` : false"
+                                        :help="ps.stock ? `Đang chọn: #${ps.stock_id}. ${ps.stock.name} (${ps.stock.idi}) (${number_format(ps.stock.cost_price)} ₫)` : false"
                                     >
                                         <a-row :gutter="8">
                                             <a-col :span="12">
@@ -204,56 +204,56 @@
                                             <a-button type="primary" icon="plus" />
                                         </a-tooltip>
                                     </a>
-                                    <a-popconfirm v-if="!ps.id" title="Chắc chắn muốn xóa?" @confirm="() => p.order_product_stocks.splice(psIdx, 1)">
+                                    <a-popconfirm v-if="!ps.id" title="Chắc chắn muốn xóa?" @confirm="() => op.order_product_stocks.splice(psIdx, 1)">
                                         <a-button type="danger" icon="delete" />
                                     </a-popconfirm>
                                 </template>
-                                <a-table
-                                    :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
-                                    slot="expandedRowRender"
-                                    slot-scope="ops, psIdx"
-                                    :columns="addon_transactionsTableColumns"
-                                    :data-source="ops.transactions"
-                                    :pagination="false"
-                                    :row-key="opst => `opst-${opst.id || Math.random()}`"
-                                    size="small"
-                                    bordered
-                                >
-                                    <template slot="description" slot-scope="value, pst, pstIdx">
-                                        <a-form-model-item
-                                            :rules="[{required:true,message:'Không được để trống'}, {min:10,message:'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 10 ký tự)'}]"
-                                            :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.description'" style="margin-bottom:0;"
-                                        >
-                                            <a-input v-model="pst.description" placeholder="Trả góp, trả thẳng, thanh toán sản phẩm ABC, vv..vv" type="textarea" />
-                                        </a-form-model-item>
-                                    </template>
-                                    <template slot="amount" slot-scope="value, pst, pstIdx">
-                                        <a-form-model-item
-                                            :rules="{required:true,message:'Không được để trống'}"
-                                            :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.amount'" style="margin-bottom:0;"
-                                            :help="`VND: ${number_format(pst.amount || 0)}`"
-                                        >
-                                            <a-input-number v-model="pst.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(pst, UserRole.ROLE_ADMIN_MASTER)" />
-                                        </a-form-model-item>
-                                    </template>
-                                    <template slot="paid_date" slot-scope="value, pst, pstIdx">
-                                        <a-form-model-item
-                                            :rules="{required:true,message:'Không được để trống'}"
-                                            :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.paid_date'" style="margin-bottom:0;"
-                                            help="Ngày thanh toán sẽ liên kết trực tiếp tới tiền lãi/thu của tháng đó"
-                                        >
-                                            <a-date-picker
-                                                v-model="pst.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" :disabled="disabledField(pst)"
-                                                :disabledDate="disabledLastMonthAndTomorrow"
-                                            />
-                                        </a-form-model-item>
-                                    </template>
-                                    <template slot="action" slot-scope="value, pst, pstIdx">
-                                        <a-popconfirm v-if="!pst.id" title="Chắc chắn muốn xóa?" @confirm="() => ps.transactions.splice(pstIdx,1)">
-                                            <a-button type="danger" icon="delete" />
-                                        </a-popconfirm>
-                                    </template>
-                                </a-table>
+                                <template slot="expandedRowRender" slot-scope="ops, psIdx">
+                                    <a-table
+                                        :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
+                                        :columns="addon_transactionsTableColumns"
+                                        :data-source="ops.transactions"
+                                        :pagination="false"
+                                        :row-key="opst => `opst-${opst.id || Math.random()}`"
+                                        size="small"
+                                        bordered
+                                    >
+                                        <template slot="description" slot-scope="value, pst, pstIdx">
+                                            <a-form-model-item
+                                                :rules="[{required:true,message:'Không được để trống'}, {min:10,message:'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 10 ký tự)'}]"
+                                                :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.description'" style="margin-bottom:0;"
+                                            >
+                                                <a-input v-model="pst.description" placeholder="Trả góp, trả thẳng, thanh toán sản phẩm ABC, vv..vv" type="textarea" />
+                                            </a-form-model-item>
+                                        </template>
+                                        <template slot="amount" slot-scope="value, pst, pstIdx">
+                                            <a-form-model-item
+                                                :rules="{required:true,message:'Không được để trống'}"
+                                                :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.amount'" style="margin-bottom:0;"
+                                                :help="`VND: ${number_format(pst.amount || 0)}`"
+                                            >
+                                                <a-input-number v-model="pst.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(pst, UserRole.ROLE_ADMIN_MASTER)" />
+                                            </a-form-model-item>
+                                        </template>
+                                        <template slot="paid_date" slot-scope="value, pst, pstIdx">
+                                            <a-form-model-item
+                                                :rules="{required:true,message:'Không được để trống'}"
+                                                :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.paid_date'" style="margin-bottom:0;"
+                                                help="Ngày thanh toán sẽ liên kết trực tiếp tới tiền lãi/thu của tháng đó"
+                                            >
+                                                <a-date-picker
+                                                    v-model="pst.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" :disabled="disabledField(pst)"
+                                                    :disabledDate="disabledLastMonthAndTomorrow"
+                                                />
+                                            </a-form-model-item>
+                                        </template>
+                                        <template slot="action" slot-scope="value, pst, pstIdx">
+                                            <a-popconfirm v-if="!pst.id" title="Chắc chắn muốn xóa?" @confirm="() => ops.transactions.splice(pstIdx,1)">
+                                                <a-button type="danger" icon="delete" />
+                                            </a-popconfirm>
+                                        </template>
+                                    </a-table>
+                                </template>
                             </a-table>
                         </a-card>
                     </a-card>
