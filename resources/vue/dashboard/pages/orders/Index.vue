@@ -251,7 +251,7 @@
             :footer="false"
             width="98vw"
         >
-            <OrderEdit :orderId="currentOrderId" />
+            <OrderEdit :orderId="currentOrderId" @orderUpdated="(orderId) => loadOrders({})" />
         </a-modal>
     </div>
 </template>
