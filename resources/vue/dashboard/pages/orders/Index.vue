@@ -181,7 +181,6 @@
                 <a-table
                     v-if="o.order_products.length"
                     defaultExpandAllRows
-                    :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
                     :columns="orderProductTableColumns"
                     :data-source="o.order_products"
                     :pagination="false"
@@ -191,7 +190,6 @@
                 >
                     <template slot="expandedRowRender" slot-scope="op">
                         <a-table
-                            :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
                             :columns="orderProductStockTableColumns"
                             :data-source="op.order_product_stocks"
                             :pagination="false"
@@ -206,7 +204,6 @@
                     v-if="o.transactions.length"
                     :style="o.order_products.length ? 'margin-top: 25px;' : ''"
                     :title="() => 'Giao dịch thêm'"
-                    :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
                     :columns="transactionsTableColumns"
                     :data-source="o.transactions"
                     :pagination="false"
@@ -343,7 +340,7 @@ const transactionsTableColumns = [
 
 const orderProductTableColumns = [
     {
-        title: 'Sản phẩm',
+        title: 'Sản phẩm mua',
         key: 'name',
         dataIndex: 'product',
         customRender: (product) => product.name,
@@ -352,7 +349,7 @@ const orderProductTableColumns = [
 
 const orderProductStockTableColumns = [
     {
-        title: 'Tên hàng',
+        title: 'Tên hàng xuất kho',
         key: 'name',
         dataIndex: 'stock',
         customRender: (stock) => stock.name,

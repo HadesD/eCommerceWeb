@@ -103,7 +103,7 @@
                             label="Sản phẩm"
                             :rules="{required:true,message:'Không được để trống'}"
                             :prop="'order_products.'+pIdx+'.product_id'"
-                            :help="op.product ? `Đang chọn: #${op.product.id}. ${op.product.name} (${number_format(op.product.price)} VND)` : false"
+                            :help="op.product ? `Đang chọn: #${op.product.id}. ${op.product.name} (${number_format(op.product.price)} ₫)` : false"
                         >
                             <a-row :gutter="8">
                                 <a-col :span="12">
@@ -215,7 +215,6 @@
                                 </template>
                                 <template slot="expandedRowRender" slot-scope="ops, psIdx">
                                     <a-table
-                                        :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
                                         :columns="addon_transactionsTableColumns"
                                         :data-source="ops.transactions"
                                         :pagination="false"
