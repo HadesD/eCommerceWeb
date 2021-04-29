@@ -61,7 +61,10 @@
                 >
                     <a-input-number v-model="formData.quantity" :min="id ? 0 : 1" :max="200" />
                 </a-form-model-item>
-                <a-form-model-item label="Giá nhập (Đơn giá)" prop="cost_price" :help="`VND: ${number_format(formData.cost_price || 0)}`">
+                <a-form-model-item
+                    label="Giá nhập (Đơn giá)" prop="cost_price"
+                    :help="`Xem trước: ${number_format(formData.cost_price || 0)} ₫`"
+                >
                     <a-input-number
                         v-model="formData.cost_price"
                         style="width: 100%;"
@@ -70,7 +73,9 @@
                         :disabled="disabledField(formData, UserRole.ROLE_ADMIN_MASTER)"
                     />
                 </a-form-model-item>
-                <a-form-model-item label="Giá bán dự kiến tối thiểu (Đơn giá)" prop="sell_price" :help="`VND: ${number_format(formData.sell_price || 0)}`">
+                <a-form-model-item label="Giá bán dự kiến tối thiểu (Đơn giá)" prop="sell_price"
+                    :help="`Xem trước: ${number_format(formData.sell_price || 0)} ₫`"
+                >
                     <a-input-number
                         v-model="formData.sell_price"
                         style="width: 100%;"
@@ -171,7 +176,7 @@
                                 :rules="[{required:true,message:'Không được để trống'},{type:'integer'}]"
                                 :prop="`transactions.${index}.amount`"
                                 style="margin-bottom:0;"
-                                :help="`VND: ${number_format(record.amount || 0)}`"
+                                :help="`Xem trước: ${number_format(record.amount || 0)} ₫`"
                             >
                                 <a-input-number v-model="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(record, UserRole.ROLE_ADMIN_MASTER)" />
                             </a-form-model-item>

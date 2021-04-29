@@ -197,7 +197,7 @@
                                         :rules="[{required:true,message:'Không được để trống'},{type:'integer'}]"
                                         :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.amount'"
                                         style="margin-bottom:0;"
-                                        :help="`VND: ${number_format(ps.amount || 0)}`"
+                                        :help="`Xem trước: ${number_format(ps.amount || 0)} ₫`"
                                     >
                                         <a-input-number v-model="ps.amount" style="width: 100%;" :min="0" :max="2000000000" />
                                     </a-form-model-item>
@@ -235,7 +235,7 @@
                                             <a-form-model-item
                                                 :rules="[{required:true,message:'Không được để trống'},{type:'integer'}]"
                                                 :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.amount'" style="margin-bottom:0;"
-                                                :help="`VND: ${number_format(pst.amount || 0)}`"
+                                                :help="`Xem trước: ${number_format(pst.amount || 0)} ₫`"
                                             >
                                                 <a-input-number v-model="pst.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(pst, UserRole.ROLE_ADMIN_MASTER)" />
                                             </a-form-model-item>
@@ -291,7 +291,7 @@
                                 :rules="{required:true,message:'Không được để trống'}"
                                 :prop="`transactions.${index}.amount`"
                                 style="margin-bottom:0;"
-                                :help="`VND: ${number_format(record.amount || 0)}`"
+                                :help="`Xem trước: ${number_format(record.amount || 0)} ₫`"
                             >
                                 <a-input-number v-model="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(record, UserRole.ROLE_ADMIN_MASTER)" />
                             </a-form-model-item>

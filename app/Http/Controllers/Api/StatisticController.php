@@ -42,6 +42,8 @@ class StatisticController extends Controller
                 'avail_cost_price' => Stock::sum(DB::raw('cost_price * quantity')),
             ],
             'transaction' => [
+                'funds' => self::FUNDS,
+
                 'chart_total' => Transaction::select(DB::raw('(YEAR(paid_date)*100+MONTH(paid_date)) AS ym'), DB::raw('SUM(amount) AS amount'))->groupBy('ym')->orderBy('ym', 'ASC')->get(),
                 'chart_near_30_days' => Transaction::select(DB::raw('(YEAR(paid_date)*10000+MONTH(paid_date)*100+DAY(paid_date)) AS ymd'), DB::raw('SUM(amount) AS amount'))->where('paid_date','>=', date('Y-m-d 00:00:00', strtotime('-30 days')))->groupBy('ymd')->orderBy('ymd', 'ASC')->get(),
 

@@ -51,7 +51,7 @@
                     />
                 </a-form-model-item>
                 <a-form-model-item label="Giá bán" ref="price" prop="price"
-                    :help="`VND: ${number_format(formData.price || 0)}`"
+                    :help="`Xem trước: ${number_format(formData.price || 0)} ₫`"
                 >
                     <a-input-number
                         v-model="formData.price"

@@ -23,7 +23,7 @@
                     <a-card title="Kho hàng">
                         <a-statistic title="Tổng số mặt hàng" :value="statistics.stock.count" />
                         <a-statistic title="Tổng số mặt hàng có sẵn" :value="statistics.stock.avail_count" />
-                        <a-statistic title="Tổng giá trị hàng có sẵn trong kho (VND)" :value="statistics.stock.avail_cost_price" />
+                        <a-statistic title="Tổng giá trị hàng có sẵn trong kho" :value="statistics.stock.avail_cost_price" suffix="₫" />
                     </a-card>
                 </a-col>
                 <a-col :span="6" :lg="6" :md="12" :sm="24" :xs="24">
@@ -36,11 +36,12 @@
             <a-card title="Thu chi" style="margin-top: 15px;">
                 <a-row :gutter="8">
                     <a-col :span="5" :lg="5" :md="24" :sm="24" :xs="24">
-                        <a-statistic title="Tổng Lãi (VND)" :value="statistics.transaction.amount_total" />
-                        <a-statistic title="Tổng Lãi tháng này (VND)" :value="statistics.transaction.this_month_amount_total" />
-                        <a-statistic title="Tổng khách đang Nợ (VND)" :value="statistics.transaction.remaining_need_paid_total" />
-                        <a-statistic title="Tổng Lãi Thực trước nợ" :value="statistics.transaction.real_amount_total_before_debt" />
-                        <a-statistic title="Tổng Lãi Thực sau nợ" :value="statistics.transaction.real_amount_total_after_debt" />
+                        <a-statistic title="Vốn hiện tại" :value="statistics.transaction.funds" suffix="₫" />
+                        <a-statistic title="Tổng Lãi" :value="statistics.transaction.amount_total" suffix="₫" />
+                        <a-statistic title="Tổng Lãi tháng này" :value="statistics.transaction.this_month_amount_total" suffix="₫" />
+                        <a-statistic title="Tổng khách đang Nợ" :value="statistics.transaction.remaining_need_paid_total" suffix="₫" />
+                        <a-statistic title="Tổng Lãi Thực trước nợ" :value="statistics.transaction.real_amount_total_before_debt" suffix="₫" />
+                        <a-statistic title="Tổng Lãi Thực sau nợ" :value="statistics.transaction.real_amount_total_after_debt" suffix="₫" />
                     </a-col>
                     <a-col :span="19" :lg="19" :md="24" :sm="24" :xs="24">
                         <line-chart :height="150" type="line" :chart-data="datacollectionNear30days" :options="chartOptionsNear30days" />
