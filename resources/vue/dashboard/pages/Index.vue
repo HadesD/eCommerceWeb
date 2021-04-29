@@ -1,128 +1,88 @@
 <template>
-    <div>
-        <a-row :gutter="8" style="margin-bottom: 15px;">
-            <a-col :offset="20" :span="4">
-                <a-button type="primary" icon="reload" :loading="loading" style="float: right;" @click="() => loadStatistic()" />
+    <a-row :gutter="8" style="margin-bottom: 15px;">
+        <a-col :offset="20" :span="4">
+            <a-button type="primary" icon="reload" :loading="loading" style="float: right;" @click="() => loadStatistic()" />
+        </a-col>
+    </a-row>
+    <a-spin :spinning="loading">
+        <a-row :gutter="8">
+            <a-col :span="6" :lg="6" :md="12" :sm="24" :xs="24">
+                <a-card title="Đơn hàng">
+                    <a-statistic title="Tổng" :value="statistics.order.count" />
+                    <a-statistic title="Chưa hoàn tất" :value="statistics.order.uncompleted_count" />
+                </a-card>
+            </a-col>
+            <a-col :span="6" :lg="6" :md="12" :sm="24" :xs="24">
+                <a-card title="Sản phẩm">
+                    <a-statistic title="Tổng" :value="statistics.product.count" />
+                    <a-statistic title="Đang bán" :value="statistics.product.selling_count" />
+                </a-card>
+            </a-col>
+            <a-col :span="6" :lg="6" :md="12" :sm="24" :xs="24">
+                <a-card title="Kho hàng">
+                    <a-statistic title="Tổng số mặt hàng" :value="statistics.stock.count" />
+                    <a-statistic title="Tổng số mặt hàng có sẵn" :value="statistics.stock.avail_count" />
+                    <a-statistic title="Tổng giá trị hàng có sẵn trong kho" :value="statistics.stock.avail_cost_price" suffix="₫" />
+                </a-card>
+            </a-col>
+            <a-col :span="6" :lg="6" :md="12" :sm="24" :xs="24">
+                <a-card title="Người dùng">
+                    <a-statistic title="Tổng" :value="statistics.user.count" />
+                    <a-statistic title="Admin" :value="statistics.user.admin_count" />
+                </a-card>
             </a-col>
         </a-row>
-        <a-spin :spinning="loading">
+        <a-card title="Thu chi" style="margin-top: 15px;">
             <a-row :gutter="8">
-                <a-col :span="6" :lg="6" :md="12" :sm="24" :xs="24">
-                    <a-card title="Đơn hàng">
-                        <a-statistic title="Tổng" :value="statistics.order.count" />
-                        <a-statistic title="Chưa hoàn tất" :value="statistics.order.uncompleted_count" />
-                    </a-card>
+                <a-col :span="5" :lg="5" :md="24" :sm="24" :xs="24">
+                    <a-statistic title="Vốn hiện tại" :value="statistics.transaction.funds" suffix="₫" />
+                    <a-statistic title="Tổng Lãi" :value="statistics.transaction.amount_total" suffix="₫" />
+                    <a-statistic title="Tổng Lãi tháng này" :value="statistics.transaction.this_month_amount_total" suffix="₫" />
+                    <a-statistic title="Tổng khách đang Nợ" :value="statistics.transaction.remaining_need_paid_total" suffix="₫" />
+                    <a-statistic title="Tổng Lãi Thực trước nợ" :value="statistics.transaction.real_amount_total_before_debt" suffix="₫" />
+                    <a-statistic title="Tổng Lãi Thực sau nợ" :value="statistics.transaction.real_amount_total_after_debt" suffix="₫" />
                 </a-col>
-                <a-col :span="6" :lg="6" :md="12" :sm="24" :xs="24">
-                    <a-card title="Sản phẩm">
-                        <a-statistic title="Tổng" :value="statistics.product.count" />
-                        <a-statistic title="Đang bán" :value="statistics.product.selling_count" />
-                    </a-card>
-                </a-col>
-                <a-col :span="6" :lg="6" :md="12" :sm="24" :xs="24">
-                    <a-card title="Kho hàng">
-                        <a-statistic title="Tổng số mặt hàng" :value="statistics.stock.count" />
-                        <a-statistic title="Tổng số mặt hàng có sẵn" :value="statistics.stock.avail_count" />
-                        <a-statistic title="Tổng giá trị hàng có sẵn trong kho" :value="statistics.stock.avail_cost_price" suffix="₫" />
-                    </a-card>
-                </a-col>
-                <a-col :span="6" :lg="6" :md="12" :sm="24" :xs="24">
-                    <a-card title="Người dùng">
-                        <a-statistic title="Tổng" :value="statistics.user.count" />
-                        <a-statistic title="Admin" :value="statistics.user.admin_count" />
-                    </a-card>
+                <a-col :span="19" :lg="19" :md="24" :sm="24" :xs="24">
+                    <line-chart :height="150" type="line" :chart-data="datacollectionNear30days" :options="chartOptionsNear30days" />
+                    <line-chart :height="150" type="line" :chart-data="datacollectionTotal" :options="chartOptionsTotal" />
                 </a-col>
             </a-row>
-            <a-card title="Thu chi" style="margin-top: 15px;">
-                <a-row :gutter="8">
-                    <a-col :span="5" :lg="5" :md="24" :sm="24" :xs="24">
-                        <a-statistic title="Vốn hiện tại" :value="statistics.transaction.funds" suffix="₫" />
-                        <a-statistic title="Tổng Lãi" :value="statistics.transaction.amount_total" suffix="₫" />
-                        <a-statistic title="Tổng Lãi tháng này" :value="statistics.transaction.this_month_amount_total" suffix="₫" />
-                        <a-statistic title="Tổng khách đang Nợ" :value="statistics.transaction.remaining_need_paid_total" suffix="₫" />
-                        <a-statistic title="Tổng Lãi Thực trước nợ" :value="statistics.transaction.real_amount_total_before_debt" suffix="₫" />
-                        <a-statistic title="Tổng Lãi Thực sau nợ" :value="statistics.transaction.real_amount_total_after_debt" suffix="₫" />
-                    </a-col>
-                    <a-col :span="19" :lg="19" :md="24" :sm="24" :xs="24">
-                        <line-chart :height="150" type="line" :chart-data="datacollectionNear30days" :options="chartOptionsNear30days" />
-                        <line-chart :height="150" type="line" :chart-data="datacollectionTotal" :options="chartOptionsTotal" />
-                    </a-col>
-                </a-row>
-            </a-card>
-        </a-spin>
-    </div>
+        </a-card>
+    </a-spin>
 </template>
 
 <script>
+import { onMounted, ref } from 'vue';
 import { number_format } from '../../helpers';
 
 export default {
     components: {
         LineChart: () => import('../utils/LineChart'),
     },
-    data(){
-        return {
-            loading: false,
+    setup() {
+        const loading = ref(false);
+        const statistics = ref({
+            order: {},
+            user: {},
+            product: {},
+            stock: {},
+            transaction: {},
+        });
+        const datacollectionTotal = ref({});
+        const chartOptionsTotal = ref(null);
 
-            statistics: {
-                order: {},
-                user: {},
-                product: {},
-                stock: {},
-                transaction: {},
-            },
+        const datacollectionNear30days = ref({});
+        const chartOptionsNear30days = ref(null);
 
-            datacollectionTotal: {},
-            chartOptionsTotal: null,
-            datacollectionNear30days: {},
-            chartOptionsNear30days: null,
-        };
-    },
-    mounted(){
-        this.chartOptionsTotal = {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-            },
-            tooltips: {
-                callbacks: {
-                    label: function(t, d) {
-                        return number_format(t.yLabel);
-                    },
-                },
-            },
-        };
-
-        this.chartOptionsNear30days = {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-            },
-            tooltips: {
-                callbacks: {
-                    label: function(t, d) {
-                        return number_format(t.yLabel);
-                    },
-                },
-            },
-        };
-
-        this.loadStatistic();
-    },
-    methods: {
-        loadStatistic() {
-            this.loading = true;
+        function loadStatistic() {
+            loading.value = true;
 
             axios.get('/api/statistics')
                 .then(res => {
-                    this.statistics = {...res.data};
+                    statistics.value = {...res.data};
 
-                    const chart_total = this.statistics.transaction.chart_total;
-                    this.datacollectionTotal = {
+                    const chart_total = statistics.value.transaction.chart_total;
+                    datacollectionTotal.value = {
                         labels: chart_total.map(value => value.ym),
                         datasets: [
                             {
@@ -134,8 +94,8 @@ export default {
                         ]
                     };
 
-                    const chart_near_30_days = this.statistics.transaction.chart_near_30_days;
-                    this.datacollectionNear30days = {
+                    const chart_near_30_days = statistics.value.transaction.chart_near_30_days;
+                    datacollectionNear30days = {
                         labels: chart_near_30_days.map(value => value.ymd),
                         datasets: [
                             {
@@ -156,9 +116,56 @@ export default {
                     this.$message.error(err.message || 'Thất bại');
                 })
                 .finally(() => {
-                    this.loading = false;
+                    loading.value = false;
                 });
-        },
+        };
+
+        onMounted(() => {
+            chartOptionsTotal.value = {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function(t, d) {
+                            return number_format(t.yLabel);
+                        },
+                    },
+                },
+            };
+
+            chartOptionsNear30days.value = {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function(t, d) {
+                            return number_format(t.yLabel);
+                        },
+                    },
+                },
+            };
+            loadStatistic();
+        });
+
+        return {
+            loading,
+            loadStatistic,
+
+            statistics,
+
+            datacollectionTotal,
+            chartOptionsTotal,
+            datacollectionNear30days,
+            chartOptionsNear30days,
+        };
     },
 }
 </script>

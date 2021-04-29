@@ -9,25 +9,25 @@
             @updateCategories="updateCategories"
         />
         <a-col :span="4" :lg="4" :md="24" :sm="24" :xs="24">
-        <a-page-header title="Chuyên mục">
-            <template slot="extra">
-                <a-tooltip title="Thêm chuyên mục">
-                    <a-button type="primary" icon="plus" @click="showAddCategoryModal" />
-                </a-tooltip>
-            </template>
-        </a-page-header>
-        <a-spin :spinning="categoriesTreeLoading || stocksTableLoading">
-            <a-tree
-                show-line
-                :expandedKeys="categoriesTreeExpandedKeys"
-                :tree-data="categoriesTreeData"
-                @select="onCategoriesTreeSelect"
-                @expand="onCategoriesTreeExpand"
-            >
-            </a-tree>
-        </a-spin>
+            <a-page-header title="Chuyên mục">
+                <template slot="extra">
+                    <a-tooltip title="Thêm chuyên mục">
+                        <a-button type="primary" icon="plus" @click="showAddCategoryModal" />
+                    </a-tooltip>
+                </template>
+            </a-page-header>
+            <a-spin :spinning="categoriesTreeLoading || stocksTableLoading">
+                <a-tree
+                    show-line
+                    :expandedKeys="categoriesTreeExpandedKeys"
+                    :tree-data="categoriesTreeData"
+                    @select="onCategoriesTreeSelect"
+                    @expand="onCategoriesTreeExpand"
+                >
+                </a-tree>
+            </a-spin>
         </a-col>
-        <a-col :span="20" :lg="20" :md="24" :sm="24" :xs="24" :style="{borderLeft: (['xs','sm','md'].indexOf($mq) !== -1) ?  'none' : '1px solid #CCC'}">
+        <a-col :span="20" :lg="20" :md="24" :sm="24" :xs="24" :style="{borderLeft: ($screen.xs || $screen.sm || $screen.md) ?  '1px solid #CCC' : 'none'}">
             <a-page-header title="Kho hàng">
                 <template slot="tags">
                     <a-tooltip title="Làm mới">
@@ -39,13 +39,13 @@
                         <a-button type="primary" icon="download" :disabled="stocks.length <= 0" @click="() => download()" />
                     </a-tooltip>
                     <a-tooltip title="Nhập kho">
-                        <a-button type="primary" icon="plus" @click="() => { currentStockId = undefined; stockEditPageVisible = true; }" />
+                        <a-button type="primary" icon="plus" @click="() => { currentStockId = null; stockEditPageVisible = true; }" />
                     </a-tooltip>
                 </template>
             </a-page-header>
             <a-table
-                :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
-                :size="['xs','sm','md'].indexOf($mq) !== -1 ? 'small' : 'default'"
+                :scroll="($screen.xs || $screen.sm || $screen.md) ? { x: 1300, y: '85vh' } : {}"
+                :size="($screen.xs || $screen.sm || $screen.md) ? 'small' : 'default'"
                 :columns="stocksTableColumns"
                 :data-source="stocksTableData"
                 :loading="stocksTableLoading"
@@ -53,7 +53,7 @@
                 :pagination="stocksTablePagination"
                 @change="(pagination, filters, sorter) => {
                     stocksTableFilters = filters;
-                    stocksTableSorts = (sorter.column && sorter.columnKey) ? ((sorter.order === 'descend' ? '-' : '+') + sorter.columnKey) : undefined;
+                    stocksTableSorts = (sorter.column && sorter.columnKey) ? ((sorter.order === 'descend' ? '-' : '+') + sorter.columnKey) : null;
                     loadStocks({page: pagination.current});
                 }"
             >
@@ -84,7 +84,7 @@
                     slot="filterSearchBoxIcon"
                     slot-scope="filtered"
                     type="search"
-                    :style="{ color: filtered ? '#108ee9' : undefined }"
+                    :style="{ color: filtered ? '#108ee9' : null }"
                 />
                 <!-- Block Search: END -->
 
@@ -244,10 +244,10 @@ export default {
     data() {
         return {
             stockEditPageVisible: false,
-            currentStockId: undefined,
+            currentStockId: null,
 
             userEditPageVisible: false,
-            currentUserId: undefined,
+            currentUserId: null,
 
             categories: [],
             addCategoryModalVisible: false,
@@ -262,13 +262,13 @@ export default {
                 position: 'both',
             },
             stocksTableFilters: {},
-            stocksTableSorts: undefined,
+            stocksTableSorts: null,
         };
     },
     mounted() {
         this.loadCategoriesTree();
 
-        this.currentCategoryId = (parseInt(this.$route.query.category_id) || undefined);
+        this.currentCategoryId = (parseInt(this.$route.query.category_id) || null);
         this.stocksTablePagination.current = (parseInt(this.$route.query.page) || 1);
 
         this.loadStocks({});
@@ -372,8 +372,8 @@ export default {
             this.stocksTableLoading = true;
 
             // Reset popup data
-            this.currentUserId = undefined;
-            this.currentStockId = undefined;
+            this.currentUserId = null;
+            this.currentStockId = null;
 
             axios.get('/api/stocks', {
                 params: {

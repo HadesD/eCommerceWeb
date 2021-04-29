@@ -43,8 +43,8 @@
                 ref="ruleForm"
                 :model="formData"
                 :rules="rules"
-                :label-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? {span: 4} : {}"
-                :wrapper-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? {span: 14} : {}"
+                :label-col="($screen.xs || $screen.sm || $screen.md) ? {span: 4} : {}"
+                :wrapper-col="($screen.xs || $screen.sm || $screen.md) ? {span: 14} : {}"
             >
                 <a-form-model-item label="Tên sản phẩm" prop="name">
                     <a-input v-model="formData.name" />
@@ -155,7 +155,7 @@
                         </a-tooltip>
                     </a>
                     <a-table
-                        :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
+                        :scroll="($screen.xs || $screen.sm || $screen.md) ? { x: 1300, y: '85vh' } : {}"
                         size="small"
                         :columns="addon_transactionsTableColumns"
                         :data-source="formData.transactions"
@@ -213,7 +213,7 @@
                         </template>
                     </a-collapse-panel>
                 </a-collapse>
-                <a-form-model-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: (['xs','sm','md'].indexOf($mq) !== -1) ? 0 : 4 }">
+                <a-form-model-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: ($screen.xs || $screen.sm || $screen.md) ? 0 : 4 }">
                     <a-button
                         type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })"
                         block

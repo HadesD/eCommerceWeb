@@ -1,14 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 const RouteView = {
-    render: (h) => h('router-view')
+    // render: (h) => h('router-view')
+    // template: `<router-view></router-view>`
+    render: (h) => {
+        console.log(h);
+    }
 };
 
 let routes = [
     {
-        path: '',
+        path: '/',
         component: () => import('../layouts/Main.vue'),
-        redirect: '/',
+        // redirect: '/',
         children: [
             {
                 path: '/',
@@ -16,65 +20,23 @@ let routes = [
             },
             {
                 path: '/products',
-                component: RouteView,
-                children: [
-                    {
-                        path: '/',
-                        component: () => import('../pages/products/Index.vue'),
-                    },
-                    {
-                        path: 'new',
-                        component: () => import('../pages/products/Edit.vue'),
-                    },
-                ],
+                component: () => import('../pages/products/Index.vue'),
             },
             {
                 path: '/stocks',
-                component: RouteView,
-                children: [
-                    {
-                        path: '/',
-                        component: () => import('../pages/stocks/Index.vue'),
-                    },
-                    {
-                        path: 'new',
-                        component: () => import('../pages/stocks/Edit.vue'),
-                    },
-                ],
+                component: () => import('../pages/stocks/Index.vue'),
             },
             {
                 path: '/orders',
-                component: RouteView,
-                children: [
-                    {
-                        path: '/',
-                        component: () => import('../pages/orders/Index.vue'),
-                    },
-                    {
-                        path: 'new',
-                        component: () => import('../pages/orders/Edit.vue'),
-                    },
-                ],
+                component: () => import('../pages/orders/Index.vue'),
             },
             {
                 path: '/users',
-                component: RouteView,
-                children: [
-                    {
-                        path: '/',
-                        component: () => import('../pages/users/Index.vue'),
-                    },
-                ],
+                component: () => import('../pages/users/Index.vue'),
             },
             {
                 path: '/transactions',
-                component: RouteView,
-                children: [
-                    {
-                        path: '/',
-                        component: () => import('../pages/transactions/Index.vue'),
-                    },
-                ],
+                component: () => import('../pages/transactions/Index.vue'),
             },
             {
                 path: '/help',
@@ -94,7 +56,6 @@ routes.push({
 });
 
 export default createRouter({
-    base: '/dashboard',
-    history: createWebHistory(),
+    history: createWebHistory('/dashboard'),
     routes,
 });
