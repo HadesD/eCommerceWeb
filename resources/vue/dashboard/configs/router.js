@@ -1,9 +1,4 @@
-import Vue from 'vue';
-import Router from 'vue-router';
-
-// const PagesRoute = () => import('./pages/index');
-
-Vue.use(Router);
+import { createRouter, createWebHistory } from 'vue-router';
 
 const RouteView = {
     render: (h) => h('router-view')
@@ -94,12 +89,12 @@ let routes = [
 ];
 
 routes.push({
-    path: '*',
+    path: '/(.*)',
     component: () => import('../pages/404.vue'),
 });
 
-export default new Router({
+export default createRouter({
     base: '/dashboard',
-    mode: 'history',
+    history: createWebHistory(),
     routes,
 });
