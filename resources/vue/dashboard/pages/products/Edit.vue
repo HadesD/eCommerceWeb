@@ -43,13 +43,11 @@
                     <a-input
                         @change="onNameChanged"
                         v-model="formData.name"
-                        @blur="() => {$refs.name.onFieldBlur();$refs.slug.onFieldBlur()}"
                     />
                 </a-form-model-item>
                 <a-form-model-item label="Đường dẫn URL (Slug)" ref="slug" prop="slug">
                     <a-input
                         v-model="formData.slug"
-                        @blur="() => $refs.slug.onFieldBlur()"
                     />
                 </a-form-model-item>
                 <a-form-model-item label="Giá bán" ref="price" prop="price"
@@ -57,7 +55,6 @@
                 >
                     <a-input-number
                         v-model="formData.price"
-                        @blur="() => $refs.price.onFieldBlur()"
                         style="width: 100%;"
                         :min="0"
                         :max="2000000000"
@@ -66,7 +63,6 @@
                 <a-form-model-item label="Trạng thái" ref="status" prop="status">
                     <a-select
                         v-model="formData.status"
-                        @blur="() => $refs.status.onFieldBlur()"
                     >
                         <a-select-option v-for="codeSts in Object.keys(configProductStatus)" :key="codeSts" :value="parseInt(codeSts)">{{ configProductStatus[codeSts].name }}</a-select-option>
                     </a-select>
@@ -182,6 +178,7 @@ export default {
                 ],
                 price: [
                     { required: true },
+                    { type: 'integer' },
                 ],
                 status: [
                     { required: true },

@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\DB;
 
 class StatisticController extends Controller
 {
+    const FUNDS = 500000000;
+
     /**
      * Display a listing of the resource.
      *
@@ -40,56 +42,16 @@ class StatisticController extends Controller
                 'avail_cost_price' => Stock::sum(DB::raw('cost_price * quantity')),
             ],
             'transaction' => [
+                'chart_total' => Transaction::select(DB::raw('(YEAR(paid_date)*100+MONTH(paid_date)) AS ym'), DB::raw('SUM(amount) AS amount'))->groupBy('ym')->orderBy('ym', 'ASC')->get(),
+                'chart_near_30_days' => Transaction::select(DB::raw('(YEAR(paid_date)*10000+MONTH(paid_date)*100+DAY(paid_date)) AS ymd'), DB::raw('SUM(amount) AS amount'))->where('paid_date','>=', date('Y-m-d 00:00:00', strtotime('-30 days')))->groupBy('ymd')->orderBy('ymd', 'ASC')->get(),
+
                 'amount_total' => Transaction::sum('amount'),
                 'remaining_need_paid_total' => Order::where('status', Order::STS_PAYING)->get()->append('remaining_need_paid_total')->sum('remaining_need_paid_total'),
-                'this_month_amount_total' => Transaction::where('paid_date', '>=', date('Y-m-01'))->sum('amount'),
-                'chart' => Transaction::select(DB::raw('(YEAR(paid_date)*100+MONTH(paid_date)) AS ym'), DB::raw('SUM(amount) AS amount'))->groupBy('ym')->orderBy('ym', 'ASC')->get(),
+                'this_month_amount_total' => Transaction::where('paid_date', '>=', date('Y-m-01 00:00:00'))->sum('amount'),
+
+                'real_amount_total_before_debt' => 0,
+                'real_amount_total_after_debt' => 0,
             ],
         ];
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 }

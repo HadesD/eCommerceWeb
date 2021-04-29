@@ -194,7 +194,7 @@
                                 </template>
                                 <template slot="amount" slot-scope="text, ps, psIdx">
                                     <a-form-model-item
-                                        :rules="{required:true,message:'Không được để trống'}"
+                                        :rules="[{required:true,message:'Không được để trống'},{type:'integer'}]"
                                         :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.amount'"
                                         style="margin-bottom:0;"
                                         :help="`VND: ${number_format(ps.amount || 0)}`"
@@ -233,7 +233,7 @@
                                         </template>
                                         <template slot="amount" slot-scope="value, pst, pstIdx">
                                             <a-form-model-item
-                                                :rules="{required:true,message:'Không được để trống'}"
+                                                :rules="[{required:true,message:'Không được để trống'},{type:'integer'}]"
                                                 :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.amount'" style="margin-bottom:0;"
                                                 :help="`VND: ${number_format(pst.amount || 0)}`"
                                             >

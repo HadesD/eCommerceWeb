@@ -168,7 +168,7 @@
                         </template>
                         <template slot="amount" slot-scope="text, record, index">
                             <a-form-model-item
-                                :rules="{required:true,message:'Không được để trống'}"
+                                :rules="[{required:true,message:'Không được để trống'},{type:'integer'}]"
                                 :prop="`transactions.${index}.amount`"
                                 style="margin-bottom:0;"
                                 :help="`VND: ${number_format(record.amount || 0)}`"
@@ -339,9 +339,11 @@ export default {
                 ],
                 cost_price: [
                     { required: true },
+                    { type: 'integer' },
                 ],
                 sell_price: [
                     { required: true },
+                    { type: 'integer' },
                 ],
                 tester_id: [
                     { required: true },

@@ -39,9 +39,12 @@
                         <a-statistic title="Tổng Lãi (VND)" :value="statistics.transaction.amount_total" />
                         <a-statistic title="Tổng Lãi tháng này (VND)" :value="statistics.transaction.this_month_amount_total" />
                         <a-statistic title="Tổng khách đang Nợ (VND)" :value="statistics.transaction.remaining_need_paid_total" />
+                        <a-statistic title="Tổng Lãi Thực trước nợ" :value="statistics.transaction.real_amount_total_before_debt" />
+                        <a-statistic title="Tổng Lãi Thực sau nợ" :value="statistics.transaction.real_amount_total_after_debt" />
                     </a-col>
                     <a-col :span="19" :lg="19" :md="24" :sm="24" :xs="24">
-                        <line-chart :height="150" type="line" :chart-data="datacollection" :options="chartOptions"></line-chart>
+                        <line-chart :height="150" type="line" :chart-data="datacollectionNear30days" :options="chartOptionsNear30days" />
+                        <line-chart :height="150" type="line" :chart-data="datacollectionTotal" :options="chartOptionsTotal" />
                     </a-col>
                 </a-row>
             </a-card>
@@ -61,37 +64,37 @@ export default {
             loading: false,
 
             statistics: {
-                order: {
-                    count: undefined,
-                    uncompleted_count: undefined,
-                },
-                user: {
-                    count: undefined,
-                    admin_count: undefined,
-                },
-                product: {
-                    count: undefined,
-                    selling_count: undefined,
-                },
-                stock: {
-                    count: undefined,
-                    avail_count: undefined,
-                    avail_count_quantity: undefined,
-                    cost_price_total: undefined,
-                    this_month_cost_price_total: undefined,
-                },
-                transaction: {
-                    amount_total: undefined,
-                    this_month_amount_total: undefined,
-                },
+                order: {},
+                user: {},
+                product: {},
+                stock: {},
+                transaction: {},
             },
 
-            datacollection: {},
-            chartOptions: null,
+            datacollectionTotal: {},
+            chartOptionsTotal: null,
+            datacollectionNear30days: {},
+            chartOptionsNear30days: null,
         };
     },
     mounted(){
-        this.chartOptions = {
+        this.chartOptionsTotal = {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+            },
+            tooltips: {
+                callbacks: {
+                    label: function(t, d) {
+                        return number_format(t.yLabel);
+                    },
+                },
+            },
+        };
+
+        this.chartOptionsNear30days = {
             responsive: true,
             plugins: {
                 legend: {
@@ -115,16 +118,30 @@ export default {
 
             axios.get('/api/statistics')
                 .then(res => {
-                    this.statistics = {...res.data}
+                    this.statistics = {...res.data};
 
-                    this.datacollection = {
-                        labels: this.statistics.transaction.chart?.map(value => value.ym),
+                    const chart_total = this.statistics.transaction.chart_total;
+                    this.datacollectionTotal = {
+                        labels: chart_total.map(value => value.ym),
                         datasets: [
                             {
-                                label: 'Lãi',
+                                label: 'Lãi Tháng',
                                 backgroundColor: '#ffb1c1',
                                 borderColor: '#f87979',
-                                data: this.statistics.transaction.chart?.map(value => value.amount),
+                                data: chart_total.map(value => value.amount),
+                            },
+                        ]
+                    };
+
+                    const chart_near_30_days = this.statistics.transaction.chart_near_30_days;
+                    this.datacollectionNear30days = {
+                        labels: chart_near_30_days.map(value => value.ymd),
+                        datasets: [
+                            {
+                                label: 'Lãi Ngày',
+                                backgroundColor: '#ffb1c1',
+                                borderColor: '#f87979',
+                                data: chart_near_30_days.map(value => value.amount),
                             },
                         ]
                     };
