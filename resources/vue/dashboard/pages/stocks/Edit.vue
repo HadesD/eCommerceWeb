@@ -165,7 +165,10 @@
                     >
                         <template slot="description" slot-scope="text, record, index">
                             <a-form-model-item
-                                :rules="[{required:true,message:'Không được để trống'}, {min:10,message:'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 10 ký tự)'}]"
+                                :rules="[
+                                    {required:true,message:'Không được để trống'},
+                                    {min:(record.id && (stockInfo.transactions[index].description.indexOf(`#${record.id}`) === -1) ? 0 : 10),message:'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 10 ký tự)'}
+                                ]"
                                 :prop="`transactions.${index}.description`" style="margin-bottom:0;"
                             >
                                 <a-input v-model="record.description" placeholder="Mã giảm giá, phí ship, v..v" type="textarea" :disabled="disabledField(record)" />
