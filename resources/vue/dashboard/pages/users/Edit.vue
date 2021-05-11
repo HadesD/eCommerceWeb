@@ -8,8 +8,8 @@
                 <a-tooltip title="Lấy dữ liệu mới nhất" v-if="id">
                     <a-button type="primary" size="small" icon="reload" :loading="userInfoLoading" @click="() => loadUser(id)" />
                 </a-tooltip>
-                <a-tooltip title="Xoá toàn bộ dữ liệu đang nhập" v-else>
-                    <a-popconfirm title="Xác nhận reset toàn bộ dữ liệu đang nhập?" @confirm="() => this.formData.id = this.formData.id === undefined ? null : undefined">
+                <a-tooltip title="Xoá toàn bộ dữ liệu đang nhập" v-if="userId">
+                    <a-popconfirm title="Xác nhận reset toàn bộ dữ liệu đang nhập?" @confirm="() => this.formData.id = (this.formData.id === undefined) ? null : undefined">
                         <a-button type="danger" size="small" icon="delete" />
                     </a-popconfirm>
                 </a-tooltip>
