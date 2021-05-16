@@ -67,7 +67,7 @@ class OrderController extends Controller
                     $csv = \League\Csv\Writer::createFromFileObject(new \SplTempFileObject);
                     $colNameRow = array_keys($orderQuery[0]->toArray());
                     foreach ($colNameRow as &$colName) {
-                        $colName = __('csv.' . $colName) ?? $colName;
+                        $colName = __('csv.' . $colName);
                     }
                     $csv->insertOne($colNameRow);
 
