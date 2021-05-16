@@ -66,19 +66,15 @@ class OrderController extends Controller
                 case 'csv': {
                     $csv = \League\Csv\Writer::createFromFileObject(new \SplTempFileObject);
                     $colNameRow = array_keys($orderQuery[0]->toArray());
-                    $statusCol = null;
                     for ($i = 0; $i < count($colNameRow); $i++) {
                         $colName = &$colNameRow[$i];
-                        if ($colName === 'status') {
-                            $statusCol = $i;
-                        }
                         $colName = __('csv.' . $colName);
                     }
                     $csv->insertOne($colNameRow);
 
                     foreach ($orderQuery as $order) {
                         $orderRow = $order->toArray();
-                        $orderRow[$statusCol] = __('csv._order_status.'.$orderRow[$statusCol]);
+                        $orderRow['status'] = __('csv._order_status.'.$orderRow['status']);
                         $csv->insertOne($orderRow);
                     }
 
