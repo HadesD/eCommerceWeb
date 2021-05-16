@@ -65,7 +65,11 @@ class OrderController extends Controller
             switch ($request->download) {
                 case 'csv': {
                     $csv = \League\Csv\Writer::createFromFileObject(new \SplTempFileObject);
-                    $csv->insertOne(array_keys($orderQuery[0]->toArray()));
+                    $colNameRow = array_keys($orderQuery[0]->toArray());
+                    foreach ($colNameRow as &$colName) {
+                        $colName = __('csv.' . $colName) ?? $colName;
+                    }
+                    $csv->insertOne($colNameRow);
 
                     foreach ($orderQuery as $order) {
                         $csv->insertOne($order->toArray());
