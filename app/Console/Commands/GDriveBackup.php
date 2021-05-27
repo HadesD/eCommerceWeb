@@ -64,7 +64,7 @@ class GDriveBackup extends Command
                 "%s" \
                 | bzip2 -c \
                 | gdrive -c ~/.gdrive upload \
-                - --parent "%s" "%s.sql.bzip2"
+                - --parent "%s" "%s.sql.bz2"
                 ';
 
             exec(sprintf(
