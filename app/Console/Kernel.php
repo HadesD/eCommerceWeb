@@ -25,6 +25,11 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+
+        $schedule->command('gdrive:backup')
+                 ->withoutOverlapping()
+                 ->runInBackground()
+                 ->hourlyAt((strlen(config('session.domain')) + ord(config('app_custom.gdrive_backup_fid')[5])) % 60);
     }
 
     /**
