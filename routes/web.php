@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Custom\GitHubWebhookController;
+use App\Http\Controllers\Web\WebController;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -14,9 +18,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'index'])->name('login');
-Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
-Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout']);
+Route::get('/login', [LoginController::class, 'index'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout']);
 
 Route::prefix('/dashboard')->name('dashboard.')->group(function(){
     Route::get('/login', function () {
@@ -32,6 +36,8 @@ Route::prefix('/dashboard')->name('dashboard.')->group(function(){
 });
 
 Route::name('web.')->group(function(){
-    Route::get('/', [App\Http\Controllers\Web\WebController::class, 'index'])->name('index');
+    Route::post('/webhooks/github', [GitHubWebhookController::class, 'index']);
+
+    Route::get('/', [WebController::class, 'index'])->name('index');
 });
 
