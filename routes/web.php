@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Custom\GitHubWebhookController;
 use App\Http\Controllers\Web\WebController;
 
 use Illuminate\Support\Facades\Auth;
@@ -36,8 +35,6 @@ Route::prefix('/dashboard')->name('dashboard.')->group(function(){
 });
 
 Route::name('web.')->group(function(){
-    Route::post('/webhooks/github', [GitHubWebhookController::class, 'index']);
-
     Route::get('/', [WebController::class, 'index'])->name('index');
 });
 
