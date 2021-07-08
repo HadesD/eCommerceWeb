@@ -19,5 +19,7 @@ class GitHubWebhookController extends Controller
         exec('git pull 2>&1', $output, $result_code);
 
         Log::info(sprintf('GitHubWebhook[%d]', $result_code), $output);
+
+        return $result_code === 0;
     }
 }
