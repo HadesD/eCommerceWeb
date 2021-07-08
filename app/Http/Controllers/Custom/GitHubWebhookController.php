@@ -16,7 +16,7 @@ class GitHubWebhookController extends Controller
             return $branchRef;
         }
 
-        exec('git pull', $output, $result_code);
+        exec('git pull 2>&1', $output, $result_code);
 
         Log::info(sprintf('GitHubWebhook[%d]', $result_code), $output);
     }
