@@ -20,6 +20,6 @@ class GitHubWebhookController extends Controller
 
         Log::info(sprintf('GitHubWebhook[%d]', $result_code), $output);
 
-        return $result_code === 0;
+        return response($result_code, ($result_code === 0) ? 200 : 500);
     }
 }
