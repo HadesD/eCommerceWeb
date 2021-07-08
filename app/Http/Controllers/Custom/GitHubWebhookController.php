@@ -10,6 +10,11 @@ class GitHubWebhookController extends Controller
 {
     public function index(Request $request)
     {
-        Log::info('GITHUB', $request->all());
+        $branchRef = $request->ref;
+        if ($branchRef !== 'refs/heads/release') {
+            return $branchRef;
+        }
+
+        return exec('git pull');
     }
 }
