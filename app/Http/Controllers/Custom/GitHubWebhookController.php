@@ -10,11 +10,14 @@ class GitHubWebhookController extends Controller
 {
     public function index(Request $request)
     {
-        $branchRef = $request->ref;
+        $payload = json_decode($request->payload);
+        $branchRef = $payload->ref;
         if ($branchRef !== 'refs/heads/release') {
             return $branchRef;
         }
 
-        return exec('git pull');
+        exec('git pull', $output, $result_code);
+
+        Log::info(sprintf('GitHubWebhook[%d]', $result_code), $output);
     }
 }
