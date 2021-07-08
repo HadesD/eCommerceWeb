@@ -16,10 +16,12 @@ class GitHubWebhookController extends Controller
             return $branchRef;
         }
 
+        chdir('..');
+
         exec('git pull 2>&1', $output, $result_code);
 
         if ($result_code === 0) {
-            exec('cd .. && php artisan optimize', $output, $result_code);
+            exec('php artisan optimize', $output, $result_code);
         }
 
         Log::info(sprintf('GitHubWebhook[%d]', $result_code), $output);
