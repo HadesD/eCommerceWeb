@@ -34,5 +34,5 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
 });
 
 Route::get('{any?}', function () {
-    return view('in_construction');
+    return view('index');
 })->where('any', '^(?!api).*')->name('index');

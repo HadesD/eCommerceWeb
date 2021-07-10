@@ -13,12 +13,16 @@ const mix = require('laravel-mix');
 
 mix.webpackConfig({
     output: {
+        globalObject: 'this',
         chunkFilename: mix.inProduction() ? 'js/chunks/[name].[chunkhash].js' : 'js/chunks/[name].js',
     },
 });
 
 mix.js('resources/vue/dashboard/app.js', 'public/js/dashboard').vue();
 mix.sass('resources/vue/assets/dashboard/app.scss', 'public/css/dashboard');
+
+mix.js('resources/vue/app-client.js', 'public/js')
+   .js('resources/vue/app-server.js', 'public/js').vue();
 
 const HOST = 'rinphone.local'
 mix.browserSync({

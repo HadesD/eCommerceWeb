@@ -32,6 +32,7 @@
         "vue-chartjs": "^3.5.1",
         "vue-mq": "^1.0.1",
         "vue-progressbar": "^0.7.5",
-        "vue-router": "^3.4.3"
+        "vue-router": "^3.4.3",
+        "vue-server-renderer": "^2.6.14"
     }
 }

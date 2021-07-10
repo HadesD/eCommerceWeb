@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5fce3bac0189ae14fe60abfb25385f78",
+    "content-hash": "a3767c910100c945d8c6465a6303695d",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2462,6 +2462,131 @@
                 }
             ],
             "time": "2020-08-18T17:17:46+00:00"
+        },
+        {
+            "name": "spatie/laravel-server-side-rendering",
+            "version": "1.4.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/laravel-server-side-rendering.git",
+                "reference": "a07478e96e36070d1e9eb72d5734282fd47255b4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/laravel-server-side-rendering/zipball/a07478e96e36070d1e9eb72d5734282fd47255b4",
+                "reference": "a07478e96e36070d1e9eb72d5734282fd47255b4",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^6.18|^7.0|^8.0",
+                "php": "^7.3|^8.0",
+                "spatie/server-side-rendering": "^0.3"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^4.0|^5.0|^6.0",
+                "phpunit/phpunit": "^8.0|^9.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Spatie\\Ssr\\SsrServiceProvider"
+                    ],
+                    "aliases": {
+                        "Ssr": "Spatie\\Ssr\\Facades\\Ssr"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\Ssr\\": "src"
+                },
+                "files": [
+                    "src/helpers.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sebastian De Deyne",
+                    "email": "sebastian@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Server side rendering JavaScript in your Laravel application",
+            "homepage": "https://github.com/spatie/laravel-server-side-rendering",
+            "keywords": [
+                "SSR",
+                "laravel-server-side-rendering",
+                "spatie"
+            ],
+            "support": {
+                "issues": "https://github.com/spatie/laravel-server-side-rendering/issues",
+                "source": "https://github.com/spatie/laravel-server-side-rendering/tree/1.4.4"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
+                }
+            ],
+            "time": "2021-04-06T21:07:57+00:00"
+        },
+        {
+            "name": "spatie/server-side-rendering",
+            "version": "0.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/server-side-rendering.git",
+                "reference": "8a2c1e0f820c1396352da3ea814e847d8f40b963"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/server-side-rendering/zipball/8a2c1e0f820c1396352da3ea814e847d8f40b963",
+                "reference": "8a2c1e0f820c1396352da3ea814e847d8f40b963",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2|^8.0",
+                "symfony/process": "^3.0|^4.0|^5.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^8.5|^9.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\Ssr\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sebastian De Deyne",
+                    "email": "sebastian@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Server side rendering JavaScript in your PHP application",
+            "homepage": "https://github.com/spatie/server-side-rendering",
+            "keywords": [
+                "SSR",
+                "server-side-rendering",
+                "spatie"
+            ],
+            "support": {
+                "issues": "https://github.com/spatie/server-side-rendering/issues",
+                "source": "https://github.com/spatie/server-side-rendering/tree/0.3.1"
+            },
+            "time": "2021-07-09T07:15:31+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -7418,5 +7543,5 @@
         "php": "^7.3|^8.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Dashboard | ' . config('app.name'))
+@section('title', ($title ?? 'Bảng điều khiển') . ' | ' . config('app.name'))
 @push('head.css')
     <link href="{{ mix('/css/dashboard/app.css') }}" rel="stylesheet" id="app-css" />
 @endpush
