@@ -53,6 +53,7 @@
 <script>
 import User from '../../utils/User';
 import UserRole from '../../configs/UserRole';
+import RequestApi from '../../utils/RequestApi';
 
 export default {
     data(){
@@ -84,13 +85,13 @@ export default {
                 this.$Progress.start();
 
                 // Refresh CSRF
-                await axios.get('/sanctum/csrf-cookie');
+                await RequestApi.get('/sanctum/csrf-cookie');
 
                 // Login
-                await axios.post('/login', this.formData);
+                await RequestApi.post('/login', this.formData);
 
                 // Check permission
-                const userApiRequest = await axios.get('/api/user');
+                const userApiRequest = await RequestApi.get('/api/user');
                 const userData = userApiRequest.data;
                 if (userData.role >= UserRole.ROLE_ADMIN_MANAGER) {
                     User.setInfo(userData);

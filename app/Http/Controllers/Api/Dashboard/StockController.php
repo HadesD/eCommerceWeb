@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Dashboard;
 
 use App\Exceptions\ApiErrorException;
 use App\Http\Controllers\Controller;
@@ -54,7 +54,11 @@ class StockController extends Controller
             switch ($request->download) {
                 case 'csv': {
                     $csv = \League\Csv\Writer::createFromFileObject(new \SplTempFileObject);
-                    $csv->insertOne(array_keys($stockQuery[0]->toArray()));
+                    $colNameRow = array_keys($stockQuery[0]->toArray());
+                    foreach ($colNameRow as &$colName) {
+                        $colName = __('csv.' . $colName);
+                    }
+                    $csv->insertOne($colNameRow);
 
                     foreach ($stockQuery as $stock) {
                         $csv->insertOne($stock->toArray());

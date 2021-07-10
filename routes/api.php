@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\GitHubWebhookController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,19 +16,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::post('/webhooks/github', [GitHubWebhookController::class, 'index']);
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware(['auth:sanctum', 'role.manager'])->group(function(){
+Route::prefix('/dashboard')->middleware(['auth:sanctum', 'role.manager'])->group(function () {
     Route::apiResources([
-        'orders' => App\Http\Controllers\Api\OrderController::class,
-        'stocks' => App\Http\Controllers\Api\StockController::class,
-        'categories' => App\Http\Controllers\Api\CategoryController::class,
-        'products' => App\Http\Controllers\Api\ProductController::class,
-        'users' => App\Http\Controllers\Api\UserController::class,
-        'statistics' => App\Http\Controllers\Api\StatisticController::class,
-        'transactions' => App\Http\Controllers\Api\TransactionController::class,
+        'orders' => App\Http\Controllers\Api\Dashboard\OrderController::class,
+        'stocks' => App\Http\Controllers\Api\Dashboard\StockController::class,
+        'categories' => App\Http\Controllers\Api\Dashboard\CategoryController::class,
+        'products' => App\Http\Controllers\Api\Dashboard\ProductController::class,
+        'users' => App\Http\Controllers\Api\Dashboard\UserController::class,
+        'statistics' => App\Http\Controllers\Api\Dashboard\StatisticController::class,
+        'transactions' => App\Http\Controllers\Api\Dashboard\TransactionController::class,
     ]);
 });
-

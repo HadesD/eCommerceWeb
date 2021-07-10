@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Dashboard;
 
 use App\Exceptions\ApiErrorException;
 use App\Http\Controllers\Controller;
@@ -65,10 +65,17 @@ class OrderController extends Controller
             switch ($request->download) {
                 case 'csv': {
                     $csv = \League\Csv\Writer::createFromFileObject(new \SplTempFileObject);
-                    $csv->insertOne(array_keys($orderQuery[0]->toArray()));
+                    $colNameRow = array_keys($orderQuery[0]->toArray());
+                    for ($i = 0; $i < count($colNameRow); $i++) {
+                        $colName = &$colNameRow[$i];
+                        $colName = __('csv.' . $colName);
+                    }
+                    $csv->insertOne($colNameRow);
 
                     foreach ($orderQuery as $order) {
-                        $csv->insertOne($order->toArray());
+                        $orderRow = $order->toArray();
+                        $orderRow['status'] = __('csv._order_status.'.$orderRow['status']);
+                        $csv->insertOne($orderRow);
                     }
 
                     return response((string)$csv, 200, [

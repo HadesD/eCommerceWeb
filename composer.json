@@ -15,7 +15,9 @@
         "laravel/framework": "^8.0",
         "laravel/sanctum": "^2.6",
         "laravel/tinker": "^2.0",
-        "league/csv": "^9.7"
+        "league/csv": "^9.7",
+        "renatomarinho/laravel-page-speed": "^2.0",
+        "spatie/laravel-server-side-rendering": "^1.4"
     },
     "require-dev": {
         "facade/ignition": "^2.3.6",

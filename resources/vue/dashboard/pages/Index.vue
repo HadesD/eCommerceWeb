@@ -54,6 +54,7 @@
 <script>
 import { onMounted, ref } from 'vue';
 import { number_format } from '../../helpers';
+import RequestRepository from '../utils/RequestRepository';
 
 export default {
     components: {
@@ -77,7 +78,7 @@ export default {
         function loadStatistic() {
             loading.value = true;
 
-            axios.get('/api/statistics')
+            RequestRepository.get('/statistics')
                 .then(res => {
                     statistics.value = {...res.data};
 

@@ -8,8 +8,8 @@
                 <a-tooltip title="Lấy dữ liệu mới nhất" v-if="id">
                     <a-button type="primary" size="small" icon="reload" :loading="userInfoLoading" @click="() => loadUser(id)" />
                 </a-tooltip>
-                <a-tooltip title="Xoá toàn bộ dữ liệu đang nhập" v-else>
-                    <a-popconfirm title="Xác nhận reset toàn bộ dữ liệu đang nhập?" @confirm="() => this.formData.id = this.formData.id === undefined ? null : undefined">
+                <a-tooltip title="Xoá toàn bộ dữ liệu đang nhập" v-if="!userId">
+                    <a-popconfirm title="Xác nhận reset toàn bộ dữ liệu đang nhập?" @confirm="() => this.formData.id = (this.formData.id === undefined) ? null : undefined">
                         <a-button type="danger" size="small" icon="delete" />
                     </a-popconfirm>
                 </a-tooltip>
@@ -68,6 +68,7 @@
 <script>
 import UserRole, { Config as configUserRole } from '../../configs/UserRole';
 import User from '../../utils/User';
+import RequestRepository from '../../utils/RequestRepository';
 
 export default {
     props: {
@@ -143,7 +144,7 @@ export default {
     methods: {
         loadUser(id) {
             this.userInfoLoading = true;
-            axios.get(`/api/users/${id}`)
+            RequestRepository.get(`/users/${id}`)
                 .then(res => {
                     const uData = res.data.data;
 
@@ -173,12 +174,9 @@ export default {
 
             const userId = this.id;
 
-            axios({
-                url: '/api/users' + (userId ? `/${userId}` : ''),
-                method: userId ? 'put' : 'post',
-                data: {
-                    ...this.formData,
-                }
+            const request = userId ? RequestRepository.put : RequestRepository.post;
+            request('/users' + (userId ? `/${userId}` : ''), {
+                ...this.formData,
             })
                 .then(res => {
                     const uData = res.data.data;

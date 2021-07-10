@@ -14,13 +14,16 @@ yarn-error.log
 # Add by developers
 *.bak
 /bin
+/public/js/app-server.js*
+/public/js/app-client.js*
 /public/js/dashboard
+/public/css/app.css*
 /public/css/dashboard
 /public/mix-manifest.json
-/public/js/chunks/*
+/public/js/chunks/
 /public/public.zip
 /public.tar.gz
 ~*
 /composer.phar
 *.orig
-
+package-lock.json

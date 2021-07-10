@@ -11,20 +11,39 @@ const mix = require('laravel-mix');
  |
  */
 
+let output = {
+    chunkFilename: mix.inProduction() ? 'js/chunks/[name].[chunkhash].js' : 'js/chunks/[name].js',
+};
+
+if (process.env.RENDER_TARGET === 'server') {
+    output = {
+        ...output,
+        globalObject: 'this',
+    };
+
+    mix.js('resources/vue/app-server.js', 'public/js')
+        .webpackConfig({
+            target: 'node',
+        });
+} else {
+    mix.js('resources/vue/app-client.js', 'public/js');
+    mix.sass('resources/vue/assets/app.scss', 'public/css');
+
+    mix.js('resources/vue/dashboard/app.js', 'public/js/dashboard');
+    mix.sass('resources/vue/assets/dashboard/app.scss', 'public/css/dashboard');
+
+    const HOST = 'rinphone.local'
+    mix.browserSync({
+        host: HOST,
+        proxy: HOST,
+        open: 'external',
+    });
+}
+
+mix.vue();
+
 mix.webpackConfig({
-    output: {
-        chunkFilename: mix.inProduction() ? 'js/chunks/[name].[chunkhash].js' : 'js/chunks/[name].js',
-    },
-});
-
-mix.js('resources/vue/dashboard/app.js', 'public/js/dashboard').vue();
-mix.sass('resources/vue/assets/dashboard/app.scss', 'public/css/dashboard');
-
-const HOST = 'rinphone.local'
-mix.browserSync({
-    host: HOST,
-    proxy: HOST,
-    open: 'external',
+    output,
 });
 
 if (mix.inProduction()) {

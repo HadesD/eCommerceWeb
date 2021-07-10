@@ -17,8 +17,8 @@
                     <a-tooltip title="Lấy dữ liệu mới nhất" v-if="id">
                         <a-button type="primary" size="small" icon="reload" :loading="stockInfoLoading" @click="() => loadStock(id)" />
                     </a-tooltip>
-                    <a-tooltip title="Xoá toàn bộ dữ liệu đang nhập" v-else>
-                        <a-popconfirm title="Xác nhận reset toàn bộ dữ liệu đang nhập?" @confirm="() => this.formData.id = this.formData.id === undefined ? null : undefined">
+                    <a-tooltip title="Xoá toàn bộ dữ liệu đang nhập" v-if="!stockId">
+                        <a-popconfirm title="Xác nhận reset toàn bộ dữ liệu đang nhập?" @confirm="() => this.formData.id = (this.formData.id === undefined) ? null : undefined">
                             <a-button type="danger" size="small" icon="delete" />
                         </a-popconfirm>
                     </a-tooltip>
@@ -165,7 +165,10 @@
                     >
                         <template slot="description" slot-scope="text, record, index">
                             <a-form-model-item
-                                :rules="[{required:true,message:'Không được để trống'}, {min:10,message:'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 10 ký tự)'}]"
+                                :rules="[
+                                    {required:true,message:'Không được để trống'},
+                                    {min:(record.id && (stockInfo.transactions[index].description.indexOf(`#${record.id}`) === -1) ? 0 : 10),message:'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 10 ký tự)'}
+                                ]"
                                 :prop="`transactions.${index}.description`" style="margin-bottom:0;"
                             >
                                 <a-input v-model="record.description" placeholder="Mã giảm giá, phí ship, v..v" type="textarea" :disabled="disabledField(record)" />
@@ -257,6 +260,7 @@ import { number_format } from '../../../helpers';
 import UserRole from '../../configs/UserRole';
 import User from '../../utils/User';
 import { Config as configOrderStatus } from '../../configs/OrderStatus';
+import RequestRepository from '../../utils/RequestRepository';
 
 const addon_transactionsTableColumns = [
     {
@@ -430,7 +434,7 @@ export default {
         },
         reloadCategoriesTree(){
             this.categoriesTreeLoading = true;
-            axios.get('/api/categories')
+            RequestRepository.get('/categories')
                 .then(res => {
                     this.categories = res.data.data || [];
                 })
@@ -466,7 +470,7 @@ export default {
             this.currentUserId = undefined;
             this.currentOrderId = undefined,
 
-            axios.get(`/api/stocks/${id}`)
+            RequestRepository.get(`/stocks/${id}`)
                 .then(res => {
                     const sData = res.data.data;
                     if (!sData.id) {
@@ -506,19 +510,16 @@ export default {
 
             const stockId = this.id;
 
-            axios({
-                url: '/api/stocks' + (stockId ? `/${stockId}` : ''),
-                method: stockId ? 'put' : 'post',
-                data: {
-                    ...this.formData,
-                    inout_date: moment(this.formData.inout_date).format('YYYY-MM-DD HH:mm:ss'),
-                    transactions: this.formData.transactions.map(value => {
-                        return {
-                            ...value,
-                            paid_date: moment(value.paid_date).format("YYYY-MM-DD HH:mm:ss"),
-                        };
-                    }),
-                }
+            const request = stockId ? RequestRepository.put : RequestRepository.post;
+            request('/stocks' + (stockId ? `/${stockId}` : ''), {
+                ...this.formData,
+                inout_date: moment(this.formData.inout_date).format('YYYY-MM-DD HH:mm:ss'),
+                transactions: this.formData.transactions.map(value => {
+                    return {
+                        ...value,
+                        paid_date: moment(value.paid_date).format("YYYY-MM-DD HH:mm:ss"),
+                    };
+                }),
             })
                 .then(res => {
                     const sData = res.data.data;

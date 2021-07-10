@@ -254,10 +254,12 @@
 </template>
 
 <script>
+import moment from 'moment';
+
 import OrderStatus, { Config as configOrderStatus } from '../../configs/OrderStatus';
 import OrderProductStockStatus from '../../configs/OrderProductStockStatus';
 import { number_format, date_format } from '../../../helpers';
-import moment from 'moment';
+import RequestRepository from '../../utils/RequestRepository';
 
 const ordersTableColumns = [
     {
@@ -453,7 +455,7 @@ export default {
             this.currentProductId = undefined;
             this.currentOrderId = undefined;
 
-            axios.get('/api/orders', {
+            RequestRepository.get('/orders', {
                 params: {
                     page: page || this.ordersTablePagination.current,
                     ...this.ordersTableFilters,
@@ -494,7 +496,7 @@ export default {
         download() {
             const filters = this.ordersTableFilters;
             const downloadUrl = new URL(window.location.href);
-            downloadUrl.pathname = '/api/orders';
+            downloadUrl.pathname = RequestRepository.defaults.baseURL + '/orders';
             downloadUrl.searchParams.append('download', 'csv');
             Object.keys(filters).forEach(value => {
                 const filterVal = filters[value];

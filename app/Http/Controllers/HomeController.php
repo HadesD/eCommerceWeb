@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Web;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class WebController extends Controller
+class HomeController extends Controller
 {
     public function index()
     {
-        return view('web.in_construction');
+        return view('home.in_construction');
     }
 }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
@@ -48,7 +48,11 @@ class TransactionController extends Controller
             switch ($request->download) {
                 case 'csv': {
                     $csv = \League\Csv\Writer::createFromFileObject(new \SplTempFileObject);
-                    $csv->insertOne(array_keys($transactionQuery[0]->toArray()));
+                    $colNameRow = array_keys($transactionQuery[0]->toArray());
+                    foreach ($colNameRow as &$colName) {
+                        $colName = __('csv.' . $colName);
+                    }
+                    $csv->insertOne($colNameRow);
 
                     foreach ($transactionQuery as $transaction) {
                         $csv->insertOne($transaction->toArray());

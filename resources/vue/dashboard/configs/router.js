@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
+import Main from '../layouts/Main';
+
 const RouteView = {
     // render: (h) => h('router-view')
     // template: `<router-view></router-view>`
@@ -12,6 +14,7 @@ let routes = [
     {
         path: '/',
         component: () => import('../layouts/Main.vue'),
+        component: Main,
         // redirect: '/',
         children: [
             {

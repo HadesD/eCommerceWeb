@@ -150,6 +150,7 @@
 
 <script>
 import { number_format, date_format } from '../../../helpers';
+import RequestRepository from '../../utils/RequestRepository';
 
 const stocksTableColumns = [
     {
@@ -327,7 +328,7 @@ export default {
         // CategoriesTree
         loadCategoriesTree(){
             this.categoriesTreeLoading = true;
-            axios.get('/api/categories')
+            RequestRepository.get('/categories')
                 .then(res => {
                     this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
                 })
@@ -375,7 +376,7 @@ export default {
             this.currentUserId = null;
             this.currentStockId = null;
 
-            axios.get('/api/stocks', {
+            RequestRepository.get('/stocks', {
                 params: {
                     category_id: this.currentCategoryId,
                     page: page || this.stocksTablePagination.current,
@@ -415,7 +416,7 @@ export default {
         download() {
             const filters = this.stocksTableFilters;
             const downloadUrl = new URL(window.location.href);
-            downloadUrl.pathname = '/api/stocks';
+            downloadUrl.pathname = RequestRepository.defaults.baseURL + '/stocks';
             downloadUrl.searchParams.append('download', 'csv');
             if (this.stocksTableSorts) {
                 downloadUrl.searchParams.append('sort_by', this.stocksTableSorts);

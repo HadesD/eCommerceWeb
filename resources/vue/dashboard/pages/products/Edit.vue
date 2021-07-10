@@ -17,8 +17,8 @@
                     <a-tooltip title="Lấy dữ liệu mới nhất" v-if="id">
                         <a-button type="primary" size="small" icon="reload" :loading="productInfoLoading" @click="() => loadProduct(id)" />
                     </a-tooltip>
-                    <a-tooltip title="Xoá toàn bộ dữ liệu đang nhập" v-else>
-                        <a-popconfirm title="Xác nhận reset toàn bộ dữ liệu đang nhập?" @confirm="() => this.formData.id = this.formData.id === undefined ? null : undefined">
+                    <a-tooltip title="Xoá toàn bộ dữ liệu đang nhập" v-if="!productId">
+                        <a-popconfirm title="Xác nhận reset toàn bộ dữ liệu đang nhập?" @confirm="() => this.formData.id = (this.formData.id === undefined) ? null : undefined">
                             <a-button type="danger" size="small" icon="delete" />
                         </a-popconfirm>
                     </a-tooltip>
@@ -142,6 +142,7 @@
 <script>
 import ProductStatus, { Config as configProductStatus } from '../../configs/ProductStatus';
 import { vietnameseNormalize, number_format } from '../../../helpers';
+import RequestRepository from '../../utils/RequestRepository';
 
 export default {
     props: {
@@ -237,7 +238,7 @@ export default {
         },
         reloadCategoriesTree(){
             this.categoriesTreeLoading = true;
-            axios.get('/api/categories')
+            RequestRepository.get('/categories')
                 .then(res => {
                     this.categories = res.data.data || [];
                 })
@@ -269,7 +270,7 @@ export default {
         loadProduct(id){
             this.productInfoLoading = true;
 
-            axios.get(`/api/products/${id}`)
+            RequestRepository.get(`/products/${id}`)
                 .then(res => {
                     const pData = res.data.data;
                     if (!pData.id) {
@@ -303,12 +304,9 @@ export default {
             this.productInfoLoading = true;
 
             const productId = this.id;
-            axios({
-                url: '/api/products' + (productId ? `/${productId}` : ''),
-                method: productId ? 'put' : 'post',
-                data: {
-                    ...this.formData,
-                },
+            const request = productId ? RequestRepository.put : RequestRepository.post;
+            request('/products' + (productId ? `/${productId}` : ''), {
+                ...this.formData,
             })
                 .then(res => {
                     this.formData.id = res.data.data.id;
