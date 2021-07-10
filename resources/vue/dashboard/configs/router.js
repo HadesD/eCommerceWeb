@@ -13,7 +13,6 @@ const RouteView = {
 let routes = [
     {
         path: '/',
-        component: () => import('../layouts/Main.vue'),
         component: Main,
         // redirect: '/',
         children: [

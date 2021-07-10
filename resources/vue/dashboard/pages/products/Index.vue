@@ -1,13 +1,13 @@
 <template>
     <a-row :gutter="16">
-        <AddCategoryModal
-        :visible="addCategoryModalVisible"
-        :categories="categories"
-        :categoriesTreeLoading="categoriesTreeLoading"
-        @handleOk="addCategoryModalHandleOk"
-        @handleCancel="addCategoryModalHandleCancel"
-        @updateCategories="updateCategories"
-        />
+        <!-- <AddCategoryModal
+            :visible="addCategoryModalVisible"
+            :categories="categories"
+            :categoriesTreeLoading="categoriesTreeLoading"
+            @handleOk="addCategoryModalHandleOk"
+            @handleCancel="addCategoryModalHandleCancel"
+            @updateCategories="updateCategories"
+        /> -->
         <a-col :span="4" :lg="4" :md="24" :sm="24" :xs="24">
             <a-page-header title="Chuyên mục">
                 <template slot="extra">

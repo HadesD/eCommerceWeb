@@ -8,7 +8,7 @@
             </template>
             <template slot="extra">
                 <a-tooltip title="Thêm người dùng">
-                    <a-button type="primary" icon="plus" @click="() => { currentUserId = undefined; editPageVisible = true; }" />
+                    <a-button type="primary" icon="plus" @click="() => { currentUserId = null; editPageVisible = true; }" />
                 </a-tooltip>
             </template>
         </a-page-header>
@@ -52,7 +52,7 @@
                 slot="filterSearchBoxIcon"
                 slot-scope="filtered"
                 type="search"
-                :style="{ color: filtered ? '#108ee9' : undefined }"
+                :style="{ color: filtered ? '#108ee9' : null }"
             />
             <!-- Block Search: END -->
 
@@ -162,7 +162,7 @@ export default {
     },
     data() {
         return {
-            currentUserId: undefined,
+            currentUserId: null,
 
             usersTableColumns,
             usersTableLoading: false,
