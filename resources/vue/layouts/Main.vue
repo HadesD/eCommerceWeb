@@ -6,19 +6,20 @@
 import RequestRepository from '../utils/RequestRepository';
 
 export default {
-    data() {
+    async data() {
+        let e = 111;
+        try {
+            const a = await RequestRepository.get('/');
+        } catch (e) {
+            e = e || 1;
+        }
+
         return {
-            msg: null,
+            msg: e,
         };
     },
-    mounted() {
-        RequestRepository.get('/sfsdsdf')
-            .then(res => {
-                this.msg = 113;
-            })
-            .catch(error => {
-                this.msg = 111;
-            });
+
+    async mounted() {
     },
 }
 </script>

@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-// const PagesRoute = () => import('./pages/index');
+import Main from '../layouts/Main';
 
 Vue.use(Router);
 
@@ -12,7 +12,7 @@ const RouteView = {
 let routes = [
     {
         path: '',
-        component: () => import('../layouts/Main.vue'),
+        component: Main,
         redirect: '/',
         children: [
             {
