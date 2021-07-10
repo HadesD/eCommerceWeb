@@ -27,6 +27,7 @@ if (process.env.RENDER_TARGET === 'server') {
         });
 } else {
     mix.js('resources/vue/app-client.js', 'public/js');
+    mix.sass('resources/vue/assets/app.scss', 'public/css');
 
     mix.js('resources/vue/dashboard/app.js', 'public/js/dashboard');
     mix.sass('resources/vue/assets/dashboard/app.scss', 'public/css/dashboard');
