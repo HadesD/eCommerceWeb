@@ -260,6 +260,7 @@ import { number_format } from '../../../helpers';
 import UserRole from '../../configs/UserRole';
 import User from '../../utils/User';
 import { Config as configOrderStatus } from '../../configs/OrderStatus';
+import RequestRepository from '../../utils/RequestRepository';
 
 const addon_transactionsTableColumns = [
     {
@@ -433,7 +434,7 @@ export default {
         },
         reloadCategoriesTree(){
             this.categoriesTreeLoading = true;
-            axios.get('/api/categories')
+            RequestRepository.get('/categories')
                 .then(res => {
                     this.categories = res.data.data || [];
                 })
@@ -469,7 +470,7 @@ export default {
             this.currentUserId = undefined;
             this.currentOrderId = undefined,
 
-            axios.get(`/api/stocks/${id}`)
+            RequestRepository.get(`/stocks/${id}`)
                 .then(res => {
                     const sData = res.data.data;
                     if (!sData.id) {
@@ -509,19 +510,16 @@ export default {
 
             const stockId = this.id;
 
-            axios({
-                url: '/api/stocks' + (stockId ? `/${stockId}` : ''),
-                method: stockId ? 'put' : 'post',
-                data: {
-                    ...this.formData,
-                    inout_date: moment(this.formData.inout_date).format('YYYY-MM-DD HH:mm:ss'),
-                    transactions: this.formData.transactions.map(value => {
-                        return {
-                            ...value,
-                            paid_date: moment(value.paid_date).format("YYYY-MM-DD HH:mm:ss"),
-                        };
-                    }),
-                }
+            const request = stockId ? RequestRepository.put : RequestRepository.post;
+            request('/stocks' + (stockId ? `/${stockId}` : ''), {
+                ...this.formData,
+                inout_date: moment(this.formData.inout_date).format('YYYY-MM-DD HH:mm:ss'),
+                transactions: this.formData.transactions.map(value => {
+                    return {
+                        ...value,
+                        paid_date: moment(value.paid_date).format("YYYY-MM-DD HH:mm:ss"),
+                    };
+                }),
             })
                 .then(res => {
                     const sData = res.data.data;

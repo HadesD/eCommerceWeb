@@ -137,6 +137,7 @@
 <script>
 import { number_format, date_format } from '../../../helpers';
 import moment from 'moment';
+import RequestRepository from '../../utils/RequestRepository';
 
 const transactionsTableColumns = [
     {
@@ -242,7 +243,7 @@ export default {
             this.currentStockId = undefined;
             this.currentOrderId = undefined;
 
-            axios.get('/api/transactions', {
+            RequestRepository.get('/transactions', {
                 params: {
                     page: page || this.transactionsTablePagination.current,
                     ...this.transactionsTableFilters,
@@ -277,7 +278,7 @@ export default {
         download() {
             const filters = this.transactionsTableFilters;
             const downloadUrl = new URL(window.location.href);
-            downloadUrl.pathname = '/api/transactions';
+            downloadUrl.pathname = RequestRepository.defaults.baseURL + '/transactions';
             downloadUrl.searchParams.append('download', 'csv');
             if (this.transactionsTableSorts) {
                 downloadUrl.searchParams.append('sort_by', this.transactionsTableSorts);

@@ -90,6 +90,7 @@
 <script>
 import UserRole, { Config as configUserRole } from '../../configs/UserRole';
 import { date_format } from '../../../helpers';
+import RequestRepository from '../../utils/RequestRepository';
 
 const usersTableColumns = [
     {
@@ -187,7 +188,7 @@ export default {
         loadUsers({page}) {
             this.usersTableLoading = true;
 
-            axios.get('/api/users', {
+            RequestRepository.get('/users', {
                 params: {
                     page: page || this.usersTablePagination.current,
                     ...this.usersTableFilters,

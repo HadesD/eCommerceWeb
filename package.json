@@ -25,7 +25,7 @@
         "vue-template-compiler": "^2.6.12"
     },
     "dependencies": {
-        "ant-design-vue": "^1.7.3",
+        "ant-design-vue": "^1.7.6",
         "axios": "^0.21.1",
         "chart.js": "2.9.4",
         "vue": "^2.6.12",

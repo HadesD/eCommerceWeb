@@ -55,6 +55,7 @@
 
 <script>
 import { number_format } from '../../helpers';
+import RequestRepository from '../utils/RequestRepository';
 
 export default {
     components: {
@@ -117,7 +118,7 @@ export default {
         loadStatistic() {
             this.loading = true;
 
-            axios.get('/api/statistics')
+            RequestRepository.get('/statistics')
                 .then(res => {
                     this.statistics = {...res.data};
 

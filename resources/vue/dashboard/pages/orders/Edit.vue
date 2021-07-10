@@ -394,6 +394,7 @@ import UserRole from '../../configs/UserRole';
 import OrderStatus, { Config as configOrderStatus } from '../../configs/OrderStatus';
 import OrderProductStockStatus, { Config as configOrderProductStockStatus } from '../../configs/OrderProductStockStatus';
 import PaymentMethod, { Config as configPaymentMethod } from '../../configs/PaymentMethod';
+import RequestRepository from '../../utils/RequestRepository';
 
 import { number_format, cloneDeep, } from '../../../helpers';
 import User from '../../utils/User';
@@ -603,7 +604,7 @@ export default {
         },
 
         loadCategoriesTree(){
-            axios.get('/api/categories')
+            RequestRepository.get('/categories')
                 .then(res => {
                     this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
 
@@ -647,7 +648,7 @@ export default {
             this.currentProductId = undefined;
             this.currentStockId = undefined;
 
-            axios.get(`/api/orders/${id}`)
+            RequestRepository.get(`/orders/${id}`)
                 .then(res => {
                     const orderData = res.data.data;
                     if (!orderData.id) {
@@ -702,37 +703,34 @@ export default {
             this.orderInfoLoading = true;
 
             const orderId = this.id;
-            axios({
-                url: '/api/orders' + (orderId ? `/${orderId}` : ''),
-                method: orderId ? 'put' : 'post',
-                data: {
-                    ...this.formData,
-                    deal_date: moment(this.formData.deal_date).format("YYYY-MM-DD HH:mm:ss"),
-                    transactions: this.formData.transactions.map(value => {
-                        return {
-                            ...value,
-                            paid_date: moment(value.paid_date).format("YYYY-MM-DD HH:mm:ss"),
-                        };
-                    }),
-                    order_products: this.formData.order_products.map(op_value => {
-                        return {
-                            ...op_value,
-                            product: undefined,
-                            order_product_stocks: op_value.order_product_stocks.map(ops_value => {
-                                return {
-                                    ...ops_value,
-                                    stock: undefined,
-                                    transactions: ops_value.transactions.map(opst_value => {
-                                        return {
-                                            ...opst_value,
-                                            paid_date: moment(opst_value.paid_date).format('YYYY-MM-DD HH:mm:ss')
-                                        };
-                                    }),
-                                };
-                            }),
-                        };
-                    }),
-                }
+            const request = orderId ? RequestRepository.put : RequestRepository.post;
+            request('/orders' + (orderId ? `/${orderId}` : ''), {
+                ...this.formData,
+                deal_date: moment(this.formData.deal_date).format("YYYY-MM-DD HH:mm:ss"),
+                transactions: this.formData.transactions.map(value => {
+                    return {
+                        ...value,
+                        paid_date: moment(value.paid_date).format("YYYY-MM-DD HH:mm:ss"),
+                    };
+                }),
+                order_products: this.formData.order_products.map(op_value => {
+                    return {
+                        ...op_value,
+                        product: undefined,
+                        order_product_stocks: op_value.order_product_stocks.map(ops_value => {
+                            return {
+                                ...ops_value,
+                                stock: undefined,
+                                transactions: ops_value.transactions.map(opst_value => {
+                                    return {
+                                        ...opst_value,
+                                        paid_date: moment(opst_value.paid_date).format('YYYY-MM-DD HH:mm:ss')
+                                    };
+                                }),
+                            };
+                        }),
+                    };
+                }),
             })
                 .then(res => {
                     const orderData = res.data.data;

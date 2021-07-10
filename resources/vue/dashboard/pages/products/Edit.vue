@@ -142,6 +142,7 @@
 <script>
 import ProductStatus, { Config as configProductStatus } from '../../configs/ProductStatus';
 import { vietnameseNormalize, number_format } from '../../../helpers';
+import RequestRepository from '../../utils/RequestRepository';
 
 export default {
     props: {
@@ -237,7 +238,7 @@ export default {
         },
         reloadCategoriesTree(){
             this.categoriesTreeLoading = true;
-            axios.get('/api/categories')
+            RequestRepository.get('/categories')
                 .then(res => {
                     this.categories = res.data.data || [];
                 })
@@ -269,7 +270,7 @@ export default {
         loadProduct(id){
             this.productInfoLoading = true;
 
-            axios.get(`/api/products/${id}`)
+            RequestRepository.get(`/products/${id}`)
                 .then(res => {
                     const pData = res.data.data;
                     if (!pData.id) {
@@ -303,12 +304,9 @@ export default {
             this.productInfoLoading = true;
 
             const productId = this.id;
-            axios({
-                url: '/api/products' + (productId ? `/${productId}` : ''),
-                method: productId ? 'put' : 'post',
-                data: {
-                    ...this.formData,
-                },
+            const request = productId ? RequestRepository.put : RequestRepository.post;
+            request('/products' + (productId ? `/${productId}` : ''), {
+                ...this.formData,
             })
                 .then(res => {
                     this.formData.id = res.data.data.id;

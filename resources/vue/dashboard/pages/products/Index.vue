@@ -128,6 +128,7 @@
 <script>
 import ProductStatus, { Config as configProductStatus } from '../../configs/ProductStatus';
 import { number_format, date_format } from '../../../helpers';
+import RequestRepository from '../../utils/RequestRepository';
 
 const productsTableColumns = [
     {
@@ -286,7 +287,7 @@ export default {
         // CategoriesTree
         loadCategoriesTree() {
             this.categoriesTreeLoading = true;
-            axios.get('/api/categories')
+            RequestRepository.get('/categories')
                 .then(res => {
                     this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
                 })
@@ -333,7 +334,7 @@ export default {
             // Reset popup data
             this.currentProductId = undefined;
 
-            axios.get('/api/products', {
+            RequestRepository.get('/products', {
                 params: {
                     category_id: this.currentCategoryId,
                     page: page || this.productsTablePagination.current,
