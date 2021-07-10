@@ -1,70 +1,87 @@
 <template>
     <div style="padding-top: 150px;">
-        <vue-progress-bar />
+        <!-- <vue-progress-bar /> -->
         <div style="text-align: center; margin: 15px 0;">
             <img src="/favicon.ico" /><span style="font-size:25px;font-weight:bold;vertical-align: bottom;">inPhone.vn</span>
         </div>
-        <a-form-model
+        <a-form
             ref="ruleForm"
             :model="formData"
             :rules="rules"
+            @finish="onFinish"
             style="width: 400px;margin:0 auto;padding: 30px;"
         >
-            <a-form-model-item ref="email" prop="email">
+            <a-form-item name="email">
                 <a-input
                     autoFocus
                     size="large"
                     placeholder="E-mail"
-                    v-model="formData.email"
+                    v-model:value="formData.email"
                 >
-                    <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+                    <template #prefix>
+                        <UserOutlined />
+                    </template>
                 </a-input>
-            </a-form-model-item>
+            </a-form-item>
 
-            <a-form-model-item ref="password" prop="password">
+            <a-form-item name="password">
                 <a-input-password
                     size="large"
                     placeholder="Mật khẩu"
-                    v-model="formData.password"
+                    v-model:value="formData.password"
                 >
-                    <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+                    <template #prefix>
+                        <LockOutlined />
+                    </template>
                 </a-input-password>
-            </a-form-model-item>
+            </a-form-item>
 
-            <a-form-model-item>
-                <a-checkbox v-model="formData.remember">Ghi nhớ</a-checkbox>
+            <a-form-item name="remember">
+                <a-checkbox v-model:checked="formData.remember">Ghi nhớ</a-checkbox>
                 <!-- <router-link
                     :to="{ name: 'recover', params: { user: 'aaa'} }"
                     class="forge-password"
                     style="float: right;"
                 >Quên mật khẩu?</router-link> -->
-            </a-form-model-item>
+            </a-form-item>
 
-            <a-form-model-item style="margin-top:24px">
+            <a-form-item style="margin-top:24px">
                 <a-button
                     size="large" type="primary" htmlType="submit" block class="login-button"
                     :loading="loggingIn"
-                    @click="() => $refs.ruleForm.validate(valid => {if (valid) onFinish()})"
                 >Đăng nhập</a-button>
-            </a-form-model-item>
-        </a-form-model>
+            </a-form-item>
+        </a-form>
     </div>
 </template>
 <script>
+import { reactive, ref, } from 'vue';
+
 import User from '../../utils/User';
 import UserRole from '../../configs/UserRole';
 import RequestApi from '../../utils/RequestApi';
 
+import {
+    UserOutlined, LockOutlined,
+} from '@ant-design/icons-vue';
+
 export default {
-    data(){
+    components: {
+        UserOutlined, LockOutlined,
+    },
+    setup(){
+        const ruleForm = ref();
+        const formData = reactive({
+            email: null,
+            password: null,
+            remember: true,
+        });
+
         return {
             loggingIn: false,
 
-            formData: {
-                email: undefined,
-                password: undefined,
-                remember: true,
-            },
+            ruleForm,
+            formData,
             rules: {
                 email: [
                     { required: true, trigger: 'blur' },
@@ -82,7 +99,7 @@ export default {
             try {
                 this.loggingIn = true;
 
-                this.$Progress.start();
+                // this.$Progress.start();
 
                 // Refresh CSRF
                 await RequestApi.get('/sanctum/csrf-cookie');
@@ -96,16 +113,16 @@ export default {
                 if (userData.role >= UserRole.ROLE_ADMIN_MANAGER) {
                     User.setInfo(userData);
 
-                    this.$Progress.finish();
+                    // this.$Progress.finish();
 
                     this.$router.push({path: '/'});
                 } else {
                     this.$message.error('Bạn không có quyền hạn truy cập trang này');
 
-                    this.$Progress.fail();
+                    // this.$Progress.fail();
                 }
             } catch (err) {
-                this.$Progress.fail();
+                // this.$Progress.fail();
 
                 if (err.response && err.response.message) {
                     this.$message.error(err.response.message);

@@ -48,10 +48,9 @@
                 >Tìm</a-button>
                 <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);clearFilters();}">Reset</a-button>
             </div>
-            <a-icon
+            <SearchOutlined
                 slot="filterSearchBoxIcon"
                 slot-scope="filtered"
-                type="search"
                 :style="{ color: filtered ? '#108ee9' : null }"
             />
             <!-- Block Search: END -->
@@ -73,7 +72,7 @@
             </template>
             <template slot="sns_info" slot-scope="value">
                 <a v-if="value && value.facebook" :href="value.facebook" target="_blank">
-                    <a-icon type="facebook" style="font-size: 20px;"></a-icon>
+                    <FacebookOutlined />
                 </a>
             </template>
         </a-table>
@@ -91,6 +90,9 @@
 import UserRole, { Config as configUserRole } from '../../configs/UserRole';
 import { date_format } from '../../../helpers';
 import RequestRepository from '../../utils/RequestRepository';
+import {
+    SearchOutlined, FacebookOutlined,
+} from '@ant-design/icons-vue';
 
 const usersTableColumns = [
     {
@@ -159,6 +161,7 @@ export default {
     },
     components: {
         Edit: () => import('./Edit'),
+        SearchOutlined, FacebookOutlined,
     },
     data() {
         return {
