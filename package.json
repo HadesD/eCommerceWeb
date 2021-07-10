@@ -1,18 +1,16 @@
 {
     "private": true,
     "scripts": {
-        "dev": "npm run development",
+        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --config=node_modules/laravel-mix/setup/webpack.config.js",
         "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "watch": "npm run development -- --watch",
-        "watch-poll": "npm run watch -- --watch-poll",
-        "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --disable-host-check --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "prod": "git clean -xdf public && npm run production && tar zcvf public.tar.gz public/css public/js public/mix-manifest.json",
-        "build": "npm run prod",
-        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --config=node_modules/laravel-mix/setup/webpack.config.js"
+        "watch": "concurrently \"cross-env RENDER_TARGET=server npm run development -- --watch\" \"cross-env RENDER_TARGET=client npm run development -- --watch\"",
+        "dev": "concurrently \"cross-env RENDER_TARGET=server npm run development\" \"cross-env RENDER_TARGET=client npm run development\"",
+        "prod": "git clean -xdf public && concurrently \"cross-env RENDER_TARGET=server npm run production\" \"cross-env RENDER_TARGET=client npm run production\" && tar zcvf public.tar.gz public/css public/js public/mix-manifest.json"
     },
     "devDependencies": {
         "browser-sync": "^2.26.14",
         "browser-sync-webpack-plugin": "^2.2.2",
+        "concurrently": "^6.2.0",
         "cross-env": "^7.0",
         "laravel-mix": "*",
         "lodash": "^4.17.19",
@@ -22,17 +20,17 @@
         "sass": "^1.15.2",
         "sass-loader": "^8.0.0",
         "vue-loader": "^15.9.6",
-        "vue-template-compiler": "^2.6.12"
+        "vue-template-compiler": "^2.6.14"
     },
     "dependencies": {
         "ant-design-vue": "^1.7.6",
         "axios": "^0.21.1",
         "chart.js": "2.9.4",
-        "vue": "^2.6.12",
+        "vue": "^2.6.14",
         "vue-chartjs": "^3.5.1",
         "vue-mq": "^1.0.1",
         "vue-progressbar": "^0.7.5",
-        "vue-router": "^3.4.3",
+        "vue-router": "^3.5.2",
         "vue-server-renderer": "^2.6.14"
     }
 }
