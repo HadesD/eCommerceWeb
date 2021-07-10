@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Dashboard;
 
 use App\Exceptions\ApiErrorException;
 use App\Http\Controllers\Controller;
@@ -106,7 +106,6 @@ class UserController extends Controller
             if (!$authUser->hasPermission(User::ROLE_ADMIN_MASTER) && !$authUser->hasPermission($user->role)) {
                 throw new ApiErrorException('Bạn không có quyền chỉnh sửa người dùng này');
             }
-
 
             if ($request->role !== $user->role) {
                 $canSetRequestRole = $authUser->hasPermission(User::ROLE_ADMIN_MASTER);

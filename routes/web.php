@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Web\WebController;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -17,23 +16,23 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/login', [LoginController::class, 'index'])->name('login');
-Route::post('/login', [LoginController::class, 'login']);
-Route::post('/logout', [LoginController::class, 'logout']);
+Route::get('login', [LoginController::class, 'index'])->name('login');
+Route::post('login', [LoginController::class, 'login']);
+Route::post('logout', [LoginController::class, 'logout']);
 
-Route::prefix('/dashboard')->name('dashboard.')->group(function () {
-    Route::get('/login', function () {
+Route::prefix('dashboard')->name('dashboard.')->group(function () {
+    Route::get('login', function () {
         if (Auth::check()) {
             return redirect()->route('dashboard.index');
         }
         return view('dashboard.index');
     })->name('login');
 
-    Route::middleware(['auth:sanctum', 'verified', 'role.manager'])->get('/{any?}', function () {
+    Route::middleware(['auth:sanctum', 'verified', 'role.manager'])->get('{any?}', function () {
         return view('dashboard.index');
     })->where('any', '.*')->name('index');
 });
 
-Route::name('web.')->group(function () {
-    Route::get('/', [WebController::class, 'index'])->name('index');
-});
+Route::get('{any?}', function () {
+    return view('in_construction');
+})->where('any', '^(?!api).*')->name('index');
