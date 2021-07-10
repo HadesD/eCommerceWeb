@@ -5,28 +5,29 @@
             :selectedKeys="[$route.path]"
             :style="{ lineHeight: '64px' }"
         >
-        <a-menu-item key="-" @click="sideBarCollapse">
-            <Icon :type="sideBarCollapsed ? MenuUnfoldOutlined : MenuFoldOutlined" style="font-size: 25px;vertical-align: middle;" />
-        </a-menu-item>
-        <a-menu-item>
-            <a href="/" target="_blank">Trang Chủ</a>
-        </a-menu-item>
-        <a-menu-item key="--" style="float:right;">
-            <a-dropdown>
-                <a @click="e => e.preventDefault()">
-                    <UserOutlined /> {{ userName }}<DownOutlined />
-                </a>
-                <template #overlay>
-                    <a-menu>
-                        <a-menu-item>
-                        <a @click="logout">
-                            <LogoutOutlined /> Đăng xuất
-                        </a>
-                        </a-menu-item>
-                    </a-menu>
-                </template>
-            </a-dropdown>
-        </a-menu-item>
+            <a-menu-item key="-" @click="sideBarCollapse">
+                <MenuUnfoldOutlined v-if="sideBarCollapsed" />
+                <MenuFoldOutlined v-else />
+            </a-menu-item>
+            <a-menu-item>
+                <a href="/" target="_blank">Trang Chủ</a>
+            </a-menu-item>
+            <a-menu-item key="--" style="float:right;">
+                <a-dropdown>
+                    <a @click="e => e.preventDefault()">
+                        <UserOutlined /> {{ userName }}<DownOutlined />
+                    </a>
+                    <template #overlay>
+                        <a-menu>
+                            <a-menu-item>
+                                <a @click="logout">
+                                    <LogoutOutlined /> Đăng xuất
+                                </a>
+                            </a-menu-item>
+                        </a-menu>
+                    </template>
+                </a-dropdown>
+            </a-menu-item>
         </a-menu>
     </a-layout-header>
 </template>
@@ -37,13 +38,11 @@ import {
     UserOutlined, DownOutlined, LogoutOutlined,
     MenuUnfoldOutlined, MenuFoldOutlined,
 } from '@ant-design/icons-vue';
-import Icon from '@ant-design/icons-vue';
 
 export default {
     components: {
         UserOutlined, DownOutlined, LogoutOutlined,
         MenuUnfoldOutlined, MenuFoldOutlined,
-        Icon,
     },
     props: {
         sideBarCollapsed: {
@@ -53,7 +52,7 @@ export default {
     data() {
         return {
 
-        }
+        };
     },
     computed: {
         userName(){
