@@ -16,7 +16,7 @@ app.use(router);
 
 (async () => {
     try {
-        router.push(context.url);
+        router.push({path: context.url});
         await router.isReady();
         dispatch(await renderToString(app));
     } catch (e) {
