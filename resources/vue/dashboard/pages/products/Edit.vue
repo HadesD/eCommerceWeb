@@ -13,7 +13,7 @@
                 :title="id ? `Sản phẩm: ${formData.name}` : 'Đăng bán sản phẩm mới'"
                 :sub-title="id ? `#${id}` : false"
             >
-                <template slot="tags">
+                <template #tags>
                     <a-tooltip title="Lấy dữ liệu mới nhất" v-if="id">
                         <a-button type="primary" size="small" icon="reload" :loading="productInfoLoading" @click="() => loadProduct(id)" />
                     </a-tooltip>

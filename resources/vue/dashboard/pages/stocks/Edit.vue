@@ -13,7 +13,7 @@
                 :title="id ? `Tên hàng: ${formData.name}` : 'Nhập hàng mới vào kho'"
                 :sub-title="id ? `#${id}` : false"
             >
-                <template slot="tags">
+                <template #tags>
                     <a-tooltip title="Lấy dữ liệu mới nhất" v-if="id">
                         <a-button type="primary" size="small" icon="reload" :loading="stockInfoLoading" @click="() => loadStock(id)" />
                     </a-tooltip>
@@ -90,7 +90,7 @@
                     <a-row :gutter="8">
                         <a-col :span="12">
                             <a-input-search v-model="formData.tester_id" readOnly @search="() => { currentUserId = formData.tester_id; userEditPageVisible = true; }">
-                                <a-button icon="search" slot="enterButton" />
+                                <a-button icon="search" #enterButton />
                             </a-input-search>
                         </a-col>
                         <a-col :span="8">
@@ -149,11 +149,13 @@
                     />
                 </a-form-model-item>
                 <a-card title="Giao dịch thêm" style="margin-bottom:16px;" :headStyle="{ backgroundColor:'#9800ab',color:'#FFF' }" :bodyStyle="{padding:0}">
-                    <a slot="extra" @click="() => formData.transactions.push(Object.assign({}, transaction_obj))">
-                        <a-tooltip title="Thêm giao dịch">
-                            <a-button type="primary" icon="plus" />
-                        </a-tooltip>
-                    </a>
+                    <template #extra>
+                        <a @click="() => formData.transactions.push(Object.assign({}, transaction_obj))">
+                            <a-tooltip title="Thêm giao dịch">
+                                <a-button type="primary" icon="plus" />
+                            </a-tooltip>
+                        </a>
+                    </template>
                     <a-table
                         :scroll="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? { x: 1300, y: '85vh' } : {}"
                         size="small"
@@ -163,7 +165,7 @@
                         :row-key="record => `addon-tnx-${record.id || Math.random()}`"
                         bordered
                     >
-                        <template slot="description" slot-scope="text, record, index">
+                        <template #description slot-scope="text, record, index">
                             <a-form-model-item
                                 :rules="[
                                     {required:true,message:'Không được để trống'},
@@ -174,7 +176,7 @@
                                 <a-input v-model="record.description" placeholder="Mã giảm giá, phí ship, v..v" type="textarea" :disabled="disabledField(record)" />
                             </a-form-model-item>
                         </template>
-                        <template slot="amount" slot-scope="text, record, index">
+                        <template #amount slot-scope="text, record, index">
                             <a-form-model-item
                                 :rules="[{required:true,message:'Không được để trống'},{type:'integer'}]"
                                 :prop="`transactions.${index}.amount`"
@@ -184,7 +186,7 @@
                                 <a-input-number v-model="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(record, UserRole.ROLE_ADMIN_MASTER)" />
                             </a-form-model-item>
                         </template>
-                        <template slot="paid_date" slot-scope="text, record, index">
+                        <template #paid_date slot-scope="text, record, index">
                             <a-form-model-item
                                 :rules="{required:true,message:'Không được để trống'}"
                                 :prop="'transactions.'+index+'.paid_date'" style="margin-bottom:0;"
@@ -196,7 +198,7 @@
                                 />
                             </a-form-model-item>
                         </template>
-                        <template slot="action" slot-scope="text, record, index">
+                        <template #action slot-scope="text, record, index">
                             <a-popconfirm v-if="!record.id" title="Chắc chắn muốn xóa?" @confirm="() => formData.transactions.splice(index,1)">
                                 <a-button type="danger" icon="delete" />
                             </a-popconfirm>

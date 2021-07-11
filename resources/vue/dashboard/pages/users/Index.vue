@@ -1,19 +1,27 @@
 <template>
     <div>
         <a-page-header title="Người dùng / Khách hàng">
-            <template slot="tags">
+            <template #tags>
                 <a-tooltip title="Làm mới">
-                    <a-button type="primary" icon="reload" :loading="usersTableLoading" @click="() => loadUsers({})" />
+                    <a-button type="primary" :loading="usersTableLoading" @click="() => loadUsers({})">
+                        <template #icon>
+                            <ReloadOutlined />
+                        </template>
+                    </a-button>
                 </a-tooltip>
             </template>
-            <template slot="extra">
+            <template #extra>
                 <a-tooltip title="Thêm người dùng">
-                    <a-button type="primary" icon="plus" @click="() => { currentUserId = null; editPageVisible = true; }" />
+                    <a-button type="primary" @click="() => { currentUserId = null; editPageVisible = true; }">
+                        <template #icon>
+                            <PlusOutlined />
+                        </template>
+                    </a-button>
                 </a-tooltip>
             </template>
         </a-page-header>
+            <!-- :scroll="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? { x: 1300 } : {}" -->
         <a-table
-            :scroll="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? { x: 1300 } : {}"
             :size="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? 'small' : 'default'"
             :columns="usersTableColumns"
             :data-source="usersTableData"
@@ -26,44 +34,43 @@
             }"
         >
             <!-- Block Search: BEGIN -->
-            <div
-                slot="filterSearchBox"
-                slot-scope="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }"
-                style="padding: 8px"
-            >
-                <a-input
-                    :placeholder="`Tìm ${column.title}`"
-                    :value="selectedKeys[0]"
-                    style="width: 188px; margin-bottom: 8px; display: block;"
-                    @change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
-                    @pressEnter="() => $refs[`filterSearchBoxSubmit.${column.dataIndex}`].$el.click()"
-                />
-                <a-button
-                    :ref="`filterSearchBoxSubmit.${column.dataIndex}`"
-                    type="primary"
-                    icon="search"
-                    size="small"
-                    style="width: 90px; margin-right: 8px"
-                    @click="() => {confirm();}"
-                >Tìm</a-button>
-                <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);clearFilters();}">Reset</a-button>
-            </div>
-            <SearchOutlined
-                slot="filterSearchBoxIcon"
-                slot-scope="filtered"
-                :style="{ color: filtered ? '#108ee9' : null }"
-            />
+            <template #filterSearchBox="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }">
+                <div style="padding: 8px">
+                    <a-input
+                        :placeholder="`Tìm ${column.title}`"
+                        :value="selectedKeys[0]"
+                        style="width: 188px; margin-bottom: 8px; display: block;"
+                        @change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
+                        @pressEnter="() => $refs[`filterSearchBoxSubmit.${column.dataIndex}`].$el.click()"
+                    />
+                    <a-button
+                        :ref="`filterSearchBoxSubmit.${column.dataIndex}`"
+                        type="primary"
+                        size="small"
+                        style="width: 90px; margin-right: 8px"
+                        @click="() => {confirm();}"
+                    ><template #icon><SearchOutlined /></template> Tìm</a-button>
+                    <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);clearFilters();}">Reset</a-button>
+                </div>
+            </template>
+            <template #filterSearchBoxIcon="{ filtered }">
+                <SearchOutlined :style="{ color: filtered ? '#108ee9' : undefined }" />
+            </template>
             <!-- Block Search: END -->
 
             <template #role="{ text }">
-                <a-tag v-if="configUserRole[value]" :color="configUserRole[value].color">{{ configUserRole[value].name }}</a-tag>
+                <a-tag v-if="configUserRole[text]" :color="configUserRole[text].color">{{ configUserRole[text].name }}</a-tag>
             </template>
             <template #action="{ record }">
                 <template v-if="!onFinishSelect">
-                    <a-button type="primary" icon="edit" @click="() => {currentUserId = record.id; editPageVisible = true;}" />
+                    <a-button type="primary" @click="() => {currentUserId = record.id; editPageVisible = true;}">
+                        <template #icon><EditOutlined /></template>
+                    </a-button>
                 </template>
                 <template v-else>
-                    <a-button type="primary" icon="user" @click="() => onFinishSelect(record)">Chọn</a-button>
+                    <a-button type="primary" icon="user" @click="() => onFinishSelect(record)">
+                        <template #icon><UserOutlined /></template> Chọn
+                    </a-button>
                 </template>
             </template>
             <template #time="{ record }">
@@ -71,8 +78,8 @@
                 <div>Update: {{ date_format(record.updated_at) }}</div>
             </template>
             <template #sns_info="{ text }">
-                <a v-if="value && value.facebook" :href="value.facebook" target="_blank">
-                    <FacebookOutlined />
+                <a v-if="text && text.facebook" :href="text.facebook" target="_blank">
+                    <FacebookOutlined style="font-size: 1.5em;" />
                 </a>
             </template>
         </a-table>
@@ -87,12 +94,18 @@
     </div>
 </template>
 <script>
+import { defineAsyncComponent } from 'vue';
+
+import {
+    FacebookOutlined,
+    SearchOutlined, DownloadOutlined, PlusOutlined,
+    ReloadOutlined, ShoppingCartOutlined, EditOutlined,
+    UserOutlined,
+} from '@ant-design/icons-vue';
+
 import UserRole, { Config as configUserRole } from '../../configs/UserRole';
 import { date_format } from '../../../helpers';
 import RequestRepository from '../../utils/RequestRepository';
-import {
-    SearchOutlined, FacebookOutlined,
-} from '@ant-design/icons-vue';
 
 const usersTableColumns = [
     {
@@ -160,8 +173,11 @@ export default {
         onFinishSelect: Function,
     },
     components: {
-        Edit: () => import('./Edit'),
-        SearchOutlined, FacebookOutlined,
+        Edit: defineAsyncComponent(() => import('./Edit')),
+        FacebookOutlined,
+        SearchOutlined, DownloadOutlined, PlusOutlined,
+        ReloadOutlined, ShoppingCartOutlined, EditOutlined,
+        UserOutlined,
     },
     data() {
         return {

@@ -10,7 +10,7 @@
         /> -->
         <a-col :span="4" :lg="4" :md="24" :sm="24" :xs="24">
             <a-page-header title="Chuyên mục">
-                <template slot="extra">
+                <template #extra>
                     <a-tooltip title="Thêm chuyên mục">
                         <a-button type="primary" icon="plus" @click="showAddCategoryModal" />
                     </a-tooltip>
@@ -28,12 +28,12 @@
         </a-col>
         <a-col :span="20" :lg="20" :md="24" :sm="24" :xs="24" :style="{borderLeft: (['xs','sm','md'].indexOf($mq) !== -1) ?  'none' : '1px solid #CCC'}">
             <a-page-header title="Sản phẩm">
-                <template slot="tags">
+                <template #tags>
                     <a-tooltip title="Làm mới">
                         <a-button type="primary" icon="reload" :loading="productsTableLoading" @click="() => loadProducts({})" />
                     </a-tooltip>
                 </template>
-                <template slot="extra">
+                <template #extra>
                     <a-tooltip title="Thêm sản phẩm">
                         <a-button type="primary" icon="plus" @click="() => { currentProductId = undefined; productEditPageVisible = true; }" />
                     </a-tooltip>
@@ -54,34 +54,28 @@
                 }"
             >
                 <!-- Block Search: BEGIN -->
-                <div
-                    slot="filterSearchBox"
-                    slot-scope="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }"
-                    style="padding: 8px"
-                >
-                    <a-input
-                        :placeholder="`Tìm ${column.title}`"
-                        :value="selectedKeys[0]"
-                        style="width: 188px; margin-bottom: 8px; display: block;"
-                        @change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
-                        @pressEnter="() => $refs[`filterSearchBoxSubmit.${column.dataIndex}`].$el.click()"
-                    />
-                    <a-button
-                        :ref="`filterSearchBoxSubmit.${column.dataIndex}`"
-                        type="primary"
-                        icon="search"
-                        size="small"
-                        style="width: 90px; margin-right: 8px"
-                        @click="() => {confirm();}"
-                    >Tìm</a-button>
-                    <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);clearFilters();}">Reset</a-button>
-                </div>
-                <a-icon
-                    slot="filterSearchBoxIcon"
-                    slot-scope="filtered"
-                    type="search"
-                    :style="{ color: filtered ? '#108ee9' : undefined }"
-                />
+                <template #filterSearchBox="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }">
+                    <div style="padding: 8px">
+                        <a-input
+                            :placeholder="`Tìm ${column.title}`"
+                            :value="selectedKeys[0]"
+                            style="width: 188px; margin-bottom: 8px; display: block;"
+                            @change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
+                            @pressEnter="() => $refs[`filterSearchBoxSubmit.${column.dataIndex}`].$el.click()"
+                        />
+                        <a-button
+                            :ref="`filterSearchBoxSubmit.${column.dataIndex}`"
+                            type="primary"
+                            size="small"
+                            style="width: 90px; margin-right: 8px"
+                            @click="() => {confirm();}"
+                        ><template #icon><SearchOutlined /></template> Tìm</a-button>
+                        <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);clearFilters();}">Reset</a-button>
+                    </div>
+                </template>
+                <template #filterSearchBoxIcon="{ filtered }">
+                    <SearchOutlined :style="{ color: filtered ? '#108ee9' : undefined }" />
+                </template>
                 <!-- Block Search: END -->
 
                 <template #name="{ text, record }">
