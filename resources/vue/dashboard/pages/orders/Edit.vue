@@ -31,10 +31,10 @@
                 </template>
                 <a-descriptions size="small" :column="1" v-if="id">
                     <a-descriptions-item label="Ngày tạo">
-                        <span>{{ orderInfo.created_at }}</span>
+                        <span>{{ date_format(orderInfo.created_at) }}</span>
                     </a-descriptions-item>
                     <a-descriptions-item label="Ngày cập nhật">
-                        <span>{{ orderInfo.updated_at }}</span>
+                        <span>{{ date_format(orderInfo.updated_at) }}</span>
                     </a-descriptions-item>
                     <a-descriptions-item label="Người cập nhật" v-if="orderInfo.updated_user">
                         <span>{{ orderInfo.updated_user_id }}. {{ orderInfo.updated_user.name }}</span>
@@ -450,7 +450,7 @@ import OrderProductStockStatus, { Config as configOrderProductStockStatus } from
 import PaymentMethod, { Config as configPaymentMethod } from '../../configs/PaymentMethod';
 import RequestRepository from '../../utils/RequestRepository';
 
-import { number_format, cloneDeep, } from '../../../helpers';
+import { number_format, cloneDeep, date_format, } from '../../../helpers';
 import User from '../../utils/User';
 
 const addon_transactionsTableColumns = [
@@ -662,6 +662,7 @@ export default {
     methods: {
         cloneDeep,
         number_format,
+        date_format,
 
         disabledLastMonthAndTomorrow(current) {
             return !this.authUser.hasPermission(UserRole.ROLE_ADMIN_SUB_MASTER) &&
