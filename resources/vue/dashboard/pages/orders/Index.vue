@@ -27,10 +27,10 @@
                 </a-tooltip>
             </template>
         </a-page-header>
-            <!-- :scroll="($screen.xs || $screen.sm || $screen.md) ? { x: 1300, y: '85vh' } : {}" -->
+            <!-- :scroll="($grid.xs || $grid.sm || $grid.md) ? { x: 1300, y: '85vh' } : {}" -->
         <a-table
             defaultExpandAllRows
-            :size="($screen.xs || $screen.sm || $screen.md) ? 'small' : 'default'"
+            :size="($grid.xs || $grid.sm || $grid.md) ? 'small' : 'default'"
             :columns="ordersTableColumns"
             :data-source="ordersTableData"
             :loading="ordersTableLoading"
@@ -88,12 +88,12 @@
             </template>
             <!-- Block Filter RangeDate: END -->
 
-            <template #customer="{ value, record }">
-                <div v-if="value && record.customer">
+            <template #customer="{ text, record }">
+                <div v-if="text && record.customer">
                     <div>
-                        <span>#{{ value }}. {{ record.customer.name }}</span>
-                        <a-button @click="() => { currentUserId = value; userEditPageVisible = true; }" size="small">
-                            <template #icon><SearchOutlined /></template> Tìm
+                        <span>#{{ text }}. {{ record.customer.name }}</span>
+                        <a-button @click="() => { currentUserId = text; userEditPageVisible = true; }" size="small">
+                            <template #icon><SearchOutlined /></template>
                         </a-button>
                     </div>
                     <div>Phone: {{ record.customer.phone || 'Chưa có' }}</div>
@@ -105,64 +105,19 @@
             <template #total_amount="{ record }">
                 <div>
                     <span>Nhập: </span>
-                    <span>{{ number_format((() => {
-                        let cost = 0;
-
-                        record.order_products.forEach(op_elm => {
-                            op_elm.order_product_stocks.forEach(ops_elm => {
-                                // stock.cost_amount
-                                if (ops_elm.status === OrderProductStockStatus.STS_SOLD) {
-                                    cost += ops_elm.stock.cost_price;
-                                }
-                            });
-                        });
-
-                        return cost;
-                    })()) }} ₫</span>
+                    <span>{{ calcCost(record) }} ₫</span>
                 </div>
                 <div>
                     <span>Bán: </span>
-                    <span>{{ number_format((() => {
-                        let sell = 0;
-
-                        record.order_products.forEach(op_elm => {
-                            op_elm.order_product_stocks.forEach(ops_elm => {
-                                // stock.cost_amount
-                                if (ops_elm.status === OrderProductStockStatus.STS_SOLD) {
-                                    sell += ops_elm.amount;
-                                }
-                            });
-                        });
-
-                        return sell;
-                    })()) }} ₫</span>
+                    <span>{{ calcSell(record) }} ₫</span>
                 </div>
                 <div>
                     <span>Thu Kho: </span>
-                    <span>{{ number_format((() => {
-                        let amount = 0;
-                        record.order_products.forEach(op_elm => {
-                            op_elm.order_product_stocks.forEach(ops_elm => {
-                                ops_elm.transactions.forEach(tnx_eml => {
-                                    amount += tnx_eml.amount;
-                                });
-                            });
-                        });
-
-                        return amount;
-                    })()) }} ₫</span>
+                    <span>{{ calcAmount(record) }} ₫</span>
                 </div>
                 <div>
                     <span>GD Thêm: </span>
-                    <span>{{ number_format((() => {
-                        let amount = 0;
-                        // addon transactions
-                        record.transactions.forEach(r_tnx_elm => {
-                            amount += r_tnx_elm.amount;
-                        });
-
-                        return amount;
-                    })()) }} ₫</span>
+                    <span>{{ calcAdd(record) }} ₫</span>
                 </div>
             </template>
             <template #time="{ record }">
@@ -194,7 +149,7 @@
                 </template>
             </template>
 
-            <template #expandedRowRender="o">
+            <template #expandedRowRender="{ record: o }">
                 <a-table
                     v-if="o.order_products.length"
                     defaultExpandAllRows
@@ -205,7 +160,7 @@
                     size="small"
                     bordered
                 >
-                    <template #expandedRowRender="op">
+                    <template #expandedRowRender="{ record: op }">
                         <a-table
                             :columns="orderProductStockTableColumns"
                             :data-source="op.order_product_stocks"
@@ -271,6 +226,7 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from 'vue';
 import moment from 'moment';
 
 import {
@@ -308,9 +264,9 @@ const ordersTableColumns = [
     {
         title: 'Ngày xuất đơn',
         dataIndex: 'deal_date',
-        customRender: (text) => date_format(text),
         slots: {
             filterDropdown: 'filterRangeDate',
+            customRender: (text) => date_format(text),
         },
         sorter: true,
     },
@@ -374,8 +330,9 @@ const orderProductTableColumns = [
     {
         title: 'Sản phẩm mua',
         key: 'name',
-        dataIndex: 'product',
-        customRender: (product) => product.name,
+        // dataIndex: 'product',
+        // customRender: ({ record }) => record.name,
+        customRender: ({ record }) => record.product?.name,
     },
 ];
 
@@ -383,38 +340,39 @@ const orderProductStockTableColumns = [
     {
         title: 'Tên hàng xuất kho',
         key: 'name',
-        dataIndex: 'stock',
-        customRender: (stock) => stock.name,
+        // dataIndex: 'stock',
+        customRender: ({ record }) => record.stock?.name,
     },
     {
         title: 'Idi/Imei',
         key: 'idi',
-        dataIndex: 'stock',
-        customRender: (stock) => stock.idi,
+        // dataIndex: 'stock',
+        customRender: ({ record }) => record.stock?.idi,
     },
     {
         title: 'Giá nhập',
         key: 'cost_price',
-        dataIndex: 'stock',
-        customRender: (stock) => number_format(stock.cost_price),
+        // dataIndex: 'stock',
+        customRender: ({ record }) => number_format(record.stock?.cost_price) + ' ₫',
     },
     {
         title: 'Giá bán',
-        dataIndex: 'amount',
-        customRender: (value) => number_format(value),
+        key: 'amount',
+        // dataIndex: 'amount',
+        customRender: ({ record }) => number_format(record.amount) + ' ₫',
     },
     {
         title: 'Đã thu',
         key: 'total_received',
-        dataIndex: 'transactions',
-        customRender: (transactions) => {
+        // dataIndex: 'transactions',
+        customRender: ({ record }) => {
             let total = 0;
 
-            transactions.forEach(value => {
+            record.transactions?.forEach(value => {
                 total += value.amount;
             });
 
-            return number_format(total);
+            return number_format(total) + ' ₫';
         },
     },
 ];
@@ -424,10 +382,10 @@ export default {
         onFinishSelect: Function,
     },
     components: {
-        UserEdit: () => import('../users/Edit'),
-        StockEdit: () => import('../stocks/Edit'),
-        ProductEdit: () => import('../products/Edit'),
-        OrderEdit: () => import('../orders/Edit'),
+        UserEdit: defineAsyncComponent(() => import('../users/Edit')),
+        StockEdit: defineAsyncComponent(() => import('../stocks/Edit')),
+        ProductEdit: defineAsyncComponent(() => import('../products/Edit')),
+        OrderEdit: defineAsyncComponent(() => import('../orders/Edit')),
         SearchOutlined, DownloadOutlined, PlusOutlined,
         ReloadOutlined, ShoppingCartOutlined, EditOutlined,
     },
@@ -523,6 +481,64 @@ export default {
                 .finally(()=>{
                     this.ordersTableLoading = false;
                 });
+        },
+
+        calcCost(record) {
+            return number_format((() => {
+                let cost = 0;
+
+                record.order_products.forEach(op_elm => {
+                    op_elm.order_product_stocks.forEach(ops_elm => {
+                        // stock.cost_amount
+                        if (ops_elm.status === OrderProductStockStatus.STS_SOLD) {
+                            cost += ops_elm.stock.cost_price;
+                        }
+                    });
+                });
+
+                return cost;
+            })());
+        },
+        calcAmount(record) {
+            return number_format((() => {
+                let amount = 0;
+                record.order_products.forEach(op_elm => {
+                    op_elm.order_product_stocks.forEach(ops_elm => {
+                        ops_elm.transactions.forEach(tnx_eml => {
+                            amount += tnx_eml.amount;
+                        });
+                    });
+                });
+
+                return amount;
+            })());
+        },
+        calcSell(record) {
+            return number_format((() => {
+                let sell = 0;
+
+                record.order_products.forEach(op_elm => {
+                    op_elm.order_product_stocks.forEach(ops_elm => {
+                        // stock.cost_amount
+                        if (ops_elm.status === OrderProductStockStatus.STS_SOLD) {
+                            sell += ops_elm.amount;
+                        }
+                    });
+                });
+
+                return sell;
+            })());
+        },
+        calcAdd(record) {
+            return number_format((() => {
+                let amount = 0;
+                // addon transactions
+                record.transactions.forEach(r_tnx_elm => {
+                    amount += r_tnx_elm.amount;
+                });
+
+                return amount;
+            })());
         },
 
         download() {

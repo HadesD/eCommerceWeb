@@ -1,71 +1,71 @@
 <template>
-    <div>
-        <a-page-header
-            :title="id ? 'Sửa thông tin người dùng' : 'Thêm khách hàng / người dùng mới'"
-            :subTitle="id ? `#${id}` : null"
+    <a-page-header
+        :title="id ? 'Sửa thông tin người dùng' : 'Thêm khách hàng / người dùng mới'"
+        :subTitle="id ? `#${id}` : null"
+    >
+        <template #tags>
+            <a-tooltip title="Lấy dữ liệu mới nhất" v-if="id">
+                <a-button type="primary" size="small" icon="reload" :loading="userInfoLoading" @click="() => loadUser(id)" />
+            </a-tooltip>
+            <a-tooltip title="Xoá toàn bộ dữ liệu đang nhập" v-if="!userId">
+                <a-popconfirm title="Xác nhận reset toàn bộ dữ liệu đang nhập?" @confirm="() => this.formData.id = (this.formData.id === undefined) ? null : undefined">
+                    <a-button type="danger" size="small" icon="delete" />
+                </a-popconfirm>
+            </a-tooltip>
+        </template>
+        <a-descriptions size="small" :column="1" v-if="id">
+            <a-descriptions-item label="Ngày tạo">
+                <span>{{ userInfo.created_at }}</span>
+            </a-descriptions-item>
+            <a-descriptions-item label="Ngày cập nhật">
+                <span>{{ userInfo.updated_at }}</span>
+            </a-descriptions-item>
+        </a-descriptions>
+    </a-page-header>
+    <a-spin :spinning="userInfoLoading">
+        <a-form
+            ref="ruleForm"
+            :model="formData"
+            :rules="rules"
+            :label-col="($grid.xs || $grid.sm || $grid.md) ? { span: 4 } : {}"
+            :wrapper-col="($grid.xs || $grid.sm || $grid.md) ? { span: 20 } : {}"
         >
-            <template slot="tags">
-                <a-tooltip title="Lấy dữ liệu mới nhất" v-if="id">
-                    <a-button type="primary" size="small" icon="reload" :loading="userInfoLoading" @click="() => loadUser(id)" />
-                </a-tooltip>
-                <a-tooltip title="Xoá toàn bộ dữ liệu đang nhập" v-if="!userId">
-                    <a-popconfirm title="Xác nhận reset toàn bộ dữ liệu đang nhập?" @confirm="() => this.formData.id = (this.formData.id === undefined) ? null : undefined">
-                        <a-button type="danger" size="small" icon="delete" />
-                    </a-popconfirm>
-                </a-tooltip>
-            </template>
-            <a-descriptions size="small" :column="1" v-if="id">
-                <a-descriptions-item label="Ngày tạo">
-                    <span>{{ userInfo.created_at }}</span>
-                </a-descriptions-item>
-                <a-descriptions-item label="Ngày cập nhật">
-                    <span>{{ userInfo.updated_at }}</span>
-                </a-descriptions-item>
-            </a-descriptions>
-        </a-page-header>
-        <a-spin :spinning="userInfoLoading">
-            <a-form-model
-                ref="ruleForm"
-                :model="formData"
-                :rules="rules"
-                :label-col="($screen.xs || $screen.sm || $screen.md) ? { span: 4 } : {}"
-                :wrapper-col="($screen.xs || $screen.sm || $screen.md) ? { span: 20 } : {}"
-            >
-                <a-form-model-item label="Họ tên" prop="name">
-                    <a-input v-model="formData.name" />
-                </a-form-model-item>
-                <a-form-model-item label="Số điện thoại" prop="phone">
-                    <a-input v-model="formData.phone" />
-                </a-form-model-item>
-                <a-form-model-item label="Facebook" prop="sns_info.facebook" help="https://facebook.com/zuck">
-                    <a-input v-model="formData.sns_info.facebook" />
-                </a-form-model-item>
-                <a-form-model-item label="Email" prop="email">
-                    <a-input v-model="formData.email" />
-                </a-form-model-item>
-                <a-form-model-item label="Mật khẩu" prop="password">
-                    <a-input v-model="formData.password" />
-                </a-form-model-item>
-                <a-form-model-item label="Chức vụ" prop="role">
-                    <a-select v-model="formData.role">
-                        <a-select-option v-for="userRole in Object.keys(configUserRole)" :key="userRole" :value="parseInt(userRole)" :disabled="!authUser.hasPermission(UserRole.ROLE_ADMIN_MASTER) && (parseInt(userRole) >= UserRole.ROLE_ADMIN_MASTER)">{{ configUserRole[userRole].name }}</a-select-option>
-                    </a-select>
-                </a-form-model-item>
-                <a-form-model-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: ($screen.xs || $screen.sm || $screen.md) ? 0 : 4 }">
-                    <a-button
-                        type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })"
-                        block
-                        size="large"
-                        :disabled="id && !authUser.hasPermission(this.userInfo.role)"
-                    >
-                        {{ id ? 'Sửa' : 'Tạo' }}
-                    </a-button>
-                </a-form-model-item>
-            </a-form-model>
-        </a-spin>
-    </div>
+            <a-form-item label="Họ tên" name="name">
+                <a-input v-model:value="formData.name" />
+            </a-form-item>
+            <a-form-item label="Số điện thoại" name="phone">
+                <a-input v-model:value="formData.phone" />
+            </a-form-item>
+            <a-form-item label="Facebook" name="sns_info.facebook" help="https://facebook.com/zuck">
+                <a-input v-model:value="formData.sns_info.facebook" />
+            </a-form-item>
+            <a-form-item label="Email" name="email">
+                <a-input v-model:value="formData.email" />
+            </a-form-item>
+            <a-form-item label="Mật khẩu" name="password">
+                <a-input v-model:value="formData.password" />
+            </a-form-item>
+            <a-form-item label="Chức vụ" name="role">
+                <a-select v-model:value="formData.role">
+                    <a-select-option v-for="userRole in Object.keys(configUserRole)" :key="userRole" :value="parseInt(userRole)" :disabled="!authUser.hasPermission(UserRole.ROLE_ADMIN_MASTER) && (parseInt(userRole) >= UserRole.ROLE_ADMIN_MASTER)">{{ configUserRole[userRole].name }}</a-select-option>
+                </a-select>
+            </a-form-item>
+            <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: ($grid.xs || $grid.sm || $grid.md) ? 0 : 4 }">
+                <a-button
+                    type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })"
+                    block
+                    size="large"
+                    :disabled="id && !authUser.hasPermission(this.userInfo.role)"
+                >
+                    {{ id ? 'Sửa' : 'Tạo' }}
+                </a-button>
+            </a-form-item>
+        </a-form>
+    </a-spin>
 </template>
 <script>
+import { ref } from 'vue';
+
 import UserRole, { Config as configUserRole } from '../../configs/UserRole';
 import User from '../../utils/User';
 import RequestRepository from '../../utils/RequestRepository';
@@ -74,23 +74,25 @@ export default {
     props: {
         userId: Number,
     },
-    data() {
+    setup() {
+        const formData = ref({
+            id: undefined,
+            name: undefined,
+            email: undefined,
+            phone: undefined,
+            password: undefined,
+            sns_info: {
+                facebook: undefined,
+            },
+            role: UserRole.ROLE_USER_NORMAL,
+        });
+
         return {
             userInfoLoading: false,
 
             userInfo: {},
 
-            formData: {
-                id: undefined,
-                name: undefined,
-                email: undefined,
-                phone: undefined,
-                password: undefined,
-                sns_info: {
-                    facebook: undefined,
-                },
-                role: UserRole.ROLE_USER_NORMAL,
-            },
+            formData,
             rules: {
                 name: [
                     { required: true },

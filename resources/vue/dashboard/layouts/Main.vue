@@ -42,7 +42,7 @@ export default {
             return this.isMobileSize ? 0 : 80;
         },
         isMobileSize(){
-            const mq = this.$screen;
+            const mq = this.$grid;
             return mq.xs || mq.sm || mq.md;
         },
     },

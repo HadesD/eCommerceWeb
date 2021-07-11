@@ -27,7 +27,7 @@
                 </a-tree>
             </a-spin>
         </a-col>
-        <a-col :span="20" :lg="20" :md="24" :sm="24" :xs="24" :style="{borderLeft: ($screen.xs || $screen.sm || $screen.md) ?  '1px solid #CCC' : 'none'}">
+        <a-col :span="20" :lg="20" :md="24" :sm="24" :xs="24" :style="{borderLeft: ($grid.xs || $grid.sm || $grid.md) ?  '1px solid #CCC' : 'none'}">
             <a-page-header title="Kho hàng">
                 <template slot="tags">
                     <a-tooltip title="Làm mới">
@@ -44,8 +44,8 @@
                 </template>
             </a-page-header>
             <a-table
-                :scroll="($screen.xs || $screen.sm || $screen.md) ? { x: 1300, y: '85vh' } : {}"
-                :size="($screen.xs || $screen.sm || $screen.md) ? 'small' : 'default'"
+                :scroll="($grid.xs || $grid.sm || $grid.md) ? { x: 1300, y: '85vh' } : {}"
+                :size="($grid.xs || $grid.sm || $grid.md) ? 'small' : 'default'"
                 :columns="stocksTableColumns"
                 :data-source="stocksTableData"
                 :loading="stocksTableLoading"
