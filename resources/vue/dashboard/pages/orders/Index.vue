@@ -62,7 +62,7 @@
                     <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);clearFilters();}">Reset</a-button>
                 </div>
             </template>
-            <template #filterSearchBoxIcon="filtered">
+            <template #filterSearchBoxIcon="{ filtered }">
                 <SearchOutlined :style="{ color: filtered ? '#108ee9' : undefined }" />
             </template>
             <!-- Block Search: END -->
