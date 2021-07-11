@@ -2,7 +2,7 @@
     <a-layout>
         <!-- <vue-progress-bar /> -->
         <SiderMenu :collapsed="sideBarCollapsed" :width="sideBarWidth" :collapsedWidth="sideBarCollapsedWidth"></SiderMenu>
-        <a-layout :style="{ marginLeft: (sideBarCollapsed ? sideBarCollapsedWidth : sideBarWidth) + 'px'  }">
+        <a-layout>
             <Header :sideBarCollapsed="sideBarCollapsed" @onSetSidebarCollapsed="setSidebarCollapsed"></Header>
             <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
                 <!-- <Breadcrumb></Breadcrumb> -->
@@ -43,7 +43,7 @@ export default {
         },
         isMobileSize(){
             const mq = this.$grid;
-            return mq.xs || mq.sm || mq.md;
+            return ['sm', 'md'].indexOf(mq.breakpoint) !== -1;
         },
     },
     mounted(){

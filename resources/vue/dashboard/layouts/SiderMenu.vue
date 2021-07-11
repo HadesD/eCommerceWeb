@@ -1,5 +1,11 @@
 <template>
-    <a-layout-sider v-model="collapsed" id="slider_sidebar" :width="width" :collapsedWidth="collapsedWidth">
+    <a-layout-sider
+        id="slider_sidebar"
+        :collapsed="collapsed" collapsible
+        :width="width"
+        :collapsedWidth="collapsedWidth"
+        :trigger="null"
+    >
         <a-menu
             theme="dark"
             mode="inline"
