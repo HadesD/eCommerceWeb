@@ -32,9 +32,7 @@
             :model="formData"
             :rules="rules"
             @finish="onFinish"
-            :label-col="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) === -1) ? { span: 4 } : {}"
-            :wrapper-col="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) === -1) ? { span: 20 } : {}"
-            :layout="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) === -1) ? 'horizontal' : 'vertical'"
+            layout="vertical"
         >
             <a-form-item label="Họ tên" name="name">
                 <a-input v-model:value="formData.name" />
