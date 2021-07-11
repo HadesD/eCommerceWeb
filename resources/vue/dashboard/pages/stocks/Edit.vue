@@ -441,7 +441,7 @@ export default {
                     this.categories = res.data.data || [];
                 })
                 .catch(err => {
-                    if (err.response && err.response.data.message) {
+                    if (err.response && err.response.data && err.response.data.message) {
                         this.$message.error(err.response.data.message);
                         return;
                     }
@@ -496,7 +496,7 @@ export default {
                     this.stockInfoLoading = false;
                 })
                 .catch(err => {
-                    if (err.response && err.response.data.message) {
+                    if (err.response && err.response.data && err.response.data.message) {
                         this.$message.error(err.response.data.message);
                         return;
                     }
@@ -540,7 +540,7 @@ export default {
                 })
                 .catch(err => {
                     this.stockInfoLoading = false;
-                    if (err.response && err.response.data.message) {
+                    if (err.response && err.response.data && err.response.data.message) {
                         this.$message.error(err.response.data.message);
                         return;
                     }

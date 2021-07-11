@@ -472,7 +472,7 @@ export default {
                     // this.$router.push(newUrl.pathname.replace(/\/dashboard/, '') + newUrl.search);
                 })
                 .catch(err => {
-                    if (err.response && err.response.data.message) {
+                    if (err.response && err.response.data && err.response.data.message) {
                         this.$message.error(err.response.data.message);
                         return;
                     }

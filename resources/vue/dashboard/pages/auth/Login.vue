@@ -73,8 +73,8 @@ export default {
     setup(){
         const ruleForm = ref();
         const formData = reactive({
-            email: null,
-            password: null,
+            email: undefined,
+            password: undefined,
             remember: true,
         });
 
@@ -128,8 +128,8 @@ export default {
                 .catch(err => {
                     // this.$Progress.fail();
 
-                    if (err.response && err.response.message) {
-                        this.$message.error(err.response.message);
+                    if (err.response && err.response.data && err.response.data.message) {
+                        this.$message.error(err.response.data.message);
                         return;
                     }
 

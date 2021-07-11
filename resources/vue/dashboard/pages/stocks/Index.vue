@@ -357,7 +357,7 @@ export default {
                     this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
                 })
                 .catch(err => {
-                    if (err.response && err.response.data.message) {
+                    if (err.response && err.response.data && err.response.data.message) {
                         this.$message.error(err.response.data.message);
                         return;
                     }
@@ -425,7 +425,7 @@ export default {
                     //   }
                 })
                 .catch(err => {
-                    if (err.response && err.response.data.message) {
+                    if (err.response && err.response.data && err.response.data.message) {
                         this.$message.error(err.response.data.message);
                         return;
                     }
