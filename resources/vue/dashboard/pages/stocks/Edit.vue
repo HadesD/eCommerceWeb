@@ -188,7 +188,7 @@
                                     {required:true,message:'Không được để trống'},
                                     {min:(record.id && (stockInfo.transactions[index].description.indexOf(`#${record.id}`) === -1) ? 0 : 10),message:'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 10 ký tự)'}
                                 ]"
-                                :name="`transactions.${index}.description`" style="margin-bottom:0;"
+                                :name="['transactions', index, 'description']" style="margin-bottom:0;"
                             >
                                 <a-input v-model:value="record.description" placeholder="Mã giảm giá, phí ship, v..v" type="textarea" :disabled="disabledField(record)" />
                             </a-form-item>
@@ -196,7 +196,7 @@
                         <template #amount="{ text, record, index }">
                             <a-form-item
                                 :rules="[{required:true,message:'Không được để trống'},{type:'integer'}]"
-                                :name="`transactions.${index}.amount`"
+                                :name="['transactions', index,'amount']"
                                 style="margin-bottom:0;"
                                 :help="`Xem trước: ${number_format(record.amount || 0)} ₫`"
                             >
@@ -206,7 +206,7 @@
                         <template #paid_date="{ text, record, index }">
                             <a-form-item
                                 :rules="{required:true,message:'Không được để trống'}"
-                                :name="'transactions.'+index+'.paid_date'" style="margin-bottom:0;"
+                                :name="['transactions', index, 'paid_date']" style="margin-bottom:0;"
                                 help="Ngày thanh toán sẽ liên kết trực tiếp tới tiền lãi/thu của tháng đó"
                             >
                                 <a-date-picker
