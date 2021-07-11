@@ -8,37 +8,37 @@
         @cancel="cancel"
     >
         <a-form ref="ruleForm" :model="formData" :rules="rules" >
-        <a-form-item label="Tên chuyên mục" name="name">
-            <a-input v-model="formData.name" @change="onNameChanged" />
-        </a-form-item>
-        <a-form-item label="Đường dẫn URL (Slug)" name="slug">
-            <a-input v-model="formData.slug" />
-        </a-form-item>
-        <a-form-item label="Mô tả ngắn">
-            <a-textarea v-model="formData.description" placeholder="Nhập mô tả" :auto-size="{ minRows: 3, maxRows: 5  }" />
-        </a-form-item>
-        <a-form-item label="Chuyên mục cha">
-            <a-form-item :style="{ display: 'inline-block', width: 'calc(100% - 40px)' }" >
-                <a-spin :spinning="categoriesTreeLoading">
-                    <a-tree-select
-                        show-search
-                        allow-clear
-                        v-model="formData.parent_id"
-                        tree-data-simple-mode
-                        treeDefaultExpandAll
-                        treeNodeFilterProp="title"
-                        style="width: 100%"
-                        :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-                        :tree-data="categoriesTreeData"
-                        placeholder="Chuyên mục cha"
-                        :replaceFields="{ pId:'parent_id',title:'name',value:'id' }"
-                    />
-                </a-spin>
+            <a-form-item label="Tên chuyên mục" name="name">
+                <a-input v-model="formData.name" @change="onNameChanged" />
             </a-form-item>
-            <a-form-item :style="{ display: 'inline-block', float:'right' }">
-                <a-button type="primary" icon="reload" @click="reloadCategoriesTree" :loading="categoriesTreeLoading" />
+            <a-form-item label="Đường dẫn URL (Slug)" name="slug">
+                <a-input v-model="formData.slug" />
             </a-form-item>
-        </a-form-item>
+            <a-form-item label="Mô tả ngắn">
+                <a-textarea v-model="formData.description" placeholder="Nhập mô tả" :auto-size="{ minRows: 3, maxRows: 5  }" />
+            </a-form-item>
+            <a-form-item label="Chuyên mục cha">
+                <a-form-item :style="{ display: 'inline-block', width: 'calc(100% - 40px)' }" >
+                    <a-spin :spinning="categoriesTreeLoading">
+                        <a-tree-select
+                            show-search
+                            allow-clear
+                            v-model="formData.parent_id"
+                            tree-data-simple-mode
+                            treeDefaultExpandAll
+                            treeNodeFilterProp="title"
+                            style="width: 100%"
+                            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                            :tree-data="categoriesTreeData"
+                            placeholder="Chuyên mục cha"
+                            :replaceFields="{ pId:'parent_id',title:'name',value:'id' }"
+                        />
+                    </a-spin>
+                </a-form-item>
+                <a-form-item :style="{ display: 'inline-block', float:'right' }">
+                    <a-button type="primary" icon="reload" @click="reloadCategoriesTree" :loading="categoriesTreeLoading" />
+                </a-form-item>
+            </a-form-item>
         </a-form>
     </a-modal>
 </template>
