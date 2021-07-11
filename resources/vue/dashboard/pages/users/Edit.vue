@@ -43,7 +43,11 @@
                 <a-input v-model:value="formData.phone" />
             </a-form-item>
             <a-form-item label="Facebook" name="sns_info.facebook" help="https://facebook.com/zuck">
-                <a-input v-model:value="formData.sns_info.facebook" />
+                <a-input v-model:value="formData.sns_info.facebook">
+                    <template v-if="formData.sns_info.facebook" #addonAfter>
+                        <a :href="formData.sns_info.facebook" target="_blank"><FacebookOutlined /></a>
+                    </template>
+                </a-input>
             </a-form-item>
             <a-form-item label="Email" name="email">
                 <a-input v-model:value="formData.email" />
@@ -72,6 +76,7 @@ import { reactive, ref, } from 'vue';
 
 import {
     ReloadOutlined, DeleteOutlined,
+    FacebookOutlined,
 } from '@ant-design/icons-vue';
 
 import UserRole, { Config as configUserRole } from '../../configs/UserRole';
@@ -85,6 +90,7 @@ export default {
     },
     components: {
         ReloadOutlined, DeleteOutlined,
+        FacebookOutlined,
     },
     setup() {
         const ruleForm = ref();
