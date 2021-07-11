@@ -32,25 +32,25 @@
                     </a-descriptions-item>
                 </a-descriptions>
             </a-page-header>
-            <a-form-model
+            <a-form
                 ref="ruleForm"
                 :model="formData"
                 :rules="rules"
                 :label-col="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) === -1) ? {span: 4} : {}"
                 :wrapper-col="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) === -1) ? {span: 14} : {}"
             >
-                <a-form-model-item label="Tên sản phẩm" ref="name" prop="name">
+                <a-form-item label="Tên sản phẩm" name="name">
                     <a-input
                         @change="onNameChanged"
                         v-model="formData.name"
                     />
-                </a-form-model-item>
-                <a-form-model-item label="Đường dẫn URL (Slug)" ref="slug" prop="slug">
+                </a-form-item>
+                <a-form-item label="Đường dẫn URL (Slug)" name="slug">
                     <a-input
                         v-model="formData.slug"
                     />
-                </a-form-model-item>
-                <a-form-model-item label="Giá bán" ref="price" prop="price"
+                </a-form-item>
+                <a-form-item label="Giá bán" name="price"
                     :help="`Xem trước: ${number_format(formData.price || 0)} ₫`"
                 >
                     <a-input-number
@@ -59,21 +59,21 @@
                         :min="0"
                         :max="2000000000"
                     />
-                </a-form-model-item>
-                <a-form-model-item label="Trạng thái" ref="status" prop="status">
+                </a-form-item>
+                <a-form-item label="Trạng thái" name="status">
                     <a-select
                         v-model="formData.status"
                     >
                         <a-select-option v-for="codeSts in Object.keys(configProductStatus)" :key="codeSts" :value="parseInt(codeSts)">{{ configProductStatus[codeSts].name }}</a-select-option>
                     </a-select>
-                </a-form-model-item>
-                <a-form-model-item label="Chuyên mục cha">
-                    <a-form-model-item style="display: inline-block; margin-right: 5px;">
+                </a-form-item>
+                <a-form-item label="Chuyên mục cha">
+                    <a-form-item style="display: inline-block; margin-right: 5px;">
                         <a-tooltip title="Thêm chuyên mục">
                             <a-button type="primary" icon="plus" @click="showAddCategoryModal" />
                         </a-tooltip>
-                    </a-form-model-item>
-                    <a-form-model-item prop="categories_id" :style="{ display: 'inline-block', width: 'calc(100% - 80px)' }">
+                    </a-form-item>
+                    <a-form-item prop="categories_id" :style="{ display: 'inline-block', width: 'calc(100% - 80px)' }">
                         <a-spin :spinning="categoriesTreeLoading">
                             <a-tree-select
                                 show-search
@@ -90,52 +90,52 @@
                                 :replaceFields="{ pId:'parent_id',title:'name',value:'id' }"
                             />
                         </a-spin>
-                    </a-form-model-item>
-                    <a-form-model-item style="display: inline-block; margin-left: 5px;">
+                    </a-form-item>
+                    <a-form-item style="display: inline-block; margin-left: 5px;">
                         <a-tooltip title="Làm mới">
                             <a-button type="primary" icon="reload" @click="reloadCategoriesTree" :loading="categoriesTreeLoading" />
                         </a-tooltip>
-                    </a-form-model-item>
-                </a-form-model-item>
+                    </a-form-item>
+                </a-form-item>
                 <a-tabs default-active-key="description" @change="(k) => $refs[k] && $refs[k].focus()">
                     <a-tab-pane key="description" tab="Mô tả ngắn">
-                        <a-form-model-item label="Mô tả ngắn">
+                        <a-form-item label="Mô tả ngắn">
                             <a-textarea
                                 v-model="formData.description"
                                 ref="description"
                                 placeholder="Nhập mô tả"
                                 :auto-size="{ minRows: 3, maxRows: 10 }"
                             />
-                        </a-form-model-item>
+                        </a-form-item>
                     </a-tab-pane>
                     <a-tab-pane key="detail" tab="Chi tiết sản phẩm">
-                        <a-form-model-item label="Mô tả ngắn">
+                        <a-form-item label="Mô tả ngắn">
                             <a-textarea
                                 v-model="formData.detail"
                                 ref="detail"
                                 placeholder="Nhập mô tả"
                                 :auto-size="{ minRows: 3, maxRows: 10 }"
                             />
-                        </a-form-model-item>
+                        </a-form-item>
                     </a-tab-pane>
                     <a-tab-pane key="specification" tab="Thông số sản phẩm">
-                        <a-form-model-item label="Mô tả ngắn">
+                        <a-form-item label="Mô tả ngắn">
                             <a-textarea
                                 v-model="formData.specification"
                                 ref="specification"
                                 placeholder="Nhập mô tả"
                                 :auto-size="{ minRows: 3, maxRows: 10 }"
                             />
-                        </a-form-model-item>
+                        </a-form-item>
                     </a-tab-pane>
                 </a-tabs>
-                <a-form-model-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: (['xs','sm','md'].indexOf($grid.breakpoint) !== -1) ? 0 : 4 }">
+                <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: (['xs','sm','md'].indexOf($grid.breakpoint) !== -1) ? 0 : 4 }">
                     <a-button
                         type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate(valid => { if (valid) onFinish() })"
                         block
                     >{{ id ? 'Sửa' : 'Đăng bán' }}</a-button>
-                </a-form-model-item>
-            </a-form-model>
+                </a-form-item>
+            </a-form>
         </a-spin>
     </div>
 </template>

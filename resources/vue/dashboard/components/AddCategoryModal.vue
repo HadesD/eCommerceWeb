@@ -7,18 +7,18 @@
         @ok="ok"
         @cancel="cancel"
     >
-        <a-form-model ref="ruleForm" :model="formData" :rules="rules" >
-        <a-form-model-item label="Tên chuyên mục" ref="name" prop="name">
+        <a-form ref="ruleForm" :model="formData" :rules="rules" >
+        <a-form-item label="Tên chuyên mục" name="name">
             <a-input v-model="formData.name" @change="onNameChanged" />
-        </a-form-model-item>
-        <a-form-model-item label="Đường dẫn URL (Slug)" ref="slug" prop="slug">
+        </a-form-item>
+        <a-form-item label="Đường dẫn URL (Slug)" name="slug">
             <a-input v-model="formData.slug" />
-        </a-form-model-item>
-        <a-form-model-item label="Mô tả ngắn">
+        </a-form-item>
+        <a-form-item label="Mô tả ngắn">
             <a-textarea v-model="formData.description" placeholder="Nhập mô tả" :auto-size="{ minRows: 3, maxRows: 5  }" />
-        </a-form-model-item>
-        <a-form-model-item label="Chuyên mục cha">
-            <a-form-model-item :style="{ display: 'inline-block', width: 'calc(100% - 40px)' }" >
+        </a-form-item>
+        <a-form-item label="Chuyên mục cha">
+            <a-form-item :style="{ display: 'inline-block', width: 'calc(100% - 40px)' }" >
                 <a-spin :spinning="categoriesTreeLoading">
                     <a-tree-select
                         show-search
@@ -34,12 +34,12 @@
                         :replaceFields="{ pId:'parent_id',title:'name',value:'id' }"
                     />
                 </a-spin>
-            </a-form-model-item>
-            <a-form-model-item :style="{ display: 'inline-block', float:'right' }">
+            </a-form-item>
+            <a-form-item :style="{ display: 'inline-block', float:'right' }">
                 <a-button type="primary" icon="reload" @click="reloadCategoriesTree" :loading="categoriesTreeLoading" />
-            </a-form-model-item>
-        </a-form-model-item>
-        </a-form-model>
+            </a-form-item>
+        </a-form-item>
+        </a-form>
     </a-modal>
 </template>
 <script>
