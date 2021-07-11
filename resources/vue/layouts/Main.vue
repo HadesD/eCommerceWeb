@@ -6,10 +6,10 @@
 import RequestRepository from '../utils/RequestRepository';
 
 export default {
-    async data() {
+    data() {
         let e = 111;
         try {
-            // const a = await RequestRepository.get('/');
+            const a = RequestRepository.get('/');
         } catch (e) {
             e = e || 1;
         }

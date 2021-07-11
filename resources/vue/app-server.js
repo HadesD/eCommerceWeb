@@ -36,12 +36,19 @@
 //=====
 import { createSSRApp } from 'vue';
 import { renderToString } from '@vue/server-renderer';
+import { createRouter, createMemoryHistory } from 'vue-router';
 
-// import router from './configs/router';
+import routes from './configs/routes';
 import MainApp from './layouts/MainApp';
 
 const app = createSSRApp(MainApp);
-// app.use(router);
+
+const router = createRouter({
+    history: createMemoryHistory('/'),
+    routes,
+});
+
+app.use(router);
 
 (async () => {
     try {
