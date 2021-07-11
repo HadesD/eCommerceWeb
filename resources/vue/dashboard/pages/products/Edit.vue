@@ -36,8 +36,8 @@
                 ref="ruleForm"
                 :model="formData"
                 :rules="rules"
-                :label-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? {span: 4} : {}"
-                :wrapper-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? {span: 14} : {}"
+                :label-col="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) === -1) ? {span: 4} : {}"
+                :wrapper-col="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) === -1) ? {span: 14} : {}"
             >
                 <a-form-model-item label="Tên sản phẩm" ref="name" prop="name">
                     <a-input
@@ -129,7 +129,7 @@
                         </a-form-model-item>
                     </a-tab-pane>
                 </a-tabs>
-                <a-form-model-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: (['xs','sm','md'].indexOf($mq) !== -1) ? 0 : 4 }">
+                <a-form-model-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: (['xs','sm','md'].indexOf($grid.breakpoint) !== -1) ? 0 : 4 }">
                     <a-button
                         type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate(valid => { if (valid) onFinish() })"
                         block

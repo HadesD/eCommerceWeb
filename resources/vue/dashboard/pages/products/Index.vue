@@ -1,18 +1,20 @@
 <template>
     <a-row :gutter="16">
-        <!-- <AddCategoryModal
+        <AddCategoryModal
             :visible="addCategoryModalVisible"
             :categories="categories"
             :categoriesTreeLoading="categoriesTreeLoading"
             @handleOk="addCategoryModalHandleOk"
             @handleCancel="addCategoryModalHandleCancel"
             @updateCategories="updateCategories"
-        /> -->
+        />
         <a-col :span="4" :lg="4" :md="24" :sm="24" :xs="24">
             <a-page-header title="Chuyên mục">
                 <template #extra>
                     <a-tooltip title="Thêm chuyên mục">
-                        <a-button type="primary" icon="plus" @click="showAddCategoryModal" />
+                        <a-button type="primary" @click="showAddCategoryModal">
+                            <template #icon><PlusOutlined /></template>
+                        </a-button>
                     </a-tooltip>
                 </template>
             </a-page-header>
@@ -26,22 +28,26 @@
                 />
             </a-spin>
         </a-col>
-        <a-col :span="20" :lg="20" :md="24" :sm="24" :xs="24" :style="{borderLeft: (['xs','sm','md'].indexOf($mq) !== -1) ?  'none' : '1px solid #CCC'}">
+        <a-col :span="20" :lg="20" :md="24" :sm="24" :xs="24" :style="{borderLeft: (['xs','sm','md'].indexOf($grid.breakpoint) !== -1) ?  'none' : '1px solid #CCC'}">
             <a-page-header title="Sản phẩm">
                 <template #tags>
                     <a-tooltip title="Làm mới">
-                        <a-button type="primary" icon="reload" :loading="productsTableLoading" @click="() => loadProducts({})" />
+                        <a-button type="primary" :loading="productsTableLoading" @click="() => loadProducts({})">
+                            <template #icon><ReloadOutlined /></template>
+                        </a-button>
                     </a-tooltip>
                 </template>
                 <template #extra>
                     <a-tooltip title="Thêm sản phẩm">
-                        <a-button type="primary" icon="plus" @click="() => { currentProductId = undefined; productEditPageVisible = true; }" />
+                        <a-button type="primary" @click="() => { currentProductId = undefined; productEditPageVisible = true; }">
+                            <template #icon><PlusOutlined /></template>
+                        </a-button>
                     </a-tooltip>
                 </template>
             </a-page-header>
+                <!-- :scroll="(['xs','sm','md'].indexOf($grid.breakpoint) !== -1) ? { x: 1300, y: '85vh' } : {}" -->
             <a-table
-                :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
-                :size="['xs','sm','md'].indexOf($mq) !== -1 ? 'small' : 'default'"
+                :size="['xs','sm','md'].indexOf($grid.breakpoint) !== -1 ? 'small' : 'default'"
                 :columns="productsTableColumns"
                 :data-source="productsTableData"
                 :loading="productsTableLoading"
@@ -79,17 +85,17 @@
                 <!-- Block Search: END -->
 
                 <template #name="{ text, record }">
-                    <div>{{ value }}</div>
+                    <div>{{ text }}</div>
                     <a-tag>{{ record.slug }}</a-tag>
                 </template>
                 <template #status="{ text }">
-                    <a-tag v-if="configProductStatus[value]" :color="configProductStatus[value].color">{{ configProductStatus[value].name }}</a-tag>
+                    <a-tag v-if="configProductStatus[text]" :color="configProductStatus[text].color">{{ configProductStatus[text].name }}</a-tag>
                 </template>
                 <template #price="{ text }">
-                    <div style="display:block;text-align:right;">{{ number_format(value) }} ₫</div>
+                    <div style="display:block;text-align:right;">{{ number_format(text) }} ₫</div>
                 </template>
                 <template #categories="{ text }">
-                    <a-tag v-for="category in value" :key="category.id">{{ category.name }}</a-tag>
+                    <a-tag v-for="category in text" :key="category.id">{{ category.name }}</a-tag>
                 </template>
                 <template #time="{ record }">
                     <div>Tạo: {{ date_format(record.created_at) }}</div>
@@ -97,13 +103,17 @@
                 </template>
                 <template #action="{ record }">
                     <template v-if="!onFinishSelect">
-                        <a-button type="primary" icon="edit" @click="() => { currentProductId = record.id; productEditPageVisible = true; }" />
+                        <a-button type="primary" @click="() => { currentProductId = record.id; productEditPageVisible = true; }">
+                            <template #icon><EditOutlined /></template>
+                        </a-button>
                     </template>
                     <template v-else>
                         <a-button
-                            type="primary" icon="shopping-cart" @click="() => onFinishSelect(record)"
+                            type="primary" @click="() => onFinishSelect(record)"
                             :disabled="record.status === ProductStatus.STS_SOLDOUT"
-                        >Chọn</a-button>
+                        >
+                            <template #icon><ShoppingCartOutlined /></template> Chọn
+                        </a-button>
                     </template>
                 </template>
             </a-table>
@@ -120,6 +130,14 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from 'vue';
+
+import {
+    SearchOutlined, DownloadOutlined, PlusOutlined,
+    ReloadOutlined, ShoppingCartOutlined, EditOutlined,
+    BankOutlined,
+} from '@ant-design/icons-vue';
+
 import ProductStatus, { Config as configProductStatus } from '../../configs/ProductStatus';
 import { number_format, date_format } from '../../../helpers';
 import RequestRepository from '../../utils/RequestRepository';
@@ -189,8 +207,12 @@ export default {
         onFinishSelect: Function,
     },
     components: {
-        AddCategoryModal: () => import('../../components/AddCategoryModal.vue'),
-        ProductEdit: () => import('../products/Edit'),
+        AddCategoryModal: defineAsyncComponent(() => import('../../components/AddCategoryModal.vue')),
+        ProductEdit: defineAsyncComponent(() => import('../products/Edit')),
+
+        SearchOutlined, DownloadOutlined, PlusOutlined,
+        ReloadOutlined, ShoppingCartOutlined, EditOutlined,
+        BankOutlined,
     },
     data() {
         return {

@@ -40,8 +40,8 @@
                 ref="ruleForm"
                 :model="formData"
                 :rules="rules"
-                :label-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? { span: 4 } : {}"
-                :wrapper-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? { span: 14 } : {}"
+                :label-col="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) === -1) ? { span: 4 } : {}"
+                :wrapper-col="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) === -1) ? { span: 14 } : {}"
             >
                 <a-form-model-item label="Trạng thái" prop="status">
                     <a-select v-model="formData.status">
@@ -152,7 +152,7 @@
                                 </a>
                             </template>
                             <a-table
-                                :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
+                                :scroll="(['xs','sm','md'].indexOf($grid.breakpoint) !== -1) ? { x: 1300, y: '85vh' } : {}"
                                 :columns="product_stockTableColumns"
                                 :data-source="op.order_product_stocks"
                                 :pagination="false"
@@ -277,7 +277,7 @@
                         </a>
                     </template>
                     <a-table
-                        :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
+                        :scroll="(['xs','sm','md'].indexOf($grid.breakpoint) !== -1) ? { x: 1300, y: '85vh' } : {}"
                         :columns="addon_transactionsTableColumns"
                         :data-source="formData.transactions"
                         :pagination="false"
@@ -323,7 +323,7 @@
                         </template>
                     </a-table>
                 </a-card>
-                <a-form-model-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: (['xs','sm','md'].indexOf($mq) !== -1) ? 0 : 4 }">
+                <a-form-model-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: (['xs','sm','md'].indexOf($grid.breakpoint) !== -1) ? 0 : 4 }">
                     <a-button
                         type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })"
                         block
