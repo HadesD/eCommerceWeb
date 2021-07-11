@@ -43,15 +43,10 @@ import MainApp from './layouts/MainApp';
 const app = createSSRApp(MainApp);
 // app.use(router);
 
-const main = async () => {
-    let html = '';
+(async () => {
     try {
-        html = await renderToString(app);
+        dispatch(await renderToString(app));
     } catch (e) {
         dispatch(e.message);
     }
-
-    dispatch(html);
-};
-
-main();
+})();
