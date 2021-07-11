@@ -9,6 +9,8 @@ import moment from 'moment';
 import 'moment/locale/vi';
 
 import User from '../utils/User';
+import RequestHttp from '../utils/RequestHttp';
+import RequestApi from '../utils/RequestApi';
 
 moment.locale('vi');
 
@@ -31,7 +33,7 @@ export default {
         reloadUserInfo() {
             const hide = this.$message.loading('Đang đồng bộ thông tin đăng nhập...', 0);
 
-            axios.get('/api/user')
+            RequestApi.get('/user')
                 .then(res => {
                     User.setInfo(res.data);
                 })
@@ -65,7 +67,7 @@ export default {
         checkUpdate() {
             let hasNewVer = false;
 
-            axios.get('/dashboard')
+            RequestHttp.get('/dashboard')
                 .then(res => {
                     const newAppDoc = new DOMParser().parseFromString(res.data, 'text/html');
 

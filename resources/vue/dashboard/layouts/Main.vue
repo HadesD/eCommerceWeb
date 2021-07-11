@@ -11,13 +11,17 @@
                 </div>
             </a-layout-content>
             <a-layout-footer :style="{ textAlign: 'center' }">
-                <div>From Dark.Hades with <a-icon type="heart" :style="{ color: 'hotpink' }" /></div>
+                <div>From Dark.Hades with <HeartOutlined :style="{ color: 'hotpink' }" /></div>
             </a-layout-footer>
         </a-layout>
     </a-layout>
 </template>
 
 <script>
+import {
+    HeartOutlined,
+} from '@ant-design/icons-vue';
+
 import Breadcrumb from '../components/Breadcrumb';
 import SiderMenu from '../layouts/SiderMenu';
 import Header from '../layouts/Header';
@@ -30,7 +34,8 @@ export default {
         }
     },
     components: {
-        Header, Breadcrumb, SiderMenu
+        Header, Breadcrumb, SiderMenu,
+        HeartOutlined,
     },
     computed:{
         sideBarCollapsedWidth(){
