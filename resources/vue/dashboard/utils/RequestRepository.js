@@ -1,5 +1,9 @@
+import axios from 'axios';
 import RequestApi from './RequestApi';
 
-export default RequestApi.create({
-    baseURL: `${process.env.APP_URL||''}/api/dashboard`,
+const ins = axios.create({
+    ...RequestApi.defaults,
+    baseURL: `${RequestApi.defaults.baseURL}/dashboard`,
 });
+
+export default ins;

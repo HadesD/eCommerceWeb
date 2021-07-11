@@ -1,9 +1,15 @@
 <template>
-    <a-layout-sider v-model="collapsed" id="slider_sidebar" :width="width" :collapsedWidth="collapsedWidth">
+    <a-layout-sider
+        id="slider_sidebar"
+        :collapsed="collapsed" collapsible
+        :width="width"
+        :collapsedWidth="collapsedWidth"
+        :trigger="null"
+    >
         <a-menu
             theme="dark"
             mode="inline"
-            :defaultOpenKeys="['/', '/statistics']"
+            :openKeys="['/', '/statistics']"
             :selectedKeys="[$route.path]"
             :style="{ height: '100%', borderRight: 0 }"
         >
@@ -16,48 +22,48 @@
             </a-menu-item>
             <a-menu-item key="/help/">
                 <router-link to="/help/">
-                    <a-icon type="question-circle" />
+                    <QuestionCircleOutlined />
                     <span>Hướng dẫn</span>
                 </router-link>
             </a-menu-item>
             <a-sub-menu key="/">
-                <span slot="title">
-                    <a-icon type="shop" />
+                <template #title>
+                    <ShopOutlined />
                     <span>Quản lý tiệm</span>
-                </span>
+                </template>
                 <a-menu-item key="/products/">
                     <router-link to="/products/">
-                        <a-icon type="shopping-cart" />
+                        <ShoppingCartOutlined />
                         <span>Sản phẩm</span>
                     </router-link>
                 </a-menu-item>
                 <a-menu-item key="/orders/">
                     <router-link to="/orders/">
-                        <a-icon type="account-book" />
+                        <AccountBookOutlined />
                         <span>Hoá Đơn</span>
                     </router-link>
                 </a-menu-item>
                 <a-menu-item key="/stocks/">
                     <router-link to="/stocks/">
-                        <a-icon type="bank" />
+                        <BankOutlined />
                         <span>Kho hàng</span>
                     </router-link>
                 </a-menu-item>
                 <a-menu-item key="/users/">
                     <router-link to="/users/">
-                        <a-icon type="user" />
+                        <UserOutlined />
                         <span>Khách hàng</span>
                     </router-link>
                 </a-menu-item>
             </a-sub-menu>
             <a-sub-menu key="/statistics">
-                <span slot="title">
-                    <a-icon type="pie-chart" />
+                <template #title>
+                    <BarChartOutlined />
                     <span>Thống kê</span>
-                </span>
+                </template>
                 <a-menu-item key="/transactions/">
                     <router-link to="/transactions/">
-                        <a-icon type="transaction" />
+                        <TransactionOutlined />
                         <span>Thu / Chi</span>
                     </router-link>
                 </a-menu-item>
@@ -66,7 +72,18 @@
     </a-layout-sider>
 </template>
 <script>
+import {
+    UserOutlined, BarChartOutlined, BankOutlined,
+    AccountBookOutlined, QuestionCircleOutlined,
+    ShopOutlined, ShoppingCartOutlined, TransactionOutlined,
+} from '@ant-design/icons-vue';
+
 export default {
+    components: {
+        UserOutlined, BarChartOutlined, BankOutlined,
+        AccountBookOutlined, QuestionCircleOutlined,
+        ShopOutlined, ShoppingCartOutlined, TransactionOutlined,
+    },
     props: {
         width: {
             type: Number,

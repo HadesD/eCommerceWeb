@@ -8,6 +8,8 @@
         "prod": "git clean -xdf public && concurrently \"cross-env RENDER_TARGET=server npm run production\" \"cross-env RENDER_TARGET=client npm run production\" && tar zcvf public.tar.gz public/css public/js public/mix-manifest.json"
     },
     "devDependencies": {
+        "@vue/compiler-sfc": "^3.1.4",
+        "babel-plugin-import": "^1.13.3",
         "browser-sync": "^2.26.14",
         "browser-sync-webpack-plugin": "^2.2.2",
         "concurrently": "^6.2.0",
@@ -19,18 +21,19 @@
         "resolve-url-loader": "^3.1.0",
         "sass": "^1.15.2",
         "sass-loader": "^8.0.0",
-        "vue-loader": "^15.9.6",
-        "vue-template-compiler": "^2.6.14"
+        "vue-loader": "^16.2.0"
     },
     "dependencies": {
-        "ant-design-vue": "^1.7.6",
+        "@ant-design/icons-vue": "^6.0.1",
+        "ant-design-vue": "^2.2.1",
         "axios": "^0.21.1",
-        "chart.js": "2.9.4",
-        "vue": "^2.6.14",
+        "chart.js": "^2.9.4",
+        "vue": "^3.1.4",
         "vue-chartjs": "^3.5.1",
         "vue-mq": "^1.0.1",
         "vue-progressbar": "^0.7.5",
-        "vue-router": "^3.5.2",
+        "vue-router": "^4.0.10",
+        "vue-screen": "^2.0.3-alpha.3",
         "vue-server-renderer": "^2.6.14"
     }
 }

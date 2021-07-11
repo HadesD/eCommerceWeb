@@ -1,8 +1,8 @@
 <template>
     <a-layout>
-        <vue-progress-bar />
+        <!-- <vue-progress-bar /> -->
         <SiderMenu :collapsed="sideBarCollapsed" :width="sideBarWidth" :collapsedWidth="sideBarCollapsedWidth"></SiderMenu>
-        <a-layout :style="{ marginLeft: (sideBarCollapsed ? sideBarCollapsedWidth : sideBarWidth) + 'px'  }">
+        <a-layout>
             <Header :sideBarCollapsed="sideBarCollapsed" @onSetSidebarCollapsed="setSidebarCollapsed"></Header>
             <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
                 <!-- <Breadcrumb></Breadcrumb> -->
@@ -11,13 +11,17 @@
                 </div>
             </a-layout-content>
             <a-layout-footer :style="{ textAlign: 'center' }">
-                <div>From Dark.Hades with <a-icon type="heart" :style="{ color: 'hotpink' }" /></div>
+                <div>From Dark.Hades with <HeartOutlined :style="{ color: 'hotpink' }" /></div>
             </a-layout-footer>
         </a-layout>
     </a-layout>
 </template>
 
 <script>
+import {
+    HeartOutlined,
+} from '@ant-design/icons-vue';
+
 import Breadcrumb from '../components/Breadcrumb';
 import SiderMenu from '../layouts/SiderMenu';
 import Header from '../layouts/Header';
@@ -30,19 +34,20 @@ export default {
         }
     },
     components: {
-        Header, Breadcrumb, SiderMenu
+        Header, Breadcrumb, SiderMenu,
+        HeartOutlined,
     },
     computed:{
         sideBarCollapsedWidth(){
             return this.isMobileSize ? 0 : 80;
         },
         isMobileSize(){
-            return ['xs', 'sm', 'md'].indexOf(this.$mq) !== -1;
+            return (['xs', 'sm', 'md'].indexOf(this.$grid.breakpoint) !== -1);
         },
     },
     mounted(){
-        this.$on('asyncComponentLoading', this.$Progress.start);
-        this.$on('asyncComponentLoaded', this.$Progress.finish);
+        // this.$on('asyncComponentLoading', this.$Progress.start);
+        // this.$on('asyncComponentLoaded', this.$Progress.finish);
 
         if (this.isMobileSize) {
             this.sideBarCollapsed = true;

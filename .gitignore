@@ -26,3 +26,4 @@ yarn-error.log
 ~*
 /composer.phar
 *.orig
+package-lock.json

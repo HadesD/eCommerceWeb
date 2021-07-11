@@ -9,43 +9,51 @@
             @updateCategories="updateCategories"
         />
         <a-col :span="4" :lg="4" :md="24" :sm="24" :xs="24">
-        <a-page-header title="Chuyên mục">
-            <template slot="extra">
-                <a-tooltip title="Thêm chuyên mục">
-                    <a-button type="primary" icon="plus" @click="showAddCategoryModal" />
-                </a-tooltip>
-            </template>
-        </a-page-header>
-        <a-spin :spinning="categoriesTreeLoading || stocksTableLoading">
-            <a-tree
-                show-line
-                :expandedKeys="categoriesTreeExpandedKeys"
-                :tree-data="categoriesTreeData"
-                @select="onCategoriesTreeSelect"
-                @expand="onCategoriesTreeExpand"
-            >
-            </a-tree>
-        </a-spin>
-        </a-col>
-        <a-col :span="20" :lg="20" :md="24" :sm="24" :xs="24" :style="{borderLeft: (['xs','sm','md'].indexOf($mq) !== -1) ?  'none' : '1px solid #CCC'}">
-            <a-page-header title="Kho hàng">
-                <template slot="tags">
-                    <a-tooltip title="Làm mới">
-                        <a-button type="primary" icon="reload" :loading="stocksTableLoading" @click="() => loadStocks({})" />
-                    </a-tooltip>
-                </template>
-                <template slot="extra">
-                    <a-tooltip title="Tải CSV">
-                        <a-button type="primary" icon="download" :disabled="stocks.length <= 0" @click="() => download()" />
-                    </a-tooltip>
-                    <a-tooltip title="Nhập kho">
-                        <a-button type="primary" icon="plus" @click="() => { currentStockId = undefined; stockEditPageVisible = true; }" />
+            <a-page-header title="Chuyên mục">
+                <template #extra>
+                    <a-tooltip title="Thêm chuyên mục">
+                        <a-button type="primary" @click="showAddCategoryModal">
+                            <template #icon><PlusOutlined /></template>
+                        </a-button>
                     </a-tooltip>
                 </template>
             </a-page-header>
+            <a-spin :spinning="categoriesTreeLoading || stocksTableLoading">
+                <a-tree
+                    show-line
+                    :expandedKeys="categoriesTreeExpandedKeys"
+                    :tree-data="categoriesTreeData"
+                    @select="onCategoriesTreeSelect"
+                    @expand="onCategoriesTreeExpand"
+                >
+                </a-tree>
+            </a-spin>
+        </a-col>
+        <a-col :span="20" :lg="20" :md="24" :sm="24" :xs="24" :style="{borderLeft: (['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ?  '1px solid #CCC' : 'none'}">
+            <a-page-header title="Kho hàng">
+                <template #tags>
+                    <a-tooltip title="Làm mới">
+                        <a-button type="primary" :loading="stocksTableLoading" @click="() => loadStocks({})">
+                            <template #icon><ReloadOutlined /></template>
+                        </a-button>
+                    </a-tooltip>
+                </template>
+                <template #extra>
+                    <a-tooltip title="Tải CSV">
+                        <a-button type="primary" :disabled="stocks.length <= 0" @click="() => download()">
+                            <template #icon><DownloadOutlined /></template>
+                        </a-button>
+                    </a-tooltip>
+                    <a-tooltip title="Nhập kho">
+                        <a-button type="primary" @click="() => { currentStockId = null; stockEditPageVisible = true; }">
+                            <template #icon><PlusOutlined /></template>
+                        </a-button>
+                    </a-tooltip>
+                </template>
+            </a-page-header>
+                <!-- :size="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? 'small' : 'default'" -->
             <a-table
-                :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
-                :size="['xs','sm','md'].indexOf($mq) !== -1 ? 'small' : 'default'"
+                :scroll="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? { x: 1300, y: '85vh' } : {}"
                 :columns="stocksTableColumns"
                 :data-source="stocksTableData"
                 :loading="stocksTableLoading"
@@ -53,76 +61,80 @@
                 :pagination="stocksTablePagination"
                 @change="(pagination, filters, sorter) => {
                     stocksTableFilters = filters;
-                    stocksTableSorts = (sorter.column && sorter.columnKey) ? ((sorter.order === 'descend' ? '-' : '+') + sorter.columnKey) : undefined;
+                    stocksTableSorts = (sorter.column && sorter.columnKey) ? ((sorter.order === 'descend' ? '-' : '+') + sorter.columnKey) : null;
                     loadStocks({page: pagination.current});
                 }"
             >
                 <!-- Block Search: BEGIN -->
-                <div
-                    slot="filterSearchBox"
-                    slot-scope="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }"
-                    style="padding: 8px"
-                >
-                    <a-input
-                        :placeholder="`Tìm ${column.title}`"
-                        :value="selectedKeys[0]"
-                        style="width: 188px; margin-bottom: 8px; display: block;"
-                        @change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
-                        @pressEnter="() => $refs[`filterSearchBox.${column.dataIndex}.btn`].$el.click()"
-                    />
-                    <a-button
-                        :ref="`filterSearchBox.${column.dataIndex}.btn`"
-                        type="primary"
-                        icon="search"
-                        size="small"
-                        style="width: 90px; margin-right: 8px"
-                        @click="() => {confirm();}"
-                    >Tìm</a-button>
-                    <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);clearFilters();}">Reset</a-button>
-                </div>
-                <a-icon
-                    slot="filterSearchBoxIcon"
-                    slot-scope="filtered"
-                    type="search"
-                    :style="{ color: filtered ? '#108ee9' : undefined }"
-                />
+                <template #filterSearchBox="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }">
+                    <div style="padding: 8px">
+                        <a-input
+                            :placeholder="`Tìm ${column.title}`"
+                            :value="selectedKeys[0]"
+                            style="width: 188px; margin-bottom: 8px; display: block;"
+                            @change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
+                            @pressEnter="() => $refs[`filterSearchBoxSubmit.${column.dataIndex}`].$el.click()"
+                        />
+                        <a-button
+                            :ref="`filterSearchBoxSubmit.${column.dataIndex}`"
+                            type="primary"
+                            size="small"
+                            style="width: 90px; margin-right: 8px"
+                            @click="() => {confirm();}"
+                        >
+                            <template #icon><SearchOutlined /></template> Tìm
+                        </a-button>
+                        <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);clearFilters();}">Reset</a-button>
+                    </div>
+                </template>
+                <template #filterSearchBoxIcon="{ filtered }">
+                    <SearchOutlined :style="{ color: filtered ? '#108ee9' : undefined }" />
+                </template>
                 <!-- Block Search: END -->
 
-                <template slot="price" slot-scope="value">
-                    <div style="text-align:right;">{{ number_format(value || 0) }} ₫</div>
+                <template #price="{ text }">
+                    <div style="text-align:right;">{{ number_format(text || 0) }} ₫</div>
                 </template>
-                <template slot="quantity" slot-scope="value">
-                    <a-tag :color="(value > 0) ? 'green' : 'red'">{{ value }}</a-tag>
+                <template #quantity="{ text }">
+                    <a-tag :color="(text > 0) ? 'green' : 'red'">{{ text }}</a-tag>
                 </template>
-                <template slot="categories" slot-scope="value">
-                    <a-tag v-for="category in value" :key="category.id">{{ category.name }}</a-tag>
+                <template #categories="{ text }">
+                    <a-tag v-for="category in text" :key="category.id">{{ category.name }}</a-tag>
                 </template>
-                <template slot="tester" slot-scope="value, record">
-                    <div v-if="value && record.tester">
+                <template #tester="{ text, record }">
+                    <div v-if="text && record.tester">
                         <div>
-                            <span>#{{ value }}. {{ record.tester.name }}</span>
-                            <a-button icon="search" @click="() => { currentUserId = value; userEditPageVisible = true; }" size="small" />
+                            <span>#{{ text }}. {{ record.tester.name }}</span>
+                            <a-button @click="() => { currentUserId = text; userEditPageVisible = true; }" size="small">
+                                <template #icon><SearchOutlined /></template>
+                            </a-button>
                         </div>
                         <div>Phone: {{ record.tester.phone || 'Chưa có' }}</div>
                     </div>
                 </template>
-                <template slot="update_info" slot-scope="record">
+                <template #update_info="{ record }">
                     <div>Tạo: {{ date_format(record.created_at) }}</div>
                     <div>Update: {{ date_format(record.updated_at) }}</div>
                     <div v-if="record.updated_user">
                         <span>Cuối bởi: {{ record.updated_user.name }}</span>
-                        <a-button icon="search" @click="() => { currentUserId = record.updated_user_id; userEditPageVisible = true; }" size="small" />
+                        <a-button @click="() => { currentUserId = record.updated_user_id; userEditPageVisible = true; }" size="small">
+                            <template #icon><SearchOutlined /></template>
+                        </a-button>
                     </div>
                 </template>
-                <template slot="action" slot-scope="record">
+                <template #action="{ record }">
                     <template v-if="!onFinishSelect">
-                        <a-button type="primary" icon="edit" @click="() => { currentStockId = record.id; stockEditPageVisible = true; }" />
+                        <a-button type="primary" @click="() => { currentStockId = record.id; stockEditPageVisible = true; }">
+                            <template #icon><EditOutlined /></template>
+                        </a-button>
                     </template>
                     <template v-else>
                         <a-button
-                            type="primary" icon="bank" @click="() => onFinishSelect(record)"
+                            type="primary" @click="() => onFinishSelect(record)"
                             :disabled="record.quantity <= 0"
-                        >Chọn</a-button>
+                        >
+                            <template #icon><BankOutlined /></template> Chọn
+                        </a-button>
                     </template>
                 </template>
             </a-table>
@@ -149,6 +161,14 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from 'vue';
+
+import {
+    SearchOutlined, DownloadOutlined, PlusOutlined,
+    ReloadOutlined, ShoppingCartOutlined, EditOutlined,
+    BankOutlined,
+} from '@ant-design/icons-vue';
+
 import { number_format, date_format } from '../../../helpers';
 import RequestRepository from '../../utils/RequestRepository';
 
@@ -156,7 +176,7 @@ const stocksTableColumns = [
     {
         title: '#ID',
         dataIndex: 'id',
-        scopedSlots: {
+        slots: {
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
         },
@@ -164,7 +184,7 @@ const stocksTableColumns = [
     {
         title: 'Tên',
         dataIndex: 'name',
-        scopedSlots: {
+        slots: {
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
         },
@@ -172,7 +192,7 @@ const stocksTableColumns = [
     {
         title: 'Id/Imei',
         dataIndex: 'idi',
-        scopedSlots: {
+        slots: {
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
         },
@@ -180,7 +200,7 @@ const stocksTableColumns = [
     {
         title: 'Giá nhập (Đơn giá)',
         dataIndex: 'cost_price',
-        scopedSlots: {
+        slots: {
             customRender: 'price',
         },
         sorter: true,
@@ -188,7 +208,7 @@ const stocksTableColumns = [
     {
         title: 'Giá bán dự định (Đơn giá)',
         dataIndex: 'sell_price',
-        scopedSlots: {
+        slots: {
             customRender: 'price',
         },
         sorter: true,
@@ -196,7 +216,7 @@ const stocksTableColumns = [
     {
         title: 'Người kiểm thử',
         dataIndex: 'tester_id',
-        scopedSlots: {
+        slots: {
             customRender: 'tester',
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
@@ -205,7 +225,7 @@ const stocksTableColumns = [
     {
         title: 'Tồn kho',
         dataIndex: 'quantity',
-        scopedSlots: {
+        slots: {
             customRender: 'quantity',
         },
         sorter: true,
@@ -213,21 +233,21 @@ const stocksTableColumns = [
     {
         title: 'Chuyên mục',
         dataIndex: 'categories',
-        scopedSlots: {
+        slots: {
             customRender: 'categories',
         },
     },
     {
         title: 'Cập nhật',
         key: 'update_info',
-        scopedSlots: {
+        slots: {
             customRender: 'update_info',
         },
     },
     {
         title: 'Hành động',
         key: 'action',
-        scopedSlots: {
+        slots: {
             customRender: 'action',
         },
     },
@@ -238,17 +258,21 @@ export default {
         onFinishSelect: Function,
     },
     components: {
-        AddCategoryModal: () => import('../../components/AddCategoryModal.vue'),
-        UserEdit: () => import('../users/Edit'),
-        StockEdit: () => import('../stocks/Edit'),
+        AddCategoryModal: defineAsyncComponent(() => import('../../components/AddCategoryModal.vue')),
+        UserEdit: defineAsyncComponent(() => import('../users/Edit')),
+        StockEdit: defineAsyncComponent(() => import('../stocks/Edit')),
+
+        SearchOutlined, DownloadOutlined, PlusOutlined,
+        ReloadOutlined, ShoppingCartOutlined, EditOutlined,
+        BankOutlined,
     },
     data() {
         return {
             stockEditPageVisible: false,
-            currentStockId: undefined,
+            currentStockId: null,
 
             userEditPageVisible: false,
-            currentUserId: undefined,
+            currentUserId: null,
 
             categories: [],
             addCategoryModalVisible: false,
@@ -263,13 +287,13 @@ export default {
                 position: 'both',
             },
             stocksTableFilters: {},
-            stocksTableSorts: undefined,
+            stocksTableSorts: null,
         };
     },
     mounted() {
         this.loadCategoriesTree();
 
-        this.currentCategoryId = (parseInt(this.$route.query.category_id) || undefined);
+        this.currentCategoryId = (parseInt(this.$route.query.category_id) || null);
         this.stocksTablePagination.current = (parseInt(this.$route.query.page) || 1);
 
         this.loadStocks({});
@@ -333,7 +357,7 @@ export default {
                     this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
                 })
                 .catch(err => {
-                    if (err.response && err.response.data.message) {
+                    if (err.response && err.response.data && err.response.data.message) {
                         this.$message.error(err.response.data.message);
                         return;
                     }
@@ -373,8 +397,8 @@ export default {
             this.stocksTableLoading = true;
 
             // Reset popup data
-            this.currentUserId = undefined;
-            this.currentStockId = undefined;
+            this.currentUserId = null;
+            this.currentStockId = null;
 
             RequestRepository.get('/stocks', {
                 params: {
@@ -401,7 +425,7 @@ export default {
                     //   }
                 })
                 .catch(err => {
-                    if (err.response && err.response.data.message) {
+                    if (err.response && err.response.data && err.response.data.message) {
                         this.$message.error(err.response.data.message);
                         return;
                     }

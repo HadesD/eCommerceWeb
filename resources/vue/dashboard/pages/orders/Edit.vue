@@ -6,147 +6,180 @@
                 :sub-title="id ? `#${id}` : false"
                 :ghost="false"
             >
-                <template slot="tags">
+                <template #tags>
                     <a-tooltip title="Lấy dữ liệu mới nhất" v-if="id">
-                        <a-button type="primary" size="small" icon="reload" :loading="orderInfoLoading" @click="() => loadOrder(id)" />
+                        <a-button type="primary" size="small" :loading="orderInfoLoading" @click="() => loadOrder(id)">
+                            <template #icon><ReloadOutlined /></template>
+                        </a-button>
                     </a-tooltip>
                     <a-tooltip title="Xoá toàn bộ dữ liệu đang nhập" v-if="!orderId">
                         <a-popconfirm title="Xác nhận reset toàn bộ dữ liệu đang nhập?" @confirm="() => this.formData.id = (this.formData.id === undefined) ? null : undefined">
-                            <a-button type="danger" size="small" icon="delete" />
+                            <a-button type="primary" danger size="small">
+                                <template #icon><DeleteOutlined /></template>
+                            </a-button>
                         </a-popconfirm>
                     </a-tooltip>
                 </template>
-                <template slot="extra">
+                <template #extra>
                     <template v-if="id">
                         <a-tooltip title="In hoá đơn">
-                            <a-button type="primary" icon="printer" @click="() => printOrder()" />
+                            <a-button type="primary" @click="() => printOrder()">
+                                <template #icon><PrinterOutlined /></template>
+                            </a-button>
                         </a-tooltip>
                     </template>
                 </template>
                 <a-descriptions size="small" :column="1" v-if="id">
                     <a-descriptions-item label="Ngày tạo">
-                        <span>{{ orderInfo.created_at }}</span>
+                        <span>{{ date_format(orderInfo.created_at) }}</span>
                     </a-descriptions-item>
                     <a-descriptions-item label="Ngày cập nhật">
-                        <span>{{ orderInfo.updated_at }}</span>
+                        <span>{{ date_format(orderInfo.updated_at) }}</span>
                     </a-descriptions-item>
                     <a-descriptions-item label="Người cập nhật" v-if="orderInfo.updated_user">
                         <span>{{ orderInfo.updated_user_id }}. {{ orderInfo.updated_user.name }}</span>
-                        <a-button icon="search" size="small" @click="() => { currentUserId = orderInfo.updated_user_id; userEditPageVisible = true; }" />
+                        <a-button size="small" @click="() => { currentUserId = orderInfo.updated_user_id; userEditPageVisible = true; }">
+                            <template #icon><SearchOutlined /></template>
+                        </a-button>
                     </a-descriptions-item>
                 </a-descriptions>
             </a-page-header>
-            <a-form-model
+            <a-form
                 ref="ruleForm"
                 :model="formData"
                 :rules="rules"
-                :label-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? { span: 4 } : {}"
-                :wrapper-col="(['xs', 'sm', 'md'].indexOf($mq) === -1) ? { span: 14 } : {}"
+                @finish="onFinish"
+                :label-col="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) === -1) ? { span: 4 } : {}"
+                :wrapper-col="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) === -1) ? { span: 14 } : {}"
             >
-                <a-form-model-item label="Trạng thái" prop="status">
-                    <a-select v-model="formData.status">
+                <a-form-item label="Trạng thái" name="status">
+                    <a-select v-model:value="formData.status">
                         <a-select-option v-for="stsCode in Object.keys(configOrderStatus)" :key="stsCode" :value="parseInt(stsCode)">{{ configOrderStatus[stsCode].name }}</a-select-option>
                     </a-select>
-                </a-form-model-item>
-                <a-form-model-item
+                </a-form-item>
+                <a-form-item
                     label="Ngày xuất đơn"
-                    prop="deal_date"
+                    name="deal_date"
                     help="Ngày xuât đơn cho khách hàng"
                     :rules="{required:true}"
                 >
                     <a-date-picker
-                        v-model="formData.deal_date"
+                        v-model:value="formData.deal_date"
                         format="YYYY-MM-DD HH:mm:ss"
                         show-time
                         type="date"
                         :disabledDate="disabledLastMonthAndTomorrow"
                     />
-                </a-form-model-item>
-                <a-form-model-item
+                </a-form-item>
+                <a-form-item
                     label="Khách hàng"
-                    prop="customer_id"
+                    name="customer_id"
                     :help="orderInfo.customer ? `Đang chọn: #${orderInfo.customer.id}. ${orderInfo.customer.name} (Phone: ${orderInfo.customer.phone || 'Chưa có'})` : false"
                 >
                     <a-row :gutter="8">
                         <a-col :span="12">
-                            <a-input-search v-model="formData.customer_id" readOnly @search="() => { currentUserId = formData.customer_id; userEditPageVisible = true; }">
-                                <a-button icon="search" slot="enterButton" />
+                            <a-input-search v-model:value="formData.customer_id" readOnly @search="() => { currentUserId = formData.customer_id; userEditPageVisible = true; }">
+                                <template #enterButton>
+                                    <a-button>
+                                        <template #icon><SearchOutlined /></template>
+                                    </a-button>
+                                </template>
                             </a-input-search>
                         </a-col>
                         <a-col :span="8">
                             <a-tooltip title="Chọn từ danh sách">
-                                <a-button type="primary" icon="user" @click="() => {
+                                <a-button type="primary" @click="() => {
                                     userIndexPageFinish = (recordData) => {
                                         formData.customer_id = recordData.id;
                                         orderInfo.customer = recordData;
                                     };
                                     userIndexPageVisible = true;
-                                }">Chọn</a-button>
+                                }">
+                                    <template #icon><UserOutlined /></template> Chọn
+                                </a-button>
                             </a-tooltip>
                         </a-col>
                     </a-row>
-                </a-form-model-item>
-                <a-form-model-item label="Ghi chú" prop="note">
-                    <a-textarea v-model="formData.note" placeholder="Tên khách hàng, loại thanh toán, chi phí sinh hoạt, lương nhân viên, v..v" />
-                </a-form-model-item>
+                </a-form-item>
+                <a-form-item label="Ghi chú" name="note">
+                    <a-textarea v-model:value="formData.note" placeholder="Tên khách hàng, loại thanh toán, chi phí sinh hoạt, lương nhân viên, v..v" />
+                </a-form-item>
                 <a-card title="Sản phẩm đặt mua" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#9800ab',color:'#FFF'}">
-                    <a slot="extra" @click="() => formData.order_products.push(cloneDeep(order_product_obj))">
-                        <a-tooltip title="Thêm sản phẩm">
-                            <a-button type="primary" icon="plus" />
-                        </a-tooltip>
-                    </a>
+                    <template #extra>
+                        <a @click="() => formData.order_products.push(cloneDeep(order_product_obj))">
+                            <a-tooltip title="Thêm sản phẩm">
+                                <a-button type="primary">
+                                    <template #icon><PlusOutlined /></template> Chọn
+                                </a-button>
+                            </a-tooltip>
+                        </a>
+                    </template>
                     <a-card :title="`Sản phẩm #${pIdx}`" v-for="(op, pIdx) in formData.order_products" :key="`op-${op.id || Math.random()}`" style="margin-bottom: 16px;" :headStyle="{backgroundColor:'#f18e1f',color:'#FFF'}">
-                        <a-popconfirm v-if="!op.id" slot="extra" title="Chắc chắn muốn xóa?" @confirm="() => formData.order_products.splice(pIdx, 1)">
-                            <a-button type="danger" icon="delete"></a-button>
-                        </a-popconfirm>
-                        <a-form-model-item
+                        <template #extra>
+                            <a-popconfirm v-if="!op.id" title="Chắc chắn muốn xóa?" @confirm="() => formData.order_products.splice(pIdx, 1)">
+                                <a-button type="primary" danger>
+                                    <template #icon><DeleteOutlined /></template>
+                                </a-button>
+                            </a-popconfirm>
+                        </template>
+                        <a-form-item
                             label="Sản phẩm"
                             :rules="{required:true,message:'Không được để trống'}"
-                            :prop="'order_products.'+pIdx+'.product_id'"
+                            :name="['order_products', pIdx, 'product_id']"
                             :help="op.product ? `Đang chọn: #${op.product.id}. ${op.product.name} (${number_format(op.product.price)} ₫)` : false"
                         >
                             <a-row :gutter="8">
                                 <a-col :span="12">
-                                    <a-input-search v-model="op.product_id" readOnly @search="() => {
+                                    <a-input-search v-model:value="op.product_id" readOnly @search="() => {
                                         currentProductId = op.product_id;
                                         productEditPageVisible = true;
                                     }">
-                                        <a-button icon="search" slot="enterButton" />
+                                        <template #enterButton>
+                                            <a-button>
+                                                <template #icon><SearchOutlined /></template>
+                                            </a-button>
+                                        </template>
                                     </a-input-search>
                                 </a-col>
                                 <a-col :span="8">
                                     <a-tooltip v-if="!op.id || (op.id <= 0) || (authUser.role === UserRole.ROLE_ADMIN_MASTER)" title="Chọn từ danh sách">
-                                        <a-button type="primary" icon="shopping-cart" @click="() => {
+                                        <a-button type="primary" @click="() => {
                                             productIndexPageFinish = (recordData) => {
                                                 op.product_id = recordData.id;
                                                 op.product = recordData;
                                             };
                                             productIndexPageVisible = true;
-                                        }">Chọn</a-button>
+                                        }">
+                                            <template #icon><ShoppingCartOutlined /></template> Chọn
+                                        </a-button>
                                     </a-tooltip>
                                 </a-col>
                             </a-row>
-                        </a-form-model-item>
-                        <a-form-model-item
+                        </a-form-item>
+                        <a-form-item
                             label="Hình thức thanh toán"
                             :rules="{required:true,message:'Không được để trống'}"
-                            :prop="'order_products.'+pIdx+'.payment_method'"
+                            :name="['order_products', pIdx, 'payment_method']"
                         >
-                            <a-select v-model="op.payment_method">
+                            <a-select v-model:value="op.payment_method">
                                 <a-select-option v-for="methodCode in Object.keys(configPaymentMethod)" :key="methodCode" :value="parseInt(methodCode)">{{ configPaymentMethod[methodCode].name }}</a-select-option>
                             </a-select>
-                        </a-form-model-item>
-                        <a-form-model-item label="Số lượng muốn đặt ban đầu">
-                            <a-input-number v-model="op.quantity" style="width: 100%;" :min="1" :disabled="op.product ? true : false" />
-                        </a-form-model-item>
+                        </a-form-item>
+                        <a-form-item label="Số lượng muốn đặt ban đầu">
+                            <a-input-number v-model:value="op.quantity" style="width: 100%;" :min="1" :disabled="op.product ? true : false" />
+                        </a-form-item>
                         <a-card title="Xuất kho" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#680075',color:'#FFF'}" :bodyStyle="{padding:0}">
-                            <a slot="extra" @click="() => op.order_product_stocks.push(cloneDeep(order_product_stock_obj))">
-                                <a-tooltip title="Chọn thêm hàng từ kho">
-                                    <a-button type="primary" icon="plus" />
-                                </a-tooltip>
-                            </a>
+                            <template #extra>
+                                <a @click="() => op.order_product_stocks.push(cloneDeep(order_product_stock_obj))">
+                                    <a-tooltip title="Chọn thêm hàng từ kho">
+                                        <a-button type="primary">
+                                            <template #icon><PlusOutlined /></template> Chọn
+                                        </a-button>
+                                    </a-tooltip>
+                                </a>
+                            </template>
+                                <!-- :scroll="(['xs','sm','md'].indexOf($grid.breakpoint) !== -1) ? { x: 1300, y: '85vh' } : {}" -->
                             <a-table
-                                :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
                                 :columns="product_stockTableColumns"
                                 :data-source="op.order_product_stocks"
                                 :pagination="false"
@@ -155,65 +188,75 @@
                                 bordered
                                 defaultExpandAllRows
                             >
-                                <template slot="stock" slot-scope="text, ps, psIdx">
-                                    <a-form-model-item
+                                <template #stock="{ text, record: ps, index: psIdx }">
+                                    <a-form-item
                                         :rules="{required:true,message:'Không được để trống'}"
-                                        :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.stock_id'"
+                                        :name="['order_products', pIdx, 'order_product_stocks', psIdx, 'stock_id']"
                                         style="margin-bottom:0;"
                                         :help="ps.stock ? `Đang chọn: #${ps.stock_id}. ${ps.stock.name} (${ps.stock.idi}) (${number_format(ps.stock.cost_price)} ₫)` : false"
                                     >
                                         <a-row :gutter="8">
                                             <a-col :span="12">
-                                                <a-input-search v-model="ps.stock_id" readOnly @search="() => {
+                                                <a-input-search v-model:value="ps.stock_id" readOnly @search="() => {
                                                     currentStockId = ps.stock_id;
                                                     stockEditPageVisible = true;
                                                 }">
-                                                    <a-button icon="search" slot="enterButton" />
+                                                    <template #enterButton>
+                                                        <a-button>
+                                                            <template #icon><SearchOutlined /></template>
+                                                        </a-button>
+                                                    </template>
                                                 </a-input-search>
                                             </a-col>
                                             <a-col :span="8">
                                                 <a-tooltip v-if="!ps.id || (ps.id <= 0)" title="Chọn từ danh sách">
-                                                    <a-button type="primary" icon="bank" @click="() => {
+                                                    <a-button type="primary" @click="() => {
                                                         stockIndexPageFinish = (recordData) => {
                                                             ps.stock_id = recordData.id;
                                                             ps.stock = recordData;
                                                         };
                                                         stockIndexPageVisible = true
-                                                    }">Chọn</a-button>
+                                                    }">
+                                                        <template #icon><BankOutlined /></template> Chọn
+                                                    </a-button>
                                                 </a-tooltip>
                                             </a-col>
                                         </a-row>
-                                    </a-form-model-item>
+                                    </a-form-item>
                                 </template>
-                                <template slot="status" slot-scope="value, ps, psIdx">
-                                    <a-form-model-item :prop="`order_products.${pIdx}.order_product_stocks.${psIdx}.status`" style="min-width: 150px;">
-                                        <a-select v-model="ps.status" :disabled="!ps.id || (ps.id <= 0)">
+                                <template #status="{ record: ps, index: psIdx }">
+                                    <a-form-item :name="['order_products', pIdx, 'order_product_stocks', psIdx, 'status']" style="min-width: 150px;">
+                                        <a-select v-model:value="ps.status" :disabled="!ps.id || (ps.id <= 0)">
                                             <a-select-option v-for="stsCode in Object.keys(configOrderProductStockStatus)" :key="stsCode" :value="parseInt(stsCode)">{{ configOrderProductStockStatus[stsCode].name }}</a-select-option>
                                         </a-select>
-                                    </a-form-model-item>
+                                    </a-form-item>
                                 </template>
-                                <template slot="amount" slot-scope="text, ps, psIdx">
-                                    <a-form-model-item
+                                <template #amount="{ text, record: ps, index: psIdx }">
+                                    <a-form-item
                                         :rules="[{required:true,message:'Không được để trống'},{type:'integer'}]"
-                                        :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.amount'"
+                                        :name="['order_products', pIdx, 'order_product_stocks', psIdx, 'amount']"
                                         style="margin-bottom:0;"
                                         :help="`Xem trước: ${number_format(ps.amount || 0)} ₫`"
                                     >
-                                        <a-input-number v-model="ps.amount" style="width: 100%;" :min="0" :max="2000000000" />
-                                    </a-form-model-item>
-                                    <div>Đã thanh toán: <a-tag :color="(ps.id ? ((ps.stock.cost_price > ps.amount) ? ps.stock.cost_price : ps.amount) : ps.amount) >= 0 ? 'green' : 'red'">{{ ps.transactions.reduce((a, b) => parseInt(a) + (parseInt(b.amount) || 0), 0) }}</a-tag></div>
+                                        <a-input-number v-model:value="ps.amount" style="width: 100%;" :min="0" :max="2000000000" />
+                                    </a-form-item>
+                                    <div>Đã thanh toán: <a-tag :color="(ps.id ? ((ps.stock.cost_price > ps.amount) ? ps.stock.cost_price : ps.amount) : ps.amount) >= 0 ? 'green' : 'red'">{{ number_format(ps.transactions.reduce((a, b) => parseInt(a) + (parseInt(b.amount) || 0), 0)) }} ₫</a-tag></div>
                                 </template>
-                                <template slot="action" slot-scope="text, ps, psIdx">
+                                <template #action="{ text, record: ps, index: psIdx }">
                                     <a @click="() => ps.transactions.push({...transaction_obj})">
                                         <a-tooltip title="Thêm giao dịch">
-                                            <a-button type="primary" icon="plus" />
+                                            <a-button type="primary">
+                                                <template #icon><PlusOutlined /></template>
+                                            </a-button>
                                         </a-tooltip>
                                     </a>
                                     <a-popconfirm v-if="!ps.id" title="Chắc chắn muốn xóa?" @confirm="() => op.order_product_stocks.splice(psIdx, 1)">
-                                        <a-button type="danger" icon="delete" />
+                                        <a-button type="primary" danger>
+                                            <template #icon><DeleteOutlined /></template>
+                                        </a-button>
                                     </a-popconfirm>
                                 </template>
-                                <template slot="expandedRowRender" slot-scope="ops, psIdx">
+                                <template #expandedRowRender="{ record: ops, index: psIdx }">
                                     <a-table
                                         :columns="addon_transactionsTableColumns"
                                         :data-source="ops.transactions"
@@ -222,38 +265,40 @@
                                         size="small"
                                         bordered
                                     >
-                                        <template slot="description" slot-scope="value, pst, pstIdx">
-                                            <a-form-model-item
+                                        <template #description="{ text: value, record: pst, index: pstIdx }">
+                                            <a-form-item
                                                 :rules="[{required:true,message:'Không được để trống'}, {min:10,message:'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 10 ký tự)'}]"
-                                                :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.description'" style="margin-bottom:0;"
+                                                :name="['order_products', pIdx, 'order_product_stocks', psIdx, 'transactions', pstIdx, 'description']" style="margin-bottom:0;"
                                             >
-                                                <a-input v-model="pst.description" placeholder="Trả góp, trả thẳng, thanh toán sản phẩm ABC, vv..vv" type="textarea" />
-                                            </a-form-model-item>
+                                                <a-input v-model:value="pst.description" placeholder="Trả góp, trả thẳng, thanh toán sản phẩm ABC, vv..vv" type="textarea" />
+                                            </a-form-item>
                                         </template>
-                                        <template slot="amount" slot-scope="value, pst, pstIdx">
-                                            <a-form-model-item
+                                        <template #amount="{ text: value, record: pst, index: pstIdx }">
+                                            <a-form-item
                                                 :rules="[{required:true,message:'Không được để trống'},{type:'integer'}]"
-                                                :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.amount'" style="margin-bottom:0;"
+                                                :name="['order_products', pIdx, 'order_product_stocks', psIdx, 'transactions', pstIdx, 'amount']" style="margin-bottom:0;"
                                                 :help="`Xem trước: ${number_format(pst.amount || 0)} ₫`"
                                             >
-                                                <a-input-number v-model="pst.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(pst, UserRole.ROLE_ADMIN_MASTER)" />
-                                            </a-form-model-item>
+                                                <a-input-number v-model:value="pst.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(pst, UserRole.ROLE_ADMIN_MASTER)" />
+                                            </a-form-item>
                                         </template>
-                                        <template slot="paid_date" slot-scope="value, pst, pstIdx">
-                                            <a-form-model-item
+                                        <template #paid_date="{ text: value, record: pst, index: pstIdx }">
+                                            <a-form-item
                                                 :rules="{required:true,message:'Không được để trống'}"
-                                                :prop="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.paid_date'" style="margin-bottom:0;"
+                                                :name="['order_products', pIdx, 'order_product_stocks', psIdx, 'transactions', pstIdx, 'paid_date']" style="margin-bottom:0;"
                                                 help="Ngày thanh toán sẽ liên kết trực tiếp tới tiền lãi/thu của tháng đó"
                                             >
                                                 <a-date-picker
-                                                    v-model="pst.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" :disabled="disabledField(pst)"
+                                                    v-model:value="pst.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" :disabled="disabledField(pst)"
                                                     :disabledDate="disabledLastMonthAndTomorrow"
                                                 />
-                                            </a-form-model-item>
+                                            </a-form-item>
                                         </template>
-                                        <template slot="action" slot-scope="value, pst, pstIdx">
+                                        <template #action="{ text: value, record: pst, index: pstIdx }">
                                             <a-popconfirm v-if="!pst.id" title="Chắc chắn muốn xóa?" @confirm="() => ops.transactions.splice(pstIdx,1)">
-                                                <a-button type="danger" icon="delete" />
+                                                <a-button type="primary" danger>
+                                                    <template #icon><DeleteOutlined /></template>
+                                                </a-button>
                                             </a-popconfirm>
                                         </template>
                                     </a-table>
@@ -263,13 +308,17 @@
                     </a-card>
                 </a-card>
                 <a-card title="Giao dịch thêm" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#9800ab',color:'#FFF'}" :bodyStyle="{padding:0}">
-                    <a slot="extra" @click="() => formData.transactions.push({...transaction_obj})">
-                        <a-tooltip title="Thêm giao dịch">
-                            <a-button type="primary" icon="plus" />
-                        </a-tooltip>
-                    </a>
+                    <template #extra>
+                        <a @click="() => formData.transactions.push({...transaction_obj})">
+                            <a-tooltip title="Thêm giao dịch">
+                                <a-button type="primary">
+                                    <template #icon><PlusOutlined /></template>
+                                </a-button>
+                            </a-tooltip>
+                        </a>
+                    </template>
                     <a-table
-                        :scroll="(['xs','sm','md'].indexOf($mq) !== -1) ? { x: 1300, y: '85vh' } : {}"
+                        :scroll="(['xs','sm','md'].indexOf($grid.breakpoint) !== -1) ? { x: 1300, y: '85vh' } : {}"
                         :columns="addon_transactionsTableColumns"
                         :data-source="formData.transactions"
                         :pagination="false"
@@ -277,52 +326,50 @@
                         size="small"
                         bordered
                     >
-                        <template slot="description" slot-scope="text, record, index">
-                            <a-form-model-item
+                        <template #description="{ text, record, index }">
+                            <a-form-item
                                 :rules="[{required:true,message:'Không được để trống'}, {min:10,message:'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 10 ký tự)'}]"
-                                :prop="`transactions.${index}.description`" style="margin-bottom:0;"
+                                :name="['transactions', index, 'description']" style="margin-bottom:0;"
                             >
-                                <a-input v-model="record.description" placeholder="Mã giảm giá, phí ship, v..v" type="textarea" />
-                            </a-form-model-item>
+                                <a-input v-model:value="record.description" placeholder="Mã giảm giá, phí ship, v..v" type="textarea" />
+                            </a-form-item>
                         </template>
-                        <template slot="amount" slot-scope="text, record, index">
-                            <a-form-model-item
+                        <template #amount="{ text, record, index }">
+                            <a-form-item
                                 :rules="{required:true,message:'Không được để trống'}"
-                                :prop="`transactions.${index}.amount`"
+                                :name="['transactions', index, 'amount']"
                                 style="margin-bottom:0;"
                                 :help="`Xem trước: ${number_format(record.amount || 0)} ₫`"
                             >
-                                <a-input-number v-model="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(record, UserRole.ROLE_ADMIN_MASTER)" />
-                            </a-form-model-item>
+                                <a-input-number v-model:value="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(record, UserRole.ROLE_ADMIN_MASTER)" />
+                            </a-form-item>
                         </template>
-                        <template slot="paid_date" slot-scope="text, record, index">
-                            <a-form-model-item
+                        <template #paid_date="{ text, record, index }">
+                            <a-form-item
                                 :rules="{required:true,message:'Không được để trống'}"
-                                :prop="'transactions.'+index+'.paid_date'" style="margin-bottom:0;"
+                                :name="['transactions', index, 'paid_date']" style="margin-bottom:0;"
                                 help="Ngày thanh toán sẽ liên kết trực tiếp tới tiền lãi/thu của tháng đó"
                             >
                                 <a-date-picker
-                                    v-model="record.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date"
+                                    v-model:value="record.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date"
                                     :disabled="disabledField(record)"
                                     :disabledDate="disabledLastMonthAndTomorrow"
                                 />
-                            </a-form-model-item>
+                            </a-form-item>
                         </template>
-                        <template slot="action" slot-scope="text, record, index">
+                        <template #action="{ text, record, index }">
                             <a-popconfirm v-if="!record.id" title="Chắc chắn muốn xóa?" @confirm="() => formData.transactions.splice(index,1)">
-                                <a-button type="danger" icon="delete" />
+                                <a-button type="primary" danger>
+                                    <template #icon><DeleteOutlined /></template>
+                                </a-button>
                             </a-popconfirm>
                         </template>
                     </a-table>
                 </a-card>
-                <a-form-model-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: (['xs','sm','md'].indexOf($mq) !== -1) ? 0 : 4 }">
-                    <a-button
-                        type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })"
-                        block
-                        size="large"
-                    >{{ id ? 'Sửa' : 'Tạo đơn' }}</a-button>
-                </a-form-model-item>
-            </a-form-model>
+                <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: (['xs','sm','md'].indexOf($grid.breakpoint) !== -1) ? 0 : 4 }">
+                    <a-button type="primary" htmlType="submit" block size="large">{{ id ? 'Sửa' : 'Tạo đơn' }}</a-button>
+                </a-form-item>
+            </a-form>
         </a-spin>
 
         <a-modal
@@ -388,7 +435,14 @@
 </template>
 
 <script>
+import { defineAsyncComponent, reactive, ref } from 'vue';
 import moment from 'moment';
+
+import {
+    PrinterOutlined, BankOutlined, ShoppingCartOutlined,
+    PlusOutlined, ReloadOutlined, DeleteOutlined,
+    UserOutlined, SearchOutlined,
+} from '@ant-design/icons-vue';
 
 import UserRole from '../../configs/UserRole';
 import OrderStatus, { Config as configOrderStatus } from '../../configs/OrderStatus';
@@ -396,7 +450,7 @@ import OrderProductStockStatus, { Config as configOrderProductStockStatus } from
 import PaymentMethod, { Config as configPaymentMethod } from '../../configs/PaymentMethod';
 import RequestRepository from '../../utils/RequestRepository';
 
-import { number_format, cloneDeep, } from '../../../helpers';
+import { number_format, cloneDeep, date_format, } from '../../../helpers';
 import User from '../../utils/User';
 
 const addon_transactionsTableColumns = [
@@ -407,28 +461,28 @@ const addon_transactionsTableColumns = [
     {
         title: '* Nội dung',
         dataIndex: 'description',
-        scopedSlots: {
+        slots: {
             customRender: 'description',
         },
     },
     {
         title: '* Số tiền',
         dataIndex: 'amount',
-        scopedSlots: {
+        slots: {
             customRender: 'amount',
         },
     },
     {
         title: '* Ngày thanh toán',
         dataIndex: 'paid_date',
-        scopedSlots: {
+        slots: {
             customRender: 'paid_date',
         },
     },
     {
         title: 'Hành động',
         key: 'action',
-        scopedSlots: {
+        slots: {
             customRender: 'action',
         },
     },
@@ -442,28 +496,28 @@ const product_stockTableColumns = [
     {
         title: '* Hàng trong kho',
         dataIndex: 'stock',
-        scopedSlots: {
+        slots: {
             customRender: 'stock',
         },
     },
     {
         title: '* Trạng thái',
         dataIndex: 'status',
-        scopedSlots: {
+        slots: {
             customRender: 'status',
         },
     },
     {
         title: '* Tổng tiền phải thanh toán',
         dataIndex: 'amount',
-        scopedSlots: {
+        slots: {
             customRender: 'amount',
         },
     },
     {
         title: 'Hành động',
         key: 'action',
-        scopedSlots: {
+        slots: {
             customRender: 'action',
         },
     },
@@ -474,13 +528,36 @@ export default {
         orderId: Number,
     },
     components: {
-        UserIndex: () => import('../users/Index'),
-        UserEdit: () => import('../users/Edit'),
-        ProductIndex: () => import('../products/Index'),
-        ProductEdit: () => import('../products/Edit'),
-        StockIndex: () => import('../stocks/Index'),
-        StockEdit: () => import('../stocks/Edit'),
+        UserIndex: defineAsyncComponent(() => import('../users/Index')),
+        UserEdit: defineAsyncComponent(() => import('../users/Edit')),
+        ProductIndex: defineAsyncComponent(() => import('../products/Index')),
+        ProductEdit: defineAsyncComponent(() => import('../products/Edit')),
+        StockIndex: defineAsyncComponent(() => import('../stocks/Index')),
+        StockEdit: defineAsyncComponent(() => import('../stocks/Edit')),
+
+        PrinterOutlined, BankOutlined, ShoppingCartOutlined,
+        PlusOutlined, ReloadOutlined, DeleteOutlined,
+        UserOutlined, SearchOutlined,
     },
+
+    setup() {
+        const ruleForm = ref();
+        const formData = reactive({
+            id: undefined,
+            deal_date: moment(),
+            note: undefined,
+            customer_id: undefined,
+            order_products: [],
+            status: OrderStatus.STS_PROCESSING,
+            transactions: [],
+        });
+
+        return {
+            ruleForm,
+            formData,
+        };
+    },
+
     data() {
         return {
             userIndexPageVisible: false,
@@ -507,15 +584,6 @@ export default {
             product_stockTableColumns,
 
             orderInfoLoading: false,
-            formData: {
-                id: undefined,
-                deal_date: moment(),
-                note: undefined,
-                customer_id: undefined,
-                order_products: [],
-                status: OrderStatus.STS_PROCESSING,
-                transactions: [],
-            },
             rules: {
                 status: {required: true},
                 note: {required: true},
@@ -594,6 +662,7 @@ export default {
     methods: {
         cloneDeep,
         number_format,
+        date_format,
 
         disabledLastMonthAndTomorrow(current) {
             return !this.authUser.hasPermission(UserRole.ROLE_ADMIN_SUB_MASTER) &&
@@ -628,7 +697,7 @@ export default {
                     }
                 })
                 .catch(err => {
-                    if (err.response && err.response.data.message) {
+                    if (err.response && err.response.data && err.response.data.message) {
                         this.$message.error(err.response.data.message);
                         return;
                     }
@@ -688,7 +757,7 @@ export default {
                     this.orderInfoLoading = false;
                 })
                 .catch(err => {
-                    if (err.response && err.response.data.message) {
+                    if (err.response && err.response.data && err.response.data.message) {
                         this.$message.error(err.response.data.message);
                         return;
                     }
@@ -748,14 +817,12 @@ export default {
                 .catch(err => {
                     this.orderInfoLoading = false;
 
-                    if (err.response && err.response.data.message) {
+                    if (err.response && err.response.data && err.response.data.message) {
                         this.$message.error(err.response.data.message);
                         return;
                     }
 
                     this.$message.error(err.message || 'Thất bại');
-                })
-                .finally(()=>{
                 });
         },
 

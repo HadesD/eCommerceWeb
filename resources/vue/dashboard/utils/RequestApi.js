@@ -1,3 +1,9 @@
-const axios = window.axios;
+import axios from 'axios';
+import RequestHttp from './RequestHttp';
 
-export default axios;
+const instance = axios.create({
+    ...RequestHttp.defaults,
+    baseURL: `${process.env.APP_URL||''}/api`,
+});
+
+export default instance;

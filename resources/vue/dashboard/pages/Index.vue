@@ -44,8 +44,8 @@
                         <a-statistic title="Tổng Lãi Thực sau nợ" :value="statistics.transaction.real_amount_total_after_debt" suffix="₫" />
                     </a-col>
                     <a-col :span="19" :lg="19" :md="24" :sm="24" :xs="24">
-                        <line-chart :height="150" type="line" :chart-data="datacollectionNear30days" :options="chartOptionsNear30days" />
-                        <line-chart :height="150" type="line" :chart-data="datacollectionTotal" :options="chartOptionsTotal" />
+                        <!-- <line-chart :height="150" type="line" :chart-data="datacollectionNear30days" :options="chartOptionsNear30days" />
+                        <line-chart :height="150" type="line" :chart-data="datacollectionTotal" :options="chartOptionsTotal" /> -->
                     </a-col>
                 </a-row>
             </a-card>
@@ -149,7 +149,7 @@ export default {
                     };
                 })
                 .catch(err => {
-                    if (err.response && err.response.data.message) {
+                    if (err.response && err.response.data && err.response.data.message) {
                         this.$message.error(err.response.data.message);
                         return;
                     }

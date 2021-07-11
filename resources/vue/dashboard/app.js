@@ -1,26 +1,29 @@
 require('../bootstrap');
 
-import Vue from 'vue'
+import { createApp } from 'vue';
 import Antd from 'ant-design-vue';
-import VueProgressBar from 'vue-progressbar';
-import VueMq from 'vue-mq';
+// import VueProgressBar from 'vue-progressbar';
+import VueScreen from 'vue-screen';
 
 import router from './configs/router.js';
 import MainApp from './layouts/MainApp.vue';
 
-Vue.use(Antd);
-Vue.use(VueMq);
+const app = createApp(MainApp);
 
-Vue.use(VueProgressBar, {
-    color: '#9254de',
-    failedColor: '#f5222d',
-    height: '3px',
+app.use(Antd);
+
+app.use(VueScreen, {
+    extend: 'bootstrap',
 });
 
-const app = new Vue({
-    el: '#app',
-    router,
-    render: h => h(MainApp),
-});
+// app.use(VueProgressBar, {
+//     color: '#9254de',
+//     failedColor: '#f5222d',
+//     height: '3px',
+// });
+
+app.use(router);
+
+app.mount('#app');
 
 export default app;
