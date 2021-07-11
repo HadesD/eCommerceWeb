@@ -68,11 +68,12 @@
             <!-- Block Search: END -->
 
             <!-- Block Filter RangeDate: BEGIN -->
-            <template #filterRangeDate="{ setSelectedKeys, confirm, clearFilters }">
+            <template #filterRangeDate="{ setSelectedKeys, selectedKeys, confirm, clearFilters }">
                 <div style="padding: 8px">
                     <a-range-picker
                         format="YYYY/MM/DD"
                         type="date"
+                        :value="selectedKeys"
                         style="width: 250px; margin-bottom: 8px; display: block;"
                         :ranges="{ 'Hôm nay': [moment(), moment()], 'Tháng này': [moment().startOf('month'), moment().endOf('month')] }"
                         @change="(date, dateStrings) => setSelectedKeys(dateStrings ? dateStrings : [])"

@@ -88,16 +88,16 @@
                 />
                 <!-- Block Search: END -->
 
-                <template slot="price" slot-scope="value">
+                <template #price="{ text }">
                     <div style="text-align:right;">{{ number_format(value || 0) }} ₫</div>
                 </template>
-                <template slot="quantity" slot-scope="value">
+                <template #quantity="{ text }">
                     <a-tag :color="(value > 0) ? 'green' : 'red'">{{ value }}</a-tag>
                 </template>
-                <template slot="categories" slot-scope="value">
+                <template #categories="{ text }">
                     <a-tag v-for="category in value" :key="category.id">{{ category.name }}</a-tag>
                 </template>
-                <template slot="tester" slot-scope="value, record">
+                <template #tester="{ text, record }">
                     <div v-if="value && record.tester">
                         <div>
                             <span>#{{ value }}. {{ record.tester.name }}</span>
@@ -106,7 +106,7 @@
                         <div>Phone: {{ record.tester.phone || 'Chưa có' }}</div>
                     </div>
                 </template>
-                <template slot="update_info" slot-scope="record">
+                <template #update_info="{ record }">
                     <div>Tạo: {{ date_format(record.created_at) }}</div>
                     <div>Update: {{ date_format(record.updated_at) }}</div>
                     <div v-if="record.updated_user">
@@ -114,7 +114,7 @@
                         <a-button icon="search" @click="() => { currentUserId = record.updated_user_id; userEditPageVisible = true; }" size="small" />
                     </div>
                 </template>
-                <template slot="action" slot-scope="record">
+                <template #action="{ record }">
                     <template v-if="!onFinishSelect">
                         <a-button type="primary" icon="edit" @click="() => { currentStockId = record.id; stockEditPageVisible = true; }" />
                     </template>
@@ -156,7 +156,7 @@ const stocksTableColumns = [
     {
         title: '#ID',
         dataIndex: 'id',
-        scopedSlots: {
+        slots: {
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
         },
@@ -164,7 +164,7 @@ const stocksTableColumns = [
     {
         title: 'Tên',
         dataIndex: 'name',
-        scopedSlots: {
+        slots: {
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
         },
@@ -172,7 +172,7 @@ const stocksTableColumns = [
     {
         title: 'Id/Imei',
         dataIndex: 'idi',
-        scopedSlots: {
+        slots: {
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
         },
@@ -180,7 +180,7 @@ const stocksTableColumns = [
     {
         title: 'Giá nhập (Đơn giá)',
         dataIndex: 'cost_price',
-        scopedSlots: {
+        slots: {
             customRender: 'price',
         },
         sorter: true,
@@ -188,7 +188,7 @@ const stocksTableColumns = [
     {
         title: 'Giá bán dự định (Đơn giá)',
         dataIndex: 'sell_price',
-        scopedSlots: {
+        slots: {
             customRender: 'price',
         },
         sorter: true,
@@ -196,7 +196,7 @@ const stocksTableColumns = [
     {
         title: 'Người kiểm thử',
         dataIndex: 'tester_id',
-        scopedSlots: {
+        slots: {
             customRender: 'tester',
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
@@ -205,7 +205,7 @@ const stocksTableColumns = [
     {
         title: 'Tồn kho',
         dataIndex: 'quantity',
-        scopedSlots: {
+        slots: {
             customRender: 'quantity',
         },
         sorter: true,
@@ -213,21 +213,21 @@ const stocksTableColumns = [
     {
         title: 'Chuyên mục',
         dataIndex: 'categories',
-        scopedSlots: {
+        slots: {
             customRender: 'categories',
         },
     },
     {
         title: 'Cập nhật',
         key: 'update_info',
-        scopedSlots: {
+        slots: {
             customRender: 'update_info',
         },
     },
     {
         title: 'Hành động',
         key: 'action',
-        scopedSlots: {
+        slots: {
             customRender: 'action',
         },
     },

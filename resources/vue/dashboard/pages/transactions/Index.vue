@@ -1,20 +1,28 @@
 <template>
     <div>
         <a-page-header title="Giao dịch (Thu / Chi)">
-            <template slot="tags">
+            <template #tags>
                 <a-tooltip title="Làm mới">
-                    <a-button type="primary" icon="reload" :loading="transactionsTableLoading" @click="() => loadTransactions({})" />
+                    <a-button type="primary" :loading="transactionsTableLoading" @click="() => loadTransactions({})">
+                        <template #icon>
+                            <ReloadOutlined />
+                        </template>
+                    </a-button>
                 </a-tooltip>
             </template>
-            <template slot="extra">
+            <template #extra>
                 <a-tooltip title="Tải CSV">
-                    <a-button type="primary" icon="download" :disabled="transactions.length <= 0" @click="() => download()" />
+                    <a-button type="primary" :disabled="transactions.length <= 0" @click="() => download()">
+                        <template #icon>
+                            <DownloadOutlined />
+                        </template>
+                    </a-button>
                 </a-tooltip>
             </template>
         </a-page-header>
+            <!-- :scroll="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? { x: 1300, y: '85vh' } : {}" -->
         <a-table
-            :scroll="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? { x: 1300, y: '85vh' } : {}"
-            :size="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) !== -1 ? 'small' : 'default'"
+            :size="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? 'small' : 'default'"
             :columns="transactionsTableColumns"
             :data-source="transactionsTableData"
             :loading="transactionsTableLoading"
@@ -27,80 +35,78 @@
             }"
         >
             <!-- Block Search: BEGIN -->
-            <div
-                slot="filterSearchBox"
-                slot-scope="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }"
-                style="padding: 8px"
-            >
-                <a-input
-                    :placeholder="`Tìm ${column.title}`"
-                    :value="selectedKeys[0]"
-                    style="width: 188px; margin-bottom: 8px; display: block;"
-                    @change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
-                    @pressEnter="() => $refs[`filterSearchBoxSubmit.${column.dataIndex}`].$el.click()"
-                />
-                <a-button
-                    :ref="`filterSearchBoxSubmit.${column.dataIndex}`"
-                    type="primary"
-                    icon="search"
-                    size="small"
-                    style="width: 90px; margin-right: 8px"
-                    @click="() => {confirm();}"
-                >Tìm</a-button>
-                <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);clearFilters();}">Reset</a-button>
-            </div>
-            <a-icon
-                slot="filterSearchBoxIcon"
-                slot-scope="filtered"
-                type="search"
-                :style="{ color: filtered ? '#108ee9' : undefined }"
-            />
+            <template #filterSearchBox="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }">
+                <div style="padding: 8px">
+                    <a-input
+                        :placeholder="`Tìm ${column.title}`"
+                        :value="selectedKeys[0]"
+                        style="width: 188px; margin-bottom: 8px; display: block;"
+                        @change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
+                        @pressEnter="() => $refs[`filterSearchBoxSubmit.${column.dataIndex}`].$el.click()"
+                    />
+                    <a-button
+                        :ref="`filterSearchBoxSubmit.${column.dataIndex}`"
+                        type="primary"
+                        size="small"
+                        style="width: 90px; margin-right: 8px"
+                        @click="() => {confirm();}"
+                    ><template #icon><SearchOutlined /></template> Tìm</a-button>
+                    <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);clearFilters();}">Reset</a-button>
+                </div>
+            </template>
+            <template #filterSearchBoxIcon="{ filtered }">
+                <SearchOutlined :style="{ color: filtered ? '#108ee9' : undefined }" />
+            </template>
             <!-- Block Search: END -->
 
             <!-- Block Filter RangeDate: BEGIN -->
-            <div
-                slot="filterRangeDate"
-                slot-scope="{ setSelectedKeys, confirm, clearFilters }"
-                style="padding: 8px"
-            >
-                <a-range-picker
-                    format="YYYY/MM/DD"
-                    type="date"
-                    style="width: 250px; margin-bottom: 8px; display: block;"
-                    :ranges="{ 'Hôm nay': [moment(), moment()], 'Tháng này': [moment().startOf('month'), moment().endOf('month')] }"
-                    @change="(date, dateStrings) => setSelectedKeys(dateStrings ? dateStrings : [])"
-                />
-                <a-button
-                    type="primary"
-                    icon="search"
-                    size="small"
-                    style="width: 90px; margin-right: 8px"
-                    @click="() => {confirm();}"
-                >Tìm</a-button>
-                <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);clearFilters();}">Reset</a-button>
-            </div>
+            <template #filterRangeDate="{ setSelectedKeys, selectedKeys, confirm, clearFilters }">
+                <div style="padding: 8px">
+                    <a-range-picker
+                        format="YYYY/MM/DD"
+                        type="date"
+                        :value="selectedKeys"
+                        style="width: 250px; margin-bottom: 8px; display: block;"
+                        :ranges="{ 'Hôm nay': [moment(), moment()], 'Tháng này': [moment().startOf('month'), moment().endOf('month')] }"
+                        @change="(date, dateStrings) => setSelectedKeys(dateStrings ? dateStrings : [])"
+                    />
+                    <a-button
+                        type="primary"
+                        size="small"
+                        style="width: 90px; margin-right: 8px"
+                        @click="() => {confirm();}"
+                    ><template #icon><SearchOutlined /></template> Tìm</a-button>
+                    <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);clearFilters();}">Reset</a-button>
+                </div>
+            </template>
             <!-- Block Filter RangeDate: END -->
 
-            <template slot="type" slot-scope="value, record">
-                <a-tag>{{ value }}</a-tag>
-                <a-button v-if="record.order" size="small" icon="account-book" @click="() => { currentOrderId = record.order.id; orderEditPageVisible = true; }" />
-                <a-button v-if="record.stock" size="small" icon="bank" @click="() => { currentStockId = record.stock.id; stockEditPageVisible = true; }" />
+            <template #type="{ text, record }">
+                <a-tag>{{ text }}</a-tag>
+                <a-button v-if="record.order" size="small" @click="() => { currentOrderId = record.order.id; orderEditPageVisible = true; }">
+                    <template #icon><AccountBookOutlined /></template>
+                </a-button>
+                <a-button v-if="record.stock" size="small" @click="() => { currentStockId = record.stock.id; stockEditPageVisible = true; }">
+                    <template #icon><BankOutlined /></template>
+                </a-button>
             </template>
 
-            <template slot="amount" slot-scope="value">
+            <template #amount="{ text }">
                 <div style="float:right;">
-                    <a-tag :color="(value >= 0) ? 'green' : 'red'">{{ number_format(value) }}</a-tag>
+                    <a-tag :color="(text >= 0) ? 'green' : 'red'">{{ number_format(text) }}</a-tag>
                 </div>
             </template>
 
-            <template slot="cashier_id" slot-scope="value, record">
+            <template #cashier_id="{ text, record }">
                 <div v-if="record.cashier">
-                    <span>#{{ value }}. {{ record.cashier.name }}</span>
-                    <a-button icon="search" @click="() => { currentUserId = value; userEditPageVisible = true; }" size="small" />
+                    <span>#{{ text }}. {{ record.cashier.name }}</span>
+                    <a-button @click="() => { currentUserId = text; userEditPageVisible = true; }" size="small">
+                        <template #icon><SearchOutlined /></template>
+                    </a-button>
                 </div>
             </template>
 
-            <template slot="time" slot-scope="record">
+            <template #time="{ record }">
                 <div>Tạo: {{ date_format(record.created_at) }}</div>
                 <div>Update: {{ date_format(record.updated_at) }}</div>
             </template>
@@ -135,6 +141,13 @@
     </div>
 </template>
 <script>
+import { defineAsyncComponent } from 'vue';
+import {
+    SearchOutlined, DownloadOutlined, PlusOutlined,
+    ReloadOutlined, ShoppingCartOutlined, EditOutlined,
+    AccountBookOutlined, BankOutlined,
+} from '@ant-design/icons-vue';
+
 import { number_format, date_format } from '../../../helpers';
 import moment from 'moment';
 import RequestRepository from '../../utils/RequestRepository';
@@ -143,7 +156,7 @@ const transactionsTableColumns = [
     {
         title: '#ID',
         dataIndex: 'id',
-        scopedSlots: {
+        slots: {
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
         },
@@ -151,14 +164,14 @@ const transactionsTableColumns = [
     {
         title: 'Loại giao dịch',
         dataIndex: 'type',
-        scopedSlots: {
+        slots: {
             customRender: 'type',
         },
     },
     {
         title: 'Nội dung',
         dataIndex: 'description',
-        scopedSlots: {
+        slots: {
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
         },
@@ -166,7 +179,7 @@ const transactionsTableColumns = [
     {
         title: 'Số tiền',
         dataIndex: 'amount',
-        scopedSlots: {
+        slots: {
             customRender: 'amount',
         },
         sorter: true,
@@ -174,7 +187,7 @@ const transactionsTableColumns = [
     {
         title: 'Ngày thanh toán',
         dataIndex: 'paid_date',
-        scopedSlots: {
+        slots: {
             filterDropdown: 'filterRangeDate',
         },
         sorter: true,
@@ -182,14 +195,14 @@ const transactionsTableColumns = [
     {
         title: 'Thu ngân',
         dataIndex: 'cashier_id',
-        scopedSlots: {
+        slots: {
             customRender: 'cashier_id',
         },
     },
     {
         title: 'Thời gian',
         key: 'time',
-        scopedSlots: {
+        slots: {
             customRender: 'time',
         },
     },
@@ -197,9 +210,13 @@ const transactionsTableColumns = [
 
 export default {
     components: {
-        StockEdit: () => import('../stocks/Edit'),
-        OrderEdit: () => import('../orders/Edit'),
-        UserEdit: () => import('../users/Edit'),
+        UserEdit: defineAsyncComponent(() => import('../users/Edit')),
+        StockEdit: defineAsyncComponent(() => import('../stocks/Edit')),
+        OrderEdit: defineAsyncComponent(() => import('../orders/Edit')),
+
+        SearchOutlined, DownloadOutlined, PlusOutlined,
+        ReloadOutlined, ShoppingCartOutlined, EditOutlined,
+        AccountBookOutlined, BankOutlined,
     },
     data() {
         return {

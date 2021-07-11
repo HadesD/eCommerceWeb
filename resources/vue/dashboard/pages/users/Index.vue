@@ -14,7 +14,7 @@
         </a-page-header>
         <a-table
             :scroll="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? { x: 1300 } : {}"
-            :size="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) !== -1 ? 'small' : 'default'"
+            :size="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? 'small' : 'default'"
             :columns="usersTableColumns"
             :data-source="usersTableData"
             :loading="usersTableLoading"
@@ -55,10 +55,10 @@
             />
             <!-- Block Search: END -->
 
-            <template slot="role" slot-scope="value">
+            <template #role="{ text }">
                 <a-tag v-if="configUserRole[value]" :color="configUserRole[value].color">{{ configUserRole[value].name }}</a-tag>
             </template>
-            <template slot="action" slot-scope="record">
+            <template #action="{ record }">
                 <template v-if="!onFinishSelect">
                     <a-button type="primary" icon="edit" @click="() => {currentUserId = record.id; editPageVisible = true;}" />
                 </template>
@@ -66,11 +66,11 @@
                     <a-button type="primary" icon="user" @click="() => onFinishSelect(record)">Chọn</a-button>
                 </template>
             </template>
-            <template slot="time" slot-scope="record">
+            <template #time="{ record }">
                 <div>Tạo: {{ date_format(record.created_at) }}</div>
                 <div>Update: {{ date_format(record.updated_at) }}</div>
             </template>
-            <template slot="sns_info" slot-scope="value">
+            <template #sns_info="{ text }">
                 <a v-if="value && value.facebook" :href="value.facebook" target="_blank">
                     <FacebookOutlined />
                 </a>
@@ -98,7 +98,7 @@ const usersTableColumns = [
     {
         title: '#ID',
         dataIndex: 'id',
-        scopedSlots: {
+        slots: {
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
         },
@@ -106,7 +106,7 @@ const usersTableColumns = [
     {
         title: 'Tên',
         dataIndex: 'name',
-        scopedSlots: {
+        slots: {
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
         },
@@ -114,14 +114,14 @@ const usersTableColumns = [
     {
         title: 'Chức vụ',
         dataIndex: 'role',
-        scopedSlots: {
+        slots: {
             customRender: 'role',
         },
     },
     {
         title: 'Số điện thoại',
         dataIndex: 'phone',
-        scopedSlots: {
+        slots: {
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
         },
@@ -129,7 +129,7 @@ const usersTableColumns = [
     {
         title: 'Mạng xã hội',
         dataIndex: 'sns_info',
-        scopedSlots: {
+        slots: {
             customRender: 'sns_info',
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
@@ -138,7 +138,7 @@ const usersTableColumns = [
     {
         title: 'Email',
         dataIndex: 'email',
-        scopedSlots: {
+        slots: {
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
         },
@@ -146,12 +146,12 @@ const usersTableColumns = [
     {
         title: 'Thời gian',
         key: 'time',
-        scopedSlots: { customRender: 'time' },
+        slots: { customRender: 'time' },
     },
     {
         title: 'Hành động',
         key: 'action',
-        scopedSlots: { customRender: 'action' },
+        slots: { customRender: 'action' },
     },
 ];
 

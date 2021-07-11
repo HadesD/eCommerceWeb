@@ -84,24 +84,24 @@
                 />
                 <!-- Block Search: END -->
 
-                <template slot="name" slot-scope="value, record">
+                <template #name="{ text, record }">
                     <div>{{ value }}</div>
                     <a-tag>{{ record.slug }}</a-tag>
                 </template>
-                <template slot="status" slot-scope="value">
+                <template #status="{ text }">
                     <a-tag v-if="configProductStatus[value]" :color="configProductStatus[value].color">{{ configProductStatus[value].name }}</a-tag>
                 </template>
-                <template slot="price" slot-scope="value">
+                <template #price="{ text }">
                     <div style="display:block;text-align:right;">{{ number_format(value) }} ₫</div>
                 </template>
-                <template slot="categories" slot-scope="value">
+                <template #categories="{ text }">
                     <a-tag v-for="category in value" :key="category.id">{{ category.name }}</a-tag>
                 </template>
-                <template slot="time" slot-scope="record">
+                <template #time="{ record }">
                     <div>Tạo: {{ date_format(record.created_at) }}</div>
                     <div>Update: {{ date_format(record.updated_at) }}</div>
                 </template>
-                <template slot="action" slot-scope="record">
+                <template #action="{ record }">
                     <template v-if="!onFinishSelect">
                         <a-button type="primary" icon="edit" @click="() => { currentProductId = record.id; productEditPageVisible = true; }" />
                     </template>
@@ -134,7 +134,7 @@ const productsTableColumns = [
     {
         title: '#ID',
         dataIndex: 'id',
-        scopedSlots: {
+        slots: {
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
         },
@@ -142,7 +142,7 @@ const productsTableColumns = [
     {
         title: 'Tên',
         dataIndex: 'name',
-        scopedSlots: {
+        slots: {
             customRender: 'name',
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
@@ -151,7 +151,7 @@ const productsTableColumns = [
     {
         title: 'Trạng thái',
         dataIndex: 'status',
-        scopedSlots: { customRender: 'status' },
+        slots: { customRender: 'status' },
         filters: Object.keys(configProductStatus).map(value => {
             return {
                 text: configProductStatus[value].name,
@@ -162,7 +162,7 @@ const productsTableColumns = [
     {
         title: 'Giá bán',
         dataIndex: 'price',
-        scopedSlots: {
+        slots: {
             customRender: 'price',
         },
         sorter: true,
@@ -170,21 +170,21 @@ const productsTableColumns = [
     {
         title: 'Chuyên mục',
         dataIndex: 'categories',
-        scopedSlots: {
+        slots: {
             customRender: 'categories',
         },
     },
     {
         title: 'Thời gian',
         key: 'time',
-        scopedSlots: {
+        slots: {
             customRender: 'time',
         },
     },
     {
         title: 'Hành động',
         key: 'action',
-        scopedSlots: {
+        slots: {
             customRender: 'action',
         },
     },

@@ -270,28 +270,28 @@ const addon_transactionsTableColumns = [
     {
         title: '* Nội dung',
         dataIndex: 'description',
-        scopedSlots: {
+        slots: {
             customRender: 'description',
         },
     },
     {
         title: '* Số tiền',
         dataIndex: 'amount',
-        scopedSlots: {
+        slots: {
             customRender: 'amount',
         },
     },
     {
         title: '* Ngày thanh toán',
         dataIndex: 'paid_date',
-        scopedSlots: {
+        slots: {
             customRender: 'paid_date',
         },
     },
     {
         title: 'Hành động',
         key: 'action',
-        scopedSlots: {
+        slots: {
             customRender: 'action',
         },
     },

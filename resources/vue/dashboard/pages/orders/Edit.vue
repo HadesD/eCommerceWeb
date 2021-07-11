@@ -407,28 +407,28 @@ const addon_transactionsTableColumns = [
     {
         title: '* Nội dung',
         dataIndex: 'description',
-        scopedSlots: {
+        slots: {
             customRender: 'description',
         },
     },
     {
         title: '* Số tiền',
         dataIndex: 'amount',
-        scopedSlots: {
+        slots: {
             customRender: 'amount',
         },
     },
     {
         title: '* Ngày thanh toán',
         dataIndex: 'paid_date',
-        scopedSlots: {
+        slots: {
             customRender: 'paid_date',
         },
     },
     {
         title: 'Hành động',
         key: 'action',
-        scopedSlots: {
+        slots: {
             customRender: 'action',
         },
     },
@@ -442,28 +442,28 @@ const product_stockTableColumns = [
     {
         title: '* Hàng trong kho',
         dataIndex: 'stock',
-        scopedSlots: {
+        slots: {
             customRender: 'stock',
         },
     },
     {
         title: '* Trạng thái',
         dataIndex: 'status',
-        scopedSlots: {
+        slots: {
             customRender: 'status',
         },
     },
     {
         title: '* Tổng tiền phải thanh toán',
         dataIndex: 'amount',
-        scopedSlots: {
+        slots: {
             customRender: 'amount',
         },
     },
     {
         title: 'Hành động',
         key: 'action',
-        scopedSlots: {
+        slots: {
             customRender: 'action',
         },
     },
