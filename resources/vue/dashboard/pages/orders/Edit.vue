@@ -8,18 +8,24 @@
             >
                 <template #tags>
                     <a-tooltip title="Lấy dữ liệu mới nhất" v-if="id">
-                        <a-button type="primary" size="small" icon="reload" :loading="orderInfoLoading" @click="() => loadOrder(id)" />
+                        <a-button type="primary" size="small" :loading="orderInfoLoading" @click="() => loadOrder(id)">
+                            <template #icon><ReloadOutlined /></template>
+                        </a-button>
                     </a-tooltip>
                     <a-tooltip title="Xoá toàn bộ dữ liệu đang nhập" v-if="!orderId">
                         <a-popconfirm title="Xác nhận reset toàn bộ dữ liệu đang nhập?" @confirm="() => this.formData.id = (this.formData.id === undefined) ? null : undefined">
-                            <a-button type="primary" danger size="small" icon="delete" />
+                            <a-button type="primary" danger size="small">
+                                <template #icon><DeleteOutlined /></template>
+                            </a-button>
                         </a-popconfirm>
                     </a-tooltip>
                 </template>
                 <template #extra>
                     <template v-if="id">
                         <a-tooltip title="In hoá đơn">
-                            <a-button type="primary" icon="printer" @click="() => printOrder()" />
+                            <a-button type="primary" @click="() => printOrder()">
+                                <template #icon><PrinterOutlined /></template>
+                            </a-button>
                         </a-tooltip>
                     </template>
                 </template>
@@ -32,7 +38,9 @@
                     </a-descriptions-item>
                     <a-descriptions-item label="Người cập nhật" v-if="orderInfo.updated_user">
                         <span>{{ orderInfo.updated_user_id }}. {{ orderInfo.updated_user.name }}</span>
-                        <a-button icon="search" size="small" @click="() => { currentUserId = orderInfo.updated_user_id; userEditPageVisible = true; }" />
+                        <a-button size="small" @click="() => { currentUserId = orderInfo.updated_user_id; userEditPageVisible = true; }">
+                            <template #icon><SearchOutlined /></template>
+                        </a-button>
                     </a-descriptions-item>
                 </a-descriptions>
             </a-page-header>
@@ -70,18 +78,24 @@
                     <a-row :gutter="8">
                         <a-col :span="12">
                             <a-input-search v-model:value="formData.customer_id" readOnly @search="() => { currentUserId = formData.customer_id; userEditPageVisible = true; }">
-                                <a-button icon="search" #enterButton />
+                                <template #enterButton>
+                                    <a-button>
+                                        <template #icon><SearchOutlined /></template>
+                                    </a-button>
+                                </template>
                             </a-input-search>
                         </a-col>
                         <a-col :span="8">
                             <a-tooltip title="Chọn từ danh sách">
-                                <a-button type="primary" icon="user" @click="() => {
+                                <a-button type="primary" @click="() => {
                                     userIndexPageFinish = (recordData) => {
                                         formData.customer_id = recordData.id;
                                         orderInfo.customer = recordData;
                                     };
                                     userIndexPageVisible = true;
-                                }">Chọn</a-button>
+                                }">
+                                    <template #icon><UserOutlined /></template> Chọn
+                                </a-button>
                             </a-tooltip>
                         </a-col>
                     </a-row>
@@ -93,14 +107,18 @@
                     <template #extra>
                         <a @click="() => formData.order_products.push(cloneDeep(order_product_obj))">
                             <a-tooltip title="Thêm sản phẩm">
-                                <a-button type="primary" icon="plus" />
+                                <a-button type="primary">
+                                    <template #icon><PlusOutlined /></template> Chọn
+                                </a-button>
                             </a-tooltip>
                         </a>
                     </template>
                     <a-card :title="`Sản phẩm #${pIdx}`" v-for="(op, pIdx) in formData.order_products" :key="`op-${op.id || Math.random()}`" style="margin-bottom: 16px;" :headStyle="{backgroundColor:'#f18e1f',color:'#FFF'}">
                         <template #extra>
                             <a-popconfirm v-if="!op.id" title="Chắc chắn muốn xóa?" @confirm="() => formData.order_products.splice(pIdx, 1)">
-                                <a-button type="primary" danger icon="delete"></a-button>
+                                <a-button type="primary" danger>
+                                    <template #icon><DeleteOutlined /></template>
+                                </a-button>
                             </a-popconfirm>
                         </template>
                         <a-form-item
@@ -115,18 +133,24 @@
                                         currentProductId = op.product_id;
                                         productEditPageVisible = true;
                                     }">
-                                        <a-button icon="search" #enterButton />
+                                        <template #enterButton>
+                                            <a-button>
+                                                <template #icon><SearchOutlined /></template>
+                                            </a-button>
+                                        </template>
                                     </a-input-search>
                                 </a-col>
                                 <a-col :span="8">
                                     <a-tooltip v-if="!op.id || (op.id <= 0) || (authUser.role === UserRole.ROLE_ADMIN_MASTER)" title="Chọn từ danh sách">
-                                        <a-button type="primary" icon="shopping-cart" @click="() => {
+                                        <a-button type="primary" @click="() => {
                                             productIndexPageFinish = (recordData) => {
                                                 op.product_id = recordData.id;
                                                 op.product = recordData;
                                             };
                                             productIndexPageVisible = true;
-                                        }">Chọn</a-button>
+                                        }">
+                                            <template #icon><ShoppingCartOutlined /></template> Chọn
+                                        </a-button>
                                     </a-tooltip>
                                 </a-col>
                             </a-row>
@@ -147,7 +171,9 @@
                             <template #extra>
                                 <a @click="() => op.order_product_stocks.push(cloneDeep(order_product_stock_obj))">
                                     <a-tooltip title="Chọn thêm hàng từ kho">
-                                        <a-button type="primary" icon="plus" />
+                                        <a-button type="primary">
+                                            <template #icon><PlusOutlined /></template> Chọn
+                                        </a-button>
                                     </a-tooltip>
                                 </a>
                             </template>
@@ -174,18 +200,24 @@
                                                     currentStockId = ps.stock_id;
                                                     stockEditPageVisible = true;
                                                 }">
-                                                    <a-button icon="search" #enterButton />
+                                                    <template #enterButton>
+                                                        <a-button>
+                                                            <template #icon><SearchOutlined /></template>
+                                                        </a-button>
+                                                    </template>
                                                 </a-input-search>
                                             </a-col>
                                             <a-col :span="8">
                                                 <a-tooltip v-if="!ps.id || (ps.id <= 0)" title="Chọn từ danh sách">
-                                                    <a-button type="primary" icon="bank" @click="() => {
+                                                    <a-button type="primary" @click="() => {
                                                         stockIndexPageFinish = (recordData) => {
                                                             ps.stock_id = recordData.id;
                                                             ps.stock = recordData;
                                                         };
                                                         stockIndexPageVisible = true
-                                                    }">Chọn</a-button>
+                                                    }">
+                                                        <template #icon><BankOutlined /></template> Chọn
+                                                    </a-button>
                                                 </a-tooltip>
                                             </a-col>
                                         </a-row>
@@ -212,11 +244,15 @@
                                 <template #action slot-scope="text, ps, psIdx">
                                     <a @click="() => ps.transactions.push({...transaction_obj})">
                                         <a-tooltip title="Thêm giao dịch">
-                                            <a-button type="primary" icon="plus" />
+                                            <a-button type="primary">
+                                                <template #icon><PlusOutlined /></template>
+                                            </a-button>
                                         </a-tooltip>
                                     </a>
                                     <a-popconfirm v-if="!ps.id" title="Chắc chắn muốn xóa?" @confirm="() => op.order_product_stocks.splice(psIdx, 1)">
-                                        <a-button type="primary" danger icon="delete" />
+                                        <a-button type="primary" danger>
+                                            <template #icon><DeleteOutlined /></template>
+                                        </a-button>
                                     </a-popconfirm>
                                 </template>
                                 <template #expandedRowRender slot-scope="ops, psIdx">
@@ -259,7 +295,9 @@
                                         </template>
                                         <template #action slot-scope="value, pst, pstIdx">
                                             <a-popconfirm v-if="!pst.id" title="Chắc chắn muốn xóa?" @confirm="() => ops.transactions.splice(pstIdx,1)">
-                                                <a-button type="primary" danger icon="delete" />
+                                                <a-button type="primary" danger>
+                                                    <template #icon><DeleteOutlined /></template>
+                                                </a-button>
                                             </a-popconfirm>
                                         </template>
                                     </a-table>
@@ -272,7 +310,9 @@
                     <template #extra>
                         <a @click="() => formData.transactions.push({...transaction_obj})">
                             <a-tooltip title="Thêm giao dịch">
-                                <a-button type="primary" icon="plus" />
+                                <a-button type="primary">
+                                    <template #icon><PlusOutlined /></template>
+                                </a-button>
                             </a-tooltip>
                         </a>
                     </template>
@@ -318,17 +358,15 @@
                         </template>
                         <template #action="{ text, record, index }">
                             <a-popconfirm v-if="!record.id" title="Chắc chắn muốn xóa?" @confirm="() => formData.transactions.splice(index,1)">
-                                <a-button type="primary" danger icon="delete" />
+                                <a-button type="primary" danger>
+                                    <template #icon><DeleteOutlined /></template>
+                                </a-button>
                             </a-popconfirm>
                         </template>
                     </a-table>
                 </a-card>
                 <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: (['xs','sm','md'].indexOf($grid.breakpoint) !== -1) ? 0 : 4 }">
-                    <a-button
-                        type="primary" htmlType="submit"
-                        block
-                        size="large"
-                    >{{ id ? 'Sửa' : 'Tạo đơn' }}</a-button>
+                    <a-button type="primary" htmlType="submit" block size="large">{{ id ? 'Sửa' : 'Tạo đơn' }}</a-button>
                 </a-form-item>
             </a-form>
         </a-spin>
@@ -396,7 +434,14 @@
 </template>
 
 <script>
+import { defineAsyncComponent, reactive, ref } from 'vue';
 import moment from 'moment';
+
+import {
+    PrinterOutlined, BankOutlined, ShoppingCartOutlined,
+    PlusOutlined, ReloadOutlined, DeleteOutlined,
+    UserOutlined, SearchOutlined,
+} from '@ant-design/icons-vue';
 
 import UserRole from '../../configs/UserRole';
 import OrderStatus, { Config as configOrderStatus } from '../../configs/OrderStatus';
@@ -482,13 +527,36 @@ export default {
         orderId: Number,
     },
     components: {
-        UserIndex: () => import('../users/Index'),
-        UserEdit: () => import('../users/Edit'),
-        ProductIndex: () => import('../products/Index'),
-        ProductEdit: () => import('../products/Edit'),
-        StockIndex: () => import('../stocks/Index'),
-        StockEdit: () => import('../stocks/Edit'),
+        UserIndex: defineAsyncComponent(() => import('../users/Index')),
+        UserEdit: defineAsyncComponent(() => import('../users/Edit')),
+        ProductIndex: defineAsyncComponent(() => import('../products/Index')),
+        ProductEdit: defineAsyncComponent(() => import('../products/Edit')),
+        StockIndex: defineAsyncComponent(() => import('../stocks/Index')),
+        StockEdit: defineAsyncComponent(() => import('../stocks/Edit')),
+
+        PrinterOutlined, BankOutlined, ShoppingCartOutlined,
+        PlusOutlined, ReloadOutlined, DeleteOutlined,
+        UserOutlined, SearchOutlined,
     },
+
+    setup() {
+        const ruleForm = ref();
+        const formData = reactive({
+            id: undefined,
+            deal_date: moment(),
+            note: undefined,
+            customer_id: undefined,
+            order_products: [],
+            status: OrderStatus.STS_PROCESSING,
+            transactions: [],
+        });
+
+        return {
+            ruleForm,
+            formData,
+        };
+    },
+
     data() {
         return {
             userIndexPageVisible: false,
@@ -515,15 +583,6 @@ export default {
             product_stockTableColumns,
 
             orderInfoLoading: false,
-            formData: {
-                id: undefined,
-                deal_date: moment(),
-                note: undefined,
-                customer_id: undefined,
-                order_products: [],
-                status: OrderStatus.STS_PROCESSING,
-                transactions: [],
-            },
             rules: {
                 status: {required: true},
                 note: {required: true},
