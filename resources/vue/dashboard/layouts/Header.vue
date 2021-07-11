@@ -1,5 +1,5 @@
 <template>
-    <a-layout-header :style="{ background: '#fff', padding: 0 }">
+    <a-layout-header :style="{ padding: 0 }">
         <a-menu
             mode="horizontal"
             :selectedKeys="[$route.path]"
@@ -12,7 +12,7 @@
             <a-menu-item>
                 <a href="/" target="_blank">Trang Chủ</a>
             </a-menu-item>
-            <a-menu-item key="--" style="float:right;">
+            <a-menu-item key="--">
                 <a-dropdown>
                     <a @click="e => e.preventDefault()">
                         <UserOutlined /> {{ userName }}<DownOutlined />
@@ -64,26 +64,27 @@ export default {
             this.$emit('onSetSidebarCollapsed', !this.sideBarCollapsed);
         },
         logout(){
-            const self = this;
             const modal = this.$confirm({
-                title: 'Chú ý',
                 content: 'Chắc chắn muốn đăng xuất chứ?',
-                onOk() {
+                onOk: () => {
                     return axios.post('/logout')
                         .then(res => {
-                        User.clear();
+                            User.clear();
 
-                        self.$router.push({ path: '/login' });
+                            modal.destroy();
 
-                        self.$message.success('Đăng xuất thành công');
+                            this.$router.push({ path: '/login' });
+
+                            this.$message.success('Đăng xuất thành công');
                         })
-                        .catch(res => {
-                        console.log(res);
-                        self.$message.error('Đăng xuất thất bại');
+                        .catch(err => {
+                            if (err.response && err.response.data.message) {
+                                this.$message.error(err.response.data.message);
+                                return;
+                            }
+
+                            this.$message.error(err.message || 'Thất bại');
                         })
-                        .finally(res => {
-                        modal.destroy();
-                        });
                 },
             });
         },

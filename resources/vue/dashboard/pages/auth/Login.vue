@@ -59,6 +59,7 @@ import { reactive, ref, } from 'vue';
 
 import User from '../../utils/User';
 import UserRole from '../../configs/UserRole';
+import RequestHttp from '../../utils/RequestHttp';
 import RequestApi from '../../utils/RequestApi';
 
 import {
@@ -78,10 +79,14 @@ export default {
         });
 
         return {
-            loggingIn: false,
-
             ruleForm,
             formData,
+        };
+    },
+
+    data() {
+        return {
+            loggingIn: false,
             rules: {
                 email: [
                     { required: true, trigger: 'blur' },
@@ -92,47 +97,47 @@ export default {
             },
         };
     },
-    mounted(){
-    },
+
     methods: {
-        async onFinish() {
-            try {
-                this.loggingIn = true;
+        onFinish() {
+            this.loggingIn = true;
 
-                // this.$Progress.start();
+            // this.$Progress.start();
 
-                // Refresh CSRF
-                await RequestApi.get('/sanctum/csrf-cookie');
+            // Refresh CSRF
+            RequestHttp.get('/sanctum/csrf-cookie')
+                .then(async res => {
+                    // Login
+                    await RequestHttp.post('/login', this.formData);
 
-                // Login
-                await RequestApi.post('/login', this.formData);
+                    // Check permission
+                    const userApiRequest = await RequestApi.get('/user');
+                    const userData = userApiRequest.data;
+                    if (userData.role >= UserRole.ROLE_ADMIN_MANAGER) {
+                        User.setInfo(userData);
 
-                // Check permission
-                const userApiRequest = await RequestApi.get('/api/user');
-                const userData = userApiRequest.data;
-                if (userData.role >= UserRole.ROLE_ADMIN_MANAGER) {
-                    User.setInfo(userData);
+                        // this.$Progress.finish();
 
-                    // this.$Progress.finish();
+                        this.$router.push({path: '/'});
+                    } else {
+                        this.$message.error('Bạn không có quyền hạn truy cập trang này');
 
-                    this.$router.push({path: '/'});
-                } else {
-                    this.$message.error('Bạn không có quyền hạn truy cập trang này');
-
+                        // this.$Progress.fail();
+                    }
+                })
+                .catch(err => {
                     // this.$Progress.fail();
-                }
-            } catch (err) {
-                // this.$Progress.fail();
 
-                if (err.response && err.response.message) {
-                    this.$message.error(err.response.message);
-                    return;
-                }
+                    if (err.response && err.response.message) {
+                        this.$message.error(err.response.message);
+                        return;
+                    }
 
-                this.$message.error(err.message || 'Thất bại');
-            } finally {
-                this.loggingIn = false;
-            }
+                    this.$message.error(err.message || 'Thất bại');
+                })
+                .finally(() => {
+                    this.loggingIn = false;
+                });
         },
     },
 }
