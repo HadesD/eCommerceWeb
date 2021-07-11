@@ -15,20 +15,24 @@
             >
                 <template #tags>
                     <a-tooltip title="Lấy dữ liệu mới nhất" v-if="id">
-                        <a-button type="primary" size="small" icon="reload" :loading="productInfoLoading" @click="() => loadProduct(id)" />
+                        <a-button type="primary" size="small" :loading="productInfoLoading" @click="() => loadProduct(id)">
+                            <template #icon><ReloadOutlined /></template>
+                        </a-button>
                     </a-tooltip>
                     <a-tooltip title="Xoá toàn bộ dữ liệu đang nhập" v-if="!productId">
                         <a-popconfirm title="Xác nhận reset toàn bộ dữ liệu đang nhập?" @confirm="() => this.formData.id = (this.formData.id === undefined) ? null : undefined">
-                            <a-button type="primary" danger size="small" icon="delete" />
+                            <a-button type="primary" danger size="small">
+                                <template #icon><DeleteOutlined /></template>
+                            </a-button>
                         </a-popconfirm>
                     </a-tooltip>
                 </template>
                 <a-descriptions size="small" :column="1" v-if="id">
                     <a-descriptions-item label="Ngày tạo">
-                        <span>{{ productInfo.created_at }}</span>
+                        <span>{{ date_format(productInfo.created_at) }}</span>
                     </a-descriptions-item>
                     <a-descriptions-item label="Ngày cập nhật">
-                        <span>{{ productInfo.updated_at }}</span>
+                        <span>{{ date_format(productInfo.updated_at) }}</span>
                     </a-descriptions-item>
                 </a-descriptions>
             </a-page-header>
@@ -36,44 +40,38 @@
                 ref="ruleForm"
                 :model="formData"
                 :rules="rules"
+                @finish="onFinish"
                 :label-col="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) === -1) ? {span: 4} : {}"
                 :wrapper-col="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) === -1) ? {span: 14} : {}"
             >
                 <a-form-item label="Tên sản phẩm" name="name">
-                    <a-input
-                        @change="onNameChanged"
-                        v-model="formData.name"
-                    />
+                    <a-input @change="onNameChanged" v-model:value="formData.name" />
                 </a-form-item>
                 <a-form-item label="Đường dẫn URL (Slug)" name="slug">
-                    <a-input
-                        v-model="formData.slug"
-                    />
+                    <a-input v-model:value="formData.slug" />
                 </a-form-item>
-                <a-form-item label="Giá bán" name="price"
-                    :help="`Xem trước: ${number_format(formData.price || 0)} ₫`"
-                >
+                <a-form-item label="Giá bán" name="price" :help="`Xem trước: ${number_format(formData.price || 0)} ₫`">
                     <a-input-number
-                        v-model="formData.price"
+                        v-model:value="formData.price"
                         style="width: 100%;"
                         :min="0"
                         :max="2000000000"
                     />
                 </a-form-item>
                 <a-form-item label="Trạng thái" name="status">
-                    <a-select
-                        v-model="formData.status"
-                    >
+                    <a-select v-model:value="formData.status">
                         <a-select-option v-for="codeSts in Object.keys(configProductStatus)" :key="codeSts" :value="parseInt(codeSts)">{{ configProductStatus[codeSts].name }}</a-select-option>
                     </a-select>
                 </a-form-item>
                 <a-form-item label="Chuyên mục cha">
                     <a-form-item style="display: inline-block; margin-right: 5px;">
                         <a-tooltip title="Thêm chuyên mục">
-                            <a-button type="primary" icon="plus" @click="showAddCategoryModal" />
+                            <a-button type="primary" @click="showAddCategoryModal">
+                                <template #icon><PlusOutlined /></template>
+                            </a-button>
                         </a-tooltip>
                     </a-form-item>
-                    <a-form-item prop="categories_id" :style="{ display: 'inline-block', width: 'calc(100% - 80px)' }">
+                    <a-form-item name="categories_id" :style="{ display: 'inline-block', width: 'calc(100% - 80px)' }">
                         <a-spin :spinning="categoriesTreeLoading">
                             <a-tree-select
                                 show-search
@@ -82,7 +80,7 @@
                                 tree-data-simple-mode
                                 treeDefaultExpandAll
                                 treeNodeFilterProp="title"
-                                v-model="formData.categories_id"
+                                v-model:value="formData.categories_id"
                                 style="width: 100%"
                                 :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
                                 :tree-data="categoriesTreeData"
@@ -93,7 +91,9 @@
                     </a-form-item>
                     <a-form-item style="display: inline-block; margin-left: 5px;">
                         <a-tooltip title="Làm mới">
-                            <a-button type="primary" icon="reload" @click="reloadCategoriesTree" :loading="categoriesTreeLoading" />
+                            <a-button type="primary" @click="reloadCategoriesTree" :loading="categoriesTreeLoading">
+                                <template #icon><ReloadOutlined /></template>
+                            </a-button>
                         </a-tooltip>
                     </a-form-item>
                 </a-form-item>
@@ -101,7 +101,7 @@
                     <a-tab-pane key="description" tab="Mô tả ngắn">
                         <a-form-item label="Mô tả ngắn">
                             <a-textarea
-                                v-model="formData.description"
+                                v-model:value="formData.description"
                                 ref="description"
                                 placeholder="Nhập mô tả"
                                 :auto-size="{ minRows: 3, maxRows: 10 }"
@@ -111,7 +111,7 @@
                     <a-tab-pane key="detail" tab="Chi tiết sản phẩm">
                         <a-form-item label="Mô tả ngắn">
                             <a-textarea
-                                v-model="formData.detail"
+                                v-model:value="formData.detail"
                                 ref="detail"
                                 placeholder="Nhập mô tả"
                                 :auto-size="{ minRows: 3, maxRows: 10 }"
@@ -121,7 +121,7 @@
                     <a-tab-pane key="specification" tab="Thông số sản phẩm">
                         <a-form-item label="Mô tả ngắn">
                             <a-textarea
-                                v-model="formData.specification"
+                                v-model:value="formData.specification"
                                 ref="specification"
                                 placeholder="Nhập mô tả"
                                 :auto-size="{ minRows: 3, maxRows: 10 }"
@@ -130,18 +130,21 @@
                     </a-tab-pane>
                 </a-tabs>
                 <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: (['xs','sm','md'].indexOf($grid.breakpoint) !== -1) ? 0 : 4 }">
-                    <a-button
-                        type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate(valid => { if (valid) onFinish() })"
-                        block
-                    >{{ id ? 'Sửa' : 'Đăng bán' }}</a-button>
+                    <a-button type="primary" htmlType="submit" block>{{ id ? 'Sửa' : 'Đăng bán' }}</a-button>
                 </a-form-item>
             </a-form>
         </a-spin>
     </div>
 </template>
 <script>
+import { defineAsyncComponent, reactive, ref } from 'vue';
+
+import {
+    PlusOutlined, ReloadOutlined, DeleteOutlined,
+} from '@ant-design/icons-vue';
+
 import ProductStatus, { Config as configProductStatus } from '../../configs/ProductStatus';
-import { vietnameseNormalize, number_format } from '../../../helpers';
+import { vietnameseNormalize, number_format, date_format } from '../../../helpers';
 import RequestRepository from '../../utils/RequestRepository';
 
 export default {
@@ -149,17 +152,14 @@ export default {
         productId: Number,
     },
     components: {
-        AddCategoryModal: () => import('../../components/AddCategoryModal.vue'),
-    },
-    data() {
-        return {
-            categoriesTreeLoading: false,
-            addCategoryModalVisible: false,
-            categories: [],
+        AddCategoryModal: defineAsyncComponent(() => import('../../components/AddCategoryModal.vue')),
 
-            productInfo: {},
-            productInfoLoading: false,
-            formData: {
+        PlusOutlined, ReloadOutlined, DeleteOutlined,
+    },
+
+    setup() {
+        const ruleForm = ref();
+        const formData = reactive({
                 id: undefined,
                 name: undefined,
                 slug: undefined,
@@ -169,7 +169,22 @@ export default {
                 specification: undefined,
                 price: undefined,
                 status: ProductStatus.STS_DRAFT,
-            },
+            });
+
+        return {
+            ruleForm,
+            formData,
+        };
+    },
+
+    data() {
+        return {
+            categoriesTreeLoading: false,
+            addCategoryModalVisible: false,
+            categories: [],
+
+            productInfo: {},
+            productInfoLoading: false,
             rules: {
                 name: [
                     { required: true },
@@ -232,6 +247,7 @@ export default {
     },
     methods: {
         number_format,
+        date_format,
 
         loadCategoriesTree(){
             this.reloadCategoriesTree();
@@ -316,6 +332,8 @@ export default {
                     }
 
                     this.$message.success(productId ? 'Đã sửa sản phẩm thành công' : 'Đã thêm sản phẩm thành công');
+
+                    this.$emit('productUpdated', productId);
 
                     this.loadProduct(this.formData.id);
                 })

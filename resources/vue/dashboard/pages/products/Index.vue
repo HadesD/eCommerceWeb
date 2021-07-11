@@ -124,7 +124,7 @@
             :footer="false"
             width="98vw"
         >
-            <ProductEdit :productId="currentProductId" />
+            <ProductEdit :productId="currentProductId" @productUpdated="(productId) => loadProducts({})" />
         </a-modal>
     </a-row>
 </template>
