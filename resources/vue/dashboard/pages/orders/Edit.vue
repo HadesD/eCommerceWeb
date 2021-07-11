@@ -256,7 +256,7 @@
                                         </a-button>
                                     </a-popconfirm>
                                 </template>
-                                <template #expandedRowRender="{ record: ops }">
+                                <template #expandedRowRender="{ record: ops, index: psIdx }">
                                     <a-table
                                         :columns="addon_transactionsTableColumns"
                                         :data-source="ops.transactions"
