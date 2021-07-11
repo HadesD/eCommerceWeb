@@ -27,10 +27,10 @@
                 </a-tooltip>
             </template>
         </a-page-header>
-            <!-- :scroll="($grid.xs || $grid.sm || $grid.md) ? { x: 1300, y: '85vh' } : {}" -->
+            <!-- :scroll="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? { x: 1300, y: '85vh' } : {}" -->
         <a-table
             defaultExpandAllRows
-            :size="($grid.xs || $grid.sm || $grid.md) ? 'small' : 'default'"
+            :size="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? 'small' : 'default'"
             :columns="ordersTableColumns"
             :data-source="ordersTableData"
             :loading="ordersTableLoading"

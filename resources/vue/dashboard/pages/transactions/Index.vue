@@ -13,8 +13,8 @@
             </template>
         </a-page-header>
         <a-table
-            :scroll="($grid.xs || $grid.sm || $grid.md) ? { x: 1300, y: '85vh' } : {}"
-            :size="($grid.xs || $grid.sm || $grid.md) !== -1 ? 'small' : 'default'"
+            :scroll="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? { x: 1300, y: '85vh' } : {}"
+            :size="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) !== -1 ? 'small' : 'default'"
             :columns="transactionsTableColumns"
             :data-source="transactionsTableData"
             :loading="transactionsTableLoading"

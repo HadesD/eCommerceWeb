@@ -27,8 +27,8 @@
             ref="ruleForm"
             :model="formData"
             :rules="rules"
-            :label-col="($grid.xs || $grid.sm || $grid.md) ? { span: 4 } : {}"
-            :wrapper-col="($grid.xs || $grid.sm || $grid.md) ? { span: 20 } : {}"
+            :label-col="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? { span: 4 } : {}"
+            :wrapper-col="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? { span: 20 } : {}"
         >
             <a-form-item label="Họ tên" name="name">
                 <a-input v-model:value="formData.name" />
@@ -50,7 +50,7 @@
                     <a-select-option v-for="userRole in Object.keys(configUserRole)" :key="userRole" :value="parseInt(userRole)" :disabled="!authUser.hasPermission(UserRole.ROLE_ADMIN_MASTER) && (parseInt(userRole) >= UserRole.ROLE_ADMIN_MASTER)">{{ configUserRole[userRole].name }}</a-select-option>
                 </a-select>
             </a-form-item>
-            <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: ($grid.xs || $grid.sm || $grid.md) ? 0 : 4 }">
+            <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: (['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? 0 : 4 }">
                 <a-button
                     type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })"
                     block
