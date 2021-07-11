@@ -20,7 +20,7 @@
                         </a-button>
                     </a-tooltip>
                     <a-tooltip title="Xoá toàn bộ dữ liệu đang nhập" v-if="!stockId">
-                        <a-popconfirm title="Xác nhận reset toàn bộ dữ liệu đang nhập?" @confirm="() => this.formData.id = (this.formData.id === undefined) ? null : undefined">
+                        <a-popconfirm title="Xác nhận reset toàn bộ dữ liệu đang nhập?" @confirm="() => formData.id = (formData.id === undefined) ? null : undefined">
                             <a-button type="primary" danger size="small">
                                 <template #icon><DeleteOutlined /></template>
                             </a-button>
@@ -540,8 +540,6 @@ export default {
                     }
 
                     this.$message.error(err.message || 'Thất bại');
-                })
-                .finally(()=>{
                 });
         },
 
@@ -564,28 +562,19 @@ export default {
                 .then(res => {
                     const sData = res.data.data;
 
-                    if (stockId) {
-                        this.$message.success('Đã sửa sản phẩm thành công');
+                    this.$message.success(stockId ? 'Đã sửa sản phẩm thành công' : 'Đã thêm sản phẩm thành công');
 
-                        this.loadStock(sData.id);
-                    } else {
-                        this.$message.success('Đã thêm sản phẩm thành công');
-
-                        if (this.stockId === undefined) {
-                            this.$router.push({ path: `/stocks/${sData.id}/edit` });
-                        }
-                    }
+                    this.loadStock(sData.id);
                 })
                 .catch(err => {
                     this.stockInfoLoading = false;
+
                     if (err.response && err.response.data && err.response.data.message) {
                         this.$message.error(err.response.data.message);
                         return;
                     }
 
                     this.$message.error(err.message || 'Thất bại');
-                })
-                .finally(()=>{
                 });
         },
 

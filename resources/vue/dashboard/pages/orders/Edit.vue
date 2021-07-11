@@ -762,8 +762,6 @@ export default {
                     }
 
                     this.$message.error(err.message || 'Thất bại');
-                })
-                .finally(()=>{
                 });
         },
 
