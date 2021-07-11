@@ -3,7 +3,7 @@
         title="Hướng dẫn quản lí các loại Hoá đơn / Giao dịch trong tiệm"
         sub-title="Cập nhật: 2021/04/13"
     />
-    <a-collapse :activeKey="['/orders/new']">
+    <a-collapse default-active-key="/orders/new">
         <a-collapse-panel key="/orders/new" header="Tạo hoá đơn khi Bán hàng">
             <h3>Truy cập trang <router-link to="/orders/new">Tạo đơn</router-link></h3>
             <ul>

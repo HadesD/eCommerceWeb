@@ -33,6 +33,10 @@ let routes = [
                 component: () => import('../pages/orders/Index.vue'),
             },
             {
+                path: '/orders/new',
+                component: () => import('../pages/orders/Edit.vue'),
+            },
+            {
                 path: '/users',
                 component: () => import('../pages/users/Index.vue'),
             },
