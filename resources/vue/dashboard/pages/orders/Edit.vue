@@ -12,7 +12,7 @@
                     </a-tooltip>
                     <a-tooltip title="Xoá toàn bộ dữ liệu đang nhập" v-if="!orderId">
                         <a-popconfirm title="Xác nhận reset toàn bộ dữ liệu đang nhập?" @confirm="() => this.formData.id = (this.formData.id === undefined) ? null : undefined">
-                            <a-button type="danger" size="small" icon="delete" />
+                            <a-button type="primary" danger size="small" icon="delete" />
                         </a-popconfirm>
                     </a-tooltip>
                 </template>
@@ -100,7 +100,7 @@
                     <a-card :title="`Sản phẩm #${pIdx}`" v-for="(op, pIdx) in formData.order_products" :key="`op-${op.id || Math.random()}`" style="margin-bottom: 16px;" :headStyle="{backgroundColor:'#f18e1f',color:'#FFF'}">
                         <template #extra>
                             <a-popconfirm v-if="!op.id" title="Chắc chắn muốn xóa?" @confirm="() => formData.order_products.splice(pIdx, 1)">
-                                <a-button type="danger" icon="delete"></a-button>
+                                <a-button type="primary" danger icon="delete"></a-button>
                             </a-popconfirm>
                         </template>
                         <a-form-item
@@ -216,7 +216,7 @@
                                         </a-tooltip>
                                     </a>
                                     <a-popconfirm v-if="!ps.id" title="Chắc chắn muốn xóa?" @confirm="() => op.order_product_stocks.splice(psIdx, 1)">
-                                        <a-button type="danger" icon="delete" />
+                                        <a-button type="primary" danger icon="delete" />
                                     </a-popconfirm>
                                 </template>
                                 <template #expandedRowRender slot-scope="ops, psIdx">
@@ -259,7 +259,7 @@
                                         </template>
                                         <template #action slot-scope="value, pst, pstIdx">
                                             <a-popconfirm v-if="!pst.id" title="Chắc chắn muốn xóa?" @confirm="() => ops.transactions.splice(pstIdx,1)">
-                                                <a-button type="danger" icon="delete" />
+                                                <a-button type="primary" danger icon="delete" />
                                             </a-popconfirm>
                                         </template>
                                     </a-table>
@@ -318,7 +318,7 @@
                         </template>
                         <template #action slot-scope="text, record, index">
                             <a-popconfirm v-if="!record.id" title="Chắc chắn muốn xóa?" @confirm="() => formData.transactions.splice(index,1)">
-                                <a-button type="danger" icon="delete" />
+                                <a-button type="primary" danger icon="delete" />
                             </a-popconfirm>
                         </template>
                     </a-table>

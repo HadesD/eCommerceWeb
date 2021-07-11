@@ -19,7 +19,7 @@
                     </a-tooltip>
                     <a-tooltip title="Xoá toàn bộ dữ liệu đang nhập" v-if="!productId">
                         <a-popconfirm title="Xác nhận reset toàn bộ dữ liệu đang nhập?" @confirm="() => this.formData.id = (this.formData.id === undefined) ? null : undefined">
-                            <a-button type="danger" size="small" icon="delete" />
+                            <a-button type="primary" danger size="small" icon="delete" />
                         </a-popconfirm>
                     </a-tooltip>
                 </template>
