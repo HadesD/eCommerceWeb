@@ -2,7 +2,9 @@
     <div>
         <a-row :gutter="8" style="margin-bottom: 15px;">
             <a-col :offset="20" :span="4">
-                <a-button type="primary" icon="reload" :loading="loading" style="float: right;" @click="() => loadStatistic()" />
+                <a-button type="primary" :loading="loading" style="float: right;" @click="() => loadStatistic()">
+                    <template #icon><ReloadOutlined /></template>
+                </a-button>
             </a-col>
         </a-row>
         <a-spin :spinning="loading">
@@ -44,8 +46,8 @@
                         <a-statistic title="Tổng Lãi Thực sau nợ" :value="statistics.transaction.real_amount_total_after_debt" suffix="₫" />
                     </a-col>
                     <a-col :span="19" :lg="19" :md="24" :sm="24" :xs="24">
-                        <!-- <line-chart :height="150" type="line" :chart-data="datacollectionNear30days" :options="chartOptionsNear30days" />
-                        <line-chart :height="150" type="line" :chart-data="datacollectionTotal" :options="chartOptionsTotal" /> -->
+                        <line-chart :height="150" type="line" :data="datacollectionNear30days" :options="chartOptionsNear30days" />
+                        <line-chart :height="150" type="line" :data="datacollectionTotal" :options="chartOptionsTotal" />
                     </a-col>
                 </a-row>
             </a-card>
@@ -54,12 +56,18 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from 'vue';
+import {
+    ReloadOutlined,
+} from '@ant-design/icons-vue';
+
 import { number_format } from '../../helpers';
 import RequestRepository from '../utils/RequestRepository';
 
 export default {
     components: {
-        LineChart: () => import('../utils/LineChart'),
+        LineChart: defineAsyncComponent(() => import('../utils/LineChart')),
+        ReloadOutlined,
     },
     data(){
         return {
