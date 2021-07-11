@@ -142,6 +142,7 @@
 </template>
 <script>
 import { defineAsyncComponent } from 'vue';
+
 import {
     SearchOutlined, DownloadOutlined, PlusOutlined,
     ReloadOutlined, ShoppingCartOutlined, EditOutlined,

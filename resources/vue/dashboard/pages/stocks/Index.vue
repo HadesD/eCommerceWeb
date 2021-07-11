@@ -1,18 +1,20 @@
 <template>
     <a-row :gutter="16">
-        <!-- <AddCategoryModal
+        <AddCategoryModal
             :visible="addCategoryModalVisible"
             :categories="categories"
             :categoriesTreeLoading="categoriesTreeLoading"
             @handleOk="addCategoryModalHandleOk"
             @handleCancel="addCategoryModalHandleCancel"
             @updateCategories="updateCategories"
-        /> -->
+        />
         <a-col :span="4" :lg="4" :md="24" :sm="24" :xs="24">
             <a-page-header title="Chuyên mục">
                 <template #extra>
                     <a-tooltip title="Thêm chuyên mục">
-                        <a-button type="primary" icon="plus" @click="showAddCategoryModal" />
+                        <a-button type="primary" @click="showAddCategoryModal">
+                            <template #icon><PlusOutlined /></template>
+                        </a-button>
                     </a-tooltip>
                 </template>
             </a-page-header>
@@ -31,21 +33,27 @@
             <a-page-header title="Kho hàng">
                 <template #tags>
                     <a-tooltip title="Làm mới">
-                        <a-button type="primary" icon="reload" :loading="stocksTableLoading" @click="() => loadStocks({})" />
+                        <a-button type="primary" :loading="stocksTableLoading" @click="() => loadStocks({})">
+                            <template #icon><ReloadOutlined /></template>
+                        </a-button>
                     </a-tooltip>
                 </template>
                 <template #extra>
                     <a-tooltip title="Tải CSV">
-                        <a-button type="primary" icon="download" :disabled="stocks.length <= 0" @click="() => download()" />
+                        <a-button type="primary" :disabled="stocks.length <= 0" @click="() => download()">
+                            <template #icon><DownloadOutlined /></template>
+                        </a-button>
                     </a-tooltip>
                     <a-tooltip title="Nhập kho">
-                        <a-button type="primary" icon="plus" @click="() => { currentStockId = null; stockEditPageVisible = true; }" />
+                        <a-button type="primary" @click="() => { currentStockId = null; stockEditPageVisible = true; }">
+                            <template #icon><PlusOutlined /></template>
+                        </a-button>
                     </a-tooltip>
                 </template>
             </a-page-header>
+                <!-- :size="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? 'small' : 'default'" -->
             <a-table
                 :scroll="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? { x: 1300, y: '85vh' } : {}"
-                :size="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? 'small' : 'default'"
                 :columns="stocksTableColumns"
                 :data-source="stocksTableData"
                 :loading="stocksTableLoading"
@@ -73,7 +81,9 @@
                             size="small"
                             style="width: 90px; margin-right: 8px"
                             @click="() => {confirm();}"
-                        ><template #icon><SearchOutlined /></template> Tìm</a-button>
+                        >
+                            <template #icon><SearchOutlined /></template> Tìm
+                        </a-button>
                         <a-button size="small" style="width: 90px" @click="() => {setSelectedKeys([]);clearFilters();}">Reset</a-button>
                     </div>
                 </template>
@@ -83,19 +93,21 @@
                 <!-- Block Search: END -->
 
                 <template #price="{ text }">
-                    <div style="text-align:right;">{{ number_format(value || 0) }} ₫</div>
+                    <div style="text-align:right;">{{ number_format(text || 0) }} ₫</div>
                 </template>
                 <template #quantity="{ text }">
-                    <a-tag :color="(value > 0) ? 'green' : 'red'">{{ value }}</a-tag>
+                    <a-tag :color="(text > 0) ? 'green' : 'red'">{{ text }}</a-tag>
                 </template>
                 <template #categories="{ text }">
-                    <a-tag v-for="category in value" :key="category.id">{{ category.name }}</a-tag>
+                    <a-tag v-for="category in text" :key="category.id">{{ category.name }}</a-tag>
                 </template>
                 <template #tester="{ text, record }">
-                    <div v-if="value && record.tester">
+                    <div v-if="text && record.tester">
                         <div>
-                            <span>#{{ value }}. {{ record.tester.name }}</span>
-                            <a-button icon="search" @click="() => { currentUserId = value; userEditPageVisible = true; }" size="small" />
+                            <span>#{{ text }}. {{ record.tester.name }}</span>
+                            <a-button @click="() => { currentUserId = text; userEditPageVisible = true; }" size="small">
+                                <template #icon><SearchOutlined /></template>
+                            </a-button>
                         </div>
                         <div>Phone: {{ record.tester.phone || 'Chưa có' }}</div>
                     </div>
@@ -105,18 +117,24 @@
                     <div>Update: {{ date_format(record.updated_at) }}</div>
                     <div v-if="record.updated_user">
                         <span>Cuối bởi: {{ record.updated_user.name }}</span>
-                        <a-button icon="search" @click="() => { currentUserId = record.updated_user_id; userEditPageVisible = true; }" size="small" />
+                        <a-button @click="() => { currentUserId = record.updated_user_id; userEditPageVisible = true; }" size="small">
+                            <template #icon><SearchOutlined /></template>
+                        </a-button>
                     </div>
                 </template>
                 <template #action="{ record }">
                     <template v-if="!onFinishSelect">
-                        <a-button type="primary" icon="edit" @click="() => { currentStockId = record.id; stockEditPageVisible = true; }" />
+                        <a-button type="primary" @click="() => { currentStockId = record.id; stockEditPageVisible = true; }">
+                            <template #icon><EditOutlined /></template>
+                        </a-button>
                     </template>
                     <template v-else>
                         <a-button
-                            type="primary" icon="bank" @click="() => onFinishSelect(record)"
+                            type="primary" @click="() => onFinishSelect(record)"
                             :disabled="record.quantity <= 0"
-                        >Chọn</a-button>
+                        >
+                            <template #icon><BankOutlined /></template> Chọn
+                        </a-button>
                     </template>
                 </template>
             </a-table>
@@ -143,6 +161,14 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from 'vue';
+
+import {
+    SearchOutlined, DownloadOutlined, PlusOutlined,
+    ReloadOutlined, ShoppingCartOutlined, EditOutlined,
+    BankOutlined,
+} from '@ant-design/icons-vue';
+
 import { number_format, date_format } from '../../../helpers';
 import RequestRepository from '../../utils/RequestRepository';
 
@@ -232,9 +258,13 @@ export default {
         onFinishSelect: Function,
     },
     components: {
-        AddCategoryModal: () => import('../../components/AddCategoryModal.vue'),
-        UserEdit: () => import('../users/Edit'),
-        StockEdit: () => import('../stocks/Edit'),
+        AddCategoryModal: defineAsyncComponent(() => import('../../components/AddCategoryModal.vue')),
+        UserEdit: defineAsyncComponent(() => import('../users/Edit')),
+        StockEdit: defineAsyncComponent(() => import('../stocks/Edit')),
+
+        SearchOutlined, DownloadOutlined, PlusOutlined,
+        ReloadOutlined, ShoppingCartOutlined, EditOutlined,
+        BankOutlined,
     },
     data() {
         return {
