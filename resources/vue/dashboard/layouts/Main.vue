@@ -42,8 +42,7 @@ export default {
             return this.isMobileSize ? 0 : 80;
         },
         isMobileSize(){
-            const mq = this.$grid;
-            return ['sm', 'md'].indexOf(mq.breakpoint) !== -1;
+            return (['xs', 'sm', 'md'].indexOf(this.$grid.breakpoint) !== -1);
         },
     },
     mounted(){
