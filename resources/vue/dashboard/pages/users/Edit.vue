@@ -5,11 +5,15 @@
     >
         <template #tags>
             <a-tooltip title="Lấy dữ liệu mới nhất" v-if="id">
-                <a-button type="primary" size="small" icon="reload" :loading="userInfoLoading" @click="() => loadUser(id)" />
+                <a-button type="primary" size="small" :loading="userInfoLoading" @click="() => loadUser(id)">
+                    <template #icon><ReloadOutlined /></template>
+                </a-button>
             </a-tooltip>
             <a-tooltip title="Xoá toàn bộ dữ liệu đang nhập" v-if="!userId">
                 <a-popconfirm title="Xác nhận reset toàn bộ dữ liệu đang nhập?" @confirm="() => this.formData.id = (this.formData.id === undefined) ? null : undefined">
-                    <a-button type="danger" size="small" icon="delete" />
+                    <a-button type="danger" size="small">
+                        <template #icon><DeleteOutlined /></template>
+                    </a-button>
                 </a-popconfirm>
             </a-tooltip>
         </template>
@@ -27,8 +31,10 @@
             ref="ruleForm"
             :model="formData"
             :rules="rules"
-            :label-col="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? { span: 4 } : {}"
-            :wrapper-col="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? { span: 20 } : {}"
+            @finish="onFinish"
+            :label-col="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) === -1) ? { span: 4 } : {}"
+            :wrapper-col="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) === -1) ? { span: 20 } : {}"
+            :layout="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) === -1) ? 'horizontal' : 'vertical'"
         >
             <a-form-item label="Họ tên" name="name">
                 <a-input v-model:value="formData.name" />
@@ -50,9 +56,9 @@
                     <a-select-option v-for="userRole in Object.keys(configUserRole)" :key="userRole" :value="parseInt(userRole)" :disabled="!authUser.hasPermission(UserRole.ROLE_ADMIN_MASTER) && (parseInt(userRole) >= UserRole.ROLE_ADMIN_MASTER)">{{ configUserRole[userRole].name }}</a-select-option>
                 </a-select>
             </a-form-item>
-            <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 16, offset: (['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1) ? 0 : 4 }">
+            <a-form-item :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }">
                 <a-button
-                    type="primary" htmlType="submit" @click="() => $refs.ruleForm.validate((valid) => { if (valid) onFinish() })"
+                    type="primary" htmlType="submit"
                     block
                     size="large"
                     :disabled="id && !authUser.hasPermission(this.userInfo.role)"
@@ -64,7 +70,11 @@
     </a-spin>
 </template>
 <script>
-import { ref } from 'vue';
+import { reactive, ref, } from 'vue';
+
+import {
+    ReloadOutlined, DeleteOutlined,
+} from '@ant-design/icons-vue';
 
 import UserRole, { Config as configUserRole } from '../../configs/UserRole';
 import User from '../../utils/User';
@@ -74,8 +84,12 @@ export default {
     props: {
         userId: Number,
     },
+    components: {
+        ReloadOutlined, DeleteOutlined,
+    },
     setup() {
-        const formData = ref({
+        const ruleForm = ref();
+        const formData = reactive({
             id: undefined,
             name: undefined,
             email: undefined,
@@ -88,11 +102,16 @@ export default {
         });
 
         return {
+            ruleForm,
+            formData,
+        };
+    },
+    data() {
+        return {
             userInfoLoading: false,
 
             userInfo: {},
 
-            formData,
             rules: {
                 name: [
                     { required: true },
