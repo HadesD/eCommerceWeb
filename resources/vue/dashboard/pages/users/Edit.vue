@@ -19,10 +19,10 @@
         </template>
         <a-descriptions size="small" :column="1" v-if="id">
             <a-descriptions-item label="Ngày tạo">
-                <span>{{ userInfo.created_at }}</span>
+                <span>{{ date_format(userInfo.created_at) }}</span>
             </a-descriptions-item>
             <a-descriptions-item label="Ngày cập nhật">
-                <span>{{ userInfo.updated_at }}</span>
+                <span>{{ date_format(userInfo.updated_at) }}</span>
             </a-descriptions-item>
         </a-descriptions>
     </a-page-header>
@@ -62,9 +62,7 @@
                     block
                     size="large"
                     :disabled="id && !authUser.hasPermission(this.userInfo.role)"
-                >
-                    {{ id ? 'Sửa' : 'Tạo' }}
-                </a-button>
+                >{{ id ? 'Sửa' : 'Tạo' }}</a-button>
             </a-form-item>
         </a-form>
     </a-spin>
@@ -77,6 +75,7 @@ import {
 } from '@ant-design/icons-vue';
 
 import UserRole, { Config as configUserRole } from '../../configs/UserRole';
+import { date_format } from '../../../helpers';
 import User from '../../utils/User';
 import RequestRepository from '../../utils/RequestRepository';
 
@@ -163,6 +162,8 @@ export default {
         },
     },
     methods: {
+        date_format,
+
         loadUser(id) {
             this.userInfoLoading = true;
             RequestRepository.get(`/users/${id}`)
