@@ -21,7 +21,7 @@
                         <a-tree-select
                             show-search
                             allow-clear
-                            v-model="formData.parent_id"
+                            v-model:value="formData.parent_id"
                             tree-data-simple-mode
                             treeDefaultExpandAll
                             treeNodeFilterProp="title"

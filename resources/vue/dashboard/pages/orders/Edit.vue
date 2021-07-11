@@ -44,7 +44,7 @@
                 :wrapper-col="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) === -1) ? { span: 14 } : {}"
             >
                 <a-form-item label="Trạng thái" name="status">
-                    <a-select v-model="formData.status">
+                    <a-select v-model:value="formData.status">
                         <a-select-option v-for="stsCode in Object.keys(configOrderStatus)" :key="stsCode" :value="parseInt(stsCode)">{{ configOrderStatus[stsCode].name }}</a-select-option>
                     </a-select>
                 </a-form-item>
@@ -55,7 +55,7 @@
                     :rules="{required:true}"
                 >
                     <a-date-picker
-                        v-model="formData.deal_date"
+                        v-model:value="formData.deal_date"
                         format="YYYY-MM-DD HH:mm:ss"
                         show-time
                         type="date"
@@ -69,7 +69,7 @@
                 >
                     <a-row :gutter="8">
                         <a-col :span="12">
-                            <a-input-search v-model="formData.customer_id" readOnly @search="() => { currentUserId = formData.customer_id; userEditPageVisible = true; }">
+                            <a-input-search v-model:value="formData.customer_id" readOnly @search="() => { currentUserId = formData.customer_id; userEditPageVisible = true; }">
                                 <a-button icon="search" #enterButton />
                             </a-input-search>
                         </a-col>
@@ -87,7 +87,7 @@
                     </a-row>
                 </a-form-item>
                 <a-form-item label="Ghi chú" name="note">
-                    <a-textarea v-model="formData.note" placeholder="Tên khách hàng, loại thanh toán, chi phí sinh hoạt, lương nhân viên, v..v" />
+                    <a-textarea v-model:value="formData.note" placeholder="Tên khách hàng, loại thanh toán, chi phí sinh hoạt, lương nhân viên, v..v" />
                 </a-form-item>
                 <a-card title="Sản phẩm đặt mua" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#9800ab',color:'#FFF'}">
                     <template #extra>
@@ -111,7 +111,7 @@
                         >
                             <a-row :gutter="8">
                                 <a-col :span="12">
-                                    <a-input-search v-model="op.product_id" readOnly @search="() => {
+                                    <a-input-search v-model:value="op.product_id" readOnly @search="() => {
                                         currentProductId = op.product_id;
                                         productEditPageVisible = true;
                                     }">
@@ -136,12 +136,12 @@
                             :rules="{required:true,message:'Không được để trống'}"
                             :name="'order_products.'+pIdx+'.payment_method'"
                         >
-                            <a-select v-model="op.payment_method">
+                            <a-select v-model:value="op.payment_method">
                                 <a-select-option v-for="methodCode in Object.keys(configPaymentMethod)" :key="methodCode" :value="parseInt(methodCode)">{{ configPaymentMethod[methodCode].name }}</a-select-option>
                             </a-select>
                         </a-form-item>
                         <a-form-item label="Số lượng muốn đặt ban đầu">
-                            <a-input-number v-model="op.quantity" style="width: 100%;" :min="1" :disabled="op.product ? true : false" />
+                            <a-input-number v-model:value="op.quantity" style="width: 100%;" :min="1" :disabled="op.product ? true : false" />
                         </a-form-item>
                         <a-card title="Xuất kho" style="margin-bottom:16px;" :headStyle="{backgroundColor:'#680075',color:'#FFF'}" :bodyStyle="{padding:0}">
                             <template #extra>
@@ -170,7 +170,7 @@
                                     >
                                         <a-row :gutter="8">
                                             <a-col :span="12">
-                                                <a-input-search v-model="ps.stock_id" readOnly @search="() => {
+                                                <a-input-search v-model:value="ps.stock_id" readOnly @search="() => {
                                                     currentStockId = ps.stock_id;
                                                     stockEditPageVisible = true;
                                                 }">
@@ -193,7 +193,7 @@
                                 </template>
                                 <template #status slot-scope="value, ps, psIdx">
                                     <a-form-item :name="`order_products.${pIdx}.order_product_stocks.${psIdx}.status`" style="min-width: 150px;">
-                                        <a-select v-model="ps.status" :disabled="!ps.id || (ps.id <= 0)">
+                                        <a-select v-model:value="ps.status" :disabled="!ps.id || (ps.id <= 0)">
                                             <a-select-option v-for="stsCode in Object.keys(configOrderProductStockStatus)" :key="stsCode" :value="parseInt(stsCode)">{{ configOrderProductStockStatus[stsCode].name }}</a-select-option>
                                         </a-select>
                                     </a-form-item>
@@ -205,7 +205,7 @@
                                         style="margin-bottom:0;"
                                         :help="`Xem trước: ${number_format(ps.amount || 0)} ₫`"
                                     >
-                                        <a-input-number v-model="ps.amount" style="width: 100%;" :min="0" :max="2000000000" />
+                                        <a-input-number v-model:value="ps.amount" style="width: 100%;" :min="0" :max="2000000000" />
                                     </a-form-item>
                                     <div>Đã thanh toán: <a-tag :color="(ps.id ? ((ps.stock.cost_price > ps.amount) ? ps.stock.cost_price : ps.amount) : ps.amount) >= 0 ? 'green' : 'red'">{{ ps.transactions.reduce((a, b) => parseInt(a) + (parseInt(b.amount) || 0), 0) }}</a-tag></div>
                                 </template>
@@ -233,7 +233,7 @@
                                                 :rules="[{required:true,message:'Không được để trống'}, {min:10,message:'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 10 ký tự)'}]"
                                                 :name="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.description'" style="margin-bottom:0;"
                                             >
-                                                <a-input v-model="pst.description" placeholder="Trả góp, trả thẳng, thanh toán sản phẩm ABC, vv..vv" type="textarea" />
+                                                <a-input v-model:value="pst.description" placeholder="Trả góp, trả thẳng, thanh toán sản phẩm ABC, vv..vv" type="textarea" />
                                             </a-form-item>
                                         </template>
                                         <template #amount slot-scope="value, pst, pstIdx">
@@ -242,7 +242,7 @@
                                                 :name="'order_products.'+pIdx+'.order_product_stocks.'+psIdx+'.transactions.'+pstIdx+'.amount'" style="margin-bottom:0;"
                                                 :help="`Xem trước: ${number_format(pst.amount || 0)} ₫`"
                                             >
-                                                <a-input-number v-model="pst.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(pst, UserRole.ROLE_ADMIN_MASTER)" />
+                                                <a-input-number v-model:value="pst.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(pst, UserRole.ROLE_ADMIN_MASTER)" />
                                             </a-form-item>
                                         </template>
                                         <template #paid_date slot-scope="value, pst, pstIdx">
@@ -252,7 +252,7 @@
                                                 help="Ngày thanh toán sẽ liên kết trực tiếp tới tiền lãi/thu của tháng đó"
                                             >
                                                 <a-date-picker
-                                                    v-model="pst.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" :disabled="disabledField(pst)"
+                                                    v-model:value="pst.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" :disabled="disabledField(pst)"
                                                     :disabledDate="disabledLastMonthAndTomorrow"
                                                 />
                                             </a-form-item>
@@ -285,38 +285,38 @@
                         size="small"
                         bordered
                     >
-                        <template #description slot-scope="text, record, index">
+                        <template #description="{ text, record, index }">
                             <a-form-item
                                 :rules="[{required:true,message:'Không được để trống'}, {min:10,message:'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 10 ký tự)'}]"
                                 :name="`transactions.${index}.description`" style="margin-bottom:0;"
                             >
-                                <a-input v-model="record.description" placeholder="Mã giảm giá, phí ship, v..v" type="textarea" />
+                                <a-input v-model:value="record.description" placeholder="Mã giảm giá, phí ship, v..v" type="textarea" />
                             </a-form-item>
                         </template>
-                        <template #amount slot-scope="text, record, index">
+                        <template #amount="{ text, record, index }">
                             <a-form-item
                                 :rules="{required:true,message:'Không được để trống'}"
                                 :name="`transactions.${index}.amount`"
                                 style="margin-bottom:0;"
                                 :help="`Xem trước: ${number_format(record.amount || 0)} ₫`"
                             >
-                                <a-input-number v-model="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(record, UserRole.ROLE_ADMIN_MASTER)" />
+                                <a-input-number v-model:value="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(record, UserRole.ROLE_ADMIN_MASTER)" />
                             </a-form-item>
                         </template>
-                        <template #paid_date slot-scope="text, record, index">
+                        <template #paid_date="{ text, record, index }">
                             <a-form-item
                                 :rules="{required:true,message:'Không được để trống'}"
                                 :name="'transactions.'+index+'.paid_date'" style="margin-bottom:0;"
                                 help="Ngày thanh toán sẽ liên kết trực tiếp tới tiền lãi/thu của tháng đó"
                             >
                                 <a-date-picker
-                                    v-model="record.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date"
+                                    v-model:value="record.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date"
                                     :disabled="disabledField(record)"
                                     :disabledDate="disabledLastMonthAndTomorrow"
                                 />
                             </a-form-item>
                         </template>
-                        <template #action slot-scope="text, record, index">
+                        <template #action="{ text, record, index }">
                             <a-popconfirm v-if="!record.id" title="Chắc chắn muốn xóa?" @confirm="() => formData.transactions.splice(index,1)">
                                 <a-button type="primary" danger icon="delete" />
                             </a-popconfirm>

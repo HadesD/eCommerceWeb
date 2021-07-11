@@ -54,10 +54,10 @@
                 :wrapper-col="(['xs', 'sm', 'md'].indexOf($grid.breakpoint) === -1) ? {span: 14} : {}"
             >
                 <a-form-item label="Tên sản phẩm" name="name">
-                    <a-input v-model="formData.name" />
+                    <a-input v-model:value="formData.name" />
                 </a-form-item>
                 <a-form-item label="Id/Imei/Mã phân biệt" name="idi">
-                    <a-input v-model="formData.idi" />
+                    <a-input v-model:value="formData.idi" />
                 </a-form-item>
                 <a-form-item
                     label="Số lượng"
@@ -66,14 +66,14 @@
                         ((formData.quantity !== prev_quantity) ? 'Hệ thống sẽ tự động tạo giao dịch tương ứng với hành động tăng / giảm số lượng' : false)
                         : 'Hệ thống sẽ tự động tạo giao dịch tương ứng với số lượng nhập vào kho'"
                 >
-                    <a-input-number v-model="formData.quantity" :min="id ? 0 : 1" :max="200" />
+                    <a-input-number v-model:value="formData.quantity" :min="id ? 0 : 1" :max="200" />
                 </a-form-item>
                 <a-form-item
                     label="Giá nhập (Đơn giá)" name="cost_price"
                     :help="`Xem trước: ${number_format(formData.cost_price || 0)} ₫`"
                 >
                     <a-input-number
-                        v-model="formData.cost_price"
+                        v-model:value="formData.cost_price"
                         style="width: 100%;"
                         :min="1"
                         :max="2000000000"
@@ -84,7 +84,7 @@
                     :help="`Xem trước: ${number_format(formData.sell_price || 0)} ₫`"
                 >
                     <a-input-number
-                        v-model="formData.sell_price"
+                        v-model:value="formData.sell_price"
                         style="width: 100%;"
                         :min="formData.cost_price"
                         :max="2000000000"
@@ -96,7 +96,7 @@
                 >
                     <a-row :gutter="8">
                         <a-col :span="12">
-                            <a-input-search v-model="formData.tester_id" readOnly @search="() => { currentUserId = formData.tester_id; userEditPageVisible = true; }">
+                            <a-input-search v-model:value="formData.tester_id" readOnly @search="() => { currentUserId = formData.tester_id; userEditPageVisible = true; }">
                                 <template #enterButton>
                                     <a-button>
                                         <template #icon><SearchOutlined /></template>
@@ -115,7 +115,7 @@
                     <a-form-item style="display: inline-block; margin-right: 5px;">
                         <a-tooltip title="Thêm chuyên mục">
                             <a-button type="primary" @click="showAddCategoryModal">
-                                <template #icon><SearchOutlined /></template>
+                                <template #icon><PlusOutlined /></template>
                             </a-button>
                         </a-tooltip>
                     </a-form-item>
@@ -128,7 +128,7 @@
                                 tree-data-simple-mode
                                 treeDefaultExpandAll
                                 treeNodeFilterProp="title"
-                                v-model="formData.categories_id"
+                                v-model:value="formData.categories_id"
                                 style="width: 100%"
                                 :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
                                 :tree-data="categoriesTreeData"
@@ -146,7 +146,7 @@
                     </a-form-item>
                 </a-form-item>
                 <a-form-item label="Ghi chú">
-                    <a-textarea v-model="formData.note" />
+                    <a-textarea v-model:value="formData.note" />
                 </a-form-item>
                 <a-form-item
                     label="Ngày nhập / trả"
@@ -156,7 +156,7 @@
                     v-if="formData.quantity !== prev_quantity"
                 >
                     <a-date-picker
-                        v-model="formData.inout_date"
+                        v-model:value="formData.inout_date"
                         format="YYYY-MM-DD HH:mm:ss"
                         show-time
                         type="date"
@@ -182,7 +182,7 @@
                         :row-key="record => `addon-tnx-${record.id || Math.random()}`"
                         bordered
                     >
-                        <template #description slot-scope="text, record, index">
+                        <template #description="{ text, record, index }">
                             <a-form-item
                                 :rules="[
                                     {required:true,message:'Không được để trống'},
@@ -190,32 +190,32 @@
                                 ]"
                                 :name="`transactions.${index}.description`" style="margin-bottom:0;"
                             >
-                                <a-input v-model="record.description" placeholder="Mã giảm giá, phí ship, v..v" type="textarea" :disabled="disabledField(record)" />
+                                <a-input v-model:value="record.description" placeholder="Mã giảm giá, phí ship, v..v" type="textarea" :disabled="disabledField(record)" />
                             </a-form-item>
                         </template>
-                        <template #amount slot-scope="text, record, index">
+                        <template #amount="{ text, record, index }">
                             <a-form-item
                                 :rules="[{required:true,message:'Không được để trống'},{type:'integer'}]"
                                 :name="`transactions.${index}.amount`"
                                 style="margin-bottom:0;"
                                 :help="`Xem trước: ${number_format(record.amount || 0)} ₫`"
                             >
-                                <a-input-number v-model="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(record, UserRole.ROLE_ADMIN_MASTER)" />
+                                <a-input-number v-model:value="record.amount" style="width: 100%;" :min="-2000000000" :max="2000000000" :disabled="disabledField(record, UserRole.ROLE_ADMIN_MASTER)" />
                             </a-form-item>
                         </template>
-                        <template #paid_date slot-scope="text, record, index">
+                        <template #paid_date="{ text, record, index }">
                             <a-form-item
                                 :rules="{required:true,message:'Không được để trống'}"
                                 :name="'transactions.'+index+'.paid_date'" style="margin-bottom:0;"
                                 help="Ngày thanh toán sẽ liên kết trực tiếp tới tiền lãi/thu của tháng đó"
                             >
                                 <a-date-picker
-                                    v-model="record.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" :disabled="disabledField(record)"
+                                    v-model:value="record.paid_date" format="YYYY-MM-DD HH:mm:ss" show-time type="date" :disabled="disabledField(record)"
                                     :disabledDate="disabledLastMonthAndTomorrow"
                                 />
                             </a-form-item>
                         </template>
-                        <template #action slot-scope="text, record, index">
+                        <template #action="{ text, record, index }">
                             <a-popconfirm v-if="!record.id" title="Chắc chắn muốn xóa?" @confirm="() => formData.transactions.splice(index,1)">
                                 <a-button type="primary" danger>
                                     <template #icon><DeleteOutlined /></template>
