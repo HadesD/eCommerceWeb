@@ -24,6 +24,7 @@ yarn-error.log
 /public/public.zip
 /public.tar.gz
 ~*
-/composer.phar
+composer.phar
 *.orig
 package-lock.json
+composer.lock
