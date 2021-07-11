@@ -1,11 +1,8 @@
-import Vue from 'vue';
-import Router from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 
 import Main from '../layouts/Main';
 
 // const PagesRoute = () => import('./pages/index');
-
-Vue.use(Router);
 
 const RouteView = {
     render: (h) => h('router-view')
@@ -25,9 +22,8 @@ let routes = [
     },
 ];
 
-export default new Router({
-    // base: '/dashboard',
-    mode: 'history',
+export default createRouter({
+    // history: createWebHistory('/'),
     routes,
 });
 

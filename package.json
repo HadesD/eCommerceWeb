@@ -9,19 +9,19 @@
     },
     "devDependencies": {
         "@vue/compiler-sfc": "^3.1.4",
+        "@vue/server-renderer": "^3.1.4",
         "babel-plugin-import": "^1.13.3",
-        "browser-sync": "^2.26.14",
-        "browser-sync-webpack-plugin": "^2.2.2",
+        "browser-sync": "^2.27.4",
+        "browser-sync-webpack-plugin": "^2.3.0",
         "concurrently": "^6.2.0",
         "cross-env": "^7.0",
         "laravel-mix": "*",
-        "lodash": "^4.17.19",
-        "portal-vue": "^2.1.7",
-        "postcss-import": "^12.0.1",
-        "resolve-url-loader": "^3.1.0",
-        "sass": "^1.15.2",
-        "sass-loader": "^8.0.0",
-        "vue-loader": "^16.2.0"
+        "lodash": "^4.17.21",
+        "postcss-import": "^14.0.2",
+        "resolve-url-loader": "^3.1.4",
+        "sass": "^1.35.2",
+        "sass-loader": "^12.1.0",
+        "vue-loader": "^16.3.0"
     },
     "dependencies": {
         "@ant-design/icons-vue": "^6.0.1",

@@ -9,7 +9,7 @@ export default {
     async data() {
         let e = 111;
         try {
-            const a = await RequestRepository.get('/');
+            // const a = await RequestRepository.get('/');
         } catch (e) {
             e = e || 1;
         }

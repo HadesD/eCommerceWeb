@@ -16,18 +16,21 @@ let output = {
 };
 
 if (process.env.RENDER_TARGET === 'server') {
-    // output = {
-    //     ...output,
-    //     globalObject: 'this',
-    // };
+    output = {
+        ...output,
+        globalObject: 'this',
+    };
 
-    // mix.js('resources/vue/app-server.js', 'public/js')
-    //     .webpackConfig({
-    //         target: 'node',
-    //     });
+    mix.js('resources/vue/app-server.js', 'public/js')
+        .webpackConfig({
+            target: 'node',
+            resolve: {
+                mainFields: ["main", "module"]
+            },
+        });
 } else {
-    // mix.js('resources/vue/app-client.js', 'public/js');
-    // mix.sass('resources/vue/assets/app.scss', 'public/css');
+    mix.js('resources/vue/app-client.js', 'public/js');
+    mix.sass('resources/vue/assets/app.scss', 'public/css');
 
     mix.js('resources/vue/dashboard/app.js', 'public/js/dashboard');
     mix.sass('resources/vue/assets/dashboard/app.scss', 'public/css/dashboard');
