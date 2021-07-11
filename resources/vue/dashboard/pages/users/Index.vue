@@ -68,7 +68,7 @@
                     </a-button>
                 </template>
                 <template v-else>
-                    <a-button type="primary" icon="user" @click="() => onFinishSelect(record)">
+                    <a-button type="primary" @click="() => onFinishSelect(record)">
                         <template #icon><UserOutlined /></template> Chọn
                     </a-button>
                 </template>
