@@ -240,7 +240,7 @@
                                     >
                                         <a-input-number v-model:value="ps.amount" style="width: 100%;" :min="0" :max="2000000000" />
                                     </a-form-item>
-                                    <div>Đã thanh toán: <a-tag :color="(ps.id ? ((ps.stock.cost_price > ps.amount) ? ps.stock.cost_price : ps.amount) : ps.amount) >= 0 ? 'green' : 'red'">{{ ps.transactions.reduce((a, b) => parseInt(a) + (parseInt(b.amount) || 0), 0) }}</a-tag></div>
+                                    <div>Đã thanh toán: <a-tag :color="(ps.id ? ((ps.stock.cost_price > ps.amount) ? ps.stock.cost_price : ps.amount) : ps.amount) >= 0 ? 'green' : 'red'">{{ number_format(ps.transactions.reduce((a, b) => parseInt(a) + (parseInt(b.amount) || 0), 0)) }} ₫</a-tag></div>
                                 </template>
                                 <template #action="{ text, record: ps, index: psIdx }">
                                     <a @click="() => ps.transactions.push({...transaction_obj})">
