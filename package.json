@@ -1,7 +1,7 @@
 {
     "private": true,
     "scripts": {
-        "hot": "NODE_ENV=development concurrently \"cross-env RENDER_TARGET=server mix watch\" \"cross-env RENDER_TARGET=client mix watch --hot\"",
+        "start": "NODE_ENV=development concurrently \"cross-env RENDER_TARGET=server mix watch\" \"cross-env RENDER_TARGET=client mix watch --hot\"",
         "prod": "git clean -xdf public && NODE_ENV=production concurrently \"cross-env RENDER_TARGET=server mix\" \"cross-env RENDER_TARGET=client mix\" && tar zcvf public.tar.gz public/css public/js public/mix-manifest.json"
     },
     "devDependencies": {
