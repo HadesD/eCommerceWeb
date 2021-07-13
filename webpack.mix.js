@@ -40,12 +40,32 @@ if (process.env.RENDER_TARGET === 'server') {
     mix.js('resources/vue/dashboard/app.js', 'public/js/dashboard');
     mix.sass('resources/vue/assets/dashboard/app.scss', 'public/css/dashboard');
 
-    const HOST = 'rinphone.local'
-    mix.browserSync({
-        host: HOST,
-        proxy: HOST,
-        open: 'external',
-    });
+    // const HOST = 'rinphone.local'
+    // mix.browserSync({
+    //     host: HOST,
+    //     proxy: HOST,
+    //     // open: 'external',
+    //     open: false,
+    // });
+
+    // if (mix.inProduction()) {
+    //     mix.options({
+            // devServer: {
+            //     hot: true,
+            //     port: 3000,
+            // },
+            // hmrOptions: {
+            //     host: process.env.APP_URL.replace(/(^\w+:|^)\/\//, ''),
+            //     port: 3000,
+            // },
+        // });
+        // mix.webpackConfig({
+        //     devServer: {
+        //         hot: true,
+        //         port: 3000,
+        //     },
+        // })
+    // }
 }
 
 mix.vue();

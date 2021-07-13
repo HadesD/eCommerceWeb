@@ -1,7 +1,7 @@
 <template>
     <div id="app">
         <router-view></router-view>
-        ssfsf
+        sff
     </div>
 </template>
 <script>
