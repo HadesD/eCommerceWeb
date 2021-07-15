@@ -1,7 +1,6 @@
 {
     "include": [
-        "./resources/vue",
-        "./resources/dashboard",
+        "./resources/vue"
     ],
     "compilerOptions": {
         "module": "es2015",
