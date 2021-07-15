@@ -7,7 +7,7 @@ import RequestRepository from '../utils/RequestRepository';
 
 export default {
     data() {
-        let e = 111;
+        let e = 11;
         try {
             const a = RequestRepository.get('/');
         } catch (e) {
