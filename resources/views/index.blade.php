@@ -5,9 +5,10 @@
 @endpush
 @section('body.content')
     @php
-        $r = ssr('/js/app-server.js')->render();
+        $fallback = '<div id="app"></div>';
+        $r = ssr('/js/app-server.js')->fallback($fallback)->render();
     @endphp
-    {!! empty($r) ? '<div id="app"></div>' : $r !!}
+    {!! empty($r) ? $fallback : $r !!}
 @endsection
 @push('body.js')
     <script defer src="{{ mix('/js/app-client.js') }}" id="app-js"></script>

@@ -4,6 +4,10 @@ import { createRouter, createMemoryHistory } from 'vue-router';
 
 import routes from './configs/routes';
 import MainApp from './layouts/MainApp';
+import Antd from 'ant-design-vue';
+
+// Fix requestAnimationFrame is not defined
+global.requestAnimationFrame = cb => cb();
 
 const app = createSSRApp(MainApp);
 
@@ -12,6 +16,7 @@ const router = createRouter({
     routes,
 });
 
+app.use(Antd);
 app.use(router);
 
 (async () => {
