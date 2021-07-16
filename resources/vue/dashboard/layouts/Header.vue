@@ -1,10 +1,6 @@
 <template>
     <a-layout-header :style="{ padding: 0 }">
-        <a-menu
-            mode="horizontal"
-            :selectedKeys="[$route.path]"
-            :style="{ lineHeight: '64px' }"
-        >
+        <a-menu mode="horizontal" :selectedKeys="[$route.path]">
             <a-menu-item key="-" @click="sideBarCollapse">
                 <MenuUnfoldOutlined v-if="sideBarCollapsed" />
                 <MenuFoldOutlined v-else />
@@ -12,6 +8,8 @@
             <a-menu-item>
                 <a href="/" target="_blank">Trang Chủ</a>
             </a-menu-item>
+        </a-menu>
+        <a-menu mode="horizontal" style="position: absolute; top: 0; right: 0;">
             <a-menu-item key="--">
                 <a-dropdown>
                     <a @click="e => e.preventDefault()">
