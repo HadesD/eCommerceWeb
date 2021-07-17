@@ -11,25 +11,45 @@
                     </ul>
                 </a-typography-paragraph>
                 <a-typography-text type="secondary"><a href="https://goo.gl/maps/N1kXZFf5G77ZiV3q9" target="_blank"><AimOutlined /> ĐT637, Vĩnh Hảo, Vĩnh Thạnh, Bình Định</a></a-typography-text>
-                <a-divider />
-                <a-space>
-                    <a href="https://fb.me/rinphonevn">
-                        <a-button type="primary" shape="circle">
-                            <template #icon>
-                                <FacebookFilled />
-                            </template>
-                        </a-button>
-                    </a>
-                    <a href="">
-                        <a-button type="primary" danger shape="circle">
-                            <template #icon>
-                                <YoutubeFilled />
-                            </template>
-                        </a-button>
-                    </a>
-                </a-space>
+                <div style="margin: 10px 0;">
+                    <a-space>
+                        <a href="https://fb.me/rinphonevn" target="_blank">
+                            <a-button type="primary" shape="circle">
+                                <template #icon>
+                                    <FacebookFilled />
+                                </template>
+                            </a-button>
+                        </a>
+                        <a href="">
+                            <a-button type="primary" danger shape="circle">
+                                <template #icon>
+                                    <YoutubeFilled />
+                                </template>
+                            </a-button>
+                        </a>
+                    </a-space>
+                </div>
             </a-col>
-            <a-col :flex="3">3 / 5</a-col>
+            <a-col :flex="3">
+                <a-row type="flex">
+                    <a-col :flex="2">
+                        <a-space direction="vertical">
+                            <a-typography-title :level="5">Chuyên mục</a-typography-title>
+                            <a-typography-text>Điện thoại</a-typography-text>
+                            <a-typography-text>Phụ kiện</a-typography-text>
+                        </a-space>
+                    </a-col>
+                    <a-col :flex="2">
+                        <a-space direction="vertical">
+                            <a-typography-title :level="5">Chăm sóc Khách Hàng</a-typography-title>
+                            <a-typography-text>Quản lý tài khoản</a-typography-text>
+                            <a-typography-text>Theo dõi đơn hàng</a-typography-text>
+                            <a-typography-text>Dịch vụ Đổi / Trả</a-typography-text>
+                            <a-typography-text>Các câu hỏi thường gặp</a-typography-text>
+                        </a-space>
+                    </a-col>
+                </a-row>
+            </a-col>
         </a-row>
     </a-layout-footer>
     <a-layout-footer style="background-color:#fafafa;">
