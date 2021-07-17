@@ -16,10 +16,10 @@ let output = {
 };
 
 if (process.env.RENDER_TARGET === 'server') {
-    // output = {
-        // ...output,
-        // globalObject: 'this',
-    // };
+    output = {
+        ...output,
+        globalObject: 'this',
+    };
 
     mix.js('resources/vue/app-server.js', 'public/js')
         .webpackConfig({

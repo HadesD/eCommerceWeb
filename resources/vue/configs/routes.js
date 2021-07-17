@@ -1,14 +1,15 @@
-import Main from '../layouts/Main';
+import {
+    defineAsyncComponent,
+} from 'vue';
 
 let routes = [
     {
         path: '',
-        component: Main,
-        // redirect: '/',
+        component: defineAsyncComponent(() => import('../pages/Index')),
         children: [
             {
                 path: '/',
-                component: Main,
+                // component: Main,
             },
         ],
     },
