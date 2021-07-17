@@ -2,13 +2,13 @@
     <div id="app">
         <a-layout>
             <Header />
-            <a-layout-content style="padding: 0 50px;">
+            <a-layout-content style="padding: 0 50px;margin-bottom: 25px;">
                 <a-breadcrumb style="margin: 16px 0">
                     <a-breadcrumb-item>Home</a-breadcrumb-item>
                     <a-breadcrumb-item>List</a-breadcrumb-item>
                     <a-breadcrumb-item>App</a-breadcrumb-item>
                 </a-breadcrumb>
-                <div :style="{ background: '#fff', padding: '24px', minHeight: 'calc(100vh - 340px)' }">
+                <div :style="{ background: '#fff', padding: '24px', }">
                     <router-view></router-view>
                 </div>
             </a-layout-content>
