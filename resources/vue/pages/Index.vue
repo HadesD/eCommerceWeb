@@ -29,7 +29,7 @@
         </a-col>
         <a-col :flex="1">
             <a-card>
-                <a-card-meta title="Tặng kèm hấp dẫn" description="Khi mua hàng">
+                <a-card-meta title="Tặng kèm hấp dẫn" description="Quà tặng đa dạng">
                     <template #avatar>
                         <GiftOutlined style="font-size: 50px;" />
                     </template>
