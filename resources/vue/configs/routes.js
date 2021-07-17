@@ -1,11 +1,10 @@
-import {
-    defineAsyncComponent,
-} from 'vue';
+import Index from '../pages/Index';
 
 let routes = [
     {
         path: '',
-        component: defineAsyncComponent(() => import('../pages/Index')),
+        name: 'home',
+        component: Index,
         children: [
             {
                 path: '/',

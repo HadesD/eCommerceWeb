@@ -25,7 +25,7 @@ app.use(router);
         await router.isReady();
         dispatch(await renderToString(app));
     } catch (e) {
-        throw new Error(e);
-        // dispatch(e.message);
+        // throw new Error(e);
+        dispatch(e.stack);
     }
 })();
