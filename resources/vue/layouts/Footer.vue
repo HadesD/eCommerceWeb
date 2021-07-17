@@ -10,7 +10,7 @@
                         <li><a-typography-title :level="5">Đường dây nóng 2: <a href="tel:+84867575277">086-757-5277</a></a-typography-title></li>
                     </ul>
                 </a-typography-paragraph>
-                <a-typography-text type="secondary"><a href="https://goo.gl/maps/N1kXZFf5G77ZiV3q9" target="_blank"><AimOutlined /> ĐT637, Vĩnh Hảo, Vĩnh Thạnh, Bình Định</a></a-typography-text>
+                <a-typography-text type="secondary"><a href="https://goo.gl/maps/N1kXZFf5G77ZiV3q9" target="_blank"><EnvironmentFilled /> ĐT637, Vĩnh Hảo, Vĩnh Thạnh, Bình Định</a></a-typography-text>
                 <div style="margin: 10px 0;">
                     <a-space>
                         <a href="https://fb.me/rinphonevn" target="_blank">
@@ -66,14 +66,14 @@
 </template>
 <script>
 import {
-    AimOutlined, FacebookFilled, YoutubeFilled,
+    EnvironmentFilled, FacebookFilled, YoutubeFilled,
     CopyrightOutlined, CreditCardTwoTone,
     LeftCircleOutlined, RightCircleOutlined,
 } from '@ant-design/icons-vue';
 
 export default {
     components: {
-        AimOutlined, FacebookFilled, YoutubeFilled,
+        EnvironmentFilled, FacebookFilled, YoutubeFilled,
         CopyrightOutlined, CreditCardTwoTone,
         LeftCircleOutlined, RightCircleOutlined,
     },
