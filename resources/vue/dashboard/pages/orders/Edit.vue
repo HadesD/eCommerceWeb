@@ -267,7 +267,7 @@
                                     >
                                         <template #description="{ text: value, record: pst, index: pstIdx }">
                                             <a-form-item
-                                                :rules="[{required:true,message:'Không được để trống'}, {min:10,message:'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 10 ký tự)'}]"
+                                                :rules="[{required:true,message:'Không được để trống'}, {min:5,message:'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 5 ký tự)'}]"
                                                 :name="['order_products', pIdx, 'order_product_stocks', psIdx, 'transactions', pstIdx, 'description']" style="margin-bottom:0;"
                                             >
                                                 <a-input v-model:value="pst.description" placeholder="Trả góp, trả thẳng, thanh toán sản phẩm ABC, vv..vv" type="textarea" />
@@ -328,7 +328,7 @@
                     >
                         <template #description="{ text, record, index }">
                             <a-form-item
-                                :rules="[{required:true,message:'Không được để trống'}, {min:10,message:'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 10 ký tự)'}]"
+                                :rules="[{required:true,message:'Không được để trống'}, {min:5,message:'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 5 ký tự)'}]"
                                 :name="['transactions', index, 'description']" style="margin-bottom:0;"
                             >
                                 <a-input v-model:value="record.description" placeholder="Mã giảm giá, phí ship, v..v" type="textarea" />

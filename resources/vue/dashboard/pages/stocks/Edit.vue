@@ -186,7 +186,7 @@
                             <a-form-item
                                 :rules="[
                                     {required:true,message:'Không được để trống'},
-                                    {min:(record.id && (stockInfo.transactions[index].description.indexOf(`#${record.id}`) === -1) ? 0 : 10),message:'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 10 ký tự)'}
+                                    {min:(record.id && (stockInfo.transactions[index].description.indexOf(`#${record.id}`) === -1) ? 0 : 5),message:'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 5 ký tự)'}
                                 ]"
                                 :name="['transactions', index, 'description']" style="margin-bottom:0;"
                             >

@@ -3,7 +3,7 @@
         ref="formRef"
         @finish="onSearch"
     >
-    <a-form-item name="search_text" style="margin: 0;">
+    <a-form-item name="search_text">
         <a-input
             size="large"
             v-model:value="formState.search_text"
