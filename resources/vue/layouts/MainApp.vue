@@ -8,7 +8,7 @@
                     <a-breadcrumb-item>List</a-breadcrumb-item>
                     <a-breadcrumb-item>App</a-breadcrumb-item>
                 </a-breadcrumb>
-                <div :style="{ background: '#fff', padding: '24px', minHeight: 'calc(100vh - 166px)' }">
+                <div :style="{ background: '#fff', padding: '24px', minHeight: 'calc(100vh - 340px)' }">
                     <router-view></router-view>
                 </div>
             </a-layout-content>
