@@ -18,12 +18,8 @@
             </a-menu-item>
         </a-menu>
         <a-menu mode="horizontal" theme="dark" style="background-color: blueviolet;position: absolute; right: 0; top: 0; min-width: 245px;">
-            <a-menu-item key="1">
-                <UserOutlined /> Đăng ký
-            </a-menu-item>
-            <a-menu-item key="2">
-                <LockFilled /> Đăng nhập
-            </a-menu-item>
+            <a-menu-item key="1"><UserOutlined /> Đăng ký</a-menu-item>
+            <a-menu-item key="2"><LockFilled /> Đăng nhập</a-menu-item>
         </a-menu>
     </a-layout-header>
     <a-layout-content style="padding: 30px 50px;background-color:#FFF;">
@@ -40,7 +36,7 @@
             </a-col>
             <a-col :sm="{ span: 24 }" :lg="{ span: 8 }" style="text-align: right;">
                 <a-dropdown>
-                    <a-badge count="5">
+                    <a-badge :count="5">
                         <a-button type="primary" size="large">0 ₫ <ShoppingCartOutlined /></a-button>
                     </a-badge>
                     <template #overlay>
