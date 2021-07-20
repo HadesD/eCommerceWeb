@@ -1,7 +1,7 @@
 <template>
     <a-layout>
         <Header />
-        <a-layout-content style="padding: 0 50px;margin: 25px 0;">
+        <a-layout-content style="margin: 25px 0;">
             <div :style="{ background: '#fff', padding: '24px', }">
                 <router-view></router-view>
             </div>

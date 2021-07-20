@@ -22,8 +22,8 @@
             <a-menu-item key="2"><LockFilled /> Đăng nhập</a-menu-item>
         </a-menu>
     </a-layout-header>
-    <a-layout-content style="padding: 30px 50px;background-color:#FFF;">
-        <a-row>
+    <a-layout-content style="background-color:#FFF;">
+        <a-row style="padding: 30px 0;">
             <a-col :sm="{ span: 24 }" :lg="{ span: 16 }">
                 <a-row :gutter="10">
                     <a-col :xs="{ span: 12 }" :md="{ span: 10 }" :lg="{ span: 6 }" :xl="{ span: 5 }">

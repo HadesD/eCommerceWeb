@@ -1,1 +1,12 @@
 @import '~ant-design-vue/dist/antd.custom.css';
+
+main.ant-layout-content {
+    padding-left: 50px;
+    padding-right: 50px;
+}
+@media only screen and (max-width: 768px) {
+    main.ant-layout-content {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
