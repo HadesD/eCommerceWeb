@@ -23,7 +23,7 @@
         </a-menu>
     </a-layout-header>
     <a-layout-content style="background-color:#FFF;">
-        <a-row style="padding: 30px 0;">
+        <a-row style="padding: 30px 0 20px;">
             <a-col :sm="{ span: 24 }" :lg="{ span: 16 }">
                 <a-row :gutter="10">
                     <a-col :xs="{ span: 12 }" :md="{ span: 10 }" :lg="{ span: 6 }" :xl="{ span: 5 }">

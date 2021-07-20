@@ -74,7 +74,7 @@ export default {
                     const curVer = this.getAppVer(document);
                     const newVer = this.getAppVer(newAppDoc);
 
-                    if (curVer.css !== newVer.css || curVer.script !== newVer.script) {
+                    if ((curVer.css !== newVer.css) || (curVer.script !== newVer.script)) {
                         this.$notification.info({
                             message: 'Có phiên bản mới của website',
                             description: 'Cần tải lại trang để cập nhật',
