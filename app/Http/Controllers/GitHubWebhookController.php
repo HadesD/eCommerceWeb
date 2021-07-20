@@ -24,6 +24,10 @@ class GitHubWebhookController extends Controller
             exec('php artisan optimize', $output, $result_code);
         }
 
+        if ($result_code === 0) {
+            exec('php artisan view:cache', $output, $result_code);
+        }
+
         Log::info(sprintf('GitHubWebhook[%d]', $result_code), $output);
 
         return response($result_code, ($result_code === 0) ? 200 : 500);
