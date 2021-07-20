@@ -2,8 +2,8 @@
     "private": true,
     "scripts": {
         "less": "lessc resources/assets/antd-custom.less --js > node_modules/ant-design-vue/dist/antd.custom.css",
-        "start": "less && NODE_ENV=development concurrently \"cross-env RENDER_TARGET=server mix watch\" \"cross-env RENDER_TARGET=client mix watch --hot\"",
-        "prod": "git clean -xdf public && less && NODE_ENV=production concurrently \"cross-env RENDER_TARGET=server mix\" \"cross-env RENDER_TARGET=client mix\" && tar zcvf public.tar.gz public/css public/js public/mix-manifest.json"
+        "start": "npm run less && NODE_ENV=development concurrently \"cross-env RENDER_TARGET=server mix watch\" \"cross-env RENDER_TARGET=client mix watch --hot\"",
+        "prod": "git clean -xdf public && npm run less && NODE_ENV=production concurrently \"cross-env RENDER_TARGET=server mix\" \"cross-env RENDER_TARGET=client mix\" && tar zcvf public.tar.gz public/css public/js public/mix-manifest.json"
     },
     "devDependencies": {
         "@vue/compiler-sfc": "^3.1.4",
