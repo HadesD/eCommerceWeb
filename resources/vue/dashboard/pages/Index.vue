@@ -46,8 +46,8 @@
                         <a-statistic title="Tổng Lãi Thực sau nợ" :value="statistics.transaction.real_amount_total_after_debt" suffix="₫" />
                     </a-col>
                     <a-col :span="19" :lg="19" :md="24" :sm="24" :xs="24">
-                        <line-chart :height="150" type="line" :data="datacollectionNear30days" :options="chartOptionsNear30days" />
-                        <line-chart :height="150" type="line" :data="datacollectionTotal" :options="chartOptionsTotal" />
+                        <line-chart :height="150" type="line" :chartData="datacollectionNear30days" :options="chartOptionsNear30days" />
+                        <line-chart :height="150" type="line" :chartData="datacollectionTotal" :options="chartOptionsTotal" />
                     </a-col>
                 </a-row>
             </a-card>

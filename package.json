@@ -31,7 +31,7 @@
         "axios": "^0.21.1",
         "chart.js": "^3.4.1",
         "vue": "^3.1.4",
-        "vue-chart-3": "^0.4.1",
+        "vue-chart-3": "^0.4.5",
         "vue-progressbar": "^0.7.5",
         "vue-router": "^4.0.10",
         "vue-screen": "^2.0.3-alpha.3"
