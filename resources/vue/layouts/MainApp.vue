@@ -20,21 +20,5 @@ export default {
     components: {
         Header, Footer,
     },
-
-    setup() {
-        let e = 11;
-        try {
-            const a = RequestRepository.get('/');
-        } catch (e) {
-            e = e || 1;
-        }
-
-        return {
-            msg: e,
-        };
-    },
-
-    async mounted() {
-    },
 }
 </script>

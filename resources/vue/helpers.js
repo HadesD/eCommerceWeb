@@ -33,7 +33,28 @@ function cloneDeep(data) {
     return _.cloneDeep(data);
 }
 
+function list_to_tree(list, parentKey = 'parent_id') {
+    let map = {}, node, roots = [], i;
+
+    for (i = 0; i < list.length; i += 1) {
+        map[list[i].id] = i; // initialize the map
+        list[i].children = []; // initialize the children
+    }
+
+    for (i = 0; i < list.length; i += 1) {
+        node = list[i];
+        if (node[parentKey] !== 0) {
+            // if you have dangling branches check that map[node.parentId] exists
+            list[map[node[parentKey]]].children.push(node);
+        } else {
+            roots.push(node);
+        }
+    }
+    return roots;
+}
+
 export {
     vietnameseNormalize, number_format,
     date_format, cloneDeep,
+    list_to_tree,
 };

@@ -60,26 +60,26 @@
         </a-row>
     </a-layout-content>
     <a-layout-header style="background-color: #FFF;border-top: solid 1px #f2f2f2;box-shadow: 0px 5px 20px rgb(0 0 0 / 10%);">
-        <a-menu mode="horizontal">
-            <a-sub-menu>
+        <a-menu mode="horizontal" :selectedKeys="[$route.params?.category_slug]">
+            <a-sub-menu :disabled="!(categories.length > 0)">
                 <template #icon><MenuOutlined /></template>
                 <template #title>CHUYÊN MỤC <CaretDownOutlined /></template>
-                <a-menu-item-group title="Item 1">
-                    <a-menu-item key="setting:1">Option 1</a-menu-item>
-                    <a-menu-item key="setting:2">Option 2</a-menu-item>
-                </a-menu-item-group>
-                <a-menu-item-group title="Item 2">
-                    <a-menu-item key="setting:3">Option 3</a-menu-item>
-                    <a-menu-item key="setting:4">Option 4</a-menu-item>
-                </a-menu-item-group>
+
+                <TreeMenu :nodeData="categories" />
             </a-sub-menu>
-            <a-menu-item key="2">
+            <a-menu-item key="/">
                 <router-link to="/">Trang Chủ</router-link>
             </a-menu-item>
         </a-menu>
     </a-layout-header>
 </template>
 <script>
+import {
+  computed,
+    onMounted, ref,
+    h, resolveComponent,
+} from 'vue';
+
 import {
     FacebookFilled, PhoneFilled,
     UserOutlined, LockFilled,
@@ -89,21 +89,67 @@ import {
 
 import SearchProductForm from '../components/SearchProductForm';
 import RequestRepository from '../utils/RequestRepository';
+import { list_to_tree } from '../helpers';
+
+const TreeMenu = {
+    props: {
+        nodeData: Array,
+    },
+
+    render() {
+        const MenuItem = resolveComponent('a-menu-item');
+        const SubMenu = resolveComponent('a-sub-menu');
+        const RouterLink = resolveComponent('router-link');
+
+        const renderItem = (node) => {
+            const hasNode = node.children && (node.children.length > 0);
+            const slugLink = h(RouterLink, {
+                to: {
+                    name: 'category',
+                    params: {
+                        category_slug: node.slug,
+                    },
+                },
+            }, {
+                default: () => node.name,
+            });
+            return h(hasNode ? SubMenu : MenuItem, hasNode ? {
+                title: slugLink,
+            } : {
+                key: node.slug,
+            }, {
+                default: () => hasNode ? h(TreeMenu, {nodeData: node.children}) : slugLink,
+            });
+        };
+
+        return this.nodeData.map(node => renderItem(node));
+    },
+};
 
 export default {
     components: {
         FacebookFilled, PhoneFilled,
         UserOutlined, LockFilled,
         ShoppingCartOutlined, MenuOutlined,
-        CaretDownOutlined,
-        SearchProductForm,
+        CaretDownOutlined, SearchProductForm,
+
+        TreeMenu,
     },
 
     setup() {
         const cats = ref([]);
 
+        const categories = computed(() => list_to_tree(cats.value));
+
+        onMounted(() => {
+            RequestRepository.get('/categories')
+                .then(res => {
+                    cats.value = res.data.data;
+                });
+        });
+
         return {
-            cats,
+            categories,
         };
     },
 }
