@@ -88,6 +88,7 @@ import {
 } from '@ant-design/icons-vue';
 
 import SearchProductForm from '../components/SearchProductForm';
+import RequestRepository from '../utils/RequestRepository';
 
 export default {
     components: {
@@ -96,6 +97,14 @@ export default {
         ShoppingCartOutlined, MenuOutlined,
         CaretDownOutlined,
         SearchProductForm,
+    },
+
+    setup() {
+        const cats = ref([]);
+
+        return {
+            cats,
+        };
     },
 }
 </script>
