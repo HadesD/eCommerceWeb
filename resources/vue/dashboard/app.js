@@ -12,9 +12,7 @@ const app = createApp(MainApp);
 
 app.use(Antd);
 
-app.use(VueScreen, {
-    extend: 'bootstrap',
-});
+app.use(VueScreen, 'bootstrap');
 
 // app.use(VueProgressBar, {
 //     color: '#9254de',

@@ -10,12 +10,12 @@ let routes = [
         component: Index,
     },
     {
-        path: '/:slug',
+        path: '/:category_slug',
         name: 'category',
         component: Category,
     },
     {
-        path: '/:category_slug/:slug',
+        path: '/:category_slug/:product_slug',
         name: 'product',
         component: Product,
     },

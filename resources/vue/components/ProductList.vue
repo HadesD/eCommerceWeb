@@ -2,24 +2,34 @@
     <a-spin :spinning="loadingProductList">
         <a-row :gutter="16">
             <a-col :span="6" v-for="product in products?.data" key="product.id" style="margin-bottom: 16px;">
-                  <a-card hoverable>
-                    <template #cover>
-                        <img
-                            alt="example"
-                            src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-                        />
-                    </template>
-                    <template class="ant-card-actions" #actions>
-                        <setting-outlined key="setting" />
-                        <edit-outlined key="edit" />
-                        <ellipsis-outlined key="ellipsis" />
-                    </template>
-                    <a-card-meta :title="number_format(product.price) + ' ₫'" :description="product.name">
-                        <!-- <template #avatar>
-                            <a-avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
-                        </template> -->
-                    </a-card-meta>
-                </a-card>
+                <router-link
+                    :to="{
+                        name: 'product',
+                        params: {
+                            category_slug: $route.params.category_slug || product.categories[0].slug,
+                            product_slug: product.slug,
+                        }
+                    }"
+                >
+                    <a-card hoverable>
+                        <template #cover>
+                            <img
+                                alt="example"
+                                src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                            />
+                        </template>
+                        <template class="ant-card-actions" #actions>
+                            <setting-outlined key="setting" />
+                            <edit-outlined key="edit" />
+                            <ellipsis-outlined key="ellipsis" />
+                        </template>
+                        <a-card-meta :title="number_format(product.price) + ' ₫'" :description="product.name">
+                            <!-- <template #avatar>
+                                <a-avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+                            </template> -->
+                        </a-card-meta>
+                    </a-card>
+                </router-link>
             </a-col>
         </a-row>
 

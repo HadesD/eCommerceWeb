@@ -40,11 +40,11 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  Product  $product
+     * @param  string  $slug || $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product)
+    public function show($p)
     {
-        return new JsonResource($product);
+        return new JsonResource(Product::find($p) ?? Product::query()->where('slug', $p)->first());
     }
 }

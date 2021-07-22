@@ -60,7 +60,7 @@
         </a-row>
     </a-layout-content>
     <a-layout-header style="background-color: #FFF;border-top: solid 1px #f2f2f2;box-shadow: 0px 5px 20px rgb(0 0 0 / 10%);">
-        <a-menu mode="horizontal" :selectedKeys="[$route.params?.slug || '/']">
+        <a-menu mode="horizontal" :selectedKeys="[$route.params?.category_slug || '/']">
             <a-sub-menu :disabled="!(categories.length > 0)">
                 <template #icon><MenuOutlined /></template>
                 <template #title>CHUYÊN MỤC <CaretDownOutlined /></template>
@@ -107,7 +107,7 @@ const TreeMenu = {
                 to: {
                     name: 'category',
                     params: {
-                        slug: node.slug,
+                        category_slug: node.slug,
                     },
                 },
             }, {

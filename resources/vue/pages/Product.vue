@@ -1,12 +1,37 @@
 <template>
-    product
+    {{ product.name }}
 </template>
 <script>
+import { onMounted, ref, watch, } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
+
+import RequestRepository from '../utils/RequestRepository';
+
 export default {
     setup() {
-        console.log(useRouter());
-        console.log(useRoute());
+        const route = useRoute();
+
+        const product = ref({});
+
+        const loadProduct = () => {
+            RequestRepository.get('/products/' + route.params.product_slug)
+                .then(res => {
+                    product.value = res.data.data;
+                });
+        };
+
+        onMounted(() => {
+            loadProduct();
+        });
+
+        watch(
+            () => route.params.product_slug,
+            () => loadProduct()
+        );
+
+        return {
+            product,
+        };
     },
 }
 </script>

@@ -2,12 +2,11 @@
     <a-row :gutter="16">
         <a-col :span="4">
             <a-typography-paragraph>
-                <a-typography-title :level="5">Chuyên mục</a-typography-title>
+                <a-typography-title :level="4">Chuyên mục</a-typography-title>
                 <a-spin :spinning="loadingCategories">
                     <ul v-if="(categories.length > 0)">
                         <li v-for="cat in categories" :key="cat.id">
-
-                            <router-link :to="{ name: 'category', params: { slug: cat.slug } }">
+                            <router-link :to="{ name: 'category', params: { category_slug: cat.slug } }">
                                 <a-typography-text type="secondary">{{ cat.name }}</a-typography-text>
                             </router-link>
                         </li>
@@ -18,7 +17,7 @@
         </a-col>
         <a-col :span="20">
             <ProductList
-                :categorySlug="$route.params?.slug"
+                :categorySlug="$route.params?.category_slug"
             />
         </a-col>
     </a-row>
@@ -28,6 +27,8 @@ import {
     onMounted, ref, watch
 } from 'vue';
 import { useRoute, } from 'vue-router';
+
+import { useGrid, useScreen } from 'vue-screen';
 
 import RequestRepository from '../utils/RequestRepository';
 import ProductList from '../components/ProductList';
@@ -43,7 +44,11 @@ export default {
         const categories = ref([]);
         const loadingCategories = ref(false);
 
+        const screen = useScreen();
+        const grid = useGrid('bootstrap');
+
         const loadCategories = (slug) => {
+            console.log(screen, grid);
             loadingCategories.value = true;
 
             RequestRepository.get('/categories', {
@@ -58,11 +63,11 @@ export default {
         }
 
         onMounted(() => {
-            loadCategories(route.params.slug);
+            loadCategories(route.params.category_slug);
         });
 
         watch(
-            () => route.params.slug,
+            () => route.params.category_slug,
             newSlug => loadCategories(newSlug)
         );
 
