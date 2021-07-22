@@ -9,8 +9,8 @@ import moment from 'moment';
 import 'moment/locale/vi';
 
 import User from '../utils/User';
-import RequestHttp from '../utils/RequestHttp';
-import RequestApi from '../utils/RequestApi';
+import RequestHttp from '../../utils/RequestHttp';
+import RequestApi from '../../utils/RequestApi';
 
 moment.locale('vi');
 

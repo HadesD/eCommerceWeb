@@ -1,8 +1,9 @@
+import axios from 'axios';
 import RequestApi from './RequestApi';
 
-const repositoryInstance = RequestApi.create({
+const ins = axios.create({
     ...RequestApi.defaults,
-    baseURL: '/api',
+    baseURL: `${RequestApi.defaults.baseURL}`,
 });
 
-export default repositoryInstance;
+export default ins;

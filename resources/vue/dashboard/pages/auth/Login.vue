@@ -59,8 +59,8 @@ import { reactive, ref, } from 'vue';
 
 import User from '../../utils/User';
 import UserRole from '../../configs/UserRole';
-import RequestHttp from '../../utils/RequestHttp';
-import RequestApi from '../../utils/RequestApi';
+import RequestHttp from '../../../utils/RequestHttp';
+import RequestApi from '../../../utils/RequestApi';
 
 import {
     UserOutlined, LockOutlined,

@@ -1,6 +1,9 @@
 import axios from 'axios';
+import RequestHttp from './RequestHttp';
 
-axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-axios.defaults.withCredentials = true;
+const instance = axios.create({
+    ...RequestHttp.defaults,
+    baseURL: `${process.env.APP_URL||''}/api`,
+});
 
-export default axios;
+export default instance;

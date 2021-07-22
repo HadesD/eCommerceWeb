@@ -1,5 +1,5 @@
 import axios from 'axios';
-import RequestApi from './RequestApi';
+import RequestApi from '../../utils/RequestApi';
 
 const ins = axios.create({
     ...RequestApi.defaults,
