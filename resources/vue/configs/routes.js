@@ -1,6 +1,7 @@
 import Index from '../pages/Index';
 import Category from '../pages/Category';
 import Product from '../pages/Product';
+import Search from '../pages/Search';
 
 const RouteView = {
     template: `<router-view />`
@@ -13,7 +14,7 @@ let routes = [
         component: Index,
     },
     {
-        path: '/:category_slug',
+        path: '/:slug',
         component: RouteView,
         children: [
             {
@@ -22,11 +23,16 @@ let routes = [
                 component: Category,
             },
             {
-                path: ':product_slug',
+                path: '/:slug',
                 name: 'product',
                 component: Product,
             },
         ],
+    },
+    {
+        path: '/search',
+        name: 'search',
+        component: Search,
     },
 ];
 

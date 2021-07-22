@@ -14,6 +14,7 @@ class CategoryController extends Controller
         $parent_id = Category::query()
             ->where('slug', $request->parent_slug)
             ->value('id');
+
         return new JsonResource(
             $parent_id ? Category::query()
                 ->where('parent_id', $parent_id)
