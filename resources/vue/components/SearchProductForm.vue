@@ -1,11 +1,10 @@
 <template>
-    <a-form @finish="onSearch">
+    <a-form :rules="formRules" :model="formState" @finish="onSearch">
         <a-form-item name="search_text">
             <a-input
                 size="large"
                 allow-clear
                 v-model:value="formState.search_text"
-                required
                 placeholder="Nhập từ khoá sản phẩm muốn tìm kiếm..."
             >
                 <template #suffix>
@@ -34,18 +33,26 @@ export default {
             search_text: undefined,
         });
 
+        const formRules = {
+            search_text: [
+                {
+                    required: true,
+                },
+            ],
+        };
+
         const onSearch = value => {
-            console.log(value);
             router.push({
                 name: 'search',
                 query: {
-                    keyword: value,
+                    keyword: value.search_text,
                 },
             });
         };
 
         return {
             formState,
+            formRules,
 
             onSearch,
         };
