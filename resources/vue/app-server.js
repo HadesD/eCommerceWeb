@@ -4,7 +4,9 @@ import { createRouter, createMemoryHistory } from 'vue-router';
 
 import routes from './configs/routes';
 import MainApp from './layouts/MainApp';
+
 import Antd from 'ant-design-vue';
+import VueScreen from 'vue-screen';
 
 // Fix requestAnimationFrame is not defined
 global.requestAnimationFrame = cb => cb();
@@ -18,6 +20,7 @@ const router = createRouter({
 
 app.use(Antd);
 app.use(router);
+app.use(VueScreen, 'bootstrap');
 
 (async () => {
     try {
