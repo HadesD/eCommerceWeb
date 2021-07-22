@@ -1,4 +1,5 @@
 <template>
+    <a-typography-title :level="2">Kết quả tìm kiếm</a-typography-title>
     <ProductList />
 </template>
 <script>
