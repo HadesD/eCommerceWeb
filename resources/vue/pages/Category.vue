@@ -1,6 +1,6 @@
 <template>
     <a-row :gutter="16">
-        <a-col :span="4">
+        <a-col :md="24" :lg="4">
             <a-typography-paragraph>
                 <a-typography-title :level="4">Chuyên mục</a-typography-title>
                 <a-spin :spinning="loadingCategories">
@@ -15,7 +15,7 @@
                 </a-spin>
             </a-typography-paragraph>
         </a-col>
-        <a-col :span="20">
+        <a-col :md="24" :lg="20">
             <ProductList
                 :categorySlug="$route.params?.category_slug"
             />
@@ -27,8 +27,6 @@ import {
     onMounted, ref, watch
 } from 'vue';
 import { useRoute, } from 'vue-router';
-
-import { useGrid, useScreen } from 'vue-screen';
 
 import RequestRepository from '../utils/RequestRepository';
 import ProductList from '../components/ProductList';
@@ -44,11 +42,7 @@ export default {
         const categories = ref([]);
         const loadingCategories = ref(false);
 
-        const screen = useScreen();
-        const grid = useGrid('bootstrap');
-
         const loadCategories = (slug) => {
-            console.log(screen, grid);
             loadingCategories.value = true;
 
             RequestRepository.get('/categories', {

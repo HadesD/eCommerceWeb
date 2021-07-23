@@ -32,8 +32,14 @@ class ProductController extends Controller
             });
         }
 
+        if ($sortBy = $request->sort_by) {
+            $order = substr($sortBy, 0, 1) === '+' ? 'ASC' : 'DESC';
+            $query->orderBy(substr($sortBy, 1), $order);
+        }
+
+
         return new JsonResource(
-            $query->paginate(15)
+            $query->paginate(16)
         );
     }
 

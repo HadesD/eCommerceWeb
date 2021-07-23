@@ -15,11 +15,12 @@ class CategoryController extends Controller
             ->where('slug', $request->parent_slug)
             ->value('id');
 
-        return new JsonResource(
-            $parent_id ? Category::query()
-                ->where('parent_id', $parent_id)
-                ->get()
-                : Category::all()
-        );
+        $query = Category::query();
+
+        if ($parent_id) {
+            $query->where('parent_id', $parent_id);
+        }
+
+        return new JsonResource($query->get());
     }
 }
