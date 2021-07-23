@@ -15,14 +15,32 @@
                 </a-spin>
 
                 <a-typography-title :level="4">Bộ lọc</a-typography-title>
-                <h5>Giá tiền</h5>
+                <strong>Giá tiền</strong>
                 <a-slider range :step="5" :max="50000" v-model:value="priceRange" @afterChange="onPriceRangeAfterChange" />
                 <a-row :gutter="8">
                     <a-col :span="12">
-                        <a-input-number v-model:value="priceRange[0]" :formatter="value => `${number_format(value*1000)} ₫`" style="width:100%" />
+                        <a-input-number
+                            :step="5"
+                            :min="0"
+                            :max="45000"
+                            v-model:value="priceRange[0]"
+                            :formatter="value => `${number_format(value*1000)} ₫`"
+                            :parser="value => value.replace(' ₫', '').replace(/\./g,'')"
+                            style="width:100%"
+                            @change="onChangePriceRangeF"
+                        />
                     </a-col>
                     <a-col :span="12">
-                        <a-input-number v-model:value="priceRange[1]" :formatter="value => `${number_format(value*1000)} ₫`" style="width:100%" />
+                        <a-input-number
+                            :step="5"
+                            :min="5"
+                            :max="50000"
+                            v-model:value="priceRange[1]"
+                            :formatter="value => `${number_format(value*1000)} ₫`"
+                            :parser="value => value.replace(' ₫', '').replace(/\./g,'')"
+                            style="width:100%"
+                            @change="onChangePriceRangeT"
+                        />
                     </a-col>
                 </a-row>
             </a-typography-paragraph>
@@ -81,6 +99,14 @@ export default {
             priceRangeAfterChange.value = value;
         }, 500);
 
+        const onChangePriceRangeF = (value) => {
+            priceRange.value = [value, priceRange.value[1]];
+        };
+
+        const onChangePriceRangeT = (value) => {
+            priceRange.value = [priceRange.value[0], value];
+        };
+
         onMounted(() => {
             loadCategories(route.params.category_slug);
         });
@@ -98,6 +124,8 @@ export default {
             loadingCategories,
 
             onPriceRangeAfterChange,
+            onChangePriceRangeF,
+            onChangePriceRangeT,
             number_format,
         };
     },
