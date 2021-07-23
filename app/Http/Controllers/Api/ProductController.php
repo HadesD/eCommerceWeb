@@ -32,11 +32,17 @@ class ProductController extends Controller
             });
         }
 
+        if ($priceRange = $request->price_range) {
+            if (count($priceRange) === 2) {
+                $query->where('price', '>=', $priceRange[0])
+                    ->where('price', '<=', $priceRange[1]);
+            }
+        }
+
         if ($sortBy = $request->sort_by) {
             $order = substr($sortBy, 0, 1) === '+' ? 'ASC' : 'DESC';
             $query->orderBy(substr($sortBy, 1), $order);
         }
-
 
         return new JsonResource(
             $query->paginate(16)

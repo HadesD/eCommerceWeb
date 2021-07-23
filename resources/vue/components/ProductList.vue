@@ -20,6 +20,7 @@
                     </a-select>
                 </a-col>
             </a-row>
+
             <a-row :gutter="16">
                 <a-col :sm="24" :md="12" :lg="6" v-for="product in products?.data" key="product.id" style="margin-bottom: 16px;">
                     <router-link
@@ -75,6 +76,7 @@ export default {
     props: {
         categorySlug: String,
         keyword: String,
+        priceRange: Array,
     },
 
     setup(props) {
@@ -92,6 +94,7 @@ export default {
                     keyword,
                     category_slug: props.categorySlug,
                     sort_by: sortBy.value,
+                    price_range: props.priceRange,
                 },
             })
                 .then(res => {
@@ -120,6 +123,11 @@ export default {
 
         watch(
             () => props.keyword,
+            () => loadProductList({})
+        );
+
+        watch(
+            () => props.priceRange,
             () => loadProductList({})
         );
 
