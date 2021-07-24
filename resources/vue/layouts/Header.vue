@@ -36,7 +36,7 @@
             </a-col>
             <a-col :sm="{ span: 24 }" :lg="{ span: 8 }" style="text-align: right;">
                 <a-dropdown>
-                    <router-link :to="{ name: 'cart' }">
+                    <router-link :to="{ name: 'checkout' }">
                         <a-badge :count="5">
                             <a-button type="primary" size="large">0 ₫ <ShoppingCartOutlined /></a-button>
                         </a-badge>

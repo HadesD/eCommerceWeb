@@ -20,33 +20,41 @@ class ProductController extends Controller
     {
         $query = Product::query();
 
-        $category_id = Category::query()
-            ->where('slug', $request->category_slug)
-            ->value('id');
+        $ids = $request->ids;
 
-        if ($category_id !== null) {
-            $query->whereIn('id', function ($qW) use ($category_id) {
-                $qW->select('product_id')
-                    ->from((new ProductCategory())->getTable())
-                    ->where('category_id', $category_id);
-            });
-        }
+        if (is_array($ids)) {
+            $query->whereIn('id', $ids);
 
-        if ($priceRange = $request->price_range) {
-            if (count($priceRange) === 2) {
-                $query->where('price', '>=', $priceRange[0])
-                    ->where('price', '<=', $priceRange[1]);
+            $query = $query->get();
+        } else {
+            $category_id = Category::query()
+                ->where('slug', $request->category_slug)
+                ->value('id');
+
+            if ($category_id !== null) {
+                $query->whereIn('id', function ($qW) use ($category_id) {
+                    $qW->select('product_id')
+                        ->from((new ProductCategory())->getTable())
+                        ->where('category_id', $category_id);
+                });
             }
+
+            if ($priceRange = $request->price_range) {
+                if (count($priceRange) === 2) {
+                    $query->where('price', '>=', $priceRange[0])
+                        ->where('price', '<=', $priceRange[1]);
+                }
+            }
+
+            if ($sortBy = $request->sort_by) {
+                $order = substr($sortBy, 0, 1) === '+' ? 'ASC' : 'DESC';
+                $query->orderBy(substr($sortBy, 1), $order);
+            }
+
+            $query = $query->paginate(16);
         }
 
-        if ($sortBy = $request->sort_by) {
-            $order = substr($sortBy, 0, 1) === '+' ? 'ASC' : 'DESC';
-            $query->orderBy(substr($sortBy, 1), $order);
-        }
-
-        return new JsonResource(
-            $query->paginate(16)
-        );
+        return new JsonResource($query);
     }
 
     /**

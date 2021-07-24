@@ -2,7 +2,7 @@
     <a-row :gutter="16">
         <a-col :md="24" :lg="4">
             <a-typography-paragraph>
-                <a-typography-title :level="4">Chuyên mục</a-typography-title>
+                <a-typography-title :level="4">Chuyên mục con</a-typography-title>
                 <a-spin :spinning="loadingCategories">
                     <ul v-if="(categories.length > 0)">
                         <li v-for="cat in categories" :key="cat.id">
