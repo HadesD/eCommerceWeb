@@ -2,7 +2,7 @@
     {{ product.name }}
 </template>
 <script>
-import { onMounted, ref, watch, } from 'vue';
+import { onMounted, reactive, ref, watch, } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
 
 import RequestRepository from '../utils/RequestRepository';
@@ -11,7 +11,7 @@ export default {
     setup() {
         const route = useRoute();
 
-        const product = ref({});
+        const product = reactive({});
 
         const loadProduct = () => {
             RequestRepository.get('/products/' + route.params.product_slug)

@@ -65,6 +65,7 @@
 </template>
 <script>
 import { onMounted, ref, watch } from 'vue';
+import { message } from 'ant-design-vue';
 
 import RequestRepository from '../utils/RequestRepository';
 
@@ -85,13 +86,13 @@ export default {
         const loadingProductList = ref(false);
         const sortBy = ref('-created_at');
 
-        const loadProductList = ({ page, keyword }) => {
+        const loadProductList = ({ page, }) => {
             loadingProductList.value = true;
 
             RequestRepository.get('/products', {
                 params: {
                     page,
-                    keyword,
+                    keyword: props.keyword,
                     category_slug: props.categorySlug,
                     sort_by: sortBy.value,
                     price_range: props.priceRange,
@@ -102,6 +103,14 @@ export default {
 
                     // console.log(productListRow.value);
                     productListRow.value.scrollIntoView({behavior: 'smooth'});
+                })
+                .catch(err => {
+                    if (err.response && err.response.data && err.response.data.message) {
+                        message.error(err.response.data.message);
+                        return;
+                    }
+
+                    message.error(err.message || 'Thất bại');
                 })
                 .finally(() => {
                     loadingProductList.value = false;

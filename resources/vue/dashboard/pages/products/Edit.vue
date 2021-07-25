@@ -146,6 +146,7 @@ import {
 import ProductStatus, { Config as configProductStatus } from '../../configs/ProductStatus';
 import { vietnameseNormalize, number_format, date_format } from '../../../helpers';
 import RequestRepository from '../../utils/RequestRepository';
+import { message } from 'ant-design-vue';
 
 export default {
     props: {
@@ -260,11 +261,11 @@ export default {
                 })
                 .catch(err => {
                     if (err.response && err.response.data && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
+                        message.error(err.response.data.message);
                         return;
                     }
 
-                    this.$message.error(err.message || 'Thất bại');
+                    message.error(err.message || 'Thất bại');
                 })
                 .finally(()=>{
                     this.categoriesTreeLoading = false;
@@ -303,11 +304,11 @@ export default {
                 })
                 .catch(err => {
                     if (err.response && err.response.data && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
+                        message.error(err.response.data.message);
                         return;
                     }
 
-                    this.$message.error(err.message || 'Thất bại');
+                    message.error(err.message || 'Thất bại');
                 })
                 .finally(()=>{
                 });
@@ -331,7 +332,7 @@ export default {
                         throw res;
                     }
 
-                    this.$message.success(productId ? 'Đã sửa sản phẩm thành công' : 'Đã thêm sản phẩm thành công');
+                    message.success(productId ? 'Đã sửa sản phẩm thành công' : 'Đã thêm sản phẩm thành công');
 
                     this.$emit('productUpdated', productId);
 
@@ -339,11 +340,11 @@ export default {
                 })
                 .catch(err => {
                     if (err.response && err.response.data && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
+                        message.error(err.response.data.message);
                         return;
                     }
 
-                    this.$message.error(err.message || 'Thất bại');
+                    message.error(err.message || 'Thất bại');
                 })
                 .finally(()=>{
                     this.productInfoLoading = false;

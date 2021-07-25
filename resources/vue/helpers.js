@@ -22,7 +22,7 @@ function vietnameseNormalize(str, toUpperCase = false) {
 };
 
 function number_format(num) {
-    return new Intl.NumberFormat().format(num);
+    return new Intl.NumberFormat().format(num || 0);
 };
 
 function date_format(dateStr, formatStr = 'YYYY-MM-DD HH:mm:ss') {

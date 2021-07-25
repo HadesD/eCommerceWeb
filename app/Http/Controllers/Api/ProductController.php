@@ -32,10 +32,23 @@ class ProductController extends Controller
                 ->value('id');
 
             if ($category_id !== null) {
-                $query->whereIn('id', function ($qW) use ($category_id) {
+                $category_ids = [$category_id];
+                $findChildCategoryId = function($parentId) use (&$findChildCategoryId, &$category_ids) {
+                    $child_ids = Category::query()
+                        ->select('id')
+                        ->where('parent_id', $parentId);
+                    foreach ($child_ids->lazy() as $child) {
+                        $category_ids[] = $child->id;
+
+                        $findChildCategoryId($child->id);
+                    }
+                };
+                $findChildCategoryId($category_id);
+
+                $query->whereIn('id', function ($qW) use ($category_ids) {
                     $qW->select('product_id')
                         ->from((new ProductCategory())->getTable())
-                        ->where('category_id', $category_id);
+                        ->whereIn('category_id', $category_ids);
                 });
             }
 
@@ -44,6 +57,10 @@ class ProductController extends Controller
                     $query->where('price', '>=', $priceRange[0])
                         ->where('price', '<=', $priceRange[1]);
                 }
+            }
+
+            if ($kw = $request->keyword) {
+                $query->where('name', 'LIKE', '%'.$kw.'%');
             }
 
             if ($sortBy = $request->sort_by) {

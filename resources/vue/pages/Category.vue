@@ -67,6 +67,7 @@ import {
 import RequestRepository from '../utils/RequestRepository';
 import ProductList from '../components/ProductList';
 import { debounce } from 'lodash';
+import { message } from 'ant-design-vue';
 
 export default {
     components: {
@@ -91,6 +92,14 @@ export default {
             })
                 .then(res => {
                     categories.value = res.data.data;
+                })
+                .catch(err => {
+                    if (err.response && err.response.data && err.response.data.message) {
+                        message.error(err.response.data.message);
+                        return;
+                    }
+
+                    message.error(err.message || 'Thất bại');
                 })
                 .finally(() => { loadingCategories.value = false });
         }

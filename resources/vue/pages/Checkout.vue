@@ -3,7 +3,16 @@
     </a-table>
 </template>
 <script>
+
+const cartTableColumns = [
+    {
+
+    },
+];
+
 export default {
+
+
 
 }
 </script>
