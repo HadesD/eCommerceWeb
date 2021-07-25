@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import moment from 'moment';
+import { message } from 'ant-design-vue';
 
 function vietnameseNormalize(str, toUpperCase = false) {
     str = str.toLowerCase()
@@ -53,8 +54,18 @@ function list_to_tree(list, parentKey = 'parent_id') {
     return roots;
 }
 
+function showErrorRequestApi(err) {
+    if (err.response && err.response.data && err.response.data.message) {
+        message.error(err.response.data.message);
+        return;
+    }
+
+    message.error(err.message || 'Thất bại');
+}
+
 export {
     vietnameseNormalize, number_format,
     date_format, cloneDeep,
     list_to_tree,
+    showErrorRequestApi,
 };

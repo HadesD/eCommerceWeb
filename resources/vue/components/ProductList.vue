@@ -21,7 +21,7 @@
                 </a-col>
             </a-row>
 
-            <a-row :gutter="16">
+            <a-row :gutter="16" v-if="(products.data?.length > 0)">
                 <a-col :sm="24" :md="12" :lg="6" v-for="product in products?.data" key="product.id" style="margin-bottom: 16px;">
                     <router-link
                         :to="{
@@ -53,6 +53,7 @@
                     </router-link>
                 </a-col>
             </a-row>
+            <a-empty v-else />
 
             <a-pagination
                 v-model:current="products.current_page"
@@ -72,6 +73,7 @@ import RequestRepository from '../utils/RequestRepository';
 import {
     number_format,
 } from '../helpers';
+import { useRoute, useRouter } from 'vue-router';
 
 export default {
     props: {
@@ -85,8 +87,19 @@ export default {
         const products = ref({});
         const loadingProductList = ref(false);
         const sortBy = ref('-created_at');
+        const router = useRouter();
+        const route = useRoute();
 
         const loadProductList = ({ page, }) => {
+            if (page) {
+                router.push({
+                    query: {
+                        ...route.query,
+                        page,
+                    },
+                });
+            }
+
             loadingProductList.value = true;
 
             RequestRepository.get('/products', {
@@ -101,7 +114,6 @@ export default {
                 .then(res => {
                     products.value = res.data;
 
-                    // console.log(productListRow.value);
                     productListRow.value.scrollIntoView({behavior: 'smooth'});
                 })
                 .catch(err => {
@@ -122,7 +134,7 @@ export default {
         };
 
         onMounted(() => {
-            loadProductList({});
+            loadProductList({ page: route.query.page });
         });
 
         watch(

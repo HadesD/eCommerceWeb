@@ -49,7 +49,7 @@
         <a-col :md="24" :lg="20">
             <ProductList
                 :categorySlug="$route.params?.category_slug"
-                :priceRange="priceRangeAfterChange.map(value => (value * 1000))"
+                :priceRange="priceRangeAfterChange"
             />
         </a-col>
     </a-row>
@@ -62,6 +62,7 @@ import { useRoute, } from 'vue-router';
 
 import {
     number_format,
+    showErrorRequestApi,
 } from '../helpers';
 
 import RequestRepository from '../utils/RequestRepository';
@@ -93,19 +94,12 @@ export default {
                 .then(res => {
                     categories.value = res.data.data;
                 })
-                .catch(err => {
-                    if (err.response && err.response.data && err.response.data.message) {
-                        message.error(err.response.data.message);
-                        return;
-                    }
-
-                    message.error(err.message || 'Thất bại');
-                })
+                .catch(err => showErrorRequestApi(err))
                 .finally(() => { loadingCategories.value = false });
         }
 
         const onPriceRangeAfterChange = debounce((value) => {
-            priceRangeAfterChange.value = value;
+            priceRangeAfterChange.value = value.map(v => (v * 1000));
         }, 500);
 
         const onChangePriceRangeF = (value) => {
