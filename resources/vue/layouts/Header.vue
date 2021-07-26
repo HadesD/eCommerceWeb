@@ -63,13 +63,14 @@
     </a-layout-content>
     <a-layout-header style="background-color: #FFF;border-top: solid 1px #f2f2f2;box-shadow: 0px 5px 20px rgb(0 0 0 / 10%);">
         <a-menu mode="horizontal" :selectedKeys="[$route.params?.category_slug || '/']">
-            <a-sub-menu :disabled="!(categories.length > 0)">
+            <a-sub-menu :disabled="!(categories.length > 0)" class="header-submenu-category">
                 <template #icon><MenuOutlined /></template>
-                <template #title>CHUYÊN MỤC <CaretDownOutlined /></template>
+                <template #title>CHUYÊN MỤC</template>
 
                 <TreeMenu :nodeData="categories" />
             </a-sub-menu>
             <a-menu-item key="/">
+                <template #icon><HomeOutlined /></template>
                 <router-link to="/">Trang Chủ</router-link>
             </a-menu-item>
         </a-menu>
@@ -86,7 +87,7 @@ import {
     FacebookFilled, PhoneFilled,
     UserOutlined, LockFilled,
     ShoppingCartOutlined, MenuOutlined,
-    CaretDownOutlined,
+    CaretDownOutlined, HomeOutlined,
 } from '@ant-design/icons-vue';
 
 import SearchProductForm from '../components/SearchProductForm';
@@ -133,8 +134,9 @@ export default {
         FacebookFilled, PhoneFilled,
         UserOutlined, LockFilled,
         ShoppingCartOutlined, MenuOutlined,
-        CaretDownOutlined, SearchProductForm,
+        CaretDownOutlined, HomeOutlined,
 
+        SearchProductForm,
         TreeMenu,
     },
 

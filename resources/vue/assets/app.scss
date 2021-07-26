@@ -10,3 +10,9 @@ main.ant-layout-content {
         padding-right: 10px;
     }
 }
+
+.header-submenu-category,
+.header-submenu-category .ant-menu-submenu-title:hover {
+    background-color:#8400ff;
+    color:#FFF;
+}
