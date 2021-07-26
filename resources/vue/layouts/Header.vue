@@ -2,7 +2,7 @@
     <a-layout-header style="background-color: blueviolet;">
         <router-link to="/">
             <div style="float: left;padding: 0 15px;">
-                <img src="/favicon.ico" />
+                <img src="/favicon.ico" alt="RinPhone.vn logo" />
             </div>
         </router-link>
         <a-menu mode="horizontal" theme="dark" style="background-color: blueviolet;">

@@ -22,7 +22,7 @@
             </a-row>
 
             <a-row :gutter="16" v-if="(products.data?.length > 0)">
-                <a-col :sm="24" :md="12" :lg="6" v-for="product in products?.data" key="product.id" style="margin-bottom: 16px;">
+                <a-col :xs="24" :sm="24" :md="12" :lg="6" v-for="product in products?.data" key="product.id" style="margin-bottom: 16px;">
                     <router-link
                         :to="{
                             name: 'product',

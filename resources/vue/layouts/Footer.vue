@@ -2,7 +2,7 @@
     <a-layout-footer style="background: #FFF;">
         <a-row type="flex">
             <a-col :flex="2">
-                <div style="font-size:28px;color: blueviolet;"><img src="/favicon.ico" />inPhone.vn</div>
+                <div style="font-size:28px;color: blueviolet;"><img src="/favicon.ico" alt="RinPhone.vn logo" />inPhone.vn</div>
                 <a-typography-title :level="4">Bạn có thắc mắc cần giải đáp? 24/7 HotLine</a-typography-title>
                 <a-typography-paragraph>
                     <ul>
