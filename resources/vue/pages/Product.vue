@@ -11,7 +11,7 @@ export default {
     setup() {
         const route = useRoute();
 
-        const product = reactive({});
+        const product = ref({});
 
         const loadProduct = () => {
             RequestRepository.get('/products/' + route.params.product_slug)

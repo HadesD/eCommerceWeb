@@ -19,6 +19,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $query = Product::query();
+        $query->where('status', '!=', Product::STS_DRAFT);
 
         $ids = $request->ids;
 
@@ -68,7 +69,7 @@ class ProductController extends Controller
                 $query->orderBy(substr($sortBy, 1), $order);
             }
 
-            $query = $query->paginate(16);
+            $query = $query->paginate(24);
         }
 
         return new JsonResource($query);
@@ -82,6 +83,11 @@ class ProductController extends Controller
      */
     public function show($p)
     {
-        return new JsonResource(Product::find($p) ?? Product::query()->where('slug', $p)->first());
+        $product = Product::find($p) ?? Product::query()->where('slug', $p)->first();
+        if ($product && ($product->status === Product::STS_DRAFT)) {
+            $product = null;
+        }
+
+        return new JsonResource($product);
     }
 }
