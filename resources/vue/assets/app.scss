@@ -12,7 +12,9 @@ main.ant-layout-content {
 }
 
 .header-submenu-category,
+.header-submenu-category:hover,
 .header-submenu-category .ant-menu-submenu-title:hover {
     background-color:#8400ff;
-    color:#FFF;
+    color:#FFFFFF!important;
+    font-weight: bold;
 }
