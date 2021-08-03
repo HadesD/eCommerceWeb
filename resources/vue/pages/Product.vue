@@ -3,12 +3,10 @@
         <a-col :xs="24" :sm="24" :md="24" :lg="12">
             <a-carousel arrows dots-class="slick-dots slick-thumb" class="product-carousel">
                 <template #customPaging="props">
-                    <a>
-                        <img :src="getImgUrl(props.i)" />
-                    </a>
+                    <img :src="getImgUrl(props.i)" />
                 </template>
                 <div v-for="item in 4" :key="item">
-                    <img :src="baseUrl + 'abstract0' + item + '.jpg'" />
+                    <img :src="baseUrl + 'abstract0' + item + '.jpg'" :alt="product.name" />
                 </div>
             </a-carousel>
         </a-col>
