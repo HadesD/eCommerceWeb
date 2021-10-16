@@ -17,7 +17,9 @@ function vietnameseNormalize(str, toUpperCase = false) {
 
         // End process
         .replace(/[^a-zA-Z0-9]/g, '-')
-        .replace(/--/g, '-');
+        .replace(/--/g, '-')
+        .replace(/-$/, '')
+        .replace(/^-/, '');
 
     return toUpperCase ? str.toUpperCase() : str;
 };
