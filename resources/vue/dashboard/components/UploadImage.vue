@@ -1,4 +1,5 @@
 <template>
+    <a-alert message="Chỉ tải ảnh cần thiết, không được chọn ảnh thừa linh tinh, tránh gây tốn dung lượng máy chủ!" type="warning" show-icon style="margin-bottom: 10px;" />
     <a-upload
         accept="image/*"
         list-type="picture-card"
