@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Image;
 use App\Models\ProductCategory;
+use App\Models\ProductImage;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -69,12 +71,30 @@ class ProductController extends Controller
             // $product->image_variant_id = 0;
             $product->save();
 
-            // EAV
+            // Categories
             foreach ($request->categories_id as $category_id) {
                 $product_category = new ProductCategory;
                 $product_category->product_id = $product->id;
                 $product_category->category_id = $category_id;
                 $product_category->save();
+            }
+
+            // Images
+            foreach ($request->images as $_image) {
+                $image = null;
+                if (isset($_image['id'])) {
+                    $image = Image::find($_image['id']);
+                }
+                if (!$image) {
+                    $image = new Image;
+                    $image->url = $_image['url'];
+                    $image->save();
+                }
+
+                $productImage = new ProductImage;
+                $productImage->image_id = $image->id;
+                $productImage->product_id = $product->id;
+                $productImage->save();
             }
 
             DB::commit();
@@ -122,7 +142,7 @@ class ProductController extends Controller
             // $product->image_variant_id = 0;
             $product->save();
 
-            // EAV
+            // Categories
             foreach ($request->categories_id as $category_id) {
                 $product_category = ProductCategory::where('product_id', $product->id)
                     ->where('category_id', $category_id)
@@ -136,9 +156,36 @@ class ProductController extends Controller
                 $product_category->category_id = $category_id;
                 $product_category->save();
             }
-
             ProductCategory::where('product_id', $product->id)
                 ->whereNotIn('category_id', $request->categories_id)
+                ->delete();
+
+            // Images
+            $images_id = [];
+            foreach ($request->images as $_image) {
+                $image = null;
+                if (isset($_image['id'])) {
+                    $image = Image::find($_image['id']);
+                }
+                if (!$image) {
+                    $image = new Image;
+                    $image->url = $_image['url'];
+                    $image->save();
+                }
+
+                $images_id[] = $image->id;
+
+                if (ProductImage::where('product_id', $product->id)->where('image_id', $image->id)->exists()) {
+                    continue;
+                }
+
+                $productImage = new ProductImage();
+                $productImage->image_id = $image->id;
+                $productImage->product_id = $product->id;
+                $productImage->save();
+            }
+            ProductImage::where('product_id', $product->id)
+                ->whereNotIn('image_id', $images_id)
                 ->delete();
 
             DB::commit();

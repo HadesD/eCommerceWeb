@@ -322,7 +322,7 @@
                                 }}</span>
                             </a-descriptions-item>
                         </a-descriptions>
-                        <a-button type="primary" htmlType="submit" block :disabled="stockInfo.images?.find((elm) => (!elm.url))">{{
+                        <a-button type="primary" htmlType="submit" block :disabled="formData.images?.find((elm) => (!elm.url)) !== undefined">{{
                             id ? "Sửa" : "Nhập kho"
                         }}</a-button>
                     </a-card>

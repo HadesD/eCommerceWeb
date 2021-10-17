@@ -21,7 +21,7 @@ class Product extends Model
     protected $fillable = ['name', 'description', 'detail', 'specification', 'slug', 'price'];
 
     protected $appends = [
-        'categories',
+        'categories', 'images'
     ];
 
     public function getCategoriesAttribute()
@@ -30,6 +30,18 @@ class Product extends Model
             $query->select('category_id')
                   ->from(with(new ProductCategory)->getTable())
                   ->where('product_id', $this->id);
+        })->get();
+    }
+
+    /**
+     * @return Image[]
+     */
+    public function getImagesAttribute()
+    {
+        return Image::whereIn('id', function ($query) {
+            $query->select('image_id')
+                ->from(with(new ProductImage())->getTable())
+                ->where('product_id', $this->id);
         })->get();
     }
 }

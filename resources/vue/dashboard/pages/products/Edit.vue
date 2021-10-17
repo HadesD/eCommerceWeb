@@ -84,6 +84,23 @@
                             </a-tooltip>
                         </a-form-item>
                     </a-form-item>
+                    <a-card title="Upload ảnh" size="small">
+                        <UploadImage
+                            :defaultImages="productInfo.images?.map((v) => ({
+                                id: v.id,
+                                uid: v.id,
+                                url: v.url,
+                            }))"
+                            :change="(value) => {
+                                formData.images = value.map((v, i) => {
+                                    return {
+                                        id: v.id,
+                                        url: v.url,
+                                    };
+                                });
+                            }"
+                        />
+                    </a-card>
                     <a-tabs default-active-key="description" @change="(k) => $refs[k] && $refs[k].focus()">
                         <a-tab-pane key="description" tab="Mô tả ngắn">
                             <a-form-item label="Mô tả ngắn">
@@ -132,7 +149,9 @@
                                 <a-select-option v-for="codeSts in Object.keys(configProductStatus)" :key="codeSts" :value="parseInt(codeSts)">{{ configProductStatus[codeSts].name }}</a-select-option>
                             </a-select>
                         </a-form-item>
-                        <a-button type="primary" htmlType="submit" block>{{ id ? 'Sửa' : 'Đăng bán' }}</a-button>
+                        <a-button type="primary" htmlType="submit" block :disabled="formData.images?.find((elm) => (!elm.url)) !== undefined">{{
+                            id ? 'Sửa' : 'Đăng bán'
+                        }}</a-button>
                     </a-card>
                 </a-col>
             </a-row>
@@ -141,6 +160,8 @@
 </template>
 <script>
 import { defineAsyncComponent, reactive, ref } from 'vue';
+
+import UploadImage from '../../components/UploadImage';
 
 import {
     PlusOutlined, ReloadOutlined, DeleteOutlined,
@@ -157,6 +178,7 @@ export default {
     },
     components: {
         AddCategoryModal: defineAsyncComponent(() => import('../../components/AddCategoryModal.vue')),
+        UploadImage,
 
         PlusOutlined, ReloadOutlined, DeleteOutlined,
     },
@@ -337,7 +359,7 @@ export default {
 
                     message.success(productId ? 'Đã sửa sản phẩm thành công' : 'Đã thêm sản phẩm thành công');
 
-                    this.$emit('productUpdated', productId);
+                    // this.$emit('productUpdated', productId);
 
                     this.loadProduct(this.formData.id);
                 })
