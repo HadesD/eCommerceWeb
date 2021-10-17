@@ -51,4 +51,12 @@ if (mix.inProduction()) {
     mix.version();
 } else {
     mix.sourceMaps();
+
+    // Fix error can not create tcp socket
+    mix.options({
+        hmrOptions: {
+            host: 'localhost',
+            port: 8808,
+        },
+    });
 }
