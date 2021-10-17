@@ -92,12 +92,12 @@
                                 url: v.url,
                             }))"
                             :change="(value) => {
-                                formData.images = value.map((v, i) => {
+                                formData.images = value?.map((v, i) => {
                                     return {
                                         id: v.id,
                                         url: v.url,
                                     };
-                                });
+                                }) || [];
                             }"
                         />
                     </a-card>

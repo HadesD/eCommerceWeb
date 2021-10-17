@@ -52,7 +52,7 @@ export default {
 
         watch(() => props.defaultImages, (value, prevValue) => {
             // TODO: Fix 4 time being called
-            fileList.value = value;
+            fileList.value = value || [];
         });
 
         watch(() => fileList.value, (value) => {
