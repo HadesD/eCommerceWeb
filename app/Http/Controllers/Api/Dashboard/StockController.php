@@ -10,6 +10,7 @@ use App\Models\Stock;
 use App\Models\Category;
 use App\Models\Image;
 use App\Models\StockCategory;
+use App\Models\StockImage;
 use App\Models\StockTransaction;
 use App\Models\Transaction;
 use App\Models\User;
@@ -132,7 +133,14 @@ class StockController extends Controller
                 }
                 if (!$image) {
                     $image = new Image;
+                    $image->url = $_image['url'];
+                    $image->save();
                 }
+
+                $stockImage = new StockImage;
+                $stockImage->image_id = $image->id;
+                $stockImage->stock_id = $stock->id;
+                $stockImage->save();
             }
 
             // Import Addon transaction
@@ -209,6 +217,8 @@ class StockController extends Controller
             'cost_price' => 'required',
             'tester_id' => 'required',
             'quantity' => 'required',
+            'categories_id' => 'required|array',
+            'images' => 'array',
         ]);
 
         try {
@@ -248,6 +258,34 @@ class StockController extends Controller
             }
             StockCategory::where('stock_id', $stock->id)
                 ->whereNotIn('category_id', $request->categories_id)
+                ->delete();
+
+            // Images
+            $images_id = [];
+            foreach ($request->images as $_image) {
+                $image = null;
+                if (isset($_image['id'])) {
+                    $image = Image::find($_image['id']);
+                }
+                if (!$image) {
+                    $image = new Image;
+                    $image->url = $_image['url'];
+                    $image->save();
+                }
+
+                $images_id[] = $image->id;
+
+                if (StockImage::where('stock_id', $stock->id)->where('image_id', $image->id)->exists()) {
+                    continue;
+                }
+
+                $stockImage = new StockImage;
+                $stockImage->image_id = $image->id;
+                $stockImage->stock_id = $stock->id;
+                $stockImage->save();
+            }
+            StockImage::where('stock_id', $stock->id)
+                ->whereNotIn('image_id', $images_id)
                 ->delete();
 
             $diff_quantity = $prev_quantity - $stock->quantity;
