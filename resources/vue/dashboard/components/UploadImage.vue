@@ -93,9 +93,16 @@ export default {
             const data = new FormData();
             data.append('image', file);
 
+            const imgurClientIds = [
+                'ed03938f3ff9c55',
+                'fada7b81b37ee0a',
+                '44d107a9b53bbf5',
+                'be1c5cf3222ac27',
+            ];
+
             const xhttp = new XMLHttpRequest();
             xhttp.open('POST', 'https://api.imgur.com/3/image');
-            xhttp.setRequestHeader('Authorization', 'Client-ID ed03938f3ff9c55'); //Get yout Client ID here: http://api.imgur.com/
+            xhttp.setRequestHeader('Authorization', 'Client-ID ' + imgurClientIds[_.random(imgurClientIds.length - 1)]); //Get yout Client ID here: http://api.imgur.com/
             xhttp.responseType = 'json';
             xhttp.onload = () => {
                 if (xhttp.status !== 200) {
