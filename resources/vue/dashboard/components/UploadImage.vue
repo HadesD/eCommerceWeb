@@ -3,13 +3,16 @@
         accept="image/*"
         list-type="picture-card"
         v-model:fileList="fileList"
+        :beforeUpload="beforeUpload"
         @preview="preview"
         @change="change"
-        :beforeUpload="beforeUpload"
     >
         <div v-if="fileList.length < 8">
             <PlusOutlined />
             <div class="ant-upload-text">Upload</div>
+        </div>
+        <div v-for="(file, index) in fileList">
+            <slot name="imageRender" :file="file"></slot>
         </div>
     </a-upload>
     <a-modal
@@ -17,7 +20,7 @@
         :footer="null"
         @cancel="cancelPreview"
     >
-        <img alt="example" style="width: 100%" :src="previewImgUrl" />
+        <img :alt="previewImg?.name" style="width: 100%" :src="previewImg?.url || previewImg?.preview" />
     </a-modal>
 </template>
 <script>
@@ -28,16 +31,32 @@ import { getFileDataBase64 } from "../../helpers";
 import {
     PlusOutlined,
 } from "@ant-design/icons-vue";
+import { watch } from '@vue/runtime-core';
 
 export default {
+    props: {
+        defaultImages: Array,
+        change: Function,
+    },
+    emits: [],
+
     components: {
         PlusOutlined,
     },
 
-    setup() {
+    setup(props) {
         const previewImgVisible = ref(false);
         const fileList = ref([]);
-        const previewImgUrl = ref();
+        const previewImg = ref({});
+
+        watch(() => props.defaultImages, (value, prevValue) => {
+            console.log('defaultImages', value);
+            fileList.value = value;
+        });
+
+        watch(() => fileList.value, (value) => {
+            props.change(value);
+        });
 
         const beforeUpload = (file) => {
             fileList.value = [...fileList.value, file];
@@ -50,26 +69,40 @@ export default {
                 file.preview = await getFileDataBase64(file.originFileObj);
             }
 
-            previewImgUrl.value = file.url || file.preview;
+            previewImg.value = file;
             previewImgVisible.value = true;
         };
 
-        const change = () => {
-            const fileItem = fileList.value[fileList.value.length - 1];
+        const change = (info) => {
+            const fileItem = info.file;
+
+            // Is update event
+            if (fileItem.originFileObj) {
+                return;
+            }
+
+            // Is uploaded
+            if (fileItem.url) {
+                return;
+            }
 
             const data = new FormData();
-            data.append( 'image', fileItem.originFileObj);
+            data.append('image', fileItem);
 
             const xhttp = new XMLHttpRequest();
             xhttp.open('POST', 'https://api.imgur.com/3/image');
             xhttp.setRequestHeader('Authorization', 'Client-ID ed03938f3ff9c55'); //Get yout Client ID here: http://api.imgur.com/
-            xhttp.onreadystatechange = () => {
-                if ((xhttp.status === 200) && (xhttp.readyState === 4)) {
-                    const res = JSON.parse(xhttp.responseText);
-                    console.log(res);
-                    fileItem.status = 'done';
-                    fileItem.url = res.data.link;
+            xhttp.responseType = 'json';
+            xhttp.onload = () => {
+                if (xhttp.status !== 200) {
+                    fileItem.status = 'error';
+                    return;
                 }
+                const res = xhttp.response;
+                fileItem.status = 'done';
+                fileItem.url = res.data.link;
+
+                props.change(fileList.value);
             };
             xhttp.onloadstart = () => {
                 fileItem.status = 'uploading';
@@ -99,7 +132,7 @@ export default {
         return {
             previewImgVisible,
             fileList,
-            previewImgUrl,
+            previewImg,
 
             beforeUpload,
             preview,

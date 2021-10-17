@@ -242,7 +242,21 @@
                         </a-form-item>
                     </a-form-item>
                     <a-card title="Upload ảnh" size="small">
-                        <UploadImage />
+                        <UploadImage
+                            :defaultImages="stockInfo.images?.map((v) => ({
+                                id: v.id,
+                                uid: v.id,
+                                url: v.url,
+                            }))"
+                            :change="(value) => {
+                                formData.images = value.map((v, i) => {
+                                    return {
+                                        id: v.id || v.originFileObj?.id,
+                                        url: v.url || v.originFileObj?.url,
+                                    };
+                                });
+                            }"
+                        />
                     </a-card>
                     <a-form-item label="Ghi chú">
                         <a-textarea v-model:value="formData.note" />
@@ -444,9 +458,7 @@
                         <a-popconfirm
                             v-if="!record.id"
                             title="Chắc chắn muốn xóa?"
-                            @confirm="
-                                () => formData.transactions.splice(index, 1)
-                            "
+                            @confirm="() => formData.transactions.splice(index, 1)"
                         >
                             <a-button type="primary" danger>
                                 <template #icon><DeleteOutlined /></template>
@@ -614,6 +626,7 @@ export default {
             inout_date: undefined,
             transactions: [],
             categories_id: [],
+            images: [],
         });
 
         return {

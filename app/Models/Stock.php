@@ -65,6 +65,9 @@ class Stock extends Model
         return User::find($this->tester_id);
     }
 
+    /**
+     * @return Order[]
+     */
     public function getOrdersHistoryAttribute()
     {
         return Order::whereIn('id', function ($query) {
@@ -75,6 +78,18 @@ class Stock extends Model
                         ->from(with(new OrderProductStock)->getTable())
                         ->where('stock_id', $this->id);
                 });
+        })->get();
+    }
+
+    /**
+     * @return Image[]
+     */
+    public function getImagesAttribute()
+    {
+        return Image::whereIn('id', function ($query) {
+            $query->select('image_id')
+                ->from(with(new StockImage())->getTable())
+                ->where('stock_id', $this->id);
         })->get();
     }
 }
