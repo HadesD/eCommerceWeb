@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Stock;
 use App\Models\Category;
+use App\Models\Image;
 use App\Models\StockCategory;
 use App\Models\StockTransaction;
 use App\Models\Transaction;
@@ -88,8 +89,6 @@ class StockController extends Controller
      */
     public function store(Request $request)
     {
-        // $this->middleware('role.manager');
-
         $this->validate($request, [
             // 'note' => 'required',
             'name' => 'required',
@@ -97,6 +96,8 @@ class StockController extends Controller
             'cost_price' => 'required',
             'tester_id' => 'required',
             'quantity' => 'required',
+            'images' => 'array',
+            'categories_id' => 'required|array',
         ]);
 
         try {
@@ -121,6 +122,17 @@ class StockController extends Controller
                 $stock_category->stock_id = $stock->id;
                 $stock_category->category_id = $category_id;
                 $stock_category->save();
+            }
+
+            // Images
+            foreach ($request->images as $_image) {
+                $image = null;
+                if (isset($_image['id'])) {
+                    $image = Image::find($_image['id']);
+                }
+                if (!$image) {
+                    $image = new Image;
+                }
             }
 
             // Import Addon transaction

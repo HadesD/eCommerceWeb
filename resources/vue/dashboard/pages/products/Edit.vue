@@ -50,7 +50,7 @@
                             :max="2000000000"
                         />
                     </a-form-item>
-                    <a-form-item label="Chuyên mục cha">
+                    <a-form-item name="categories_id" label="Chuyên mục cha">
                         <a-form-item style="display: inline-block; margin-right: 5px;">
                             <a-tooltip title="Thêm chuyên mục">
                                 <a-button type="primary" @click="showAddCategoryModal">
@@ -58,7 +58,7 @@
                                 </a-button>
                             </a-tooltip>
                         </a-form-item>
-                        <a-form-item name="categories_id" :style="{ display: 'inline-block', width: 'calc(100% - 80px)' }">
+                        <a-form-item :style="{ display: 'inline-block', width: 'calc(100% - 80px)' }">
                             <a-spin :spinning="categoriesTreeLoading">
                                 <a-tree-select
                                     show-search

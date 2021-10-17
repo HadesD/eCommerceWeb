@@ -50,7 +50,7 @@ export default {
         const previewImg = ref({});
 
         watch(() => props.defaultImages, (value, prevValue) => {
-            console.log('defaultImages', value);
+            // TODO: Fix 4 time being called
             fileList.value = value;
         });
 
@@ -74,20 +74,24 @@ export default {
         };
 
         const change = (info) => {
-            const fileItem = info.file;
+            const file = info.file;
 
             // Is update event
-            if (fileItem.originFileObj) {
+            if (file.originFileObj) {
                 return;
             }
 
             // Is uploaded
-            if (fileItem.url) {
+            if (file.url) {
                 return;
             }
 
+            const fileItem = fileList.value.find((v) => {
+                return v.originFileObj === file;
+            });
+
             const data = new FormData();
-            data.append('image', fileItem);
+            data.append('image', file);
 
             const xhttp = new XMLHttpRequest();
             xhttp.open('POST', 'https://api.imgur.com/3/image');
@@ -98,6 +102,7 @@ export default {
                     fileItem.status = 'error';
                     return;
                 }
+
                 const res = xhttp.response;
                 fileItem.status = 'done';
                 fileItem.url = res.data.link;

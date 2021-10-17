@@ -158,21 +158,14 @@
                                         )
                                     "
                                 >
-                                    <a-button
-                                        type="primary"
-                                        @click="
-                                            () => (userIndexPageVisible = true)
-                                        "
-                                        ><template #icon
-                                            ><UserOutlined
-                                        /></template>
-                                        Chọn</a-button
-                                    >
+                                    <a-button type="primary" @click="() => (userIndexPageVisible = true)">
+                                        <template #icon><UserOutlined /></template>Chọn
+                                    </a-button>
                                 </a-tooltip>
                             </a-col>
                         </a-row>
                     </a-form-item>
-                    <a-form-item label="Chuyên mục cha">
+                    <a-form-item name="categories_id" label="Chuyên mục cha">
                         <a-form-item
                             style="
                                 display: inline-block;
@@ -190,7 +183,6 @@
                             </a-tooltip>
                         </a-form-item>
                         <a-form-item
-                            name="categories_id"
                             style="
                                 display: inline-block;
                                 width: calc(100% - 80px);
@@ -251,14 +243,14 @@
                             :change="(value) => {
                                 formData.images = value.map((v, i) => {
                                     return {
-                                        id: v.id || v.originFileObj?.id,
-                                        url: v.url || v.originFileObj?.url,
+                                        id: v.id,
+                                        url: v.url,
                                     };
                                 });
                             }"
                         />
                     </a-card>
-                    <a-form-item label="Ghi chú">
+                    <a-form-item name="note" label="Ghi chú">
                         <a-textarea v-model:value="formData.note" />
                     </a-form-item>
                     <a-form-item
@@ -330,7 +322,7 @@
                                 }}</span>
                             </a-descriptions-item>
                         </a-descriptions>
-                        <a-button type="primary" htmlType="submit" block>{{
+                        <a-button type="primary" htmlType="submit" block :disabled="stockInfo.images?.find((elm) => (!elm.url))">{{
                             id ? "Sửa" : "Nhập kho"
                         }}</a-button>
                     </a-card>
