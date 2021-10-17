@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import moment from 'moment';
 import { message } from 'ant-design-vue';
 
-function vietnameseNormalize(str, toUpperCase = false) {
+export function vietnameseNormalize(str, toUpperCase = false) {
     str = str.toLowerCase()
         .replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, 'a')
         .replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, 'e')
@@ -24,19 +24,19 @@ function vietnameseNormalize(str, toUpperCase = false) {
     return toUpperCase ? str.toUpperCase() : str;
 };
 
-function number_format(num) {
+export function number_format(num) {
     return new Intl.NumberFormat().format(num || 0);
 };
 
-function date_format(dateStr, formatStr = 'YYYY-MM-DD HH:mm:ss') {
+export function date_format(dateStr, formatStr = 'YYYY-MM-DD HH:mm:ss') {
     return moment(dateStr).format(formatStr);
 }
 
-function cloneDeep(data) {
+export function cloneDeep(data) {
     return _.cloneDeep(data);
 }
 
-function list_to_tree(list, parentKey = 'parent_id') {
+export function list_to_tree(list, parentKey = 'parent_id') {
     let map = {}, node, roots = [], i;
 
     for (i = 0; i < list.length; i += 1) {
@@ -56,7 +56,7 @@ function list_to_tree(list, parentKey = 'parent_id') {
     return roots;
 }
 
-function showErrorRequestApi(err) {
+export function showErrorRequestApi(err) {
     if (err.response && err.response.data && err.response.data.message) {
         message.error(err.response.data.message);
         return;
@@ -65,9 +65,13 @@ function showErrorRequestApi(err) {
     message.error(err.message || 'Thất bại');
 }
 
-export {
-    vietnameseNormalize, number_format,
-    date_format, cloneDeep,
-    list_to_tree,
-    showErrorRequestApi,
-};
+export function getFileDataBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onload = () => resolve(reader.result);
+
+        reader.onerror = error => reject(error);
+    });
+}
