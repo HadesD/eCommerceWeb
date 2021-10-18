@@ -524,6 +524,11 @@ export default {
     props: {
         orderId: Number,
     },
+
+    emits: [
+        'orderUpdated'
+    ],
+
     components: {
         UserIndex: defineAsyncComponent(() => import('~/dashboard/pages/users/Index.vue')),
         UserEdit: defineAsyncComponent(() => import('~/dashboard/pages/users/Edit.vue')),
