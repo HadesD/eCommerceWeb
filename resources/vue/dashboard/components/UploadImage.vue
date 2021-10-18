@@ -27,11 +27,11 @@
 <script>
 import { ref } from '@vue/reactivity';
 
-import { getFileDataBase64 } from "../../helpers";
+import { getFileDataBase64 } from '~/helpers';
 
 import {
     PlusOutlined,
-} from "@ant-design/icons-vue";
+} from '@ant-design/icons-vue';
 import { watch } from '@vue/runtime-core';
 
 export default {

@@ -2,7 +2,7 @@
     <a-page-header title="Giao dịch (Thu / Chi)">
         <template #tags>
             <a-tooltip title="Làm mới">
-                <a-button type="primary" :loading="transactionsTableLoading" @click="() => loadTransactions({})">
+                <a-button type="primary" :loading="transactionsTableLoading" @click="() => loadTransactions()">
                     <template #icon>
                         <ReloadOutlined />
                     </template>
@@ -30,7 +30,8 @@
         @change="(pagination, filters, sorter) => {
             transactionsTableFilters = filters;
             transactionsTableSorts = (sorter.column && sorter.columnKey) ? ((sorter.order === 'descend' ? '-' : '+') + sorter.columnKey) : undefined;
-            loadTransactions({page: pagination.current});
+            transactionsTablePagination = pagination;
+            loadTransactions();
         }"
     >
         <!-- Block Search: BEGIN -->
@@ -140,7 +141,7 @@
 </template>
 
 <script>
-import { defineAsyncComponent } from 'vue';
+import moment from 'moment';
 
 import {
     SearchOutlined, DownloadOutlined, PlusOutlined,
@@ -148,9 +149,8 @@ import {
     AccountBookOutlined, BankOutlined,
 } from '@ant-design/icons-vue';
 
-import { number_format, date_format } from '../../../helpers';
-import moment from 'moment';
-import RequestRepository from '../../utils/RequestRepository';
+import { number_format, date_format, defineAsyncComponent } from '~/helpers';
+import RequestRepository from '~/dashboard/utils/RequestRepository';
 
 const transactionsTableColumns = [
     {
@@ -210,9 +210,9 @@ const transactionsTableColumns = [
 
 export default {
     components: {
-        UserEdit: defineAsyncComponent(() => import('../users/Edit')),
-        StockEdit: defineAsyncComponent(() => import('../stocks/Edit')),
-        OrderEdit: defineAsyncComponent(() => import('../orders/Edit')),
+        UserEdit: defineAsyncComponent(() => import('~/dashboard/pages/users/Edit.vue')),
+        StockEdit: defineAsyncComponent(() => import('~/dashboard/pages/stocks/Edit.vue')),
+        OrderEdit: defineAsyncComponent(() => import('~/dashboard/pages/orders/Edit.vue')),
 
         SearchOutlined, DownloadOutlined, PlusOutlined,
         ReloadOutlined, ShoppingCartOutlined, EditOutlined,
@@ -240,7 +240,15 @@ export default {
         };
     },
     mounted() {
-        this.loadTransactions({page: 1});
+        this.transactionsTablePagination.current = this.$route.query.page;
+
+        this.transactionsTableFilters = this.$route.query;
+        delete this.transactionsTableFilters.sort_by;
+        delete this.transactionsTableFilters.page;
+
+        this.transactionsTableSorts = this.$route.query.sort_by;
+
+        this.loadTransactions();
     },
     computed: {
         transactionsTableData() {
@@ -252,7 +260,7 @@ export default {
         date_format,
         moment,
 
-        loadTransactions({page}) {
+        loadTransactions() {
             this.transactionsTableLoading = true;
 
             // Reset popup data
@@ -260,12 +268,18 @@ export default {
             this.currentStockId = undefined;
             this.currentOrderId = undefined;
 
+            const params = {
+                page: this.transactionsTablePagination.current,
+                ...this.transactionsTableFilters,
+                sort_by: this.transactionsTableSorts,
+            };
+
+            this.$router.replace({
+                query: params,
+            });
+
             RequestRepository.get('/transactions', {
-                params: {
-                    page: page || this.transactionsTablePagination.current,
-                    ...this.transactionsTableFilters,
-                    sort_by: this.transactionsTableSorts,
-                }
+                params
             })
                 .then(res => {
                     const resData = res.data;

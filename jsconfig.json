@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "baseUrl": ".",
+        "paths": {
+            "~/*": [
+                "resources/vue/*"
+            ]
+        }
+    },
+    "include": [
+        "resources/vue/**/*",
+        "resources/vue/dashboard/**/*",
+    ],
+    "exclude": [
+        "node_modules",
+        "public"
+    ]
+}

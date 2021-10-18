@@ -68,11 +68,11 @@
 import { onMounted, ref, watch } from 'vue';
 import { message } from 'ant-design-vue';
 
-import RequestRepository from '../utils/RequestRepository';
+import RequestRepository from '~/utils/RequestRepository';
 
 import {
     number_format,
-} from '../helpers';
+} from '~/helpers';
 import { useRoute, useRouter } from 'vue-router';
 
 export default {

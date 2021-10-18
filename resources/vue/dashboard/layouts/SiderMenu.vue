@@ -20,8 +20,8 @@
                     </div>
                 </router-link>
             </a-menu-item>
-            <a-menu-item key="/help/">
-                <router-link to="/help/">
+            <a-menu-item key="/help">
+                <router-link to="/help">
                     <QuestionCircleOutlined />
                     <span>Hướng dẫn</span>
                 </router-link>
@@ -31,26 +31,26 @@
                     <ShopOutlined />
                     <span>Quản lý tiệm</span>
                 </template>
-                <a-menu-item key="/products/">
-                    <router-link to="/products/">
+                <a-menu-item key="/products">
+                    <router-link to="/products">
                         <ShoppingCartOutlined />
                         <span>Sản phẩm</span>
                     </router-link>
                 </a-menu-item>
-                <a-menu-item key="/orders/">
-                    <router-link to="/orders/">
+                <a-menu-item key="/orders">
+                    <router-link to="/orders">
                         <AccountBookOutlined />
                         <span>Hoá Đơn</span>
                     </router-link>
                 </a-menu-item>
-                <a-menu-item key="/stocks/">
-                    <router-link to="/stocks/">
+                <a-menu-item key="/stocks">
+                    <router-link to="/stocks">
                         <BankOutlined />
                         <span>Kho hàng</span>
                     </router-link>
                 </a-menu-item>
-                <a-menu-item key="/users/">
-                    <router-link to="/users/">
+                <a-menu-item key="/users">
+                    <router-link to="/users">
                         <UserOutlined />
                         <span>Khách hàng</span>
                     </router-link>
@@ -61,8 +61,8 @@
                     <BarChartOutlined />
                     <span>Thống kê</span>
                 </template>
-                <a-menu-item key="/transactions/">
-                    <router-link to="/transactions/">
+                <a-menu-item key="/transactions">
+                    <router-link to="/transactions">
                         <TransactionOutlined />
                         <span>Thu / Chi</span>
                     </router-link>

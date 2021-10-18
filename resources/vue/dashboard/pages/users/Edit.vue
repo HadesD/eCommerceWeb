@@ -77,10 +77,10 @@ import {
     FacebookOutlined,
 } from '@ant-design/icons-vue';
 
-import UserRole, { Config as configUserRole } from '../../configs/UserRole';
-import { date_format } from '../../../helpers';
-import User from '../../utils/User';
-import RequestRepository from '../../utils/RequestRepository';
+import { date_format } from '~/helpers';
+import UserRole, { Config as configUserRole } from '~/dashboard/configs/UserRole';
+import RequestRepository from '~/dashboard/utils/RequestRepository';
+import User from '~/dashboard/utils/User';
 
 export default {
     props: {
@@ -157,6 +157,8 @@ export default {
                 this.userInfo = {};
 
                 this.$refs.ruleForm.resetFields();
+
+                this.userInfoLoading = false;
             }
         },
     },

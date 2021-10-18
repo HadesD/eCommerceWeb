@@ -2,7 +2,7 @@
     <a-page-header title="Người dùng / Khách hàng">
         <template #tags>
             <a-tooltip title="Làm mới">
-                <a-button type="primary" :loading="usersTableLoading" @click="() => loadUsers({})">
+                <a-button type="primary" :loading="usersTableLoading" @click="() => loadUsers()">
                     <template #icon>
                         <ReloadOutlined />
                     </template>
@@ -29,7 +29,8 @@
         :pagination="usersTablePagination"
         @change="(pagination, filters) => {
             usersTableFilters = filters;
-            loadUsers({page: pagination.current});
+            usersTablePagination = pagination;
+            loadUsers();
         }"
     >
         <!-- Block Search: BEGIN -->
@@ -88,13 +89,11 @@
         :footer="false"
         :width="700"
     >
-        <Edit :userId="currentUserId" />
+        <UserEdit :userId="currentUserId" />
     </a-modal>
 </template>
 
 <script>
-import { defineAsyncComponent } from 'vue';
-
 import {
     FacebookOutlined,
     SearchOutlined, DownloadOutlined, PlusOutlined,
@@ -102,9 +101,10 @@ import {
     UserOutlined,
 } from '@ant-design/icons-vue';
 
-import UserRole, { Config as configUserRole } from '../../configs/UserRole';
-import { date_format } from '../../../helpers';
-import RequestRepository from '../../utils/RequestRepository';
+import { date_format, defineAsyncComponent } from '~/helpers';
+
+import UserRole, { Config as configUserRole } from '~/dashboard/configs/UserRole';
+import RequestRepository from '~/dashboard/utils/RequestRepository';
 
 const usersTableColumns = [
     {
@@ -172,7 +172,8 @@ export default {
         onFinishSelect: Function,
     },
     components: {
-        Edit: defineAsyncComponent(() => import('./Edit')),
+        UserEdit: defineAsyncComponent(() => import('~/dashboard/pages/users/Edit.vue')),
+
         FacebookOutlined,
         SearchOutlined, DownloadOutlined, PlusOutlined,
         ReloadOutlined, ShoppingCartOutlined, EditOutlined,
@@ -197,20 +198,33 @@ export default {
         };
     },
     mounted() {
-        this.loadUsers({page: 1});
+        this.usersTablePagination.current = this.$route.query.page;
+
+        this.usersTableFilters = this.$route.query;
+        delete this.usersTableFilters.sort_by;
+        delete this.usersTableFilters.page;
+
+        this.usersTableSorts = this.$route.query.sort_by;
+
+        this.loadUsers();
     },
     computed: {
     },
     methods: {
         date_format,
-        loadUsers({page}) {
+        loadUsers() {
             this.usersTableLoading = true;
 
+            const params = {
+                page: this.usersTablePagination.current,
+                ...this.usersTableFilters,
+            };
+            this.$router.replace({
+                query: params,
+            });
+
             RequestRepository.get('/users', {
-                params: {
-                    page: page || this.usersTablePagination.current,
-                    ...this.usersTableFilters,
-                }
+                params
             })
                 .then(res => {
                     const resData = res.data;

@@ -33,7 +33,7 @@
             <a-page-header title="Kho hàng">
                 <template #tags>
                     <a-tooltip title="Làm mới">
-                        <a-button type="primary" :loading="stocksTableLoading" @click="() => loadStocks({})">
+                        <a-button type="primary" :loading="stocksTableLoading" @click="() => loadStocks()">
                             <template #icon><ReloadOutlined /></template>
                         </a-button>
                     </a-tooltip>
@@ -62,7 +62,8 @@
                 @change="(pagination, filters, sorter) => {
                     stocksTableFilters = filters;
                     stocksTableSorts = (sorter.column && sorter.columnKey) ? ((sorter.order === 'descend' ? '-' : '+') + sorter.columnKey) : null;
-                    loadStocks({page: pagination.current});
+                    stocksTablePagination = pagination;
+                    loadStocks();
                 }"
             >
                 <!-- Block Search: BEGIN -->
@@ -161,16 +162,16 @@
 </template>
 
 <script>
-import { defineAsyncComponent } from 'vue';
-
 import {
     SearchOutlined, DownloadOutlined, PlusOutlined,
     ReloadOutlined, ShoppingCartOutlined, EditOutlined,
     BankOutlined,
 } from '@ant-design/icons-vue';
 
-import { number_format, date_format } from '../../../helpers';
-import RequestRepository from '../../utils/RequestRepository';
+import { number_format, date_format, defineAsyncComponent } from '~/helpers';
+import RequestRepository from '~/dashboard/utils/RequestRepository';
+
+import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
 
 const stocksTableColumns = [
     {
@@ -257,15 +258,18 @@ export default {
     props: {
         onFinishSelect: Function,
     },
+
     components: {
-        AddCategoryModal: defineAsyncComponent(() => import('../../components/AddCategoryModal.vue')),
-        UserEdit: defineAsyncComponent(() => import('../users/Edit')),
-        StockEdit: defineAsyncComponent(() => import('../stocks/Edit')),
+        AddCategoryModal,
+
+        UserEdit: defineAsyncComponent(() => import('~/dashboard/pages/users/Edit.vue')),
+        StockEdit: defineAsyncComponent(() => import('~/dashboard/pages/stocks/Edit.vue')),
 
         SearchOutlined, DownloadOutlined, PlusOutlined,
         ReloadOutlined, ShoppingCartOutlined, EditOutlined,
         BankOutlined,
     },
+
     data() {
         return {
             stockEditPageVisible: false,
@@ -291,12 +295,19 @@ export default {
         };
     },
     mounted() {
+        this.currentCategoryId = this.$route.query.category_id;
         this.loadCategoriesTree();
 
-        this.currentCategoryId = (parseInt(this.$route.query.category_id) || null);
-        this.stocksTablePagination.current = (parseInt(this.$route.query.page) || 1);
+        this.stocksTablePagination.current = this.$route.query.page;
 
-        this.loadStocks({});
+        this.stocksTableFilters = this.$route.query;
+        delete this.stocksTableFilters.sort_by;
+        delete this.stocksTableFilters.page;
+        delete this.stocksTableFilters.category_id;
+
+        this.stocksTableSorts = this.$route.query.sort_by;
+
+        this.loadStocks();
     },
     computed: {
         categoriesTreeData(){
@@ -375,7 +386,7 @@ export default {
             this.currentCategoryId = keys[0];
             this.stocksTablePagination.current = 1;
 
-            this.loadStocks({});
+            this.loadStocks();
         },
 
         onCategoriesTreeExpand() {
@@ -393,20 +404,25 @@ export default {
             this.addCategoryModalVisible = false;
         },
 
-        loadStocks({page}) {
+        loadStocks() {
             this.stocksTableLoading = true;
 
             // Reset popup data
             this.currentUserId = null;
             this.currentStockId = null;
 
+            const params = {
+                category_id: this.currentCategoryId,
+                page: this.stocksTablePagination.current,
+                ...this.stocksTableFilters,
+                sort_by: this.stocksTableSorts,
+            };
+            this.$router.replace({
+                query: params,
+            });
+
             RequestRepository.get('/stocks', {
-                params: {
-                    category_id: this.currentCategoryId,
-                    page: page || this.stocksTablePagination.current,
-                    ...this.stocksTableFilters,
-                    sort_by: this.stocksTableSorts,
-                },
+                params,
             })
                 .then(res => {
                     const resData = res.data;

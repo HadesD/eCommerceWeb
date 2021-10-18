@@ -1,4 +1,5 @@
 const mix = require('laravel-mix');
+const path = require('path');
 
 /*
  |--------------------------------------------------------------------------
@@ -14,6 +15,14 @@ const mix = require('laravel-mix');
 let output = {
     chunkFilename: mix.inProduction() ? 'js/chunks/[name].[chunkhash].js' : 'js/chunks/[name].js',
 };
+
+mix.webpackConfig({
+    resolve: {
+        alias: {
+            '~': path.join(__dirname, './resources/vue')
+        }
+    }
+});
 
 if (process.env.RENDER_TARGET === 'server') {
     output = {
@@ -55,8 +64,8 @@ if (mix.inProduction()) {
     // Fix error can not create tcp socket
     mix.options({
         hmrOptions: {
-            host: 'localhost',
-            port: 7807,
+            host: '127.0.0.1',
+            port: 8880,
         },
     });
 }

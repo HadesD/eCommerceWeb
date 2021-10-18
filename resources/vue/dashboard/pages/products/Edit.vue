@@ -159,25 +159,31 @@
     </a-spin>
 </template>
 <script>
-import { defineAsyncComponent, reactive, ref } from 'vue';
+import { reactive, ref } from 'vue';
 
-import UploadImage from '../../components/UploadImage';
-
+import { message } from 'ant-design-vue';
 import {
     PlusOutlined, ReloadOutlined, DeleteOutlined,
 } from '@ant-design/icons-vue';
 
-import ProductStatus, { Config as configProductStatus } from '../../configs/ProductStatus';
-import { vietnameseNormalize, number_format, date_format } from '../../../helpers';
-import RequestRepository from '../../utils/RequestRepository';
-import { message } from 'ant-design-vue';
+import ProductStatus, { Config as configProductStatus } from '~/dashboard/configs/ProductStatus';
+import { vietnameseNormalize, number_format, date_format } from '~/helpers';
+import RequestRepository from '~/dashboard/utils/RequestRepository';
+
+import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
+import UploadImage from '~/dashboard/components/UploadImage.vue';
 
 export default {
     props: {
         productId: Number,
     },
+
+    emits: [
+        'productUpdated',
+    ],
+
     components: {
-        AddCategoryModal: defineAsyncComponent(() => import('../../components/AddCategoryModal.vue')),
+        AddCategoryModal,
         UploadImage,
 
         PlusOutlined, ReloadOutlined, DeleteOutlined,
@@ -186,16 +192,16 @@ export default {
     setup() {
         const ruleForm = ref();
         const formData = reactive({
-                id: undefined,
-                name: undefined,
-                slug: undefined,
-                categories_id: [],
-                description: undefined,
-                detail: undefined,
-                specification: undefined,
-                price: undefined,
-                status: ProductStatus.STS_DRAFT,
-            });
+            id: undefined,
+            name: undefined,
+            slug: undefined,
+            categories_id: [],
+            description: undefined,
+            detail: undefined,
+            specification: undefined,
+            price: undefined,
+            status: ProductStatus.STS_DRAFT,
+        });
 
         return {
             ruleForm,
@@ -261,6 +267,8 @@ export default {
                 this.$refs.ruleForm.resetFields();
 
                 this.productInfo = {};
+
+                this.productInfoLoading = false;
             }
         },
     },
@@ -359,7 +367,7 @@ export default {
 
                     message.success(productId ? 'Đã sửa sản phẩm thành công' : 'Đã thêm sản phẩm thành công');
 
-                    // this.$emit('productUpdated', productId);
+                    this.$emit('productUpdated', productId);
 
                     this.loadProduct(this.formData.id);
                 })

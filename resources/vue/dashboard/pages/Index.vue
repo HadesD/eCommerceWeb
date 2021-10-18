@@ -61,8 +61,8 @@ import {
     ReloadOutlined,
 } from '@ant-design/icons-vue';
 
-import { number_format } from '../../helpers';
-import RequestRepository from '../utils/RequestRepository';
+import { number_format } from '~/helpers';
+import RequestRepository from '~/dashboard/utils/RequestRepository';
 
 export default {
     components: {

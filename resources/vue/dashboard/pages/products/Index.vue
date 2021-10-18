@@ -25,6 +25,7 @@
                     :tree-data="categoriesTreeData"
                     @select="onCategoriesTreeSelect"
                     @expand="onCategoriesTreeExpand"
+                    :selectedKeys="[currentCategoryId]"
                 />
             </a-spin>
         </a-col>
@@ -32,7 +33,7 @@
             <a-page-header title="Sản phẩm">
                 <template #tags>
                     <a-tooltip title="Làm mới">
-                        <a-button type="primary" :loading="productsTableLoading" @click="() => loadProducts({})">
+                        <a-button type="primary" :loading="productsTableLoading" @click="() => loadProducts()">
                             <template #icon><ReloadOutlined /></template>
                         </a-button>
                     </a-tooltip>
@@ -56,7 +57,8 @@
                 @change="(pagination, filters, sorter) => {
                     productsTableFilters = filters;
                     productsTableSorts = (sorter.column && sorter.columnKey) ? ((sorter.order === 'descend' ? '-' : '+') + sorter.columnKey) : undefined;
-                    loadProducts({page: pagination.current});
+                    productsTablePagination = pagination;
+                    loadProducts();
                 }"
             >
                 <!-- Block Search: BEGIN -->
@@ -124,23 +126,23 @@
             :footer="false"
             width="98vw"
         >
-            <ProductEdit :productId="currentProductId" @productUpdated="(productId) => loadProducts({})" />
+            <ProductEdit :productId="currentProductId" @productUpdated="(productId) => loadProducts()" />
         </a-modal>
     </a-row>
 </template>
 
 <script>
-import { defineAsyncComponent } from 'vue';
-
 import {
     SearchOutlined, DownloadOutlined, PlusOutlined,
     ReloadOutlined, ShoppingCartOutlined, EditOutlined,
     BankOutlined,
 } from '@ant-design/icons-vue';
 
-import ProductStatus, { Config as configProductStatus } from '../../configs/ProductStatus';
-import { number_format, date_format } from '../../../helpers';
-import RequestRepository from '../../utils/RequestRepository';
+import ProductStatus, { Config as configProductStatus } from '~/dashboard/configs/ProductStatus';
+import { number_format, date_format, defineAsyncComponent } from '~/helpers';
+import RequestRepository from '~/dashboard/utils/RequestRepository';
+
+import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
 
 const productsTableColumns = [
     {
@@ -207,8 +209,9 @@ export default {
         onFinishSelect: Function,
     },
     components: {
-        AddCategoryModal: defineAsyncComponent(() => import('../../components/AddCategoryModal.vue')),
-        ProductEdit: defineAsyncComponent(() => import('../products/Edit')),
+        AddCategoryModal,
+
+        ProductEdit: defineAsyncComponent(() => import('~/dashboard/pages/products/Edit.vue')),
 
         SearchOutlined, DownloadOutlined, PlusOutlined,
         ReloadOutlined, ShoppingCartOutlined, EditOutlined,
@@ -241,12 +244,19 @@ export default {
         };
     },
     mounted(){
+        this.currentCategoryId = this.$route.query.category_id;
         this.loadCategoriesTree();
 
-        this.currentCategoryId = (parseInt(this.$route.query.category_id) || undefined);
-        this.productsTablePagination.current = 1;
+        this.productsTablePagination.current = this.$route.query.page;
 
-        this.loadProducts({});
+        this.productsTableFilters = this.$route.query;
+        delete this.productsTableFilters.sort_by;
+        delete this.productsTableFilters.page;
+        delete this.productsTableFilters.category_id;
+
+        this.productsTableSorts = this.$route.query.sort_by;
+
+        this.loadProducts();
     },
     computed: {
         categoriesTreeData(){
@@ -326,7 +336,7 @@ export default {
             this.currentCategoryId = keys[0];
             this.productsTablePagination.current = 1;
 
-            this.loadProducts({});
+            this.loadProducts();
         },
         onCategoriesTreeExpand() {
             console.log('Trigger Expand');
@@ -344,19 +354,24 @@ export default {
         },
 
         // Product
-        loadProducts({page}){
+        loadProducts(){
             this.productsTableLoading = true;
 
             // Reset popup data
             this.currentProductId = undefined;
 
+            const params = {
+                category_id: this.currentCategoryId,
+                page: this.productsTablePagination.current,
+                ...this.productsTableFilters,
+                sort_by: this.productsTableSorts,
+            };
+            this.$router.replace({
+                query: params,
+            });
+
             RequestRepository.get('/products', {
-                params: {
-                    category_id: this.currentCategoryId,
-                    page: page || this.productsTablePagination.current,
-                    ...this.productsTableFilters,
-                    sort_by: this.productsTableSorts,
-                },
+                params,
             })
                 .then(res => {
                     const resData = res.data;

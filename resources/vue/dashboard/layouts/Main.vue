@@ -22,9 +22,9 @@ import {
     HeartOutlined,
 } from '@ant-design/icons-vue';
 
-import Breadcrumb from '../components/Breadcrumb';
-import SiderMenu from '../layouts/SiderMenu';
-import Header from '../layouts/Header';
+import Breadcrumb from '~/dashboard/components/Breadcrumb.vue';
+import SiderMenu from '~/dashboard/layouts/SiderMenu.vue';
+import Header from '~/dashboard/layouts/Header.vue';
 
 export default {
     data() {

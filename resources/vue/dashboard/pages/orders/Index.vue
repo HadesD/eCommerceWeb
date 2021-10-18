@@ -38,7 +38,8 @@
         @change="(pagination, filters, sorter) => {
             ordersTableFilters = filters;
             ordersTableSorts = (sorter.column && sorter.columnKey) ? ((sorter.order === 'descend' ? '-' : '+') + sorter.columnKey) : undefined;
-            loadOrders({page: pagination.current});
+            ordersTablePagination = pagination;
+            loadOrders();
         }"
     >
         <!-- Block Search: BEGIN -->
@@ -220,12 +221,11 @@
         :footer="false"
         width="98vw"
     >
-        <OrderEdit :orderId="currentOrderId" @orderUpdated="(orderId) => loadOrders({})" />
+        <OrderEdit :orderId="currentOrderId" @orderUpdated="(orderId) => loadOrders()" />
     </a-modal>
 </template>
 
 <script>
-import { defineAsyncComponent } from 'vue';
 import moment from 'moment';
 
 import {
@@ -233,10 +233,10 @@ import {
     ReloadOutlined, ShoppingCartOutlined, EditOutlined,
 } from '@ant-design/icons-vue';
 
-import OrderStatus, { Config as configOrderStatus } from '../../configs/OrderStatus';
-import OrderProductStockStatus from '../../configs/OrderProductStockStatus';
-import { number_format, date_format } from '../../../helpers';
-import RequestRepository from '../../utils/RequestRepository';
+import OrderStatus, { Config as configOrderStatus } from '~/dashboard/configs/OrderStatus';
+import OrderProductStockStatus from '~/dashboard/configs/OrderProductStockStatus';
+import { number_format, date_format, defineAsyncComponent } from '~/helpers';
+import RequestRepository from '~/dashboard/utils/RequestRepository';
 
 const ordersTableColumns = [
     {
@@ -380,11 +380,13 @@ export default {
     props: {
         onFinishSelect: Function,
     },
+
     components: {
-        UserEdit: defineAsyncComponent(() => import('../users/Edit')),
-        StockEdit: defineAsyncComponent(() => import('../stocks/Edit')),
-        ProductEdit: defineAsyncComponent(() => import('../products/Edit')),
-        OrderEdit: defineAsyncComponent(() => import('../orders/Edit')),
+        UserEdit: defineAsyncComponent(() => import('~/dashboard/pages/users/Edit.vue')),
+        ProductEdit: defineAsyncComponent(() => import('~/dashboard/pages/products/Edit.vue')),
+        StockEdit: defineAsyncComponent(() => import('~/dashboard/pages/stocks/Edit.vue')),
+        OrderEdit: defineAsyncComponent(() => import('~/dashboard/pages/orders/Edit.vue')),
+
         SearchOutlined, DownloadOutlined, PlusOutlined,
         ReloadOutlined, ShoppingCartOutlined, EditOutlined,
     },
@@ -421,9 +423,15 @@ export default {
         }
     },
     mounted() {
-        this.ordersTablePagination.current = (parseInt(this.$route.query.page) || 1)
+        this.ordersTablePagination.current = this.$route.query.page;
 
-        this.loadOrders({});
+        this.ordersTableFilters = this.$route.query;
+        delete this.ordersTableFilters.sort_by;
+        delete this.ordersTableFilters.page;
+
+        this.ordersTableSorts = this.$route.query.sort_by;
+
+        this.loadOrders();
     },
     computed: {
         ordersTableData() {
@@ -435,7 +443,7 @@ export default {
         date_format,
         moment,
 
-        loadOrders({page}){
+        loadOrders(){
             this.ordersTableLoading = true;
 
             // Reset popup data
@@ -444,13 +452,16 @@ export default {
             this.currentProductId = undefined;
             this.currentOrderId = undefined;
 
-            RequestRepository.get('/orders', {
-                params: {
-                    page: page || this.ordersTablePagination.current,
-                    ...this.ordersTableFilters,
-                    sort_by: this.ordersTableSorts,
-                }
-            })
+            const params = {
+                ...this.ordersTableFilters,
+                sort_by: this.ordersTableSorts,
+                page: this.ordersTablePagination.current,
+            };
+            this.$router.replace({
+                query: params,
+            });
+
+            RequestRepository.get('/orders', { params })
                 .then(res => {
                     const resData = res.data;
 

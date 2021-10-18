@@ -33,10 +33,10 @@ import { debounce } from 'lodash';
 
 import { message } from 'ant-design-vue';
 
-import RequestRepository from '../utils/RequestRepository';
+import RequestRepository from '~/utils/RequestRepository';
 import {
     number_format,
-} from '../helpers';
+} from '~/helpers';
 
 export default {
     components: {

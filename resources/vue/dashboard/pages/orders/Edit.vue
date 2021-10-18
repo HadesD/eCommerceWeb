@@ -433,7 +433,7 @@
 </template>
 
 <script>
-import { defineAsyncComponent, reactive, ref } from 'vue';
+import { reactive, ref } from 'vue';
 import moment from 'moment';
 
 import {
@@ -442,14 +442,13 @@ import {
     UserOutlined, SearchOutlined,
 } from '@ant-design/icons-vue';
 
-import UserRole from '../../configs/UserRole';
-import OrderStatus, { Config as configOrderStatus } from '../../configs/OrderStatus';
-import OrderProductStockStatus, { Config as configOrderProductStockStatus } from '../../configs/OrderProductStockStatus';
-import PaymentMethod, { Config as configPaymentMethod } from '../../configs/PaymentMethod';
-import RequestRepository from '../../utils/RequestRepository';
-
-import { number_format, cloneDeep, date_format, } from '../../../helpers';
-import User from '../../utils/User';
+import { number_format, cloneDeep, date_format, defineAsyncComponent, } from '~/helpers';
+import UserRole from '~/dashboard/configs/UserRole';
+import OrderStatus, { Config as configOrderStatus } from '~/dashboard/configs/OrderStatus';
+import OrderProductStockStatus, { Config as configOrderProductStockStatus } from '~/dashboard/configs/OrderProductStockStatus';
+import PaymentMethod, { Config as configPaymentMethod } from '~/dashboard/configs/PaymentMethod';
+import RequestRepository from '~/dashboard/utils/RequestRepository';
+import User from '~/dashboard/utils/User';
 
 const addon_transactionsTableColumns = [
     {
@@ -526,12 +525,12 @@ export default {
         orderId: Number,
     },
     components: {
-        UserIndex: defineAsyncComponent(() => import('../users/Index')),
-        UserEdit: defineAsyncComponent(() => import('../users/Edit')),
-        ProductIndex: defineAsyncComponent(() => import('../products/Index')),
-        ProductEdit: defineAsyncComponent(() => import('../products/Edit')),
-        StockIndex: defineAsyncComponent(() => import('../stocks/Index')),
-        StockEdit: defineAsyncComponent(() => import('../stocks/Edit')),
+        UserIndex: defineAsyncComponent(() => import('~/dashboard/pages/users/Index.vue')),
+        UserEdit: defineAsyncComponent(() => import('~/dashboard/pages/users/Edit.vue')),
+        ProductIndex: defineAsyncComponent(() => import('~/dashboard/pages/products/Index.vue')),
+        ProductEdit: defineAsyncComponent(() => import('~/dashboard/pages/products/Edit.vue')),
+        StockIndex: defineAsyncComponent(() => import('~/dashboard/pages/stocks/Index.vue')),
+        StockEdit: defineAsyncComponent(() => import('~/dashboard/pages/stocks/Edit.vue')),
 
         PrinterOutlined, BankOutlined, ShoppingCartOutlined,
         PlusOutlined, ReloadOutlined, DeleteOutlined,
@@ -649,6 +648,8 @@ export default {
                 this.formData.transactions = [];
 
                 this.formData.deal_date = moment();
+
+                this.orderInfoLoading = false;
             }
         },
     },

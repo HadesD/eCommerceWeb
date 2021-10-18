@@ -529,10 +529,8 @@
 </template>
 
 <script>
-import { defineAsyncComponent, reactive, ref } from "vue";
-import moment from "moment";
-
-import UploadImage from '../../components/UploadImage';
+import { reactive, ref } from 'vue';
+import moment from 'moment';
 
 import {
     UserOutlined,
@@ -540,13 +538,16 @@ import {
     PlusOutlined,
     ReloadOutlined,
     DeleteOutlined,
-} from "@ant-design/icons-vue";
+} from '@ant-design/icons-vue';
 
-import { number_format, date_format } from "../../../helpers";
-import UserRole from "../../configs/UserRole";
-import User from "../../utils/User";
-import { Config as configOrderStatus } from "../../configs/OrderStatus";
-import RequestRepository from "../../utils/RequestRepository";
+import { defineAsyncComponent, number_format, date_format } from '~/helpers';
+import UserRole from '~/dashboard/configs/UserRole';
+import User from '~/dashboard/utils/User';
+import { Config as configOrderStatus } from '~/dashboard/configs/OrderStatus';
+import RequestRepository from '~/dashboard/utils/RequestRepository';
+
+import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
+import UploadImage from '~/dashboard/components/UploadImage.vue';
 
 const addon_transactionsTableColumns = [
     {
@@ -588,14 +589,12 @@ export default {
         stockId: Number,
     },
     components: {
-        AddCategoryModal: defineAsyncComponent(() =>
-            import("../../components/AddCategoryModal.vue")
-        ),
+        AddCategoryModal,
         UploadImage,
 
-        UserIndex: defineAsyncComponent(() => import("../users/Index")),
-        UserEdit: defineAsyncComponent(() => import("../users/Edit")),
-        OrderEdit: defineAsyncComponent(() => import("../orders/Edit")),
+        UserIndex: defineAsyncComponent(() => import('~/dashboard/pages/users/Index.vue')),
+        UserEdit: defineAsyncComponent(() => import('~/dashboard/pages/users/Edit.vue')),
+        OrderEdit: defineAsyncComponent(() => import('~/dashboard/pages/orders/Edit.vue')),
 
         UserOutlined,
         SearchOutlined,
@@ -699,6 +698,8 @@ export default {
                 this.formData.transactions = [];
 
                 this.stockInfo = {};
+
+                this.stockInfoLoading = false;
             }
         },
     },

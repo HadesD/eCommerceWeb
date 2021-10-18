@@ -30,7 +30,7 @@
     </a-layout-header>
 </template>
 <script>
-import User from '../utils/User';
+import User from '~/dashboard/utils/User';
 
 import {
     UserOutlined, DownOutlined, LogoutOutlined,

@@ -1,6 +1,10 @@
 import * as _ from 'lodash';
 import moment from 'moment';
 import { message } from 'ant-design-vue';
+import { defineAsyncComponent as vueDefineAsyncComponent } from 'vue';
+
+import LoadingComponent from '~/components/LoadingComponent.vue';
+import ErrorComponent from '~/components/ErrorComponent.vue';
 
 export function vietnameseNormalize(str, toUpperCase = false) {
     str = str.toLowerCase()
@@ -73,5 +77,13 @@ export function getFileDataBase64(file) {
         reader.onload = () => resolve(reader.result);
 
         reader.onerror = error => reject(error);
+    });
+}
+
+export function defineAsyncComponent(loader) {
+    return vueDefineAsyncComponent({
+        loader,
+        loadingComponent: LoadingComponent,
+        errorComponent: ErrorComponent,
     });
 }

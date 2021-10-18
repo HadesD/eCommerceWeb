@@ -1,64 +1,55 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import Main from '../layouts/Main';
-
-const RouteView = {
-    // render: (h) => h('router-view')
-    // template: `<router-view></router-view>`
-    render: (h) => {
-        console.log(h);
-    }
-};
+import Main from '~/dashboard/layouts/Main.vue';
 
 let routes = [
     {
         path: '/',
         component: Main,
-        // redirect: '/',
         children: [
             {
                 path: '/',
-                component: () => import('../pages/Index.vue'),
+                component: (() => import('~/dashboard/pages/Index.vue')),
             },
             {
                 path: '/products',
-                component: () => import('../pages/products/Index.vue'),
+                component: (() => import('~/dashboard/pages/products/Index.vue')),
             },
             {
                 path: '/stocks',
-                component: () => import('../pages/stocks/Index.vue'),
+                component: (() => import('~/dashboard/pages/stocks/Index.vue')),
             },
             {
                 path: '/orders',
-                component: () => import('../pages/orders/Index.vue'),
+                component: (() => import('~/dashboard/pages/orders/Index.vue')),
             },
             {
                 path: '/orders/new',
-                component: () => import('../pages/orders/Edit.vue'),
+                component: (() => import('~/dashboard/pages/orders/Edit.vue')),
             },
             {
                 path: '/users',
-                component: () => import('../pages/users/Index.vue'),
+                component: (() => import('~/dashboard/pages/users/Index.vue')),
             },
             {
                 path: '/transactions',
-                component: () => import('../pages/transactions/Index.vue'),
+                component: (() => import('~/dashboard/pages/transactions/Index.vue')),
             },
             {
                 path: '/help',
-                component: () => import('../pages/Help.vue'),
+                component: (() => import('~/dashboard/pages/Help.vue')),
             },
         ],
     },
     {
         path: '/login',
-        component: () => import('../pages/auth/Login.vue'),
+        component: (() => import('~/dashboard/pages/auth/Login.vue')),
     },
 ];
 
 routes.push({
     path: '/(.*)',
-    component: () => import('../pages/404.vue'),
+    component: (() => import('~/dashboard/pages/404.vue')),
 });
 
 export default createRouter({
