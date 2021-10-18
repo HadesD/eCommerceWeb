@@ -167,7 +167,7 @@ import {
 } from '@ant-design/icons-vue';
 
 import ProductStatus, { Config as configProductStatus } from '~/dashboard/configs/ProductStatus';
-import { vietnameseNormalize, number_format, date_format } from '~/helpers';
+import { vietnameseNormalize, number_format, date_format, showErrorRequestApi } from '~/helpers';
 import RequestRepository from '~/dashboard/utils/RequestRepository';
 
 import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
@@ -292,14 +292,7 @@ export default {
                 .then(res => {
                     this.categories = res.data.data || [];
                 })
-                .catch(err => {
-                    if (err.response && err.response.data && err.response.data.message) {
-                        message.error(err.response.data.message);
-                        return;
-                    }
-
-                    message.error(err.message || 'Thất bại');
-                })
+                .catch(showErrorRequestApi)
                 .finally(()=>{
                     this.categoriesTreeLoading = false;
                 });
@@ -335,14 +328,7 @@ export default {
 
                     this.productInfoLoading = false;
                 })
-                .catch(err => {
-                    if (err.response && err.response.data && err.response.data.message) {
-                        message.error(err.response.data.message);
-                        return;
-                    }
-
-                    message.error(err.message || 'Thất bại');
-                })
+                .catch(showErrorRequestApi)
                 .finally(()=>{
                 });
         },
@@ -371,14 +357,7 @@ export default {
 
                     this.loadProduct(this.formData.id);
                 })
-                .catch(err => {
-                    if (err.response && err.response.data && err.response.data.message) {
-                        message.error(err.response.data.message);
-                        return;
-                    }
-
-                    message.error(err.message || 'Thất bại');
-                })
+                .catch(showErrorRequestApi)
                 .finally(()=>{
                     this.productInfoLoading = false;
                 });

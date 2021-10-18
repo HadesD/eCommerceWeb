@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Dashboard;
 
+use App\Exceptions\ApiErrorException;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -60,6 +61,10 @@ class ProductController extends Controller
         try {
             DB::beginTransaction();
 
+            if (Product::where('slug', $request->slug)->exists()) {
+                throw new ApiErrorException('Đường dẫn đã tồn tại!');
+            }
+
             $product = new Product;
             $product->name = $request->name;
             $product->slug = $request->slug;
@@ -101,9 +106,18 @@ class ProductController extends Controller
         } catch(\Throwable $e) {
             DB::rollback();
 
-            Log::error($e);
+            $error_code = 500;
 
-            return response(null, 500);
+            if (!$e instanceof ApiErrorException) {
+                Log::error($e);
+
+                $message = 'Lỗi hệ thống';
+            } else {
+                $message = $e->getMessage();
+                $error_code = 400;
+            }
+
+            return response(['message' => $message], $error_code);
         }
 
         return $this->show($product);
@@ -131,6 +145,10 @@ class ProductController extends Controller
     {
         try {
             DB::beginTransaction();
+
+            if (($product->slug !== $request->slug) && (Product::where('slug', $request->slug)->exists())) {
+                throw new ApiErrorException('Đường dẫn đã tồn tại!');
+            }
 
             $product->name = $request->name;
             $product->slug = $request->slug;
@@ -192,9 +210,18 @@ class ProductController extends Controller
         } catch(\Throwable $e) {
             DB::rollback();
 
-            Log::error($e);
+            $error_code = 500;
 
-            return response(null, 500);
+            if (!$e instanceof ApiErrorException) {
+                Log::error($e);
+
+                $message = 'Lỗi hệ thống';
+            } else {
+                $message = $e->getMessage();
+                $error_code = 400;
+            }
+
+            return response(['message' => $message], $error_code);
         }
 
         return $this->show($product);
