@@ -88,7 +88,6 @@
 
                 <template #name="{ text, record }">
                     <div>{{ text }}</div>
-                    <a-tag>{{ record.slug }}</a-tag>
                 </template>
                 <template #status="{ text }">
                     <a-tag v-if="configProductStatus[text]" :color="configProductStatus[text].color">{{ configProductStatus[text].name }}</a-tag>

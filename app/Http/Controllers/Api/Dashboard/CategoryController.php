@@ -31,11 +31,19 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+        $this->validate($request, [
+            'name' => 'required',
+            'slug' => 'required',
+        ]);
+
         try {
             DB::beginTransaction();
 
             $category = new Category;
-            $category->fill($request->toArray());
+            $category->name = $request->name;
+            $category->slug = $request->slug;
+            $category->parent_id = $request->parent_id;
+            $category->description = $request->description;
             $category->save();
 
             DB::commit();
@@ -76,10 +84,18 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
+        $this->validate($request, [
+            'name' => 'required',
+            'slug' => 'required',
+        ]);
+
         try {
             DB::beginTransaction();
 
-            $category->fill($request->toArray());
+            $category->name = $request->name;
+            $category->slug = $request->slug;
+            $category->parent_id = $request->parent_id;
+            $category->description = $request->description;
             $category->save();
 
             DB::commit();

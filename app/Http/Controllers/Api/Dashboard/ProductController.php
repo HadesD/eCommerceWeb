@@ -58,16 +58,18 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        $this->validate($request, [
+            'name' => 'required',
+            'price' => 'required',
+            'status' => 'required',
+            'categories_id' => 'required|array',
+        ]);
+
         try {
             DB::beginTransaction();
 
-            if (Product::where('slug', $request->slug)->exists()) {
-                throw new ApiErrorException('Đường dẫn đã tồn tại!');
-            }
-
             $product = new Product;
             $product->name = $request->name;
-            $product->slug = $request->slug;
             $product->price = $request->price;
             $product->status = (int)$request->status;
             $product->description = $request->description;
@@ -143,15 +145,17 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
+        $this->validate($request, [
+            'name' => 'required',
+            'price' => 'required',
+            'status' => 'required',
+            'categories_id' => 'required|array',
+        ]);
+
         try {
             DB::beginTransaction();
 
-            if (($product->slug !== $request->slug) && (Product::where('slug', $request->slug)->exists())) {
-                throw new ApiErrorException('Đường dẫn đã tồn tại!');
-            }
-
             $product->name = $request->name;
-            $product->slug = $request->slug;
             $product->price = $request->price;
             $product->status = (int)$request->status;
             $product->description = $request->description;

@@ -53,7 +53,7 @@ import {
 } from '@ant-design/icons-vue';
 
 import { vietnameseNormalize } from '~/helpers';
-import RequestRepository from '~/utils/RequestRepository';
+import RequestRepository from '~/dashboard/utils/RequestRepository';
 
 const TREE_ROOT_ID = 0;
 const TREE_NONE_PARENT_ID = -1;

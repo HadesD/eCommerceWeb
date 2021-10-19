@@ -19,20 +19,34 @@
 import { onMounted, reactive, ref, watch, } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
 
-import RequestRepository from '../utils/RequestRepository';
+import RequestRepository from '~/utils/RequestRepository';
+import { vietnameseNormalize } from '~/helpers';
 
 const baseUrl = 'https://raw.githubusercontent.com/vueComponent/ant-design-vue/next/components/vc-slick/assets/img/react-slick/';
 
 export default {
     setup() {
         const route = useRoute();
+        const router = useRouter();
 
         const product = ref({});
 
         const loadProduct = () => {
-            RequestRepository.get('/products/' + route.params.product_slug)
+            RequestRepository.get('/products/' + route.params.product_id)
                 .then(res => {
-                    product.value = res.data.data;
+                    const productData = res.data.data;
+                    const productSlug = vietnameseNormalize(productData.name);
+                    if (route.params.product_slug !== productSlug) {
+                        console.log(productData, route.params, productSlug);
+                        router.replace({
+                            params: {
+                                ...route.params,
+                                product_slug: productSlug,
+                            },
+                        });
+                    }
+
+                    product.value = productData;
                 });
         };
 
@@ -46,7 +60,11 @@ export default {
 
         watch(
             () => route.params.product_slug,
-            () => loadProduct()
+            (value) => {
+                if (value) {
+                    loadProduct();
+                }
+            }
         );
 
         return {

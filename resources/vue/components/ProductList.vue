@@ -28,7 +28,8 @@
                             name: 'product',
                             params: {
                                 category_slug: $route.params.category_slug || product.categories[0].slug,
-                                product_slug: product.slug,
+                                product_slug: vietnameseNormalize(product.name),
+                                product_id: product.id,
                             }
                         }"
                     >
@@ -71,7 +72,7 @@ import { message } from 'ant-design-vue';
 import RequestRepository from '~/utils/RequestRepository';
 
 import {
-    number_format,
+    number_format, vietnameseNormalize,
 } from '~/helpers';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -166,8 +167,10 @@ export default {
             sortBy,
 
             loadProductList,
-            number_format,
             onSortByChange,
+
+            number_format,
+            vietnameseNormalize,
         };
     },
 }

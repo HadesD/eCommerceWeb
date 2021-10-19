@@ -21,8 +21,6 @@ class Order extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['customer_id', 'note'];
-
     public function getRemainingNeedPaidTotalAttribute()
     {
         return $this->need_paid_total - $this->stock_earned_total;

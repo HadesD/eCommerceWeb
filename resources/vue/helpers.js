@@ -7,7 +7,7 @@ import LoadingComponent from '~/components/LoadingComponent.vue';
 import ErrorComponent from '~/components/ErrorComponent.vue';
 
 export function vietnameseNormalize(str, toUpperCase = false) {
-    str = str.toLowerCase()
+    str = str?.toLowerCase()
         .replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, 'a')
         .replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, 'e')
         .replace(/ì|í|ị|ỉ|ĩ/g, 'i')
@@ -25,7 +25,7 @@ export function vietnameseNormalize(str, toUpperCase = false) {
         .replace(/-$/, '')
         .replace(/^-/, '');
 
-    return toUpperCase ? str.toUpperCase() : str;
+    return toUpperCase ? str?.toUpperCase() : str;
 };
 
 export function number_format(num) {

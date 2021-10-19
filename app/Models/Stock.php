@@ -10,10 +10,6 @@ class Stock extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'name', 'idi', 'cost_price', 'updated_user_id', 'in_date'
-    ];
-
     public function getCostTotalAttribute()
     {
         $cost_total = 0;

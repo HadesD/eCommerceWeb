@@ -37,10 +37,7 @@
             <a-row type="flex" :gutter="16">
                 <a-col :xs="{ order: 2, span: 24 }" :md="{ order: 1, span: 16 }">
                     <a-form-item label="Tên sản phẩm" name="name">
-                        <a-input @change="onNameChanged" v-model:value="formData.name" />
-                    </a-form-item>
-                    <a-form-item label="Đường dẫn URL (Slug)" name="slug">
-                        <a-input v-model:value="formData.slug" size="small" />
+                        <a-input v-model:value="formData.name" />
                     </a-form-item>
                     <a-form-item label="Giá bán" name="price" :help="`Xem trước: ${number_format(formData.price || 0)} ₫`">
                         <a-input-number
@@ -167,7 +164,7 @@ import {
 } from '@ant-design/icons-vue';
 
 import ProductStatus, { Config as configProductStatus } from '~/dashboard/configs/ProductStatus';
-import { vietnameseNormalize, number_format, date_format, showErrorRequestApi } from '~/helpers';
+import { number_format, date_format, showErrorRequestApi } from '~/helpers';
 import RequestRepository from '~/dashboard/utils/RequestRepository';
 
 import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
@@ -194,7 +191,6 @@ export default {
         const formData = reactive({
             id: undefined,
             name: undefined,
-            slug: undefined,
             categories_id: [],
             description: undefined,
             detail: undefined,
@@ -219,9 +215,6 @@ export default {
             productInfoLoading: false,
             rules: {
                 name: [
-                    { required: true },
-                ],
-                slug: [
                     { required: true },
                 ],
                 price: [
@@ -333,9 +326,6 @@ export default {
                 });
         },
 
-        onNameChanged(e){
-            this.formData.slug = vietnameseNormalize(e.target.value);
-        },
         onFinish() {
             this.productInfoLoading = true;
 

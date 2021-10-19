@@ -16,7 +16,7 @@ let routes = [
         component: Category,
     },
     {
-        path: '/:category_slug/:product_slug',
+        path: '/:category_slug/:product_slug.:product_id',
         name: 'product',
         component: Product,
     },

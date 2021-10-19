@@ -91,7 +91,6 @@ class StockController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            // 'note' => 'required',
             'name' => 'required',
             'sell_price' => 'required',
             'cost_price' => 'required',
@@ -208,10 +207,7 @@ class StockController extends Controller
      */
     public function update(Request $request, Stock $stock)
     {
-        // $this->middleware('role.manager');
-
         $this->validate($request, [
-            // 'note' => 'required',
             'name' => 'required',
             'sell_price' => 'required',
             'cost_price' => 'required',

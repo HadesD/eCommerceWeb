@@ -78,12 +78,11 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  string  $slug || $id
+     * @param Product $product
      * @return \Illuminate\Http\Response
      */
-    public function show($p)
+    public function show(Product $product)
     {
-        $product = Product::find($p) ?? Product::query()->where('slug', $p)->first();
         if ($product && ($product->status === Product::STS_DRAFT)) {
             $product = null;
         }
