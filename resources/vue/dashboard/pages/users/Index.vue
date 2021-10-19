@@ -198,20 +198,31 @@ export default {
         };
     },
     mounted() {
-        this.usersTablePagination.current = this.$route.query.page;
+        if (!this.isModalMode) {
+            this.usersTablePagination.current = this.$route.query.page;
 
-        this.usersTableFilters = this.$route.query;
-        delete this.usersTableFilters.sort_by;
-        delete this.usersTableFilters.page;
+            this.usersTableFilters = this.$route.query;
+            delete this.usersTableFilters.sort_by;
+            delete this.usersTableFilters.page;
 
-        this.usersTableSorts = this.$route.query.sort_by;
+            this.usersTableSorts = this.$route.query.sort_by;
+        }
 
         this.loadUsers();
     },
     computed: {
+        /**
+         * Is on modal / import mode
+         * @return bool
+         */
+        isModalMode() {
+            console.log(this.onFinishSelect);
+            return this.onFinishSelect !== undefined;
+        },
     },
     methods: {
         date_format,
+
         loadUsers() {
             this.usersTableLoading = true;
 
@@ -219,9 +230,12 @@ export default {
                 page: this.usersTablePagination.current,
                 ...this.usersTableFilters,
             };
-            this.$router.replace({
-                query: params,
-            });
+
+            if (!this.isModalMode) {
+                this.$router.replace({
+                    query: params,
+                });
+            }
 
             RequestRepository.get('/users', {
                 params

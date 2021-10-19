@@ -244,22 +244,33 @@ export default {
         };
     },
     mounted(){
-        this.currentCategoryId = this.$route.query.category_id;
+        if (!this.isModalMode) {
+            this.currentCategoryId = this.$route.query.category_id;
+        }
         this.loadCategoriesTree();
 
-        this.productsTablePagination.current = this.$route.query.page;
+        if (!this.isModalMode) {
+            this.productsTablePagination.current = this.$route.query.page;
 
-        this.productsTableFilters = this.$route.query;
-        delete this.productsTableFilters.sort_by;
-        delete this.productsTableFilters.page;
-        delete this.productsTableFilters.category_id;
+            this.productsTableFilters = this.$route.query;
+            delete this.productsTableFilters.sort_by;
+            delete this.productsTableFilters.page;
+            delete this.productsTableFilters.category_id;
 
-        this.productsTableSorts = this.$route.query.sort_by;
+            this.productsTableSorts = this.$route.query.sort_by;
+        }
 
         this.loadProducts();
     },
     computed: {
-        categoriesTreeData(){
+        /**
+         * Is on modal / import mode
+         * @return bool
+         */
+        isModalMode() {
+            return this.onFinishSelect !== undefined;
+        },
+        categoriesTreeData() {
             const getParent = (key, tree) => {
                 let parent;
                 for (let i = 0; i < tree.length; i++) {

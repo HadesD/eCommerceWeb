@@ -295,21 +295,33 @@ export default {
         };
     },
     mounted() {
-        this.currentCategoryId = this.$route.query.category_id;
+        if (!this.isModalMode) {
+            this.currentCategoryId = this.$route.query.category_id;
+        }
         this.loadCategoriesTree();
 
-        this.stocksTablePagination.current = this.$route.query.page;
+        if (!this.isModalMode) {
+            this.stocksTablePagination.current = this.$route.query.page;
 
-        this.stocksTableFilters = this.$route.query;
-        delete this.stocksTableFilters.sort_by;
-        delete this.stocksTableFilters.page;
-        delete this.stocksTableFilters.category_id;
+            this.stocksTableFilters = this.$route.query;
+            delete this.stocksTableFilters.sort_by;
+            delete this.stocksTableFilters.page;
+            delete this.stocksTableFilters.category_id;
 
-        this.stocksTableSorts = this.$route.query.sort_by;
+            this.stocksTableSorts = this.$route.query.sort_by;
+        }
 
         this.loadStocks();
     },
     computed: {
+        /**
+         * Is on modal / import mode
+         * @return bool
+         */
+        isModalMode() {
+            return this.onFinishSelect !== undefined;
+        },
+
         categoriesTreeData(){
             const getParent = (key, tree) => {
                 let parent;
@@ -417,9 +429,12 @@ export default {
                 ...this.stocksTableFilters,
                 sort_by: this.stocksTableSorts,
             };
-            this.$router.replace({
-                query: params,
-            });
+
+            if (!this.isModalMode) {
+                this.$router.replace({
+                    query: params,
+                });
+            }
 
             RequestRepository.get('/stocks', {
                 params,

@@ -65,7 +65,7 @@ if (mix.inProduction()) {
     mix.options({
         hmrOptions: {
             host: '127.0.0.1',
-            port: 8880,
+            port: 8888,
         },
     });
 }

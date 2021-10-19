@@ -423,17 +423,27 @@ export default {
         }
     },
     mounted() {
-        this.ordersTablePagination.current = this.$route.query.page;
+        if (!this.isModalMode) {
+            this.ordersTablePagination.current = this.$route.query.page;
 
-        this.ordersTableFilters = this.$route.query;
-        delete this.ordersTableFilters.sort_by;
-        delete this.ordersTableFilters.page;
+            this.ordersTableFilters = this.$route.query;
+            delete this.ordersTableFilters.sort_by;
+            delete this.ordersTableFilters.page;
 
-        this.ordersTableSorts = this.$route.query.sort_by;
+            this.ordersTableSorts = this.$route.query.sort_by;
+        }
 
         this.loadOrders();
     },
     computed: {
+        /**
+         * Is on modal / import mode
+         * @return bool
+         */
+        isModalMode() {
+            return this.onFinishSelect !== undefined;
+        },
+
         ordersTableData() {
             return this.orders;
         },
@@ -457,9 +467,12 @@ export default {
                 sort_by: this.ordersTableSorts,
                 page: this.ordersTablePagination.current,
             };
-            this.$router.replace({
-                query: params,
-            });
+
+            if (!this.isModalMode) {
+                this.$router.replace({
+                    query: params,
+                });
+            }
 
             RequestRepository.get('/orders', { params })
                 .then(res => {

@@ -240,17 +240,27 @@ export default {
         };
     },
     mounted() {
-        this.transactionsTablePagination.current = this.$route.query.page;
+        if (!this.isModalMode) {
+            this.transactionsTablePagination.current = this.$route.query.page;
 
-        this.transactionsTableFilters = this.$route.query;
-        delete this.transactionsTableFilters.sort_by;
-        delete this.transactionsTableFilters.page;
+            this.transactionsTableFilters = this.$route.query;
+            delete this.transactionsTableFilters.sort_by;
+            delete this.transactionsTableFilters.page;
 
-        this.transactionsTableSorts = this.$route.query.sort_by;
+            this.transactionsTableSorts = this.$route.query.sort_by;
+        }
 
         this.loadTransactions();
     },
     computed: {
+        /**
+         * Is on modal / import mode
+         * @return bool
+         */
+        isModalMode() {
+            return this.onFinishSelect !== undefined;
+        },
+
         transactionsTableData() {
             return this.transactions;
         },
@@ -274,9 +284,11 @@ export default {
                 sort_by: this.transactionsTableSorts,
             };
 
-            this.$router.replace({
-                query: params,
-            });
+            if (!this.isModalMode) {
+                this.$router.replace({
+                    query: params,
+                });
+            }
 
             RequestRepository.get('/transactions', {
                 params
