@@ -35,6 +35,9 @@ export default {
             RequestRepository.get('/products/' + route.params.product_id)
                 .then(res => {
                     const productData = res.data.data;
+
+                    document.title = productData.name;
+
                     const productSlug = vietnameseNormalize(productData.name);
                     if (route.params.product_slug !== productSlug) {
                         console.log(productData, route.params, productSlug);

@@ -30,6 +30,7 @@
         "ant-design-vue": "^2.2.8",
         "axios": "^0.21.4",
         "chart.js": "^3.5.1",
+        "mix-env-file": "^0.1.1",
         "vue": "^3.2.11",
         "vue-chart-3": "^0.5.8",
         "vue-progressbar": "^0.7.5",

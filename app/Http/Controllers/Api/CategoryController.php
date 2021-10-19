@@ -11,16 +11,17 @@ class CategoryController extends Controller
 {
     public function index(Request $request)
     {
-        $parent_id = Category::query()
-            ->where('slug', $request->parent_slug)
-            ->value('id');
+        $category = Category::where('slug', $request->parent_slug)->first();
 
         $query = Category::query();
 
-        if ($parent_id) {
-            $query->where('parent_id', $parent_id);
+        if ($category) {
+            $query->where('parent_id', $category->id);
         }
 
-        return new JsonResource($query->get());
+        return [
+            'name' => $category ? $category->name : null,
+            'data' => $query->get(),
+        ];
     }
 }

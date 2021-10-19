@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', ($title ?? 'RinPhone') . ' | ' . config('app.name'))
+@section('title', ($title ?? 'RinPhone') . ' | ' . config('app_custom.title'))
 @push('head.css')
     <link href="{{ mix('/css/app.css') }}" rel="stylesheet" id="app-css" />
 @endpush

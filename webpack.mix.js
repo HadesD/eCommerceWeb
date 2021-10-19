@@ -1,6 +1,10 @@
 const mix = require('laravel-mix');
 const path = require('path');
 
+require('mix-env-file');
+
+mix.env('./.env');
+
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -21,7 +25,7 @@ mix.webpackConfig({
         alias: {
             '~': path.join(__dirname, './resources/vue')
         }
-    }
+    },
 });
 
 if (process.env.RENDER_TARGET === 'server') {

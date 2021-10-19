@@ -55,20 +55,16 @@
     </a-row>
 </template>
 <script>
-import {
-    onMounted, ref, watch,
-} from 'vue';
+import { onMounted, ref, watch, } from 'vue';
 import { useRoute, } from 'vue-router';
-
-import {
-    number_format,
-    showErrorRequestApi,
-} from '../helpers';
-
-import RequestRepository from '../utils/RequestRepository';
-import ProductList from '../components/ProductList';
 import { debounce } from 'lodash';
 import { message } from 'ant-design-vue';
+
+import { number_format, showErrorRequestApi, } from '~/helpers';
+
+import RequestRepository from '~/utils/RequestRepository';
+
+import ProductList from '~/components/ProductList.vue';
 
 export default {
     components: {
@@ -92,7 +88,10 @@ export default {
                 },
             })
                 .then(res => {
-                    categories.value = res.data.data;
+                    const resData = res.data;
+                    document.title = resData.name;
+
+                    categories.value = resData.data;
                 })
                 .catch(err => showErrorRequestApi(err))
                 .finally(() => { loadingCategories.value = false });
@@ -116,7 +115,11 @@ export default {
 
         watch(
             () => route.params.category_slug,
-            newSlug => loadCategories(newSlug)
+            value => {
+                if (value) {
+                    loadCategories(value);
+                }
+            }
         );
 
         return {

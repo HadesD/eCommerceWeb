@@ -43,11 +43,23 @@ import {
     DollarCircleFilled, TransactionOutlined,
     ClockCircleOutlined, GiftOutlined,
 } from '@ant-design/icons-vue';
+import { onActivated, onMounted } from '@vue/runtime-core';
+
+import app from '~/configs/app';
 
 export default {
     components: {
         DollarCircleFilled, TransactionOutlined,
         ClockCircleOutlined, GiftOutlined,
+    },
+
+    setup() {
+        onActivated(() => {
+            document.title = app.title;
+        });
+        onMounted(() => {
+            document.title = app.title;
+        });
     },
 }
 </script>
