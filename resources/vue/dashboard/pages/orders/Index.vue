@@ -233,8 +233,8 @@ import {
     ReloadOutlined, ShoppingCartOutlined, EditOutlined,
 } from '@ant-design/icons-vue';
 
-import OrderStatus, { Config as configOrderStatus } from '~/dashboard/configs/OrderStatus';
-import OrderProductStockStatus from '~/dashboard/configs/OrderProductStockStatus';
+import OrderStatus, { Config as configOrderStatus } from '~/configs/OrderStatus';
+import OrderProductStockStatus from '~/configs/OrderProductStockStatus';
 import { number_format, date_format, defineAsyncComponent } from '~/helpers';
 import RequestRepository from '~/dashboard/utils/RequestRepository';
 

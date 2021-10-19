@@ -543,7 +543,7 @@ import {
 import { defineAsyncComponent, number_format, date_format } from '~/helpers';
 import UserRole from '~/dashboard/configs/UserRole';
 import User from '~/dashboard/utils/User';
-import { Config as configOrderStatus } from '~/dashboard/configs/OrderStatus';
+import { Config as configOrderStatus } from '~/configs/OrderStatus';
 import RequestRepository from '~/dashboard/utils/RequestRepository';
 
 import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';

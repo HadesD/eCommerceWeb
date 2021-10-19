@@ -137,7 +137,7 @@ import {
     BankOutlined,
 } from '@ant-design/icons-vue';
 
-import ProductStatus, { Config as configProductStatus } from '~/dashboard/configs/ProductStatus';
+import ProductStatus, { Config as configProductStatus } from '~/configs/ProductStatus';
 import { number_format, date_format, defineAsyncComponent } from '~/helpers';
 import RequestRepository from '~/dashboard/utils/RequestRepository';
 

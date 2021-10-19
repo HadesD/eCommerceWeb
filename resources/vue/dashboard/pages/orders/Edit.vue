@@ -444,9 +444,9 @@ import {
 
 import { number_format, cloneDeep, date_format, defineAsyncComponent, } from '~/helpers';
 import UserRole from '~/dashboard/configs/UserRole';
-import OrderStatus, { Config as configOrderStatus } from '~/dashboard/configs/OrderStatus';
-import OrderProductStockStatus, { Config as configOrderProductStockStatus } from '~/dashboard/configs/OrderProductStockStatus';
-import PaymentMethod, { Config as configPaymentMethod } from '~/dashboard/configs/PaymentMethod';
+import OrderStatus, { Config as configOrderStatus } from '~/configs/OrderStatus';
+import OrderProductStockStatus, { Config as configOrderProductStockStatus } from '~/configs/OrderProductStockStatus';
+import PaymentMethod, { Config as configPaymentMethod } from '~/configs/PaymentMethod';
 import RequestRepository from '~/dashboard/utils/RequestRepository';
 import User from '~/dashboard/utils/User';
 
