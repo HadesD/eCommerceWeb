@@ -24,8 +24,17 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $productQuery = isset($request->category_id) ? Category::find($request->category_id)->products
-                : (new Product);
+        $productQuery = null;
+        if (isset($request->category_id)) {
+            $category = Category::find($request->category_id);
+            if ($category) {
+                $productQuery = $category->products;
+            }
+        }
+
+        if (!$productQuery) {
+            $productQuery = Product::query();
+        }
 
         if (isset($request->status)) {
             $productQuery = $productQuery->whereIn('status', $request->status);

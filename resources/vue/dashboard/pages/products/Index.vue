@@ -376,9 +376,11 @@ export default {
                 ...this.productsTableFilters,
                 sort_by: this.productsTableSorts,
             };
-            this.$router.replace({
-                query: params,
-            });
+            if (!this.isModalMode) {
+                this.$router.replace({
+                    query: params,
+                });
+            }
 
             RequestRepository.get('/products', {
                 params,

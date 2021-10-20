@@ -27,8 +27,17 @@ class StockController extends Controller
      */
     public function index(Request $request)
     {
-        $stockQuery = isset($request->category_id) ? Category::find($request->category_id)->stocks
-                : (new Stock);
+        $stockQuery = null;
+        if (isset($request->category_id)) {
+            $category = Category::find($request->category_id);
+            if ($category) {
+                $stockQuery = $category->stocks;
+            }
+        }
+
+        if (!$stockQuery) {
+            $stockQuery = Stock::query();
+        }
 
         foreach (['name', 'idi', 'id'] as $value) {
             if (isset($request->{$value})) {

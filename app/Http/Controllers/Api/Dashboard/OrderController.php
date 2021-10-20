@@ -27,7 +27,7 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $orderQuery = new Order;
+        $orderQuery = Order::query();
 
         if (isset($request->status)) {
             $orderQuery = $orderQuery->whereIn('status', $request->status);

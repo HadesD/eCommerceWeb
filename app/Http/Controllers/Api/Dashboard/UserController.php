@@ -21,7 +21,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $userQuery = new User;
+        $userQuery = User::query();
 
         foreach (['name', 'phone', 'email', 'sns_info'] as $value) {
             if (isset($request->{$value})) {
