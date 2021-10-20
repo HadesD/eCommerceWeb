@@ -40,7 +40,6 @@ export default {
 
                     const productSlug = vietnameseNormalize(productData.name);
                     if (route.params.product_slug !== productSlug) {
-                        console.log(productData, route.params, productSlug);
                         router.replace({
                             params: {
                                 ...route.params,
