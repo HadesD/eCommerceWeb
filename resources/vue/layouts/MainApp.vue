@@ -26,9 +26,11 @@ export default {
     },
 
     setup() {
+
         return {
             locale,
         };
     },
+
 }
 </script>

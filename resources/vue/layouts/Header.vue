@@ -93,6 +93,7 @@ import {
 import SearchProductForm from '../components/SearchProductForm';
 import RequestRepository from '../utils/RequestRepository';
 import { list_to_tree } from '../helpers';
+import { useStore } from 'vuex';
 
 const TreeMenu = {
     props: {
@@ -141,15 +142,14 @@ export default {
     },
 
     setup() {
-        const cats = ref([]);
+        const store = useStore();
 
-        const categories = computed(() => list_to_tree(cats.value));
+        const categories = computed(() => {
+            return list_to_tree(store.getters.getCategories);
+        });
 
         onMounted(() => {
-            RequestRepository.get('/categories')
-                .then(res => {
-                    cats.value = res.data.data;
-                });
+            store.dispatch('fetchCategories');
         });
 
         return {
