@@ -144,16 +144,12 @@ export default {
     setup() {
         const store = useStore();
 
-        const categories = computed(() => {
-            return list_to_tree(store.getters.getCategories);
-        });
-
         onMounted(() => {
             store.dispatch('fetchCategories');
         });
 
         return {
-            categories,
+            categories: computed(() => list_to_tree(store.getters.getCategories)),
         };
     },
 }

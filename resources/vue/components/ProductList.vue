@@ -138,25 +138,13 @@ export default {
             loadProductList({ page: route.query.page });
         });
 
-        watch(
-            () => props.categorySlug,
-            () => loadProductList({})
-        );
+        watch(() => props.categorySlug, () => loadProductList({}));
 
-        watch(
-            () => props.keyword,
-            () => loadProductList({})
-        );
+        watch(() => props.keyword, () => loadProductList({}));
 
-        watch(
-            () => props.priceRange,
-            () => loadProductList({})
-        );
+        watch(() => props.priceRange, () => loadProductList({}));
 
-        watch(
-            () => sortBy.value,
-            () => loadProductList({})
-        );
+        watch(() => sortBy.value, () => loadProductList({}));
 
         return {
             productListRow,

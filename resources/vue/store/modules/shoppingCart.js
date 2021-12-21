@@ -13,12 +13,11 @@ export default {
         },
 
         appendCartProduct({ commit, store }, product) {
-
-            commit('setCartProducts', product);
+            commit('addCartProducts', product);
         },
 
-        removeCardProduct({ commit }, product) {
-
+        removeCartProduct({ commit }, product) {
+            commit('removeCartProduct', product);
         },
     },
 
@@ -28,7 +27,10 @@ export default {
         },
 
         addCartProduct(store, product) {
-            store.cartItems.push(product);
+            store.cartItems.push({
+                product,
+                num: 1,
+            });
         },
 
         /**
