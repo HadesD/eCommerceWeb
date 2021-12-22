@@ -14,6 +14,6 @@ const router = createRouter({
 });
 
 app.use(router);
-initApp(app);
+initApp(app, {ssr: false});
 
 app.mount('#app');

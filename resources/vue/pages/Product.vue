@@ -1,4 +1,7 @@
 <template>
+        <metainfo>
+            <template v-slot:title="{ content }">{{ content ? `${content} | SITE_NAME` : `SITE_NAME` }}</template>
+        </metainfo>
     <a-row>
         <a-col :xs="24" :sm="24" :md="24" :lg="12">
             <a-carousel arrows dots-class="slick-dots slick-thumb" class="product-carousel">
@@ -18,6 +21,7 @@
 <script>
 import { onMounted, reactive, ref, watch, } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
+import { useMeta } from 'vue-meta';
 
 import RequestRepository from '~/utils/RequestRepository';
 import { vietnameseNormalize } from '~/helpers';
@@ -28,6 +32,9 @@ export default {
     setup() {
         const route = useRoute();
         const router = useRouter();
+        // useMeta({
+        //     title: '%s',
+        // });
 
         const product = ref({});
 
@@ -35,6 +42,10 @@ export default {
             RequestRepository.get('/products/' + route.params.product_id)
                 .then(res => {
                     const productData = res.data.data;
+
+                    // useMeta({
+                    //     title: productData.name,
+                    // });
 
                     document.title = productData.name;
 

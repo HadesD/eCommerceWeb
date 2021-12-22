@@ -1,6 +1,7 @@
 import { createSSRApp } from 'vue';
 import { renderToString } from '@vue/server-renderer';
 import { createRouter, createMemoryHistory } from 'vue-router';
+import { renderMetaToString } from 'vue-meta/ssr';
 
 import routes from './configs/routes';
 import MainApp from './layouts/MainApp';
@@ -18,13 +19,17 @@ const router = createRouter({
 });
 
 app.use(router);
-initApp(app);
+initApp(app, {ssr: true});
 
 (async () => {
     try {
+        const ctx = {};
+
         router.push({path: context.url});
         await router.isReady();
-        dispatch(await renderToString(app));
+        await renderMetaToString(app, ctx);
+
+        dispatch({app: await renderToString(app, ctx), head: ctx.teleports.head});
     } catch (e) {
         // throw new Error(e);
         dispatch(e.stack);

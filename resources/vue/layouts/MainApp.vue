@@ -13,6 +13,8 @@
 </template>
 
 <script>
+import { useMeta } from 'vue-meta';
+
 import Header from './Header';
 import Footer from './Footer';
 
@@ -24,9 +26,13 @@ export default {
     components: {
         Header, Footer,
     },
+    metaInfo() {
+        return {
+            title: '%s',
+        };
+    },
 
     setup() {
-
         return {
             locale,
         };

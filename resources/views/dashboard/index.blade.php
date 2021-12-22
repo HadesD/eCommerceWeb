@@ -1,5 +1,7 @@
 @extends('layouts.app')
-@section('title', ($title ?? 'Bảng điều khiển') . ' | ' . config('app_custom.title'))
+@push('head.meta')
+<title>{{ ($title ?? 'Bảng điều khiển') . ' | ' . config('app_custom.title') }}</title>
+@endpush
 @push('head.css')
     <link href="{{ mix('/css/dashboard/app.css') }}" rel="stylesheet" id="app-css" />
 @endpush

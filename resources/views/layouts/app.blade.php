@@ -3,9 +3,8 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="description" content="RinPhone.vn - Chuyên kinh doanh trang thiết bị công nghệ di động, Apple, Android,... với giá thành cực kỳ hấp dẫn cho khách hàng đến với RinPhone.vn" />
         <meta name="csrf-token" content="{{ csrf_token() }}" />
-        <title>@yield('title')</title>
+        @stack('head.meta')
         <link rel="icon" href="{{ asset('favicon.ico') }}" />
         @stack('head.css')
     </head>
