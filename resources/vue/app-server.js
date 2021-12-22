@@ -29,9 +29,10 @@ initApp(app, {ssr: true});
         await router.isReady();
         await renderMetaToString(app, ctx);
 
-        dispatch({app: await renderToString(app, ctx), head: ctx.teleports.head});
+        dispatch({app: (await renderToString(app, ctx)), head: ctx.teleports.head});
     } catch (e) {
         // throw new Error(e);
+
         dispatch(e.stack);
     }
 })();
