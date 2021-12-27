@@ -20,17 +20,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResources([
+// Route::apiResources([
     // 'orders' => App\Http\Controllers\Api\OrderController::class,
     // 'stocks' => App\Http\Controllers\Api\StockController::class,
-    'categories' => App\Http\Controllers\Api\CategoryController::class,
-    'products' => App\Http\Controllers\Api\ProductController::class,
+    // 'categories' => App\Http\Controllers\Api\CategoryController::class,
+    // 'products' => App\Http\Controllers\Api\ProductController::class,
     // 'users' => App\Http\Controllers\Api\UserController::class,
     // 'statistics' => App\Http\Controllers\Api\StatisticController::class,
     // 'transactions' => App\Http\Controllers\Api\TransactionController::class,
-]);
+// ]);
 
-Route::prefix('/dashboard')->name('dashboard.')->middleware(['auth:sanctum', 'role.manager'])->group(function () {
+// Route::prefix('/dashboard')->name('dashboard.')->middleware(['auth:sanctum', 'role.manager'])->group(function () {
     Route::apiResources([
         'orders' => App\Http\Controllers\Api\Dashboard\OrderController::class,
         'stocks' => App\Http\Controllers\Api\Dashboard\StockController::class,
@@ -40,6 +40,6 @@ Route::prefix('/dashboard')->name('dashboard.')->middleware(['auth:sanctum', 'ro
         'statistics' => App\Http\Controllers\Api\Dashboard\StatisticController::class,
         'transactions' => App\Http\Controllers\Api\Dashboard\TransactionController::class,
     ]);
-});
+// });
 
 // Route::post('/webhooks/github', [GitHubWebhookController::class, 'index']);
