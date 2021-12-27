@@ -17,7 +17,7 @@ mix.env('./.env');
  */
 
 let output = {
-    chunkFilename: mix.inProduction() ? 'js/chunks/[name].[chunkhash].js' : 'js/chunks/[name].js',
+    chunkFilename: mix.inProduction() ? '[name].[chunkhash].js' : '[name].js',
 };
 
 mix.webpackConfig({
@@ -47,11 +47,11 @@ if (process.env.RENDER_TARGET === 'server') {
             },
         });
 } else {
-    mix.js('resources/vue/app-client.js', 'public/js');
-    mix.sass('resources/vue/assets/app.scss', 'public/css');
+    mix.js('resources/vue/app-client.js', 'public/assets/js');
+    mix.sass('resources/vue/assets/app.scss', 'public/assets/css');
 
-    mix.js('resources/vue/dashboard/app.js', 'public/js/dashboard');
-    mix.sass('resources/vue/dashboard/assets/app.scss', 'public/css/dashboard');
+    mix.js('resources/vue/dashboard/app.js', 'public/assets/js');
+    mix.sass('resources/vue/dashboard/assets/app.scss', 'public/assets/css');
 }
 
 mix.vue();
