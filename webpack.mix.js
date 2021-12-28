@@ -17,17 +17,19 @@ mix.env('./.env');
  */
 
 let output = {
-    chunkFilename: 'public/assets/js/chunk/' + (mix.inProduction() ? '[name].[chunkhash].js' : '[name].js'),
+    chunkFilename: 'assets/js/chunk/' + (mix.inProduction() ? '[name].[chunkhash].js' : '[name].js'),
 };
 
 let options = {
     manifest: false,
 };
 
+let vueDir = './views/vue';
+
 mix.webpackConfig({
     resolve: {
         alias: {
-            '~': path.join(__dirname, './views/vue')
+            '~': path.join(__dirname, vueDir)
         }
     },
 });
@@ -38,7 +40,7 @@ if (process.env.RENDER_TARGET === 'server') {
         globalObject: 'this',
     };
 
-    mix.js('views/vue/app-server.js', 'public/assets/js')
+    mix.js(vueDir + '/app-server.js', 'public/assets/js')
         .webpackConfig({
             // target: 'node',
             resolve: {
@@ -51,11 +53,8 @@ if (process.env.RENDER_TARGET === 'server') {
             },
         });
 } else {
-    mix.js('views/vue/app-client.js', 'public/assets/js');
-    mix.sass('views/vue/assets/app.scss', 'public/assets/css');
-
-    mix.js('views/vue/dashboard/app.js', 'dashboard/public/assets/js');
-    mix.sass('views/vue/dashboard/assets/app.scss', 'dashboard/public/assets/css');
+    mix.js(vueDir + '/app-client.js', 'public/assets/js');
+    mix.sass(vueDir + '/assets/app.scss', 'public/assets/css');
 }
 
 mix.vue();

@@ -16,11 +16,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::get('login', [LoginController::class, 'index'])->name('login');
-// Route::post('login', [LoginController::class, 'login']);
-// Route::post('logout', [LoginController::class, 'logout']);
+Route::get('login', [LoginController::class, 'index'])->name('login');
+Route::post('login', [LoginController::class, 'login']);
+Route::post('logout', [LoginController::class, 'logout']);
 
-// Route::prefix('dashboard')->name('dashboard.')->group(function () {
+Route::/*prefix('dashboard')->*/name('dashboard.')->group(function () {
     Route::get('login', function () {
         if (Auth::check()) {
             return redirect()->route('dashboard.index');
@@ -30,8 +30,8 @@ use Illuminate\Support\Facades\Route;
 
     Route::middleware(['auth:sanctum', 'verified', 'role.manager'])->get('{any?}', function () {
         return view('dashboard.index');
-    })->where('any', '.*')->name('index');
-// });
+    })->where('any', '^(?!api).*$')->name('index');
+});
 
 // Route::get('{any?}', function () {
 //     return view('index');

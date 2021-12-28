@@ -53,6 +53,6 @@ routes.push({
 });
 
 export default createRouter({
-    history: createWebHistory('/dashboard'),
+    history: createWebHistory('/'),
     routes,
 });

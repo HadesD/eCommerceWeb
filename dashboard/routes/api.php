@@ -30,7 +30,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     // 'transactions' => App\Http\Controllers\Api\TransactionController::class,
 // ]);
 
-// Route::prefix('/dashboard')->name('dashboard.')->middleware(['auth:sanctum', 'role.manager'])->group(function () {
+Route::/*prefix('/dashboard')->*/name('dashboard.')->middleware(['auth:sanctum', 'role.manager'])->group(function () {
     Route::apiResources([
         'orders' => App\Http\Controllers\Api\Dashboard\OrderController::class,
         'stocks' => App\Http\Controllers\Api\Dashboard\StockController::class,
@@ -40,6 +40,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         'statistics' => App\Http\Controllers\Api\Dashboard\StatisticController::class,
         'transactions' => App\Http\Controllers\Api\Dashboard\TransactionController::class,
     ]);
-// });
+});
 
 // Route::post('/webhooks/github', [GitHubWebhookController::class, 'index']);

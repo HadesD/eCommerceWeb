@@ -17,7 +17,7 @@ class LoginController extends Controller
             return redirect()->route('dashboard.login');
         }
 
-        return view('auth.login');
+        // return view('auth.login');
     }
 
     public function apiLogin(Request $request)
@@ -58,8 +58,10 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (!Auth::attempt($credentials, $request->remember)) {
-            return redirect()->route('login');
+            // return redirect()->route('login');
+            return redirect()->route('dashboard.login');
         }
+
         // return redirect()->intended('index');
     }
 
