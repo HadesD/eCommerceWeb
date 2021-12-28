@@ -16,7 +16,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('login', [LoginController::class, 'index'])->name('login');
+// Route::get('login', [LoginController::class, 'index'])->name('login');
+Route::get('login', function(){
+    if (Auth::check()) {
+        return redirect()->route('dashboard.index');
+    }
+
+    return view('dashboard.index');
+})->name('login');
 Route::post('login', [LoginController::class, 'login']);
 Route::post('logout', [LoginController::class, 'logout']);
 
