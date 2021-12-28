@@ -27,18 +27,9 @@ Route::get('login', function(){
 Route::post('login', [LoginController::class, 'login']);
 Route::post('logout', [LoginController::class, 'logout']);
 
-Route::/*prefix('dashboard')->*/name('dashboard.')->group(function () {
-    Route::get('dashboard/login', function () {
-        if (Auth::check()) {
-            return redirect()->route('dashboard.index');
-        }
-        return view('dashboard.index');
-    })->name('login');
-
-    Route::middleware(['auth:sanctum', 'verified', 'role.manager'])->get('{any?}', function () {
-        return view('dashboard.index');
-    })->where('any', '^(?!api).*$')->name('index');
-});
+Route::middleware(['auth:sanctum', 'verified', 'role.manager'])->get('{any?}', function () {
+    return view('dashboard.index');
+})->where('any', '^(?!api).*$')->name('index');
 
 // Route::get('{any?}', function () {
 //     return view('index');
