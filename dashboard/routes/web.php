@@ -29,7 +29,7 @@ Route::post('logout', [LoginController::class, 'logout']);
 
 Route::middleware(['auth:sanctum', 'verified', 'role.manager'])->get('{any?}', function () {
     return view('dashboard.index');
-})->where('any', '^(?!api).*$')->name('index');
+})->where('any', '^(?!api).*$')->name('dashboard.index');
 
 // Route::get('{any?}', function () {
 //     return view('index');
