@@ -21,11 +21,11 @@ Route::post('login', [LoginController::class, 'login']);
 Route::post('logout', [LoginController::class, 'logout']);
 
 Route::/*prefix('dashboard')->*/name('dashboard.')->group(function () {
-    Route::get('login', function () {
+    Route::get('dashboard/login', function () {
         if (Auth::check()) {
             return redirect()->route('dashboard.index');
         }
-        return view('dashboard.index');
+        // return view('dashboard.index');
     })->name('login');
 
     Route::middleware(['auth:sanctum', 'verified', 'role.manager'])->get('{any?}', function () {
