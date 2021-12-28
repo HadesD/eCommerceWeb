@@ -76,7 +76,6 @@
                         <a-input-number
                             v-model:value="formData.quantity"
                             :min="id ? 0 : 1"
-                            :max="200"
                         />
                     </a-form-item>
                     <a-form-item
