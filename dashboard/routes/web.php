@@ -25,7 +25,7 @@ Route::/*prefix('dashboard')->*/name('dashboard.')->group(function () {
         if (Auth::check()) {
             return redirect()->route('dashboard.index');
         }
-        // return view('dashboard.index');
+        return view('dashboard.index');
     })->name('login');
 
     Route::middleware(['auth:sanctum', 'verified', 'role.manager'])->get('{any?}', function () {
