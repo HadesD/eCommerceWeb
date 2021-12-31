@@ -2,6 +2,7 @@
 
 constexpr auto csrfTokenSessionKey = "csrf_token";
 constexpr auto csrfCookieKey = "XSRF-TOKEN";
+constexpr auto csrfHeaderKey = "X-XSRF-TOKEN";
 
 void CsrfTokenCtrl::asyncHandleHttpRequest(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr &)> &&callback)
 {
@@ -27,5 +28,5 @@ void CsrfTokenCtrl::asyncHandleHttpRequest(const HttpRequestPtr& req, std::funct
 
 bool CsrfTokenCtrl::verify(const HttpRequestPtr& req)
 {
-    return req->session()->get<std::string>(csrfTokenSessionKey) == req->getCookie(csrfCookieKey);
+    return req->session()->get<std::string>(csrfTokenSessionKey) == req->getHeader(csrfHeaderKey);
 }
