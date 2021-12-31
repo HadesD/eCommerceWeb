@@ -24,11 +24,12 @@
             //address: Ip address,0.0.0.0 by default
             "address": "0.0.0.0",
             //port: Port number
-            "port": 80,
+            "port": 8199,
             //https: If true, use https for security,false by default
             "https": false
-        },
+        }
         /*
+        ,
         {
             "address": "0.0.0.0",
             "port": 443,
@@ -68,7 +69,7 @@
             "is_fast": false,
             //client_encoding: The character set used by the client. it is empty string by default which
             //means use the default character set.
-            //"client_encoding": "",
+            "client_encoding": "utf8mb4",
             //number_of_connections: 1 by default, if the 'is_fast' is true, the number is the number of
             //connections per IO thread, otherwise it is the total number of all connections.
             "number_of_connections": 1,
@@ -106,7 +107,7 @@
         //is the number of CPU cores
         "number_of_threads": 1,
         //enable_session: False by default
-        "enable_session": false,
+        "enable_session": true,
         "session_timeout": 0,
         //document_root: Root path of HTTP document, defaut path is ./
         "document_root": "./",
@@ -231,6 +232,7 @@
         //0 means cache forever, the negative value means no cache
         "static_files_cache_time": 5,
         //simple_controllers_map: Used to configure mapping from path to simple controller
+        /*
         "simple_controllers_map": [
             {
                 "path": "/path/name",
@@ -244,6 +246,7 @@
                 ]
             }
         ],
+        */
         //idle_connection_timeout: Defaults to 60 seconds, the lifetime
         //of the connection without read or write
         "idle_connection_timeout": 60,
@@ -252,7 +255,7 @@
         "server_header_field": "",
         //enable_server_header: Set true to force drogon to add a 'Server' header to each HTTP response. The default
         //value is true.
-        "enable_server_header": true,
+        "enable_server_header": false,
         //enable_date_header: Set true to force drogon to add a 'Date' header to each HTTP response. The default
         //value is true.
         "enable_date_header": true,
