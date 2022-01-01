@@ -13,3 +13,6 @@ release:
 	make -j7 && \
 	compdb -p ./ list > ../compile_commands.json && \
 	./RinPhone
+
+tc:
+	./build/test/RinPhone_test

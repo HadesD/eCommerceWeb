@@ -6,9 +6,7 @@ static constexpr auto csrfHeaderKey = "X-CSRF-TOKEN";
 
 void CsrfTokenCtrl::asyncHandleHttpRequest(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr &)> &&callback)
 {
-    std::srand(0);
-
-    const auto token = drogon::utils::getMd5(std::to_string(std::rand()));
+    const auto token = drogon::utils::genRandomString(35);
     req->session()->modify<std::string>(
         csrfTokenSessionKey,
         [token](auto &curToken)
@@ -21,7 +19,7 @@ void CsrfTokenCtrl::asyncHandleHttpRequest(const HttpRequestPtr& req, std::funct
     Cookie tokenCookie(csrfCookieKey, token);
     tokenCookie.setExpiresDate(trantor::Date::now().after(300));
     tokenCookie.setHttpOnly(true);
-    tokenCookie.setSecure(true);
+    tokenCookie.setSecure(req->isOnSecureConnection());
 
     res->addCookie(tokenCookie);
 
