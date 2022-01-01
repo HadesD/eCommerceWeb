@@ -34,12 +34,11 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
                 .findOne(orm::Criteria(Category::Cols::_slug, req->getParameter("category_slug")))
                 .getValueOfId();
 
-            std::vector<decltype(catId)> catIds{catId};
+            std::vector<Category::PrimaryKeyType> catIds{catId};
 
-            auto findChildCategoryId = [&catIds, &catMap](decltype(catIds) parentId) {
+            auto findChildCategoryId = [&catIds, &catMap](Category::PrimaryKeyType parentId) {
                 try
                 {
-                    /* code */
                 }
                 catch(const std::exception& e)
                 {
@@ -68,13 +67,15 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
         {
             page = std::stoul(req->getParameter("page"));
         }
-        catch(...)
+        catch (...)
         {
             page = 1;
         }
 
-        const auto& prds = prdMap.paginate(page, limit).findBy(cnd);
-        auto retData = ret["data"];
+        const auto& prds = prdMap
+            .paginate(page, limit)
+            .findBy(cnd);
+        auto& retData = ret["data"];
         retData = Json::Value(Json::arrayValue);
         for (const auto& prd : prds)
         {
