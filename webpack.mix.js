@@ -21,7 +21,7 @@ let output = {
 };
 
 let options = {
-    manifest: false,
+    // manifest: true,
 };
 
 let vueDir = './views/vue';

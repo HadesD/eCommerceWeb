@@ -564,3 +564,4 @@ FodyWeavers.xsd
 **/public/assets/
 public.tar.gz
 /hot
+mix-manifest.json
