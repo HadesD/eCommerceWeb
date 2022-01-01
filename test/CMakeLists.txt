@@ -1,11 +1,13 @@
 cmake_minimum_required(VERSION 3.5)
 project(RinPhone_test CXX)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcoroutines")
+
 add_executable(${PROJECT_NAME} test_main.cc)
 
 # ##############################################################################
 # If you include the drogon source code locally in your project, use this method
-# to add drogon 
+# to add drogon
 # target_link_libraries(${PROJECT_NAME}_test PRIVATE drogon)
 #
 # and comment out the following lines

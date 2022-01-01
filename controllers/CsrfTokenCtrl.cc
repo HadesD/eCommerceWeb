@@ -1,13 +1,15 @@
 #include "CsrfTokenCtrl.h"
 
-constexpr auto csrfTokenSessionKey = "csrf_token";
-constexpr auto csrfCookieKey = "XSRF-TOKEN";
-constexpr auto csrfHeaderKey = "X-XSRF-TOKEN";
+static constexpr auto csrfTokenSessionKey = "csrf_token";
+static constexpr auto csrfCookieKey = "CSRF-TOKEN";
+static constexpr auto csrfHeaderKey = "X-CSRF-TOKEN";
 
 void CsrfTokenCtrl::asyncHandleHttpRequest(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr &)> &&callback)
 {
-    std::string token = "";
-    req->session()->modify<decltype(token)>(
+    std::srand(0);
+
+    const auto token = drogon::utils::getMd5(std::to_string(std::rand()));
+    req->session()->modify<std::string>(
         csrfTokenSessionKey,
         [token](auto &curToken)
         {
