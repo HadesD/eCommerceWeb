@@ -1,23 +1,23 @@
 {
     //rdbms: server type, postgresql,mysql or sqlite3
-    "rdbms": "postgresql",
+    "rdbms": "mysql",
     //filename: sqlite3 db file name
     //"filename":"",
     //host: server address,localhost by default;
     "host": "127.0.0.1",
     //port: server port, 5432 by default;
-    "port": 5432,
+    "port": 336,
     //dbname: Database name;
-    "dbname": "",
+    "dbname": "web_rinphone",
     //schema: valid for postgreSQL, "public" by default;
     "schema": "public",
     //user: User name
-    "user": "",
+    "user": "root",
     //password or passwd: Password
     "password": "",
-    //client_encoding: The character set used by drogon_ctl. it is empty string by default which 
+    //client_encoding: The character set used by drogon_ctl. it is empty string by default which
     //means use the default character set.
-    //"client_encoding": "",
+    "client_encoding": "utf8mb4",
     //table: An array of tables to be modelized. if the array is empty, all revealed tables are modelized.
     "tables": [],
     //convert: the value can be changed by a function call before it is stored into database or
@@ -39,8 +39,10 @@
       }]
     },
     "relationships": {
-        "enabled": false,
-        "items": [{
+        "enabled": true,
+        "items": [
+            /*
+            {
                 "type": "has one",
                 "original_table_name": "products",
                 "original_table_alias": "product",
@@ -60,18 +62,34 @@
                 "target_key": "product_id",
                 "enable_reverse": true
             },
+            */
             {
                 "type": "many to many",
                 "original_table_name": "products",
-                "original_table_alias": "",
+                "original_table_alias": "product",
                 "original_key": "id",
                 "pivot_table": {
-                    "table_name": "carts_products",
+                    "table_name": "product_categories",
                     "original_key": "product_id",
-                    "target_key": "cart_id"
+                    "target_key": "category_id"
                 },
-                "target_table_name": "carts",
-                "target_table_alias": "",
+                "target_table_name": "categories",
+                "target_table_alias": "category",
+                "target_key": "id",
+                "enable_reverse": true
+            },
+            {
+                "type": "many to many",
+                "original_table_name": "products",
+                "original_table_alias": "product",
+                "original_key": "id",
+                "pivot_table": {
+                    "table_name": "product_images",
+                    "original_key": "product_id",
+                    "target_key": "image_id"
+                },
+                "target_table_name": "images",
+                "target_table_alias": "image",
                 "target_key": "id",
                 "enable_reverse": true
             }
@@ -79,7 +97,7 @@
     },
     "restful_api_controllers": {
         "enabled": false,
-        // resource_uri: The URI to access the resource, the default value 
+        // resource_uri: The URI to access the resource, the default value
         // is '/*' in which the asterisk represents the table name.
         // If this option is set to a empty string, the URI is composed of the namespaces and the class name.
         "resource_uri": "/*",
@@ -93,7 +111,7 @@
         "db_client": {
             //name: Name of the client,'default' by default
             "name": "default",
-            //is_fast: 
+            //is_fast:
             "is_fast": false
         },
         // directory: The directory where the controller source files are stored.
