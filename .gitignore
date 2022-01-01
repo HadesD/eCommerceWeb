@@ -563,3 +563,4 @@ FodyWeavers.xsd
 !/Makefile
 **/public/assets/
 public.tar.gz
+/hot
