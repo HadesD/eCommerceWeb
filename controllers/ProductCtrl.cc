@@ -2,11 +2,13 @@
 
 #include "models/Products.h"
 #include "models/Categories.h"
+#include "models/ProductCategories.h"
 
 #include "app_helpers/ProductsMetaData.hpp"
 
 using Product = drogon_model::web_rinphone::Products;
 using Category = drogon_model::web_rinphone::Categories;
+using ProductCategory = drogon_model::web_rinphone::ProductCategories;
 
 // add definition of your processing function here
 
@@ -59,6 +61,22 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
             };
 
             findChildCategoryId(catId);
+
+            if (catIds.size()) {
+                const auto productCats = orm::Mapper<ProductCategory>(dbClient)
+                                             .findBy(orm::Criteria(ProductCategory::Cols::_category_id, orm::CompareOperator::In, catIds));
+
+                std::vector<Product::PrimaryKeyType> productIds;
+                for (const auto &productCat : productCats)
+                {
+                    productIds.push_back(productCat.getValueOfProductId());
+                }
+
+                if (productIds.size())
+                {
+                    cnd = cnd && orm::Criteria(Product::Cols::_id, orm::CompareOperator::In, productIds);
+                }
+            }
         }
         catch (const orm::UnexpectedRows &e)
         {
