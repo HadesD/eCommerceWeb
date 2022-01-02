@@ -15,7 +15,16 @@
         </a-col>
         <a-col :xs="24" :sm="24" :md="24" :lg="12">
             <a-space direction="vertical">
-                <a-typography v-for="category in product.categories">{{ category.name }}</a-typography>
+                <a-typography-text v-for="category in product.categories">
+                    <router-link
+                        :to="{
+                            name: 'category',
+                            params: {
+                                category_slug: category.slug,
+                            }
+                        }"
+                    >{{ category.name }}</router-link>
+                </a-typography-text>
             </a-space>
             <a-typography-title :level="2">{{ product.name }}</a-typography-title>
         </a-col>

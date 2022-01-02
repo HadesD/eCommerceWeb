@@ -84,8 +84,7 @@ if (process.env.RENDER_TARGET === 'server') {
                 .replace('${HOST}', hostStr)
                 .replace('${HOST}', hostStr)
                 .replace('${APP_JS}', appJs)
-                .replace('${APP_CSS}', appCss)
-                .trim();
+                .replace('${APP_CSS}', appCss);
 
             fs.writeFileSync('public/index.html', publicIndex);
         });
