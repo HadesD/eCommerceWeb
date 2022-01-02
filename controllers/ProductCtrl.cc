@@ -36,16 +36,27 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
 
             std::vector<Category::PrimaryKeyType> catIds{catId};
 
-            auto findChildCategoryId = [&catIds, &catMap](Category::PrimaryKeyType parentId) {
+            std::function<void(const Category::PrimaryKeyType)> findChildCategoryId = [&catIds, &catMap](const Category::PrimaryKeyType parentId) {
                 try
                 {
+                    auto childCats = catMap.findBy(
+                        orm::Criteria(Category::Cols::_parent_id, parentId)
+                    );
+                    for (const auto& childCat : childCats)
+                    {
+                        const auto childId = childCat.getValueOfId();
+                        catIds.push_back(childId);
+
+                        findChildCategoryId(childId);
+                    }
                 }
                 catch(const std::exception& e)
                 {
                     LOG_ERROR << e.what();
                 }
-
             };
+
+            findChildCategoryId(catId);
         }
         catch (const orm::UnexpectedRows &e)
         {
