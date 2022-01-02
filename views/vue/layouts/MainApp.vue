@@ -13,8 +13,6 @@
 </template>
 
 <script>
-import { useMeta } from 'vue-meta';
-
 import Header from './Header';
 import Footer from './Footer';
 
@@ -27,11 +25,6 @@ import RequestRepository from '../utils/RequestRepository';
 export default {
     components: {
         Header, Footer,
-    },
-    metaInfo() {
-        return {
-            title: '%s',
-        };
     },
 
     setup() {

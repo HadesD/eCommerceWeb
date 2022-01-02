@@ -32,9 +32,6 @@ export default {
     setup() {
         const route = useRoute();
         const router = useRouter();
-        // useMeta({
-        //     title: '%s',
-        // });
 
         const product = ref({});
 
@@ -42,10 +39,7 @@ export default {
             RequestRepository.get('/products/' + route.params.product_id)
                 .then(res => {
                     const productData = res.data.data;
-
-                    // useMeta({
-                    //     title: productData.name,
-                    // });
+                    console.log(res);
 
                     document.title = productData.name;
 

@@ -1,8 +1,39 @@
 #pragma once
 
-enum class ProductStatus : char
+#include "models/Products.h"
+#include "models/Categories.h"
+#include "models/ProductCategories.h"
+
+namespace app_helpers
 {
-    DRAFT = 0,
-    SELLING,
-    SOLDOUT,
-};
+    using Product = drogon_model::web_rinphone::Products;
+
+    enum class ProductStatus : char
+    {
+        DRAFT = 0,
+        SELLING,
+        SOLDOUT,
+    };
+
+    void productJsonRow(const drogon::orm::DbClientPtr &dbClient, const Product& prd, Json::Value &prdRow)
+    {
+        using Category = drogon_model::web_rinphone::Categories;
+        using ProductCategory = drogon_model::web_rinphone::ProductCategories;
+
+        auto &prdCatRow = prdRow[Category::tableName];
+        prdCatRow = Json::Value(Json::arrayValue);
+        prd.getCategory(
+            dbClient,
+            [&prdCatRow](auto pairRows)
+            {
+                for (const auto &pairRow : pairRows)
+                {
+                    prdCatRow.append(pairRow.first.toJson());
+                }
+            },
+            [](const auto &e)
+            {
+                LOG_ERROR << e.base().what();
+            });
+    }
+}

@@ -20,7 +20,7 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
     orm::Criteria cnd(
         Product::Cols::_status,
         orm::CompareOperator::NE,
-        static_cast<uint8_t>(ProductStatus::DRAFT));
+        static_cast<uint8_t>(app_helpers::ProductStatus::DRAFT));
 
     orm::SortOrder orderSort{orm::SortOrder::DESC};
     auto orderBy = Product::Cols::_created_at;
@@ -165,22 +165,7 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
         retData = Json::Value(Json::arrayValue);
         for (const auto &prd : prds)
         {
-            auto &prdRow = retData.append(prd.toJson());
-            auto &prdCatRow = prdRow[Category::tableName];
-            prdCatRow = Json::Value(Json::arrayValue);
-            prd.getCategory(
-                dbClient,
-                [&prdCatRow](auto pairRows)
-                {
-                    for (const auto &pairRow : pairRows)
-                    {
-                        prdCatRow.append(pairRow.first.toJson());
-                    }
-                },
-                [](const auto &e)
-                {
-                    LOG_ERROR << e.base().what();
-                });
+            app_helpers::productJsonRow(dbClient, prd, retData.append(prd.toJson()));
         }
 
         ret["total"] = static_cast<uint>(prdMap.count(cnd));
@@ -188,6 +173,38 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
         ret["per_page"] = static_cast<uint>(limit);
 
         callback(HttpResponse::newHttpJsonResponse(ret));
+    }
+    catch (const std::exception &e)
+    {
+        LOG_ERROR << e.what();
+
+        auto res = HttpResponse::newHttpResponse();
+        res->setStatusCode(HttpStatusCode::k500InternalServerError);
+
+        callback(res);
+    }
+}
+
+void ProductCtrl::getOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, uint64_t id)
+{
+    try
+    {
+        auto dbClient = app().getDbClient();
+        const auto& prd = orm::Mapper<Product>(dbClient)
+            .findByPrimaryKey(id);
+
+        Json::Value ret;
+        auto& retData = ret["data"];
+        retData = prd.toJson();
+        app_helpers::productJsonRow(dbClient, prd, retData);
+
+        callback(HttpResponse::newHttpJsonResponse(ret));
+    }
+    catch (const orm::UnexpectedRows& e)
+    {
+        LOG_ERROR << e.what();
+
+        callback(HttpResponse::newNotFoundResponse());
     }
     catch (const std::exception &e)
     {

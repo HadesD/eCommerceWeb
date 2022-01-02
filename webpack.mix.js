@@ -1,5 +1,6 @@
 const mix = require('laravel-mix');
 const path = require('path');
+const fs = require('fs');
 
 require('mix-env-file');
 
@@ -55,6 +56,36 @@ if (process.env.RENDER_TARGET === 'server') {
 } else {
     mix.js(vueDir + '/app-client.js', 'public/assets/js');
     mix.sass(vueDir + '/assets/app.scss', 'public/assets/css');
+
+    const indexHtmlDir = 'views/index.html';
+    if (fs.existsSync(indexHtmlDir)) {
+        let htmlData = fs.readFileSync(indexHtmlDir).toString();
+        const hostStr = !mix.inProduction() ? fs.readFileSync('hot').toString().trim() : 0;
+
+        mix.then((sts) => {
+            if (sts.hasErrors()) {
+                return;
+            }
+
+            let appJs, appCss;
+            let mixManifest = JSON.parse(fs.readFileSync('mix-manifest.json').toString());
+            for (const i in mixManifest) {
+                if (i.indexOf('.js') !== -1) {
+                    appJs = mixManifest[i];
+                } else if (i.indexOf('.css') !== -1) {
+                    appCss = mixManifest[i];
+                }
+            }
+
+            let publicIndex = htmlData
+                .replace('${HOST}', hostStr)
+                .replace('${HOST}', hostStr)
+                .replace('${APP_JS}', appJs)
+                .replace('${APP_CSS}', appCss)
+                .trim();
+            console.log(publicIndex);
+        });
+    }
 }
 
 mix.vue();
