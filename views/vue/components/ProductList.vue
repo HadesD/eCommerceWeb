@@ -75,6 +75,7 @@ import {
     number_format, vietnameseNormalize,
 } from '~/helpers';
 import { useRoute, useRouter } from 'vue-router';
+import { showErrorRequestApi } from '../helpers';
 
 export default {
     props: {
@@ -109,7 +110,7 @@ export default {
                     keyword: props.keyword,
                     category_slug: props.categorySlug,
                     sort_by: sortBy.value,
-                    price_range: props.priceRange,
+                    price_range: (props.priceRange && props.priceRange.length) ? (props.priceRange[0] + ',' + props.priceRange[1]) : undefined,
                 },
             })
                 .then(res => {
@@ -117,14 +118,7 @@ export default {
 
                     productListRow.value.scrollIntoView({behavior: 'smooth'});
                 })
-                .catch(err => {
-                    if (err.response && err.response.data && err.response.data.message) {
-                        message.error(err.response.data.message);
-                        return;
-                    }
-
-                    message.error(err.message || 'Thất bại');
-                })
+                .catch(showErrorRequestApi)
                 .finally(() => {
                     loadingProductList.value = false;
                 });

@@ -93,7 +93,7 @@ export default {
 
                     categories.value = resData.data;
                 })
-                .catch(err => showErrorRequestApi(err))
+                .catch(showErrorRequestApi)
                 .finally(() => { loadingCategories.value = false });
         }
 

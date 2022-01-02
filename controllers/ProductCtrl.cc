@@ -90,8 +90,30 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
             }
         }
 
+        const auto& reqPriceRange = req->getParameter("price_range");
+        LOG_DEBUG << reqPriceRange;
+        if (reqPriceRange.size())
+        {
+            auto pos = reqPriceRange.find(',');
+
+            if (pos != std::string::npos)
+            {
+                try
+                {
+                    auto from = std::stol(reqPriceRange.substr(0, pos));
+                    auto to = std::stol(reqPriceRange.substr(pos + 1));
+                    cnd = cnd &&
+                          orm::Criteria(Product::Cols::_price, orm::CompareOperator::GE, from) &&
+                          orm::Criteria(Product::Cols::_price, orm::CompareOperator::LE, to);
+                }
+                catch (...)
+                {
+                }
+            }
+        }
+
         // Search
-        const auto& reqKw = req->getParameter("keyword");
+        const auto &reqKw = req->getParameter("keyword");
         if (reqKw.size())
         {
             cnd = cnd && orm::Criteria(Product::Cols::_name, orm::CompareOperator::Like, '%' + reqKw + '%');
@@ -121,18 +143,20 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
         retData = Json::Value(Json::arrayValue);
         for (const auto &prd : prds)
         {
-            auto& prdRow = retData.append(prd.toJson());
-            auto& prdCatRow = prdRow[Category::tableName];
+            auto &prdRow = retData.append(prd.toJson());
+            auto &prdCatRow = prdRow[Category::tableName];
             prdCatRow = Json::Value(Json::arrayValue);
             prd.getCategory(
                 dbClient,
-                [&prdCatRow](auto pairRows) {
-                    for (const auto& pairRow : pairRows)
+                [&prdCatRow](auto pairRows)
+                {
+                    for (const auto &pairRow : pairRows)
                     {
                         prdCatRow.append(pairRow.first.toJson());
                     }
                 },
-                [](const auto& e) {
+                [](const auto &e)
+                {
                     LOG_ERROR << e.base().what();
                 });
         }
