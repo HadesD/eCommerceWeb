@@ -3,6 +3,9 @@
 # apt install inotify-tools
 
 PROCESS_NAME=RinPhone
+TRIGGER_CMD='make start'
+
+$TRIGGER_CMD &
 
 timestamp() {
     date +"%s"
@@ -25,7 +28,7 @@ inotifywait -r \
     do
         NOW_TS=$(timestamp)
 
-        echo B $base $event $file $LAST_TS $NOW_TS
+        echo $base $event $file $LAST_TS $NOW_TS
 
         if [ $(( $NOW_TS - $LAST_TS )) -lt 1 ]; then
             continue
@@ -33,9 +36,8 @@ inotifywait -r \
 
         if [[ ${file} =~ .*\.(hpp|h|cc|cpp)$ ]]; then
             pkill ${PROCESS_NAME}
-            make start ; true &
+            $TRIGGER_CMD &
         fi
 
         LAST_TS=$(timestamp)
-        echo E $base $event $file $LAST_TS $NOW_TS
     done

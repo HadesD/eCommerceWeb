@@ -18,5 +18,4 @@ tc:
 	./build/test/RinPhone_test
 
 watch:
-	make start; true
 	bash scripts/watch.sh
