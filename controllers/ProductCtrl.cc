@@ -130,6 +130,7 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
         try
         {
             page = std::stoul(req->getParameter("page"));
+            page = (page < 1) ? 1 : page;
         }
         catch (...)
         {

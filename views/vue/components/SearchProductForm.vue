@@ -7,11 +7,13 @@
                 :options="options"
                 @change="onKeywordChange"
                 @select="onSelect"
+                @focus="onFocus"
             >
                 <template #default>
                     <a-input
                         placeholder="Nhập từ khoá sản phẩm muốn tìm kiếm..."
                         allow-clear
+                        @pressEnter="onPressEnter"
                     >
                         <template #suffix>
                             <a-button type="primary" htmlType="submit"><SearchOutlined /></a-button>
@@ -112,6 +114,14 @@ export default {
                 })
         }, 300);
 
+        const onPressEnter = () => {
+            onSearch(formState);
+        };
+
+        const onFocus = () => {
+            onKeywordChange(formState.search_text);
+        };
+
         router.isReady()
             .then(() => {
                 formState.search_text = route.query.keyword;
@@ -125,6 +135,8 @@ export default {
             onSearch,
             onSelect,
             onKeywordChange,
+            onFocus,
+            onPressEnter,
         };
     },
 }
