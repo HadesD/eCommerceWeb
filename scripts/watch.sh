@@ -9,11 +9,6 @@ timestamp() {
 }
 
 LAST_TS=$(timestamp)
-    # --excludei "*\.js" \
-    # --excludei "*\.css" \
-    # --excludei "*\.sh" \
-    # --excludei "*\.gz" \
-    # --excludei '*(.git|build|node_modules|public|scripts|dashboard|uploads)/*' \
 
 inotifywait -r \
     -m \
