@@ -24,7 +24,7 @@
 </template>
 <script>
 import { ref, reactive, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 import {
     SearchOutlined,
@@ -36,14 +36,17 @@ import { message } from 'ant-design-vue';
 import RequestRepository from '~/utils/RequestRepository';
 import {
     number_format,
+    vietnameseNormalize,
 } from '~/helpers';
 
 export default {
     components: {
         SearchOutlined,
     },
+
     setup() {
         const router = useRouter();
+        const route = useRoute();
 
         const formState = reactive({
             search_text: undefined,
@@ -52,7 +55,9 @@ export default {
         const options = computed(() => searchResults.value.map(value => {
             return {
                 value: `${value.name} (${number_format(value.price)} ₫)`,
-                slug: value.slug,
+                id: value.id,
+                name: value.name,
+                slug: vietnameseNormalize(value.name),
                 category_slug: value.categories[0]?.slug,
             };
         }));
@@ -79,8 +84,10 @@ export default {
                 params: {
                     category_slug: option.category_slug,
                     product_slug: option.slug,
+                    product_id: option.id,
                 },
             });
+            formState.search_text = option.name;
         };
 
         const onKeywordChange = debounce(value => {
@@ -104,6 +111,11 @@ export default {
                     message.error(err.message || 'Thất bại');
                 })
         }, 300);
+
+        router.isReady()
+            .then(() => {
+                formState.search_text = route.query.keyword;
+            });
 
         return {
             formState,

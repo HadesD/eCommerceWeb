@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { message } from 'ant-design-vue';
 import { defineAsyncComponent as vueDefineAsyncComponent } from 'vue';
 
@@ -33,7 +33,7 @@ export function number_format(num) {
 };
 
 export function date_format(dateStr, formatStr = 'YYYY-MM-DD HH:mm:ss') {
-    return moment(dateStr).format(formatStr);
+    return dayjs(dateStr).format(formatStr);
 }
 
 export function cloneDeep(data) {

@@ -29,61 +29,72 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
     }
     else
     {
-        try
+        const auto & reqCatSlug = req->getParameter("category_slug");
+        if (reqCatSlug.size())
         {
-            orm::Mapper<Category> catMap(dbClient);
-            const auto catId = catMap
-                .findOne(orm::Criteria(Category::Cols::_slug, req->getParameter("category_slug")))
-                .getValueOfId();
-
-            std::vector<Category::PrimaryKeyType> catIds{catId};
-
-            std::function<void(const Category::PrimaryKeyType)> findChildCategoryId;
-            findChildCategoryId = [&catIds, &catMap, &findChildCategoryId](const Category::PrimaryKeyType parentId)
+            try
             {
-                try
-                {
-                    auto childCats = catMap.findBy(
-                        orm::Criteria(Category::Cols::_parent_id, parentId)
-                    );
-                    for (const auto& childCat : childCats)
-                    {
-                        const auto childId = childCat.getValueOfId();
-                        catIds.push_back(childId);
+                orm::Mapper<Category> catMap(dbClient);
+                const auto catId = catMap
+                                       .findOne(orm::Criteria(Category::Cols::_slug, reqCatSlug))
+                                       .getValueOfId();
 
-                        findChildCategoryId(childId);
+                std::vector<Category::PrimaryKeyType> catIds{catId};
+
+                std::function<void(const Category::PrimaryKeyType)> findChildCategoryId;
+                findChildCategoryId = [&catIds, &catMap, &findChildCategoryId](const Category::PrimaryKeyType parentId)
+                {
+                    try
+                    {
+                        auto childCats = catMap.findBy(
+                            orm::Criteria(Category::Cols::_parent_id, parentId));
+                        for (const auto &childCat : childCats)
+                        {
+                            const auto childId = childCat.getValueOfId();
+                            catIds.push_back(childId);
+
+                            findChildCategoryId(childId);
+                        }
+                    }
+                    catch (const std::exception &e)
+                    {
+                        LOG_ERROR << e.what();
+                    }
+                };
+
+                findChildCategoryId(catId);
+
+                if (catIds.size())
+                {
+                    const auto productCats = orm::Mapper<ProductCategory>(dbClient)
+                                                 .findBy(orm::Criteria(ProductCategory::Cols::_category_id, orm::CompareOperator::In, catIds));
+
+                    std::vector<Product::PrimaryKeyType> productIds;
+                    for (const auto &productCat : productCats)
+                    {
+                        productIds.push_back(productCat.getValueOfProductId());
+                    }
+
+                    if (productIds.size())
+                    {
+                        cnd = cnd && orm::Criteria(Product::Cols::_id, orm::CompareOperator::In, productIds);
                     }
                 }
-                catch(const std::exception& e)
-                {
-                    LOG_ERROR << e.what();
-                }
-            };
-
-            findChildCategoryId(catId);
-
-            if (catIds.size()) {
-                const auto productCats = orm::Mapper<ProductCategory>(dbClient)
-                                             .findBy(orm::Criteria(ProductCategory::Cols::_category_id, orm::CompareOperator::In, catIds));
-
-                std::vector<Product::PrimaryKeyType> productIds;
-                for (const auto &productCat : productCats)
-                {
-                    productIds.push_back(productCat.getValueOfProductId());
-                }
-
-                if (productIds.size())
-                {
-                    cnd = cnd && orm::Criteria(Product::Cols::_id, orm::CompareOperator::In, productIds);
-                }
+            }
+            catch (const orm::UnexpectedRows &e)
+            {
+            }
+            catch (const std::exception &e)
+            {
+                LOG_ERROR << e.what();
             }
         }
-        catch (const orm::UnexpectedRows &e)
+
+        // Search
+        const auto& reqKw = req->getParameter("keyword");
+        if (reqKw.size())
         {
-        }
-        catch (const std::exception &e)
-        {
-            LOG_ERROR << e.what();
+            cnd = cnd && orm::Criteria(Product::Cols::_name, orm::CompareOperator::Like, '%' + reqKw + '%');
         }
     }
 
@@ -103,14 +114,27 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
             page = 1;
         }
 
-        const auto& prds = prdMap
-            .paginate(page, limit)
-            .findBy(cnd);
-        auto& retData = ret["data"];
+        const auto &prds = prdMap
+                               .paginate(page, limit)
+                               .findBy(cnd);
+        auto &retData = ret["data"];
         retData = Json::Value(Json::arrayValue);
-        for (const auto& prd : prds)
+        for (const auto &prd : prds)
         {
-            retData.append(prd.toJson());
+            auto& prdRow = retData.append(prd.toJson());
+            auto& prdCatRow = prdRow[Category::tableName];
+            prdCatRow = Json::Value(Json::arrayValue);
+            prd.getCategory(
+                dbClient,
+                [&prdCatRow](auto pairRows) {
+                    for (const auto& pairRow : pairRows)
+                    {
+                        prdCatRow.append(pairRow.first.toJson());
+                    }
+                },
+                [](const auto& e) {
+                    LOG_ERROR << e.base().what();
+                });
         }
 
         ret["total"] = static_cast<uint>(prdMap.count(cnd));

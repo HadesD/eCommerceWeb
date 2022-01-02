@@ -19,6 +19,8 @@ import Header from './Header';
 import Footer from './Footer';
 
 import locale from 'ant-design-vue/lib/locale-provider/vi_VN';
+import 'dayjs/locale/vi';
+import dayjs from 'dayjs';
 
 import RequestRepository from '../utils/RequestRepository';
 
@@ -33,6 +35,8 @@ export default {
     },
 
     setup() {
+        dayjs.locale('vi');
+
         return {
             locale,
         };
