@@ -36,7 +36,9 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
 
             std::vector<Category::PrimaryKeyType> catIds{catId};
 
-            std::function<void(const Category::PrimaryKeyType)> findChildCategoryId = [&catIds, &catMap](const Category::PrimaryKeyType parentId) {
+            std::function<void(const Category::PrimaryKeyType)> findChildCategoryId;
+            findChildCategoryId = [&catIds, &catMap, &findChildCategoryId](const Category::PrimaryKeyType parentId)
+            {
                 try
                 {
                     auto childCats = catMap.findBy(
