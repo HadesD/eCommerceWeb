@@ -22,18 +22,25 @@ namespace app_helpers
 
         auto &prdCatRow = prdRow[Category::tableName];
         prdCatRow = Json::Value(Json::arrayValue);
+        std::promise<int> pCatRet;
+        auto fCatRet = pCatRet.get_future();
         prd.getCategory(
             dbClient,
-            [&prdCatRow](auto pairRows)
+            [&prdCatRow, &pCatRet](auto pairRows)
             {
                 for (const auto &pairRow : pairRows)
                 {
                     prdCatRow.append(pairRow.first.toJson());
                 }
+
+                pCatRet.set_value(0);
             },
-            [](const auto &e)
+            [&pCatRet](const auto &e)
             {
                 LOG_ERROR << e.base().what();
+
+                pCatRet.set_value(1);
             });
+        fCatRet.get();
     }
 }

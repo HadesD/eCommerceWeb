@@ -14,7 +14,10 @@
             </a-carousel>
         </a-col>
         <a-col :xs="24" :sm="24" :md="24" :lg="12">
-            {{ product.name }}
+            <a-space direction="vertical">
+                <a-typography v-for="category in product.categories">{{ category.name }}</a-typography>
+            </a-space>
+            <a-typography-title :level="2">{{ product.name }}</a-typography-title>
         </a-col>
     </a-row>
 </template>
@@ -39,7 +42,6 @@ export default {
             RequestRepository.get('/products/' + route.params.product_id)
                 .then(res => {
                     const productData = res.data.data;
-                    console.log(res);
 
                     document.title = productData.name;
 
