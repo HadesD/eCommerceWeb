@@ -63,12 +63,12 @@ if (process.env.RENDER_TARGET === 'server') {
     const indexHtmlDir = 'views/index.html';
     if (fs.existsSync(indexHtmlDir)) {
         let htmlData = fs.readFileSync(indexHtmlDir).toString();
-        const hostStr = !mix.inProduction() ? fs.readFileSync('hot').toString().trim() : '';
 
         mix.then((sts) => {
             if (sts.hasErrors()) {
                 return;
             }
+            const hostStr = !mix.inProduction() ? fs.readFileSync('public/hot').toString().trim() : '';
 
             let appJs, appCss;
             let mixManifest = JSON.parse(fs.readFileSync('public/mix-manifest.json').toString());
