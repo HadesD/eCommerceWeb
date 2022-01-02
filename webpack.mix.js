@@ -54,13 +54,16 @@ if (process.env.RENDER_TARGET === 'server') {
             },
         });
 } else {
+    mix.setPublicPath('public');
+    mix.setResourceRoot('views');
+
     mix.js(vueDir + '/app-client.js', 'public/assets/js');
     mix.sass(vueDir + '/assets/app.scss', 'public/assets/css');
 
     const indexHtmlDir = 'views/index.html';
     if (fs.existsSync(indexHtmlDir)) {
         let htmlData = fs.readFileSync(indexHtmlDir).toString();
-        const hostStr = !mix.inProduction() ? fs.readFileSync('hot').toString().trim() : 0;
+        const hostStr = !mix.inProduction() ? fs.readFileSync('hot').toString().trim() : '';
 
         mix.then((sts) => {
             if (sts.hasErrors()) {
@@ -68,7 +71,7 @@ if (process.env.RENDER_TARGET === 'server') {
             }
 
             let appJs, appCss;
-            let mixManifest = JSON.parse(fs.readFileSync('mix-manifest.json').toString());
+            let mixManifest = JSON.parse(fs.readFileSync('public/mix-manifest.json').toString());
             for (const i in mixManifest) {
                 if (i.indexOf('.js') !== -1) {
                     appJs = mixManifest[i];
@@ -83,7 +86,8 @@ if (process.env.RENDER_TARGET === 'server') {
                 .replace('${APP_JS}', appJs)
                 .replace('${APP_CSS}', appCss)
                 .trim();
-            console.log(publicIndex);
+
+            fs.writeFileSync('public/index.html', publicIndex);
         });
     }
 }

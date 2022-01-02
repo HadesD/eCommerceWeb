@@ -562,6 +562,7 @@ FodyWeavers.xsd
 
 !/Makefile
 **/public/assets/
+/public/index.html
 public.tar.gz
 /hot
 mix-manifest.json
