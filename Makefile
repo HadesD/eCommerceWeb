@@ -16,3 +16,6 @@ release:
 
 tc:
 	./build/test/RinPhone_test
+
+watch:
+	bash scripts/watch.sh
