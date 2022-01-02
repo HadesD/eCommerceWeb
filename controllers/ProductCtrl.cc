@@ -22,6 +22,9 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
         orm::CompareOperator::NE,
         static_cast<uint8_t>(ProductStatus::DRAFT));
 
+    orm::SortOrder orderSort{orm::SortOrder::DESC};
+    auto orderBy = Product::Cols::_created_at;
+
     const auto &reqParams = req->getParameter("id");
 
     if (reqParams.size())
@@ -90,8 +93,8 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
             }
         }
 
+        // Price range: low,high
         const auto& reqPriceRange = req->getParameter("price_range");
-        LOG_DEBUG << reqPriceRange;
         if (reqPriceRange.size())
         {
             auto pos = reqPriceRange.find(',');
@@ -118,6 +121,23 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
         {
             cnd = cnd && orm::Criteria(Product::Cols::_name, orm::CompareOperator::Like, '%' + reqKw + '%');
         }
+
+        // Sort
+        const auto& reqSortBy = req->getParameter("sort_by");
+        if (reqSortBy.size() >= 2)
+        {
+            const auto& tmpSortBy = reqSortBy.substr(1);
+            static std::vector<std::string> allowCols{
+                Product::Cols::_created_at,
+                Product::Cols::_price,
+                Product::Cols::_name,
+            };
+            if (std::find(allowCols.cbegin(), allowCols.cend(), tmpSortBy) != allowCols.cend())
+            {
+                orderSort = (reqSortBy[0] == '+') ? orm::SortOrder::ASC : orm::SortOrder::DESC;
+                orderBy = tmpSortBy;
+            }
+        }
     }
 
     Json::Value ret;
@@ -138,6 +158,7 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
         }
 
         const auto &prds = prdMap
+                               .orderBy(orderBy, orderSort)
                                .paginate(page, limit)
                                .findBy(cnd);
         auto &retData = ret["data"];
