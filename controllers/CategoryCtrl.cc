@@ -12,29 +12,10 @@ void CategoryCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpR
 
     Json::Value ret;
 
-    // TODO: Fix not to use bellow conditional
-    drogon::orm::Criteria catCond(Category::Cols::_id, drogon::orm::CompareOperator::IsNotNull);
-
-    try
-    {
-        auto cat = drogon::orm::Mapper<Category>(dbClient)
-                       .findOne(drogon::orm::Criteria(Category::Cols::_slug, req->getParameter("parent_slug")));
-        catCond = catCond && drogon::orm::Criteria(Category::Cols::_parent_id, cat.getValueOfId());
-
-        ret["name"] = cat.getValueOfName();
-    }
-    catch (const drogon::orm::UnexpectedRows& e)
-    {
-    }
-    catch (const std::exception &e)
-    {
-        LOG_DEBUG << e.what();
-    }
-
     try
     {
         drogon::orm::Mapper<Category> catMap(dbClient);
-        auto cats = catMap.findBy(catCond);
+        auto cats = catMap.orderBy(Category::Cols::_parent_id).orderBy(Category::Cols::_name).findAll();
 
         auto &retData = ret["data"];
         retData = Json::Value(Json::arrayValue);
@@ -44,7 +25,7 @@ void CategoryCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpR
             retData.append(cat.toJson());
         }
     }
-    catch(const std::exception& e)
+    catch (const std::exception &e)
     {
         LOG_ERROR << e.what();
 

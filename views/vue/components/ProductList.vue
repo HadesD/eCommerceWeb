@@ -2,6 +2,8 @@
     <div ref="productListRow">
         <div v-if="loadingProductList">
             <a-skeleton />
+            <a-skeleton />
+            <a-skeleton />
         </div>
         <div v-else>
             <a-row>

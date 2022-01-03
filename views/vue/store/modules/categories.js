@@ -9,7 +9,7 @@ export default {
         async fetchCategories({ commit }) {
             return RequestRepository.get('/categories')
                 .then(res => {
-                    commit('setCategories', res.data.data)
+                    commit('setCategories', res.data.data);
                 });
         },
     },
