@@ -197,6 +197,7 @@ export default {
             specification: undefined,
             price: undefined,
             status: ProductStatus.STS_DRAFT,
+            images: [],
         });
 
         return {
