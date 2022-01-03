@@ -26,11 +26,15 @@ export function vietnameseNormalize(str, toUpperCase = false) {
         .replace(/^-/, '');
 
     return toUpperCase ? str?.toUpperCase() : str;
-};
+}
 
 export function number_format(num) {
     return new Intl.NumberFormat().format(num || 0);
-};
+}
+
+export function money_format(num) {
+    return number_format(num) + ' ₫';
+}
 
 export function date_format(dateStr, formatStr = 'YYYY-MM-DD HH:mm:ss') {
     return dayjs(dateStr).format(formatStr);

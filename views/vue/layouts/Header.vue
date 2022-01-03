@@ -38,7 +38,7 @@
                 <a-dropdown>
                     <router-link :to="{ name: 'checkout' }">
                         <a-badge :count="5">
-                            <a-button type="primary" size="large">0 ₫ <ShoppingCartOutlined /></a-button>
+                            <a-button type="primary" size="large">{{ money_format(0) }} <ShoppingCartOutlined /></a-button>
                         </a-badge>
                     </router-link>
                     <template #overlay>
@@ -78,7 +78,7 @@
 </template>
 <script>
 import {
-  computed,
+    computed,
     onMounted, ref,
     h, resolveComponent,
 } from 'vue';
@@ -92,7 +92,7 @@ import {
 
 import SearchProductForm from '../components/SearchProductForm';
 import RequestRepository from '../utils/RequestRepository';
-import { list_to_tree } from '../helpers';
+import { list_to_tree, money_format, } from '../helpers';
 import { useStore } from 'vuex';
 
 const TreeMenu = {
@@ -150,6 +150,8 @@ export default {
 
         return {
             categories: computed(() => list_to_tree(store.getters.getCategories)),
+
+            money_format,
         };
     },
 }

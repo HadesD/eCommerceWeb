@@ -6,11 +6,11 @@
                 <a-typography-title :level="4">Bạn có thắc mắc cần giải đáp? 24/7 HotLine</a-typography-title>
                 <a-typography-paragraph>
                     <ul>
-                        <li><a-typography-title :level="5">Đường dây nóng 1: <a href="tel:+84774475777">077-447-5777</a></a-typography-title></li>
-                        <li><a-typography-title :level="5">Đường dây nóng 2: <a href="tel:+84867575277">086-757-5277</a></a-typography-title></li>
+                        <li><a-typography-title :level="5">Đường dây nóng: <PhoneOutlined /> <a href="tel:+84774475777">077-447-5777</a></a-typography-title></li>
+                        <li><a-typography-title :level="5">Đường dây nóng: <PhoneOutlined /> <a href="tel:+84867575277">086-757-5277</a></a-typography-title></li>
                     </ul>
                 </a-typography-paragraph>
-                <a-typography-text type="secondary"><a href="https://goo.gl/maps/N1kXZFf5G77ZiV3q9" target="_blank"><EnvironmentFilled /> ĐT637, Vĩnh Hảo, Vĩnh Thạnh, Bình Định</a></a-typography-text>
+                <a-typography-text type="secondary"><a href="https://goo.gl/maps/N1kXZFf5G77ZiV3q9" target="_blank" title="Xem trên Google Maps"><EnvironmentFilled /> Khu phố Định An, thị trấn Vĩnh Thạnh, Bình Định</a></a-typography-text>
                 <div style="margin: 10px 0;">
                     <a-space>
                         <a href="https://fb.me/rinphonevn" target="_blank">
@@ -34,17 +34,37 @@
                 <a-row type="flex">
                     <a-col :flex="2">
                         <a-space direction="vertical">
-                            <a-typography-title :level="5">Chuyên mục</a-typography-title>
-                            <a-typography-text>Điện thoại</a-typography-text>
-                            <a-typography-text>Phụ kiện</a-typography-text>
+                            <a-typography-title :level="5">Apple</a-typography-title>
+                            <a-typography-text><router-link to="/iphone">iPhone</router-link></a-typography-text>
+                            <a-typography-text><router-link to="/airpods">AirPods</router-link></a-typography-text>
+                            <a-typography-text><router-link to="/ipad">iPad</router-link></a-typography-text>
+                            <a-typography-text><router-link to="/apple-watch">Apple Watch</router-link></a-typography-text>
+                            <a-typography-text><router-link to="/apple">Xem thêm <DoubleRightOutlined /></router-link></a-typography-text>
                         </a-space>
                     </a-col>
                     <a-col :flex="2">
                         <a-space direction="vertical">
-                            <a-typography-title :level="5">Chăm sóc Khách Hàng</a-typography-title>
-                            <a-typography-text>Quản lý tài khoản</a-typography-text>
-                            <a-typography-text>Theo dõi đơn hàng</a-typography-text>
-                            <a-typography-text>Dịch vụ Đổi / Trả</a-typography-text>
+                            <a-typography-title :level="5">Máy Android / Khác</a-typography-title>
+                            <a-typography-text><router-link to="/samsung">Samsung</router-link></a-typography-text>
+                            <a-typography-text><router-link to="/oppo">OPPO</router-link></a-typography-text>
+                            <a-typography-text><router-link to="/vivo">Vivo</router-link></a-typography-text>
+                            <a-typography-text><router-link to="/dien-thoai-re">Điện thoại giá rẻ</router-link></a-typography-text>
+                        </a-space>
+                    </a-col>
+                    <a-col :flex="2">
+                        <a-space direction="vertical">
+                            <a-typography-title :level="5">Chuyên mục khác</a-typography-title>
+                            <a-typography-text><router-link to="/phu-kien">Phụ kiện</router-link></a-typography-text>
+                            <a-typography-text><router-link to="/linh-kien">Linh kiện</router-link></a-typography-text>
+                            <a-typography-text><router-link to="/may-tinh">Máy tính</router-link></a-typography-text>
+                        </a-space>
+                    </a-col>
+                    <a-col :flex="2">
+                        <a-space direction="vertical">
+                            <a-typography-title :level="5">Hỗ trợ Khách Hàng</a-typography-title>
+                            <a-typography-text>Chính sách bảo mật thông tin</a-typography-text>
+                            <a-typography-text>Chính sách Đổi / Trả</a-typography-text>
+                            <a-typography-text>Chính sách vận chuyển</a-typography-text>
                             <a-typography-text>Các câu hỏi thường gặp</a-typography-text>
                         </a-space>
                     </a-col>
@@ -54,7 +74,7 @@
     </a-layout-footer>
     <a-layout-footer style="background-color:#fafafa;">
         <a-row type="flex">
-            <a-col :flex="3">Copyright <CopyrightOutlined /> 2021 RinPhone.vn. All rights reserved.</a-col>
+            <a-col :flex="3">Copyright <CopyrightOutlined /> 2021 RinPhone. All rights reserved.</a-col>
             <a-col :flex="2" style="text-align: right;">
                 <a-space>
                     <CreditCardTwoTone style="font-size: 25px;" />
@@ -68,14 +88,16 @@
 import {
     EnvironmentFilled, FacebookFilled, YoutubeFilled,
     CopyrightOutlined, CreditCardTwoTone,
-    LeftCircleOutlined, RightCircleOutlined,
+    LeftCircleOutlined, RightCircleOutlined, PhoneOutlined,
+    DoubleRightOutlined,
 } from '@ant-design/icons-vue';
 
 export default {
     components: {
         EnvironmentFilled, FacebookFilled, YoutubeFilled,
         CopyrightOutlined, CreditCardTwoTone,
-        LeftCircleOutlined, RightCircleOutlined,
+        LeftCircleOutlined, RightCircleOutlined, PhoneOutlined,
+        DoubleRightOutlined,
     },
 }
 </script>

@@ -1,8 +1,5 @@
 <template>
-        <metainfo>
-            <template v-slot:title="{ content }">{{ content ? `${content} | SITE_NAME` : `SITE_NAME` }}</template>
-        </metainfo>
-    <a-row>
+    <a-row :gutter="16">
         <a-col :xs="24" :sm="24" :md="24" :lg="12">
             <a-carousel arrows dots-class="slick-dots slick-thumb" class="product-carousel" dot-position="left">
                 <template #customPaging="props">
@@ -14,20 +11,36 @@
             </a-carousel>
         </a-col>
         <a-col :xs="24" :sm="24" :md="24" :lg="12">
-            <a-space direction="vertical">
-                <a-typography-text v-for="category in product.categories">
-                    <router-link
-                        :to="{
-                            name: 'category',
-                            params: {
-                                category_slug: category.slug,
-                            }
-                        }"
-                    >{{ category.name }}</router-link>
-                </a-typography-text>
-            </a-space>
-            <a-typography-title :level="2">{{ product.name }}</a-typography-title>
+            <a-skeleton active :paragraph="6" v-if="!product.id" />
+            <div v-else>
+                <a-space direction="vertical">
+                    <a-typography-text v-for="category in product.categories">
+                        <router-link
+                            :to="{
+                                name: 'category',
+                                params: {
+                                    category_slug: category.slug,
+                                }
+                            }"
+                        >{{ category.name }}</router-link>
+                    </a-typography-text>
+                </a-space>
+                <a-typography-title :level="2" style="margin-bottom: 0;">{{ product.name }}</a-typography-title>
+                <a-typography-text type="secondary">Mã sản phẩm: <a-tag color="purple">#{{ product.id }}</a-tag></a-typography-text>
+                <div><a-rate :value="4" disabled /></div>
+                <a-divider dashed />
+                <a-typography-paragraph :level="1">{{ product.description }}</a-typography-paragraph>
+                <a-typography-title :level="2">Giá: <a-typography-text type="danger">{{ money_format(product.price) }}</a-typography-text></a-typography-title>
+            </div>
         </a-col>
+        <a-card title="Quá trình mua hàng" size="small" style="width: 100%;">
+            <a-steps :current="0">
+                <a-step title="Thêm Vào Giỏ" description="Chọn số lượng muốn mua rồi nhấn nút Thêm Vào Giỏ Hàng" />
+                <a-step title="Chốt Đơn" description="Tại trang Thanh Toán, kiểm tra lại thông tin đặt hàng và Chốt Đơn" />
+                <a-step title="Thanh Toán" description="Thực hiện thanh toán thông qua các hình thức cửa hàng đang hỗ trợ" />
+                <a-step title="Nhận Hàng" description="Sản phẩm được chuyển tới tận tay Quý Khách Hàng" />
+            </a-steps>
+        </a-card>
     </a-row>
 </template>
 <script>
@@ -36,7 +49,10 @@ import { useRoute, useRouter } from 'vue-router'
 import { useMeta } from 'vue-meta';
 
 import RequestRepository from '~/utils/RequestRepository';
-import { vietnameseNormalize } from '~/helpers';
+import {
+    vietnameseNormalize,
+    money_format,
+} from '~/helpers';
 
 export default {
     setup() {
@@ -66,17 +82,12 @@ export default {
                 });
         };
 
-        const getImgUrl = (i) => {
-            console.log(i);
-            return `abstract0${1}.jpg`;
-        };
-
         onMounted(() => {
             loadProduct();
         });
 
         watch(
-            () => route.params.product_slug,
+            () => route.params.product_id,
             (value) => {
                 if (value) {
                     loadProduct();
@@ -87,7 +98,7 @@ export default {
         return {
             product,
 
-            getImgUrl,
+            money_format,
         };
     },
 }

@@ -1,6 +1,9 @@
 <template>
-    <a-spin :spinning="loadingProductList">
-        <div ref="productListRow">
+    <div ref="productListRow">
+        <div v-if="loadingProductList">
+            <a-skeleton />
+        </div>
+        <div v-else>
             <a-row>
                 <a-col :span="12">
                     <a-typography-title :level="4">Có <a-tag color="purple">{{ number_format(products.total) }}</a-tag> sản phẩm</a-typography-title>
@@ -35,27 +38,22 @@
                     >
                         <a-card hoverable>
                             <template #cover>
-                                <img
-                                    alt="example"
-                                    src="/favicon.ico"
-                                />
+                                <img :alt="product.name" :src="product.images.length ? product.images[0].url : '/favicon.ico'" />
                             </template>
                             <template class="ant-card-actions" #actions>
                                 <!-- <setting-outlined key="setting" />
                                 <edit-outlined key="edit" />
                                 <ellipsis-outlined key="ellipsis" /> -->
                             </template>
-                            <a-card-meta :title="number_format(product.price) + ' ₫'">
+                            <a-card-meta :title="money_format(product.price)">
                                 <template #description>
                                     <a-typography-paragraph
                                         :ellipsis="{ rows: 2, expandable: false, }"
                                         :title="product.name"
                                         style="height: 3em;"
-                                    >{{ product.name }}</a-typography-paragraph>
+                                        :content="product.name"
+                                    />
                                 </template>
-                                <!-- <template #avatar>
-                                    <a-avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
-                                </template> -->
                             </a-card-meta>
                         </a-card>
                     </router-link>
@@ -70,7 +68,7 @@
                 @change="(page) => loadProductList({ page })"
             />
         </div>
-    </a-spin>
+    </div>
 </template>
 <script>
 import { onMounted, ref, watch } from 'vue';
@@ -79,7 +77,9 @@ import { message } from 'ant-design-vue';
 import RequestRepository from '~/utils/RequestRepository';
 
 import {
-    number_format, vietnameseNormalize,
+    money_format,
+    number_format,
+    vietnameseNormalize,
 } from '~/helpers';
 import { useRoute, useRouter } from 'vue-router';
 import { showErrorRequestApi } from '../helpers';
@@ -158,6 +158,7 @@ export default {
             loadProductList,
             onSortByChange,
 
+            money_format,
             number_format,
             vietnameseNormalize,
         };

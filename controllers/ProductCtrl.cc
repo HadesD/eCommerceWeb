@@ -21,14 +21,29 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
         Product::Cols::_status,
         orm::CompareOperator::NE,
         static_cast<uint8_t>(app_helpers::ProductStatus::DRAFT));
+    cnd = cnd && orm::Criteria(Product::Cols::_deleted_at, orm::CompareOperator::IsNull);
 
     orm::SortOrder orderSort{orm::SortOrder::DESC};
     auto orderBy = Product::Cols::_created_at;
 
-    const auto &reqParams = req->getParameter("id");
+    const auto &reqIds = req->getParameter("ids");
 
-    if (reqParams.size())
+    if (reqIds.size())
     {
+        std::vector<Product::PrimaryKeyType> prdIds;
+        std::istringstream iss(reqIds);
+        std::string idStr;
+        while (std::getline(iss, idStr, ','))
+        {
+            try
+            {
+                prdIds.push_back(std::stoul(idStr));
+            }
+            catch (...)
+            {
+            }
+        }
+        cnd = cnd && orm::Criteria(Product::Cols::_id, orm::CompareOperator::In, prdIds);
     }
     else
     {

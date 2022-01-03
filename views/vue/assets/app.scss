@@ -21,30 +21,39 @@ main.ant-layout-content {
 
 /* For demo */
 .product-carousel.ant-carousel .slick-dots {
-//   position: relative;
-  height: auto;
+    height: auto;
 }
 .product-carousel.ant-carousel .slick-slide img {
-//   border: 5px solid #fff;
-//   display: block;
-  margin: auto;
-//   max-width: 80%;
+    margin: auto;
+    max-height: 301px;
 }
 .product-carousel.ant-carousel .slick-arrow {
-  display: none !important;
+    display: none !important;
 }
 .product-carousel.ant-carousel .slick-thumb {
-//   bottom: 0px;
 }
 .product-carousel.ant-carousel .slick-thumb li {
-  width: 45px;
-  height: 45px;
+    padding: 2px;
+    width: 50px;
+    height: 50px;
+    border: solid 1px #e8e8e8;
+    box-shadow: 0px 1px 5px rgb(0 0 0 / 10%);
+    margin-bottom: 5px;
+    cursor: pointer;
 }
 .product-carousel.ant-carousel .slick-thumb li img {
-  width: 90%;
-  height: 90%;
-  filter: grayscale(100%);
+    width: 100%;
+    height: 100%;
+    filter: grayscale(100%);
+    -webkit-transition: all 200ms ease;
+    -moz-transition: all 200ms ease;
+    -ms-transition: all 200ms ease;
+    -o-transition: all 200ms ease;
+    transition: all 200ms ease;
+}
+.product-carousel.ant-carousel .slick-thumb li:hover img {
+    filter: grayscale(50%);
 }
 .product-carousel.ant-carousel .slick-thumb li.slick-active img {
-  filter: grayscale(0%);
+    filter: grayscale(0%);
 }

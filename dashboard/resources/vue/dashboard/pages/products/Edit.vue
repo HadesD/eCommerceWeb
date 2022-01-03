@@ -110,7 +110,7 @@
                             </a-form-item>
                         </a-tab-pane>
                         <a-tab-pane key="detail" tab="Chi tiết sản phẩm">
-                            <a-form-item label="Mô tả ngắn">
+                            <a-form-item label="Mô tả">
                                 <a-textarea
                                     v-model:value="formData.detail"
                                     ref="detail"
@@ -120,7 +120,7 @@
                             </a-form-item>
                         </a-tab-pane>
                         <a-tab-pane key="specification" tab="Thông số sản phẩm">
-                            <a-form-item label="Mô tả ngắn">
+                            <a-form-item label="Mô tả">
                                 <a-textarea
                                     v-model:value="formData.specification"
                                     ref="specification"
