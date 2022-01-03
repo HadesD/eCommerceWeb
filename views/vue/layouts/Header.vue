@@ -36,15 +36,41 @@
             </a-col>
             <a-col :sm="{ span: 24 }" :lg="{ span: 8 }" style="text-align: right;">
                 <a-dropdown>
-                    <router-link :to="{ name: 'checkout' }">
-                        <a-badge :count="cartItems.reduce((n, {num}) => (n + num), 0)">
-                            <a-button type="primary" size="large">{{ money_format(cartItems.reduce((n, {product}) => (product.price + n), 0)) }} <ShoppingCartOutlined /></a-button>
-                        </a-badge>
-                    </router-link>
+                    <a-tooltip placement="top" title="Tới trang Thanh Toán">
+                        <router-link :to="{ name: 'checkout' }">
+                            <a-badge :count="cartItems.reduce((n, {num}) => (n + num), 0)">
+                                <a-button type="primary" size="large">{{ money_format(cartItems.reduce((n, {product}) => (product.price + n), 0)) }} <ShoppingCartOutlined /></a-button>
+                            </a-badge>
+                        </router-link>
+                    </a-tooltip>
                     <template #overlay>
-                        <a-menu v-if="cartItems.length">
-                            <a-menu-item v-for="cartItem in cartItems" key="cartItem">{{ cartItem.product.name }}</a-menu-item>
-                        </a-menu>
+                        <a-list item-layout="horizontal" :data-source="cartItems" style="min-width: 350px;" class="header-cart-dropdown">
+                            <template #renderItem="{ item }">
+                                <router-link :to="{ name: 'product', params: {
+                                    category_slug: item.product.categories[0].slug,
+                                    product_slug: vietnameseNormalize(item.product.name),
+                                    product_id: item.product.id,
+                                } }">
+                                    <a-list-item key="item">
+                                        <a-list-item-meta>
+                                            <template #description>
+                                                <a-typography-paragraph
+                                                    :ellipsis="{
+                                                        rows: 2,
+                                                        expandable: false,
+                                                    }"
+                                                    :content="item.product.description"
+                                                />
+                                            </template>
+                                            <template #title>{{ item.product.name }}</template>
+                                        </a-list-item-meta>
+                                        <template #extra>
+                                            <img width="40" height="40" :alt="item.product.name" :src="item.product.images[0]?.url" />
+                                        </template>
+                                    </a-list-item>
+                                </router-link>
+                            </template>
+                        </a-list>
                     </template>
                 </a-dropdown>
             </a-col>
@@ -81,7 +107,7 @@ import {
 
 import SearchProductForm from '../components/SearchProductForm';
 import RequestRepository from '../utils/RequestRepository';
-import { list_to_tree, money_format, } from '../helpers';
+import { list_to_tree, money_format, vietnameseNormalize, } from '../helpers';
 import { useStore } from 'vuex';
 
 const TreeMenu = {
@@ -142,6 +168,7 @@ export default {
             cartItems: computed(() => store.getters.getCartItems),
 
             money_format,
+            vietnameseNormalize,
         };
     },
 }
