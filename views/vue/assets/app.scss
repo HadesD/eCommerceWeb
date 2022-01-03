@@ -14,6 +14,8 @@ main.ant-layout-content {
 .header-cart-dropdown .ant-dropdown-menu-items {
     padding: 0;
     margin-bottom: 0;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
 .header-cart-dropdown .ant-dropdown-menu-items li {
