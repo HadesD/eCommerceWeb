@@ -15,7 +15,7 @@ LAST_TS=$(timestamp)
 
 inotifywait -r \
     -m \
-    --excludei '\.(gitignore)$' \
+    --excludei '(\.gitignore|model\.json)$' \
     --event modify \
     --event delete \
     app_helpers \

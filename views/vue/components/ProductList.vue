@@ -45,7 +45,14 @@
                                 <edit-outlined key="edit" />
                                 <ellipsis-outlined key="ellipsis" /> -->
                             </template>
-                            <a-card-meta :title="number_format(product.price) + ' ₫'" :description="product.name">
+                            <a-card-meta :title="number_format(product.price) + ' ₫'">
+                                <template #description>
+                                    <a-typography-paragraph
+                                        :ellipsis="{ rows: 2, expandable: false, }"
+                                        :title="product.name"
+                                        style=""
+                                    >{{ product.name }}</a-typography-paragraph>
+                                </template>
                                 <!-- <template #avatar>
                                     <a-avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
                                 </template> -->

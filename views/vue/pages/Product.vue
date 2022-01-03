@@ -4,12 +4,12 @@
         </metainfo>
     <a-row>
         <a-col :xs="24" :sm="24" :md="24" :lg="12">
-            <a-carousel arrows dots-class="slick-dots slick-thumb" class="product-carousel">
+            <a-carousel arrows dots-class="slick-dots slick-thumb" class="product-carousel" dot-position="left">
                 <template #customPaging="props">
-                    <img :src="getImgUrl(props.i)" />
+                    <img :src="product.images[props.i]?.url" />
                 </template>
-                <div v-for="item in 4" :key="item">
-                    <img :src="baseUrl + 'abstract0' + item + '.jpg'" :alt="product.name" />
+                <div v-for="image in product.images" :key="image">
+                    <img :src="image.url" :alt="product.name" />
                 </div>
             </a-carousel>
         </a-col>
@@ -37,8 +37,6 @@ import { useMeta } from 'vue-meta';
 
 import RequestRepository from '~/utils/RequestRepository';
 import { vietnameseNormalize } from '~/helpers';
-
-const baseUrl = 'https://raw.githubusercontent.com/vueComponent/ant-design-vue/next/components/vc-slick/assets/img/react-slick/';
 
 export default {
     setup() {
@@ -69,7 +67,8 @@ export default {
         };
 
         const getImgUrl = (i) => {
-            return `${baseUrl}abstract0${i + 1}.jpg`;
+            console.log(i);
+            return `abstract0${1}.jpg`;
         };
 
         onMounted(() => {
@@ -88,7 +87,6 @@ export default {
         return {
             product,
 
-            baseUrl,
             getImgUrl,
         };
     },

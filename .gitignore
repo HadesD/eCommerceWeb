@@ -566,3 +566,4 @@ FodyWeavers.xsd
 /public/hot
 public.tar.gz
 mix-manifest.json
+.vscode/
