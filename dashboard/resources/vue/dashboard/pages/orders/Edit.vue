@@ -434,7 +434,7 @@
 
 <script>
 import { reactive, ref } from 'vue';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import {
     PrinterOutlined, BankOutlined, ShoppingCartOutlined,
@@ -546,7 +546,7 @@ export default {
         const ruleForm = ref();
         const formData = reactive({
             id: undefined,
-            deal_date: moment(),
+            deal_date: dayjs(),
             note: undefined,
             customer_id: undefined,
             order_products: [],
@@ -652,7 +652,7 @@ export default {
 
                 this.formData.transactions = [];
 
-                this.formData.deal_date = moment();
+                this.formData.deal_date = dayjs();
 
                 this.orderInfoLoading = false;
             }
@@ -670,7 +670,7 @@ export default {
 
         disabledLastMonthAndTomorrow(current) {
             return !this.authUser.hasPermission(UserRole.ROLE_ADMIN_SUB_MASTER) &&
-                current && ((current < moment().startOf('month')) || (current > moment().endOf('day')));
+                current && ((current < dayjs().startOf('month')) || (current > dayjs().endOf('day')));
         },
         disabledField(record, needRole = UserRole.ROLE_ADMIN_SUB_MASTER) {
             return !this.authUser.hasPermission(needRole) && record.id && (record.id >= 0);
@@ -729,12 +729,12 @@ export default {
                     }
 
                     _.assign(this.formData, _.pick(orderData, _.keys(this.formData)));
-                    const deal_date = moment(orderData.deal_date);
+                    const deal_date = dayjs(orderData.deal_date);
                     this.formData.deal_date = deal_date.isValid() ? deal_date : undefined;
                     this.formData.transactions = this.formData.transactions.map(value => {
                         return {
                             ...value,
-                            paid_date: moment(value.paid_date),
+                            paid_date: dayjs(value.paid_date),
                         }
                     });
                     this.formData.order_products = this.formData.order_products.map(op_value => {
@@ -746,7 +746,7 @@ export default {
                                     transactions: ops_value.transactions.map(opst_value => {
                                         return {
                                             ...opst_value,
-                                            paid_date: moment(opst_value.paid_date)
+                                            paid_date: dayjs(opst_value.paid_date)
                                         };
                                     }),
                                 };
@@ -779,11 +779,11 @@ export default {
             const request = orderId ? RequestRepository.put : RequestRepository.post;
             request('/orders' + (orderId ? `/${orderId}` : ''), {
                 ...this.formData,
-                deal_date: moment(this.formData.deal_date).format("YYYY-MM-DD HH:mm:ss"),
+                deal_date: dayjs(this.formData.deal_date).format("YYYY-MM-DD HH:mm:ss"),
                 transactions: this.formData.transactions.map(value => {
                     return {
                         ...value,
-                        paid_date: moment(value.paid_date).format("YYYY-MM-DD HH:mm:ss"),
+                        paid_date: dayjs(value.paid_date).format("YYYY-MM-DD HH:mm:ss"),
                     };
                 }),
                 order_products: this.formData.order_products.map(op_value => {
@@ -797,7 +797,7 @@ export default {
                                 transactions: ops_value.transactions.map(opst_value => {
                                     return {
                                         ...opst_value,
-                                        paid_date: moment(opst_value.paid_date).format('YYYY-MM-DD HH:mm:ss')
+                                        paid_date: dayjs(opst_value.paid_date).format('YYYY-MM-DD HH:mm:ss')
                                     };
                                 }),
                             };

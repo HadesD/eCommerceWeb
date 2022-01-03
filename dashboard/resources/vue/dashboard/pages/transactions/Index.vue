@@ -67,7 +67,7 @@
                     type="date"
                     :value="selectedKeys"
                     style="width: 250px; margin-bottom: 8px; display: block;"
-                    :ranges="{ 'Hôm nay': [moment(), moment()], 'Tháng này': [moment().startOf('month'), moment().endOf('month')] }"
+                    :ranges="{ 'Hôm nay': [dayjs(), dayjs()], 'Tháng này': [dayjs().startOf('month'), dayjs().endOf('month')] }"
                     @change="(date, dateStrings) => setSelectedKeys(dateStrings ? dateStrings : [])"
                 />
                 <a-button
@@ -141,7 +141,7 @@
 </template>
 
 <script>
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import {
     SearchOutlined, DownloadOutlined, PlusOutlined,
@@ -268,7 +268,7 @@ export default {
     methods: {
         number_format,
         date_format,
-        moment,
+        dayjs,
 
         loadTransactions() {
             this.transactionsTableLoading = true;

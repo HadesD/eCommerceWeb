@@ -529,7 +529,7 @@
 
 <script>
 import { reactive, ref } from 'vue';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import {
     UserOutlined,
@@ -717,8 +717,8 @@ export default {
             return (
                 !this.authUser.hasPermission(UserRole.ROLE_ADMIN_SUB_MASTER) &&
                 current &&
-                (current < moment().startOf("month") ||
-                    current > moment().endOf("day"))
+                (current < dayjs().startOf("month") ||
+                    current > dayjs().endOf("day"))
             );
         },
         disabledField(record, needRole = UserRole.ROLE_ADMIN_SUB_MASTER) {
@@ -793,7 +793,7 @@ export default {
                             this.formData.transactions.map((value) => {
                                 return {
                                     ...value,
-                                    paid_date: moment(value.paid_date),
+                                    paid_date: dayjs(value.paid_date),
                                 };
                             });
 
@@ -826,13 +826,13 @@ export default {
                 : RequestRepository.post;
             request("/stocks" + (stockId ? `/${stockId}` : ""), {
                 ...this.formData,
-                inout_date: moment(this.formData.inout_date).format(
+                inout_date: dayjs(this.formData.inout_date).format(
                     "YYYY-MM-DD HH:mm:ss"
                 ),
                 transactions: this.formData.transactions.map((value) => {
                     return {
                         ...value,
-                        paid_date: moment(value.paid_date).format(
+                        paid_date: dayjs(value.paid_date).format(
                             "YYYY-MM-DD HH:mm:ss"
                         ),
                     };
