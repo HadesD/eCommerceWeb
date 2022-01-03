@@ -1,51 +1,52 @@
 export default {
     state: () => ({
-        /**
-         * []{product:{},num:Number}
-         */
-        cartItems: [],
+        cartItems: [
+            /*
+            {
+                product: {},
+                num: Number,
+            },
+            */
+        ],
     }),
 
     actions: {
-        fetchCartProducts({ commit }) {
-            let products = [];
-            commit('setCartProducts', products);
+        fetchCartItems({ commit }) {
+            let items = [];
+            commit('setCartItems', items);
         },
 
-        appendCartProduct({ commit, store }, product) {
-            commit('addCartProducts', product);
+        appendCartItem({ commit, store }, item) {
+            commit('addCartItem', item);
         },
 
-        removeCartProduct({ commit }, product) {
-            commit('removeCartProduct', product);
+        removeCartItem({ commit }, item) {
+            commit('removeCartItem', item);
         },
     },
 
     mutations: {
-        setCartProducts(store, data) {
+        setCartItems(store, data) {
             store.cartItems = data;
         },
 
-        addCartProduct(store, product) {
-            store.cartItems.push({
-                product,
-                num: 1,
-            });
+        addCartItem(store, item) {
+            store.cartItems.push(item);
         },
 
         /**
          *
          * @param {*} store
-         * @param {Object} product
+         * @param {Object} item
          * @param {Number} num : Number of products being remove.
          *                       0: all
          */
-        removeCartProduct(store, product, num = 0) {
+        removeCartItem(store, item, num = 0) {
             for (const i in store.cartItems) {
-                const item = store.cartItems[i];
-                if (item.product.id === product.id) {
-                    item.num -= num;
-                    if ((num === 0) || (item.num <= 0)) {
+                const curItem = store.cartItems[i];
+                if (curItem.product.id === item.product.id) {
+                    curItem.num -= num;
+                    if ((num === 0) || (curItem.num <= 0)) {
                         store.cartItems.splice(i, 1);
                     }
                     break;
@@ -55,7 +56,7 @@ export default {
     },
 
     getters: {
-        getCartProducts(store) {
+        getCartItems(store) {
             return store.cartItems;
         },
     },

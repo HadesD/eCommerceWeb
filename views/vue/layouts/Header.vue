@@ -37,24 +37,13 @@
             <a-col :sm="{ span: 24 }" :lg="{ span: 8 }" style="text-align: right;">
                 <a-dropdown>
                     <router-link :to="{ name: 'checkout' }">
-                        <a-badge :count="5">
-                            <a-button type="primary" size="large">{{ money_format(0) }} <ShoppingCartOutlined /></a-button>
+                        <a-badge :count="cartItems.reduce((n, {num}) => (n + num), 0)">
+                            <a-button type="primary" size="large">{{ money_format(cartItems.reduce((n, {product}) => (product.price + n), 0)) }} <ShoppingCartOutlined /></a-button>
                         </a-badge>
                     </router-link>
                     <template #overlay>
-                        <a-menu>
-                            <a-menu-item key="1">
-                                <UserOutlined />
-                                1st menu item
-                            </a-menu-item>
-                            <a-menu-item key="2">
-                                <UserOutlined />
-                                2nd menu item
-                            </a-menu-item>
-                            <a-menu-item key="3">
-                                <UserOutlined />
-                                3rd item
-                            </a-menu-item>
+                        <a-menu v-if="cartItems.length">
+                            <a-menu-item v-for="cartItem in cartItems" key="cartItem">{{ cartItem.product.name }}</a-menu-item>
                         </a-menu>
                     </template>
                 </a-dropdown>
@@ -150,6 +139,7 @@ export default {
 
         return {
             categories: computed(() => list_to_tree(store.getters.getCategories)),
+            cartItems: computed(() => store.getters.getCartItems),
 
             money_format,
         };

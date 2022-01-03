@@ -31,6 +31,7 @@
                 <a-divider dashed />
                 <a-typography-paragraph :level="1">{{ product.description }}</a-typography-paragraph>
                 <a-typography-title :level="2">Giá: <a-typography-text type="danger">{{ money_format(product.price) }}</a-typography-text></a-typography-title>
+                <a-button @click="() => addToCart(product)">Thêm vào Giỏ Hàng</a-button>
             </div>
         </a-col>
         <a-card title="Quá trình mua hàng" size="small" style="width: 100%;">
@@ -53,11 +54,13 @@ import {
     vietnameseNormalize,
     money_format,
 } from '~/helpers';
+import { useStore } from 'vuex';
 
 export default {
     setup() {
         const route = useRoute();
         const router = useRouter();
+        const store = useStore();
 
         const product = ref({});
 
@@ -82,6 +85,13 @@ export default {
                 });
         };
 
+        const addToCart = (_product, num = 1) => {
+            store.dispatch('appendCartItem', {
+                product: _product,
+                num,
+            });
+        };
+
         onMounted(() => {
             loadProduct();
         });
@@ -97,6 +107,8 @@ export default {
 
         return {
             product,
+
+            addToCart,
 
             money_format,
         };
