@@ -61,15 +61,14 @@
                                     show-search
                                     allow-clear
                                     multiple
-                                    tree-data-simple-mode
                                     treeDefaultExpandAll
-                                    treeNodeFilterProp="title"
+                                    treeNodeLabelProp="name"
                                     v-model:value="formData.categories_id"
                                     style="width: 100%"
                                     :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
                                     :tree-data="categoriesTreeData"
                                     placeholder="Chuyên mục"
-                                    :replaceFields="{ pId:'parent_id',title:'name',value:'id' }"
+                                    :fieldNames="{ pId: 'parent_id', value: 'id' }"
                                 />
                             </a-spin>
                         </a-form-item>
@@ -164,7 +163,7 @@ import {
 } from '@ant-design/icons-vue';
 
 import ProductStatus, { Config as configProductStatus } from '~/configs/ProductStatus';
-import { number_format, date_format, showErrorRequestApi } from '~/helpers';
+import { number_format, date_format, showErrorRequestApi, list_to_tree, } from '~/helpers';
 import RequestRepository from '~/dashboard/utils/RequestRepository';
 
 import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
@@ -240,13 +239,7 @@ export default {
         },
 
         categoriesTreeData() {
-            let data = this.categories;
-
-            for (let i = 0; i < data.length; i++) {
-                data[i].pId = data[i].parent_id;
-            }
-
-            return data;
+            return list_to_tree(this.categories);
         },
     },
     watch: {

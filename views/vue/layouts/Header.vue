@@ -54,18 +54,13 @@
                                     <a-list-item key="item">
                                         <a-list-item-meta>
                                             <template #description>
-                                                <a-typography-paragraph
-                                                    :ellipsis="{
-                                                        rows: 2,
-                                                        expandable: false,
-                                                    }"
-                                                    :content="item.product.description"
-                                                />
+                                                <div>Giá: {{ money_format(item.product.price) }}</div>
+                                                <div>Số lượng: {{ item.num }}</div>
                                             </template>
                                             <template #title>{{ item.product.name }}</template>
                                         </a-list-item-meta>
                                         <template #extra>
-                                            <img width="40" height="40" :alt="item.product.name" :src="item.product.images[0]?.url" />
+                                            <img width="40" height="40" :alt="item.product.name" :src="item.product.images[0]?.url || '/favicon.ico'" />
                                         </template>
                                     </a-list-item>
                                 </router-link>

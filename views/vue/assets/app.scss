@@ -12,11 +12,15 @@ main.ant-layout-content {
 }
 
 .header-cart-dropdown .ant-dropdown-menu-items {
-    padding: 0 10px;
+    padding: 0;
     margin-bottom: 0;
 }
 
-.header-cart-dropdown .ant-dropdown-menu-items:hover {
+.header-cart-dropdown .ant-dropdown-menu-items li {
+    padding: 10px;
+}
+
+.header-cart-dropdown .ant-dropdown-menu-items li:hover {
     background-color: #d6a9ff;
 }
 
@@ -62,7 +66,7 @@ main.ant-layout-content {
 
 /* transits */
 .product-carousel.ant-carousel .slick-thumb li img,
-.header-cart-dropdown .ant-dropdown-menu-items
+.header-cart-dropdown .ant-dropdown-menu-items li
 {
     -webkit-transition: all 200ms ease;
     -moz-transition: all 200ms ease;
