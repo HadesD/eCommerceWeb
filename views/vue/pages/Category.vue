@@ -1,4 +1,5 @@
 <template>
+    <a-typography-title :level="1">{{ category.name }}</a-typography-title>
     <a-row :gutter="16">
         <a-col :md="24" :lg="4">
             <a-typography-paragraph>
@@ -75,6 +76,10 @@ export default {
         const route = useRoute();
 
         const categories = ref([]);
+        const category = ref({
+            name: null,
+            slug: null,
+        });
         const loadingCategories = ref(false);
         const priceRange = ref([0, 50000]);
         const priceRangeAfterChange = ref([]);
@@ -89,7 +94,9 @@ export default {
             })
                 .then(res => {
                     const resData = res.data;
-                    document.title = resData.name;
+
+                    category.value.name = resData.name;
+                    category.value.slug = slug;
 
                     categories.value = resData.data;
                 })
@@ -122,7 +129,15 @@ export default {
             }
         );
 
+        watch(
+            () => category.value.name,
+            value => {
+                document.title = value;
+            }
+        );
+
         return {
+            category,
             categories,
             priceRange,
             priceRangeAfterChange,

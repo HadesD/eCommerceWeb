@@ -82,22 +82,19 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
 
                 findChildCategoryId(catId);
 
-                if (catIds.size())
+                std::vector<Product::PrimaryKeyType> productIds;
+                const auto productCats = orm::Mapper<ProductCategory>(dbClient)
+                                             .findBy(orm::Criteria(ProductCategory::Cols::_category_id, orm::CompareOperator::In, catIds));
+
+                for (const auto &productCat : productCats)
                 {
-                    const auto productCats = orm::Mapper<ProductCategory>(dbClient)
-                                                 .findBy(orm::Criteria(ProductCategory::Cols::_category_id, orm::CompareOperator::In, catIds));
-
-                    std::vector<Product::PrimaryKeyType> productIds;
-                    for (const auto &productCat : productCats)
-                    {
-                        productIds.push_back(productCat.getValueOfProductId());
-                    }
-
-                    if (productIds.size())
-                    {
-                        cnd = cnd && orm::Criteria(Product::Cols::_id, orm::CompareOperator::In, productIds);
-                    }
+                    productIds.push_back(productCat.getValueOfProductId());
                 }
+                if (!productIds.size())
+                {
+                    productIds.push_back(0);
+                }
+                cnd = cnd && orm::Criteria(Product::Cols::_id, orm::CompareOperator::In, productIds);
             }
             catch (const orm::UnexpectedRows &e)
             {

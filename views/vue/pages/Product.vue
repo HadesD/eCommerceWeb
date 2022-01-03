@@ -11,7 +11,7 @@
             </a-carousel>
         </a-col>
         <a-col :xs="24" :sm="24" :md="24" :lg="12">
-            <a-skeleton active :paragraph="6" v-if="!product.id" />
+            <a-skeleton active :paragraph="{ rows: 6 }" v-if="!product.id" />
             <div v-else>
                 <a-space direction="vertical">
                     <a-typography-text v-for="category in product.categories">

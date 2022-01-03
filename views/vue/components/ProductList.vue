@@ -83,6 +83,7 @@ import {
 } from '~/helpers';
 import { useRoute, useRouter } from 'vue-router';
 import { showErrorRequestApi } from '../helpers';
+import { debounce } from 'lodash';
 
 export default {
     props: {
@@ -122,8 +123,6 @@ export default {
             })
                 .then(res => {
                     products.value = res.data;
-
-                    productListRow.value.scrollIntoView({behavior: 'smooth'});
                 })
                 .catch(showErrorRequestApi)
                 .finally(() => {
@@ -146,6 +145,8 @@ export default {
         watch(() => props.priceRange, () => loadProductList({}));
 
         watch(() => sortBy.value, () => loadProductList({}));
+
+        watch(() => products.value, debounce(() => productListRow.value.scrollIntoView({behavior: 'smooth'}), 100));
 
         return {
             productListRow,
