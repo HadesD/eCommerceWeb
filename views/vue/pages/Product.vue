@@ -31,10 +31,17 @@
                 <a-divider dashed />
                 <a-typography-paragraph :level="1">{{ product.description }}</a-typography-paragraph>
                 <a-typography-title :level="2">Giá: <a-typography-text type="danger">{{ money_format(product.price) }}</a-typography-text></a-typography-title>
-                <a-button @click="() => addToCart(product)">Thêm vào Giỏ Hàng</a-button>
+                <a-space>
+                    <span>Số lượng:</span>
+                    <a-input-number v-model:value="productAddCount" :min="1" size="large" />
+                    <a-button @click="() => addToCart(productAddCount)" size="large" type="primary" ghost><ShoppingCartOutlined /> Thêm vào Giỏ Hàng</a-button>
+                </a-space>
+                <div style="margin-top: 15px;">
+                    <a-button @click="() => buyProduct()" size="large" type="primary" :loading="buying">Mua</a-button>
+                </div>
             </div>
         </a-col>
-        <a-card title="Quá trình mua hàng" size="small" style="width: 100%;">
+        <a-card title="Quá trình mua hàng" size="small" style="width: 100%; margin-top: 15px;">
             <a-steps :current="0">
                 <a-step title="Thêm Vào Giỏ" description="Chọn số lượng muốn mua rồi nhấn nút Thêm Vào Giỏ Hàng" />
                 <a-step title="Chốt Đơn" description="Tại trang Thanh Toán, kiểm tra lại thông tin đặt hàng và Chốt Đơn" />
@@ -49,6 +56,10 @@ import { onMounted, reactive, ref, watch, } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
 import { useMeta } from 'vue-meta';
 
+import {
+    ShoppingCartOutlined,
+} from '@ant-design/icons-vue';
+
 import RequestRepository from '~/utils/RequestRepository';
 import {
     vietnameseNormalize,
@@ -57,12 +68,18 @@ import {
 import { useStore } from 'vuex';
 
 export default {
+    components: {
+        ShoppingCartOutlined,
+    },
+
     setup() {
         const route = useRoute();
         const router = useRouter();
         const store = useStore();
 
         const product = ref({});
+        const productAddCount = ref(1);
+        const buying = ref(false);
 
         const loadProduct = () => {
             RequestRepository.get('/products/' + route.params.product_id)
@@ -85,11 +102,24 @@ export default {
                 });
         };
 
-        const addToCart = (_product, num = 1) => {
-            store.dispatch('appendCartItem', {
-                product: _product,
+        const addToCart = (num = 1) => {
+            return store.dispatch('appendCartItem', {
+                product,
                 num,
             });
+        };
+
+        const buyProduct = () => {
+            buying.value = true;
+            addToCart(1)
+                .then(() => {
+                    router.push({
+                        name: 'checkout',
+                    });
+                })
+                .catch(() => {
+                    buying.value = false;
+                });
         };
 
         onMounted(() => {
@@ -107,8 +137,11 @@ export default {
 
         return {
             product,
+            productAddCount,
+            buying,
 
             addToCart,
+            buyProduct,
 
             money_format,
         };

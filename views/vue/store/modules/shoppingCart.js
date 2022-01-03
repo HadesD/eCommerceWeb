@@ -31,7 +31,13 @@ export default {
         },
 
         addCartItem(store, item) {
-            store.cartItems.push(item);
+            const exists = store.cartItems.find(elm => elm.product.id === item.product.id);
+            console.log(exists, item.product, item.product.id);
+            if (!exists) {
+                store.cartItems.push(item);
+            } else {
+                exists.num += item.num;
+            }
         },
 
         /**

@@ -51,13 +51,21 @@
                                     product_slug: vietnameseNormalize(item.product.name),
                                     product_id: item.product.id,
                                 } }">
-                                    <a-list-item key="item">
+                                    <a-list-item key="item" :title="item.product.name">
                                         <a-list-item-meta>
                                             <template #description>
                                                 <div>Giá: {{ money_format(item.product.price) }}</div>
                                                 <div>Số lượng: {{ item.num }}</div>
                                             </template>
-                                            <template #title>{{ item.product.name }}</template>
+                                            <template #title>
+                                                <a-typography-paragraph
+                                                    :ellipsis="{
+                                                        rows: 1,
+                                                        expandable: false,
+                                                    }"
+                                                    :content="item.product.name"
+                                                />
+                                            </template>
                                         </a-list-item-meta>
                                         <template #extra>
                                             <img width="40" height="40" :alt="item.product.name" :src="item.product.images[0]?.url || '/favicon.ico'" />
