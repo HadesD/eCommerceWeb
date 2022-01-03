@@ -50,7 +50,7 @@
                                     <a-typography-paragraph
                                         :ellipsis="{ rows: 2, expandable: false, }"
                                         :title="product.name"
-                                        style=""
+                                        style="height: 3em;"
                                     >{{ product.name }}</a-typography-paragraph>
                                 </template>
                                 <!-- <template #avatar>
