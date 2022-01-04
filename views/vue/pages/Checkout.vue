@@ -11,7 +11,8 @@ import { useStore } from 'vuex';
 
 const cartTableColumns = [
     {
-
+        title: '',
+        dataIndex: 'product',
     },
 ];
 

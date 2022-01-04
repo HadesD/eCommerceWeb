@@ -31,8 +31,7 @@ export default {
         },
 
         addCartItem(store, item) {
-            const exists = store.cartItems.find(elm => elm.product.id === item.product.id);
-            console.log(exists, item.product, item.product.id);
+            const exists = store.cartItems.find(elm => elm.product.id === item.product.value.id);
             if (!exists) {
                 store.cartItems.push(item);
             } else {
@@ -41,11 +40,9 @@ export default {
         },
 
         /**
-         *
          * @param {*} store
          * @param {Object} item
-         * @param {Number} num : Number of products being remove.
-         *                       0: all
+         * @param {Number} num : Number of products being remove. 0: all
          */
         removeCartItem(store, item, num = 0) {
             for (const i in store.cartItems) {
