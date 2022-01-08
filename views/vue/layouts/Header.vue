@@ -37,9 +37,9 @@
             <a-col :sm="{ span: 24 }" :lg="{ span: 8 }" style="text-align: right;">
                 <a-dropdown>
                     <a-tooltip placement="top" title="Tới trang Thanh Toán">
-                        <router-link :to="{ name: 'checkout' }">
+                        <router-link :to="{ name: 'cart' }">
                             <a-badge :count="cartItems.reduce((n, {num}) => (n + num), 0)">
-                                <a-button type="primary" size="large">{{ money_format(cartItems.reduce((n, {product}) => (product.price + n), 0)) }} <ShoppingCartOutlined /></a-button>
+                                <a-button type="primary" size="large">{{ money_format(cartItems.reduce((n, r) => (r.product.price * r.num + n), 0)) }} <ShoppingCartOutlined /></a-button>
                             </a-badge>
                         </router-link>
                     </a-tooltip>
@@ -83,14 +83,10 @@
         <a-menu mode="horizontal" :selectedKeys="[$route.params?.category_slug || '/']">
             <a-sub-menu :disabled="!(categories.length > 0)" class="header-submenu-category">
                 <template #icon><MenuOutlined /></template>
-                <template #title>CHUYÊN MỤC</template>
+                <template #title>SẢN PHẨM</template>
 
                 <TreeMenu :nodeData="categories" />
             </a-sub-menu>
-            <a-menu-item key="/">
-                <template #icon><HomeOutlined /></template>
-                <router-link to="/">Trang Chủ</router-link>
-            </a-menu-item>
         </a-menu>
     </a-layout-header>
 </template>

@@ -28,6 +28,12 @@ export default {
             localStorage.setItem(localStorageKeyName, JSON.stringify(state.cartItems));
         },
 
+        updateCartItem({ commit, state }, item) {
+            commit('setCartItem', item);
+
+            localStorage.setItem(localStorageKeyName, JSON.stringify(state.cartItems));
+        },
+
         removeCartItem({ commit, state }, item) {
             commit('removeCartItem', item);
 
@@ -38,6 +44,13 @@ export default {
     mutations: {
         setCartItems(store, data) {
             store.cartItems = data;
+        },
+
+        setCartItem(store, item) {
+            const exists = store.cartItems.find(elm => elm.product.id === item.product.id);
+            if (exists) {
+                exists.num = item.num;
+            }
         },
 
         addCartItem(store, item) {
@@ -54,14 +67,11 @@ export default {
          * @param {Object} item
          * @param {Number} num : Number of products being remove. 0: all
          */
-        removeCartItem(store, item, num = 0) {
+        removeCartItem(store, item) {
             for (const i in store.cartItems) {
                 const curItem = store.cartItems[i];
                 if (curItem.product.id === item.product.id) {
-                    curItem.num -= num;
-                    if ((num === 0) || (curItem.num <= 0)) {
-                        store.cartItems.splice(i, 1);
-                    }
+                    store.cartItems.splice(i, 1);
                     break;
                 }
             }

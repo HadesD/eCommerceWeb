@@ -2,7 +2,7 @@ import Index from '../pages/Index';
 import Category from '../pages/Category';
 import Product from '../pages/Product';
 import Search from '../pages/Search';
-import Checkout from '../pages/Checkout';
+import Cart from '../pages/Cart';
 
 let routes = [
     {
@@ -21,9 +21,9 @@ let routes = [
         component: Product,
     },
     {
-        path: '/checkout',
-        name: 'checkout',
-        component: Checkout,
+        path: '/cart',
+        name: 'cart',
+        component: Cart,
     },
     {
         path: '/search',

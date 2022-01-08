@@ -52,7 +52,7 @@
     </a-row>
 </template>
 <script>
-import { onMounted, reactive, ref, watch, } from 'vue';
+import { computed, onMounted, reactive, ref, watch, } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
 import { useMeta } from 'vue-meta';
 
@@ -80,8 +80,11 @@ export default {
         const product = ref({});
         const productAddCount = ref(1);
         const buying = ref(false);
+        const cartItems = computed(() => store.getters.getCartItems);
 
         const loadProduct = () => {
+            document.title = 'Trang thông tin sản phẩm';
+
             RequestRepository.get('/products/' + route.params.product_id)
                 .then(res => {
                     const productData = res.data.data;
@@ -111,10 +114,11 @@ export default {
 
         const buyProduct = () => {
             buying.value = true;
-            addToCart(1)
+
+            addToCart(cartItems.value.find(elm => elm.product.id === product.value.id) ? 0 : 1)
                 .then(() => {
                     router.push({
-                        name: 'checkout',
+                        name: 'cart',
                     });
                 })
                 .catch(() => {

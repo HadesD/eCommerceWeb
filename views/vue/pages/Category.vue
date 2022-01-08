@@ -3,7 +3,7 @@
         <a-breadcrumb-item>
             <HomeOutlined />
         </a-breadcrumb-item>
-        <a-breadcrumb-item v-for="cat in breadcrums" key="cat.id">
+        <a-breadcrumb-item v-for="cat in breadcrums" :key="cat.id">
             <router-link v-if="cat.id !== category.id" :to="{ name: 'category', params: { category_slug: cat.slug } }">{{ cat.name }}</router-link>
             <a-typography-title v-else style="display: inline-block;" :level="1">{{ category.name }}</a-typography-title>
         </a-breadcrumb-item>
