@@ -37,60 +37,66 @@
             </a-card>
         </a-col>
     </a-row>
-    <div v-for="category in categories" :key="category.id" :id="`index-cat-${category.slug}`" style="margin-bottom: 15px;">
-        <a-divider orientation="left" v-if="catsProducts[category.slug]?.products?.length">
-            <a-typography-title :level="2" style="margin-bottom: 0;">
-                <router-link :to="{
-                    name: 'category',
-                    params: {
-                        category_slug: category.slug,
-                    },
-                }">
-                    <ShoppingOutlined style="color: #8400ff;" /> {{ category.name }}
-                </router-link>
-            </a-typography-title>
-        </a-divider>
-        <a-skeleton active v-if="catsProducts[category.slug]?.loading" />
-        <a-list
-            v-else-if="catsProducts[category.slug]?.products?.length" :grid="{ gutter: 0, column: 8 }" :data-source="catsProducts[category.slug]?.products"
-            :pagination="{
-                pageSize: 8,
-            }"
-        >
-            <template #renderItem="{ item: product, }">
-                <router-link
-                    :to="{
-                        name: 'product',
-                        params: {
-                            category_slug: category.slug,
-                            product_slug: vietnameseNormalize(product.name),
-                            product_id: product.id,
-                        },
-                    }"
-                >
-                    <a-card hoverable>
-                        <template #cover>
-                            <img :alt="product.name" :src="product.images.length ? product.images[0].url : '/favicon.ico'" />
-                        </template>
-                        <template class="ant-card-actions" #actions>
-                            <!-- <setting-outlined key="setting" />
-                            <edit-outlined key="edit" />
-                            <ellipsis-outlined key="ellipsis" /> -->
-                        </template>
-                        <a-card-meta :title="money_format(product.price)">
-                            <template #description>
-                                <a-typography-paragraph
-                                    :ellipsis="{ rows: 2, expandable: false, }"
-                                    :title="product.name"
-                                    style="height: 3em;"
-                                    :content="product.name"
-                                />
-                            </template>
-                        </a-card-meta>
-                    </a-card>
-                </router-link>
+    <div v-for="category in categories" :key="category.id" :id="`index-cat-${category.slug}`">
+        <a-card style="margin-bottom: 15px;" size="small" :loading="catsProducts[category.slug]?.loading" v-if="catsProducts[category.slug]?.loading || catsProducts[category.slug]?.products?.length">
+            <template #title>
+                <a-divider orientation="left">
+                    <a-typography-title :level="3" style="margin-bottom: 0;">
+                        <router-link :to="{
+                            name: 'category',
+                            params: {
+                                category_slug: category.slug,
+                            },
+                        }">
+                            <ShoppingOutlined style="color: #8400ff;" /> {{ category.name }}
+                        </router-link>
+                    </a-typography-title>
+                </a-divider>
             </template>
-        </a-list>
+            <a-list
+                :grid="{ gutter: 16, column: 8 }"
+                :data-source="catsProducts[category.slug]?.products"
+                :pagination="{
+                    pageSize: 8,
+                }"
+            >
+                <template #renderItem="{ item: product, }">
+                    <a-list-item>
+                        <router-link
+                            :to="{
+                                name: 'product',
+                                params: {
+                                    category_slug: category.slug,
+                                    product_slug: vietnameseNormalize(product.name),
+                                    product_id: product.id,
+                                },
+                            }"
+                        >
+                            <a-card hoverable>
+                                <template #cover>
+                                    <img :alt="product.name" :src="product.images.length ? product.images[0].url : '/favicon.ico'" />
+                                </template>
+                                <template class="ant-card-actions" #actions>
+                                    <!-- <setting-outlined key="setting" />
+                                    <edit-outlined key="edit" />
+                                    <ellipsis-outlined key="ellipsis" /> -->
+                                </template>
+                                <a-card-meta :title="money_format(product.price)">
+                                    <template #description>
+                                        <a-typography-paragraph
+                                            :ellipsis="{ rows: 2, expandable: false, }"
+                                            :title="product.name"
+                                            style="height: 3em;"
+                                            :content="product.name"
+                                        />
+                                    </template>
+                                </a-card-meta>
+                            </a-card>
+                        </router-link>
+                    </a-list-item>
+                </template>
+            </a-list>
+        </a-card>
     </div>
 </template>
 <script>
