@@ -11,14 +11,24 @@ import { useStore } from 'vuex';
 
 const cartTableColumns = [
     {
-        title: '',
-        dataIndex: 'product',
+        title: 'Mã sản phẩm',
+        dataIndex: 'product[id]',
+    },
+    {
+        title: 'Đơn giá',
+        title: 'product.price',
+    },
+    {
+        title: 'Số lượng',
+        dataIndex: 'num',
     },
 ];
 
 export default {
     setup() {
         const store = useStore();
+
+        console.log(store.getters.getCartItems);
 
         return {
             cartItems: computed(() => store.getters.getCartItems),

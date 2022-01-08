@@ -1,3 +1,5 @@
+const localStorageKeyName = 'cartItems';
+
 export default {
     state: () => ({
         cartItems: [
@@ -12,16 +14,24 @@ export default {
 
     actions: {
         fetchCartItems({ commit }) {
-            let items = [];
-            commit('setCartItems', items);
+            try {
+                let items = JSON.parse(localStorage.getItem(localStorageKeyName) || '[]') || [];
+                commit('setCartItems', items);
+            } catch (e) {
+                localStorage.setItem(localStorageKeyName, '');
+            }
         },
 
-        appendCartItem({ commit, store }, item) {
+        appendCartItem({ commit, state }, item) {
             commit('addCartItem', item);
+
+            localStorage.setItem(localStorageKeyName, JSON.stringify(state.cartItems));
         },
 
-        removeCartItem({ commit }, item) {
+        removeCartItem({ commit, state }, item) {
             commit('removeCartItem', item);
+
+            localStorage.setItem(localStorageKeyName, JSON.stringify(state.cartItems));
         },
     },
 
@@ -31,7 +41,7 @@ export default {
         },
 
         addCartItem(store, item) {
-            const exists = store.cartItems.find(elm => elm.product.id === item.product.value.id);
+            const exists = store.cartItems.find(elm => elm.product.id === item.product.id);
             if (!exists) {
                 store.cartItems.push(item);
             } else {

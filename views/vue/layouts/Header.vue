@@ -163,6 +163,7 @@ export default {
         const store = useStore();
 
         onMounted(() => {
+            store.dispatch('fetchCartItems');
             store.dispatch('fetchCategories');
         });
 

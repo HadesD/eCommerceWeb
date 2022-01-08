@@ -104,7 +104,7 @@ export default {
 
         const addToCart = (num = 1) => {
             return store.dispatch('appendCartItem', {
-                product,
+                product: product.value,
                 num,
             });
         };
