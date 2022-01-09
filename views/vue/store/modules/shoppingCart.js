@@ -1,3 +1,5 @@
+import { message } from "ant-design-vue";
+
 const localStorageKeyName = 'cartItems';
 
 export default {
@@ -26,6 +28,10 @@ export default {
             commit('addCartItem', item);
 
             localStorage.setItem(localStorageKeyName, JSON.stringify(state.cartItems));
+
+            if (item.num > 0) {
+                message.success(`Đã thêm [${item.product.name}] x${item.num} vào giỏ`);
+            }
         },
 
         updateCartItem({ commit, state }, item) {
@@ -38,6 +44,8 @@ export default {
             commit('removeCartItem', item);
 
             localStorage.setItem(localStorageKeyName, JSON.stringify(state.cartItems));
+
+            message.success(`Đã xoá [${item.product.name}] x${item.num} khỏi giỏ`);
         },
 
         clearCartItems({ commit }) {

@@ -81,9 +81,18 @@
     </a-layout-content>
     <a-layout-header style="background-color: #FFF;border-top: solid 1px #f2f2f2;box-shadow: 0px 5px 20px rgb(0 0 0 / 10%);">
         <a-menu mode="horizontal" :selectedKeys="[$route.params?.category_slug || '/']">
-            <a-sub-menu :disabled="!(categories.length > 0)" class="header-submenu-category">
-                <template #icon><MenuOutlined /></template>
-                <template #title>SẢN PHẨM</template>
+            <a-sub-menu
+                :disabled="!loadingCategories && !(categories.length > 0)"
+                class="header-submenu-category"
+            >
+                <template #icon>
+                    <MenuOutlined v-if="!loadingCategories" />
+                    <LoadingOutlined v-else />
+                </template>
+                <template #title>
+                    <span v-if="!loadingCategories">SẢN PHẨM</span>
+                    <span v-else>XIN CHỜ...</span>
+                </template>
 
                 <TreeMenu :nodeData="categories" />
             </a-sub-menu>
@@ -102,6 +111,7 @@ import {
     UserOutlined, LockFilled,
     ShoppingCartOutlined, MenuOutlined,
     CaretDownOutlined, HomeOutlined,
+    LoadingOutlined,
 } from '@ant-design/icons-vue';
 
 import SearchProductForm from '../components/SearchProductForm';
@@ -150,6 +160,7 @@ export default {
         UserOutlined, LockFilled,
         ShoppingCartOutlined, MenuOutlined,
         CaretDownOutlined, HomeOutlined,
+        LoadingOutlined,
 
         SearchProductForm,
         TreeMenu,
@@ -164,6 +175,7 @@ export default {
         });
 
         return {
+            loadingCategories: computed(() => store.getters.getLoadingCategories),
             categories: computed(() => list_to_tree(store.getters.getCategories)),
             cartItems: computed(() => store.getters.getCartItems),
 

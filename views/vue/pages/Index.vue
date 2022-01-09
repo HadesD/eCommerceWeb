@@ -38,17 +38,23 @@
         </a-col>
     </a-row>
     <div v-for="category in categories" :key="category.id" :id="`index-cat-${category.slug}`">
-        <a-card style="margin-bottom: 15px;" size="small" :loading="catsProducts[category.slug]?.loading" v-if="catsProducts[category.slug]?.loading || catsProducts[category.slug]?.products?.length">
+        <a-card
+            v-if="catsProducts[category.slug]?.loading || catsProducts[category.slug]?.products?.length"
+            style="margin-bottom: 15px;"
+            size="small"
+            :loading="catsProducts[category.slug]?.loading"
+            :headStyle="{backgroundColor: 'blueviolet',}"
+        >
             <template #title>
-                <a-divider orientation="left">
-                    <a-typography-title :level="3" style="margin-bottom: 0;">
-                        <router-link :to="{
+                <a-divider orientation="left" style="margin: 0;">
+                    <a-typography-title :level="2" style="margin: 0;">
+                        <router-link style="color:#f7a21b;" :to="{
                             name: 'category',
                             params: {
                                 category_slug: category.slug,
                             },
                         }">
-                            <ShoppingOutlined style="color: #8400ff;" /> {{ category.name }}
+                            <ShoppingOutlined /> {{ category.name }}
                         </router-link>
                     </a-typography-title>
                 </a-divider>
