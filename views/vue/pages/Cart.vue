@@ -60,6 +60,7 @@
 <script>
 import { computed, reactive, ref } from '@vue/reactivity';
 import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 import { onMounted } from '@vue/runtime-core';
 
 import {
@@ -104,6 +105,7 @@ export default {
 
     setup() {
         const store = useStore();
+        const router = useRouter();
 
         const pageTitle = 'Giỏ hàng';
         const checkingOut = ref(false);
@@ -143,9 +145,16 @@ export default {
                         })),
                     })
                         .then(data => {
-                            console.log(data);
-
                             store.dispatch('clearCartItems');
+
+                            const order = data.data.data;
+
+                            router.push({
+                                name: 'order',
+                                params: {
+                                    order_id: order.id,
+                                },
+                            });
                         })
                         .catch(showErrorRequestApi)
                         .finally(() => (checkingOut.value = false));

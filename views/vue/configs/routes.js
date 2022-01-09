@@ -3,6 +3,7 @@ import Category from '../pages/Category';
 import Product from '../pages/Product';
 import Search from '../pages/Search';
 import Cart from '../pages/Cart';
+import Order from '../pages/Order';
 import FAQ from '../pages/FAQ';
 
 let routes = [
@@ -35,6 +36,11 @@ let routes = [
         path: '/:category_slug/:product_slug.:product_id',
         name: 'product',
         component: Product,
+    },
+    {
+        path: '/orders/:order_id',
+        name: 'order',
+        component: Order,
     },
     {
         path: '/faq/:faq_slug',

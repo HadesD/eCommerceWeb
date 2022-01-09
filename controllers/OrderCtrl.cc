@@ -92,8 +92,6 @@ void OrderCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpR
 
             ordMap.insert(ord);
 
-            LOG_DEBUG << ord.getValueOfId();
-
             orm::Mapper<Product> prdMap(dbClient);
             orm::Mapper<OrderProduct> ordPrdMap(dbClient);
 
@@ -110,6 +108,9 @@ void OrderCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpR
 
                 ordPrdMap.insert(ordPrd);
             }
+
+            auto& resData = resJson["data"];
+            resData = ord.toJson();
 
             // throw std::logic_error("ERR"); // TODO: remove this
         }
