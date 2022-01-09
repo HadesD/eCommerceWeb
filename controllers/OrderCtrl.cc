@@ -13,15 +13,16 @@ void OrderCtrl::getOne(const HttpRequestPtr &req, std::function<void(const HttpR
 
 void OrderCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)
 {
-    LOG_DEBUG << 22;
-    const auto reqJson = req->getJsonObject();
-    if (!reqJson)
+    const auto& reqJsonPtr = req->getJsonObject();
+    if (!reqJsonPtr || !(*reqJsonPtr).isArray())
     {
         auto ret = HttpResponse::newHttpResponse();
         ret->setStatusCode(HttpStatusCode::k406NotAcceptable);
         callback(ret);
         return;
     }
+
+    const auto& reqJson = *reqJsonPtr;
 
     Json::Value resJson;
 

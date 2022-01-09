@@ -118,7 +118,10 @@ export default {
             RequestRepository.get('/csrf-token')
                 .then(() => {
                     checkingOut.value = true;
-                    RequestRepository.post('/orders', cartItems)
+                    RequestRepository.post('/orders', cartItems.value.map(v => ({
+                        num: v.num,
+                        product_id: v.product.id,
+                    })))
                         .then(data => {
                             console.log(data);
 
