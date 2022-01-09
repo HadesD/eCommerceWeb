@@ -7,7 +7,7 @@
         </router-link>
         <a-menu mode="horizontal" theme="dark" style="background-color: blueviolet;">
             <a-menu-item key="1" style="font-size: 20px;">
-                <a href="https://m.me/rinphonevn" target="_blank">
+                <a href="https://fb.com/rinphonevn" target="_blank">
                     <FacebookFilled style="font-size: 20px;" /> @rinphonevn
                 </a>
             </a-menu-item>

@@ -15,15 +15,27 @@ void CsrfFilter::doFilter(const HttpRequestPtr &req,
                          FilterChainCallback &&fccb)
 {
     // Edit your logic here
-    if (CsrfTokenCtrl::verify(req))
+    switch (req->getMethod())
     {
-        // Passed
-        fccb();
-        return;
+        case HttpMethod::Post:
+        case HttpMethod::Patch:
+        case HttpMethod::Put:
+        {
+            if (CsrfTokenCtrl::verify(req))
+            {
+                // Passed
+                fccb();
+                return;
+            }
+        }
+        break;
+
+        default:
+            return;
     }
     //Check failed
     auto res = drogon::HttpResponse::newHttpResponse();
-    res->setStatusCode(k401Unauthorized);
+    res->setStatusCode(k403Forbidden);
     res->setBody("CSRF Token Mismatch");
     fcb(res);
 }

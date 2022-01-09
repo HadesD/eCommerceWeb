@@ -3,15 +3,17 @@
 
 void OrderCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)
 {
-
+    callback(HttpResponse::newNotFoundResponse());
 }
 
 void OrderCtrl::getOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, uint64_t id)
 {
+    callback(HttpResponse::newNotFoundResponse());
 }
 
 void OrderCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)
 {
+    LOG_DEBUG << 22;
     const auto reqJson = req->getJsonObject();
     if (!reqJson)
     {

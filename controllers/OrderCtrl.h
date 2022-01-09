@@ -1,7 +1,12 @@
 #pragma once
+
 #include <drogon/HttpController.h>
+
+#include "filters/CsrfFilter.h"
+
 using namespace drogon;
-class OrderCtrl:public drogon::HttpController<OrderCtrl>
+
+class OrderCtrl : public drogon::HttpController<OrderCtrl>
 {
   public:
     METHOD_LIST_BEGIN
@@ -12,7 +17,7 @@ class OrderCtrl:public drogon::HttpController<OrderCtrl>
 
     ADD_METHOD_TO(OrderCtrl::get, "/orders", Get);
     ADD_METHOD_TO(OrderCtrl::getOne, "/orders/{1}", Get);
-    ADD_METHOD_TO(OrderCtrl::create, "/orders", Post);
+    ADD_METHOD_TO(OrderCtrl::create, "/orders", Post, CsrfFilter().className());
 
     METHOD_LIST_END
     // your declaration of processing function maybe like this:

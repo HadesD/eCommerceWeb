@@ -24,6 +24,7 @@ inotifywait -r \
     models \
     plugins \
     test \
+    main.cc \
     | while read base event file
     do
         NOW_TS=$(timestamp)

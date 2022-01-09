@@ -115,11 +115,17 @@ export default {
         const onCheckout = () => {
             checkingOut.value = true;
 
-            RequestRepository.post('/orders', cartItems)
-                .then(data => {
-                    console.log(data);
+            RequestRepository.get('/csrf-token')
+                .then(() => {
+                    checkingOut.value = true;
+                    RequestRepository.post('/orders', cartItems)
+                        .then(data => {
+                            console.log(data);
 
-                    store.dispatch('clearCartItems');
+                            store.dispatch('clearCartItems');
+                        })
+                        .catch(showErrorRequestApi)
+                        .finally(() => (checkingOut.value = false));
                 })
                 .catch(showErrorRequestApi)
                 .finally(() => (checkingOut.value = false));

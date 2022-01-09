@@ -13,7 +13,7 @@
                 <a-typography-text type="secondary"><a href="https://goo.gl/maps/N1kXZFf5G77ZiV3q9" target="_blank" title="Xem trên Google Maps"><EnvironmentFilled /> Khu phố Định An, thị trấn Vĩnh Thạnh, Bình Định</a></a-typography-text>
                 <div style="margin: 10px 0;">
                     <a-space>
-                        <a href="https://fb.me/rinphonevn" target="_blank">
+                        <a href="https://fb.com/rinphonevn" target="_blank">
                             <a-button type="primary" shape="circle">
                                 <template #icon>
                                     <FacebookFilled />
@@ -35,37 +35,37 @@
                     <a-col :flex="2">
                         <a-space direction="vertical">
                             <a-typography-title :level="5">Apple</a-typography-title>
-                            <a-typography-text><router-link to="/iphone">iPhone</router-link></a-typography-text>
-                            <a-typography-text><router-link to="/airpods">AirPods</router-link></a-typography-text>
-                            <a-typography-text><router-link to="/ipad">iPad</router-link></a-typography-text>
-                            <a-typography-text><router-link to="/apple-watch">Apple Watch</router-link></a-typography-text>
-                            <a-typography-text><router-link to="/apple">Xem thêm <DoubleRightOutlined /></router-link></a-typography-text>
+                            <a-typography-text><router-link :to="{name:'category',params:{category_slug:'iphone'}}">iPhone</router-link></a-typography-text>
+                            <a-typography-text><router-link :to="{name:'category',params:{category_slug:'airpods'}}">AirPods</router-link></a-typography-text>
+                            <a-typography-text><router-link :to="{name:'category',params:{category_slug:'ipad'}}">iPad</router-link></a-typography-text>
+                            <a-typography-text><router-link :to="{name:'category',params:{category_slug:'apple-watch'}}">Apple Watch</router-link></a-typography-text>
+                            <a-typography-text><router-link :to="{name:'category',params:{category_slug:'apple'}}">Xem thêm <DoubleRightOutlined /></router-link></a-typography-text>
                         </a-space>
                     </a-col>
                     <a-col :flex="2">
                         <a-space direction="vertical">
                             <a-typography-title :level="5">Máy Android / Khác</a-typography-title>
-                            <a-typography-text><router-link to="/samsung">Samsung</router-link></a-typography-text>
-                            <a-typography-text><router-link to="/oppo">OPPO</router-link></a-typography-text>
-                            <a-typography-text><router-link to="/vivo">Vivo</router-link></a-typography-text>
-                            <a-typography-text><router-link to="/dien-thoai-re">Điện thoại giá rẻ</router-link></a-typography-text>
+                            <a-typography-text><router-link :to="{name:'category',params:{category_slug:'samsung'}}">Samsung</router-link></a-typography-text>
+                            <a-typography-text><router-link :to="{name:'category',params:{category_slug:'oppo'}}">OPPO</router-link></a-typography-text>
+                            <a-typography-text><router-link :to="{name:'category',params:{category_slug:'vivo'}}">Vivo</router-link></a-typography-text>
+                            <a-typography-text><router-link :to="{name:'category',params:{category_slug:'dien-thoai-re'}}">Điện thoại giá rẻ</router-link></a-typography-text>
                         </a-space>
                     </a-col>
                     <a-col :flex="2">
                         <a-space direction="vertical">
                             <a-typography-title :level="5">Chuyên mục khác</a-typography-title>
-                            <a-typography-text><router-link to="/phu-kien">Phụ kiện</router-link></a-typography-text>
-                            <a-typography-text><router-link to="/linh-kien">Linh kiện</router-link></a-typography-text>
-                            <a-typography-text><router-link to="/may-tinh">Máy tính</router-link></a-typography-text>
+                            <a-typography-text><router-link :to="{name:'category',params:{category_slug:'phu-kien'}}">Phụ kiện</router-link></a-typography-text>
+                            <a-typography-text><router-link :to="{name:'category',params:{category_slug:'linh-kien'}}">Linh kiện</router-link></a-typography-text>
+                            <a-typography-text><router-link :to="{name:'category',params:{category_slug:'may-tinh'}}">Máy tính</router-link></a-typography-text>
                         </a-space>
                     </a-col>
                     <a-col :flex="2">
                         <a-space direction="vertical">
                             <a-typography-title :level="5">Hỗ trợ Khách Hàng</a-typography-title>
-                            <a-typography-text>Chính sách bảo mật thông tin</a-typography-text>
-                            <a-typography-text>Chính sách Đổi / Trả</a-typography-text>
-                            <a-typography-text>Chính sách vận chuyển</a-typography-text>
-                            <a-typography-text>Các câu hỏi thường gặp</a-typography-text>
+                            <a-typography-text><router-link :to="{name:'faq',params:{faq_slug:'chinh-sach-bao-mat-thong-tin'}}">Chính sách bảo mật thông tin</router-link></a-typography-text>
+                            <a-typography-text><router-link :to="{name:'faq',params:{faq_slug:'chinh-sach-doi-tra'}}">Chính sách Đổi / Trả</router-link></a-typography-text>
+                            <a-typography-text><router-link :to="{name:'faq',params:{faq_slug:'chinh-sach-van-chuyen'}}">Chính sách vận chuyển</router-link></a-typography-text>
+                            <a-typography-text><router-link :to="{name:'faq',params:{faq_slug:'cac-cau-hoi-thuong-gap'}}">Các câu hỏi thường gặp</router-link></a-typography-text>
                         </a-space>
                     </a-col>
                 </a-row>
@@ -74,7 +74,7 @@
     </a-layout-footer>
     <a-layout-footer style="background-color:#fafafa;">
         <a-row type="flex">
-            <a-col :flex="3">Copyright <CopyrightOutlined /> 2021 RinPhone. All rights reserved.</a-col>
+            <a-col :flex="3">Copyright <CopyrightOutlined /> {{ dayjs().year() }} RinPhone. All rights reserved.</a-col>
             <a-col :flex="2" style="text-align: right;">
                 <a-space>
                     <CreditCardTwoTone style="font-size: 25px;" />
@@ -91,6 +91,7 @@ import {
     LeftCircleOutlined, RightCircleOutlined, PhoneOutlined,
     DoubleRightOutlined,
 } from '@ant-design/icons-vue';
+import dayjs from 'dayjs';
 
 export default {
     components: {
@@ -98,6 +99,11 @@ export default {
         CopyrightOutlined, CreditCardTwoTone,
         LeftCircleOutlined, RightCircleOutlined, PhoneOutlined,
         DoubleRightOutlined,
+    },
+    setup() {
+        return {
+            dayjs,
+        };
     },
 }
 </script>

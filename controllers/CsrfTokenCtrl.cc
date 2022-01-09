@@ -28,5 +28,6 @@ void CsrfTokenCtrl::asyncHandleHttpRequest(const HttpRequestPtr& req, std::funct
 
 bool CsrfTokenCtrl::verify(const HttpRequestPtr& req)
 {
-    return req->session()->get<std::string>(csrfTokenSessionKey) == req->getHeader(csrfHeaderKey);
+    const auto token = req->session()->get<std::string>(csrfTokenSessionKey);
+    return token.size() && ((token == req->getCookie(csrfCookieKey)) || (token == req->getHeader(csrfHeaderKey)));
 }
