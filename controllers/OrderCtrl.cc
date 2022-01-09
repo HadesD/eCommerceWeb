@@ -26,5 +26,23 @@ void OrderCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpR
 
     Json::Value resJson;
 
+    try
+    {
+        auto dbClient = app().getDbClient()->newTransaction();
+        for (const auto& item : reqJson)
+        {
+            LOG_DEBUG << item["num"].asInt();
+        }
+    }
+    catch (const std::exception &e)
+    {
+        LOG_ERROR << e.what();
+
+        auto ret = HttpResponse::newHttpResponse();
+        ret->setStatusCode(HttpStatusCode::k500InternalServerError);
+        callback(ret);
+        return;
+    }
+
     callback(HttpResponse::newHttpJsonResponse(resJson));
 }

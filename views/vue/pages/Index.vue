@@ -43,7 +43,7 @@
             style="margin-bottom: 15px;"
             size="small"
             :loading="catsProducts[category.slug]?.loading"
-            :headStyle="{backgroundColor: 'blueviolet',}"
+            :headStyle="{backgroundColor: 'blueviolet',borderLeft: '8px solid #f08b20'}"
         >
             <template #title>
                 <a-divider orientation="left" style="margin: 0;">

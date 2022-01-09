@@ -58,6 +58,7 @@ import {
 } from '@ant-design/icons-vue';
 
 import RequestRepository from '~/utils/RequestRepository';
+import RequestCsrfToken from '~/utils/RequestCsrfToken';
 import { money_format, vietnameseNormalize, showErrorRequestApi, } from '../helpers';
 
 const cartTableColumns = [
@@ -115,12 +116,13 @@ export default {
         const onCheckout = () => {
             checkingOut.value = true;
 
-            RequestRepository.get('/csrf-token')
+            RequestCsrfToken()
                 .then(() => {
                     checkingOut.value = true;
                     RequestRepository.post('/orders', cartItems.value.map(v => ({
                         num: v.num,
                         product_id: v.product.id,
+                        // TODO: Add variants properties
                     })))
                         .then(data => {
                             console.log(data);
