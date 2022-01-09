@@ -57,7 +57,8 @@ import {
     DollarOutlined,
 } from '@ant-design/icons-vue';
 
-import { money_format, vietnameseNormalize, } from '../helpers';
+import RequestRepository from '~/utils/RequestRepository';
+import { money_format, vietnameseNormalize, showErrorRequestApi, } from '../helpers';
 
 const cartTableColumns = [
     {
@@ -113,6 +114,15 @@ export default {
 
         const onCheckout = () => {
             checkingOut.value = true;
+
+            RequestRepository.post('/orders', cartItems)
+                .then(data => {
+                    console.log(data);
+
+                    store.dispatch('clearCartItems');
+                })
+                .catch(showErrorRequestApi)
+                .finally(() => (checkingOut.value = false));
         };
 
         onMounted(() => {

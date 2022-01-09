@@ -39,6 +39,12 @@ export default {
 
             localStorage.setItem(localStorageKeyName, JSON.stringify(state.cartItems));
         },
+
+        clearCartItems({ commit }) {
+            commit('clearCartItems');
+
+            localStorage.removeItem(localStorageKeyName);
+        },
     },
 
     mutations: {
@@ -75,6 +81,10 @@ export default {
                     break;
                 }
             }
+        },
+
+        clearCartItems(store) {
+            store.cartItems = [];
         },
     },
 
