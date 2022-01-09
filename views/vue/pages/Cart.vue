@@ -40,15 +40,25 @@
             </a-typography-title>
         </template>
     </a-table>
-    <div style="text-align:right; margin-top: 15px;">
-        <a-button type="primary" size="large" @click="() => onCheckout()" :disabled="!cartItems.length" :loading="checkingOut">
-            <template #icon><DollarOutlined /></template>
-            <span>Thanh toán</span>
-        </a-button>
-    </div>
+    <a-form style="text-align:right; margin-top: 15px;">
+        <a-form-item label="Hình thức thanh toán">
+            <a-select v-model:value="formData.payment_method">
+                <a-select-option v-for="methodCode in Object.keys(configPaymentMethod)" :key="methodCode" :value="parseInt(methodCode)">{{ configPaymentMethod[methodCode].name }}</a-select-option>
+            </a-select>
+        </a-form-item>
+        <a-form-item>
+            <a-textarea v-model:value="formData.note" show-count :maxlength="300" placeholder="Ghi chú, yêu cầu cá nhân của quý khách đối với đơn hàng nếu có,..." />
+        </a-form-item>
+        <a-form-item>
+            <a-button type="primary" size="large" @click="() => onCheckout()" :disabled="!cartItems.length" :loading="checkingOut">
+                <template #icon><DollarOutlined /></template>
+                <span>Thanh toán</span>
+            </a-button>
+        </a-form-item>
+    </a-form>
 </template>
 <script>
-import { computed, ref } from '@vue/reactivity';
+import { computed, reactive, ref } from '@vue/reactivity';
 import { useStore } from 'vuex';
 import { onMounted } from '@vue/runtime-core';
 
@@ -60,6 +70,7 @@ import {
 import RequestRepository from '~/utils/RequestRepository';
 import RequestCsrfToken from '~/utils/RequestCsrfToken';
 import { money_format, vietnameseNormalize, showErrorRequestApi, } from '../helpers';
+import PaymentMethod, { Config as configPaymentMethod } from '~/configs/PaymentMethod';
 
 const cartTableColumns = [
     {
@@ -97,6 +108,10 @@ export default {
         const pageTitle = 'Giỏ hàng';
         const checkingOut = ref(false);
         const cartItems = computed(() => store.getters.getCartItems);
+        const formData = reactive({
+            note: null,
+            payment_method: PaymentMethod.PM_ONCE,
+        });
 
         const totalPrice = () => {
             return cartItems.value.reduce((n, r) => n + (r.num * r.product.price), 0);
@@ -119,11 +134,14 @@ export default {
             RequestCsrfToken()
                 .then(() => {
                     checkingOut.value = true;
-                    RequestRepository.post('/orders', cartItems.value.map(v => ({
-                        num: v.num,
-                        product_id: v.product.id,
-                        // TODO: Add variants properties
-                    })))
+                    RequestRepository.post('/orders', {
+                        ...formData,
+                        items: cartItems.value.map(v => ({
+                            num: v.num,
+                            product_id: v.product.id,
+                            // TODO: Add variants properties
+                        })),
+                    })
                         .then(data => {
                             console.log(data);
 
@@ -144,6 +162,7 @@ export default {
             pageTitle,
             cartItems,
             checkingOut,
+            formData,
 
             cartTableColumns,
 
@@ -151,6 +170,9 @@ export default {
             onItemNumChanged,
             onItemDelete,
             onCheckout,
+
+            PaymentMethod,
+            configPaymentMethod,
 
             money_format,
             vietnameseNormalize,
