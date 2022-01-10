@@ -60,7 +60,7 @@
                 </a-divider>
             </template>
             <a-list
-                :grid="{ gutter: 16, column: 8 }"
+                :grid="{ gutter: 16, xs: 1, sm: 2, md: 4, lg: 4, xl: 6, xxl: 8, xxxl: 10}"
                 :data-source="catsProducts[category.slug]?.products"
                 :pagination="{
                     pageSize: 8,
