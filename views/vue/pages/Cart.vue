@@ -51,22 +51,22 @@
             <a-row :gutter="24">
                 <a-col :span="12">
                     <a-form-item label="Họ và Tên" :name="['payment', 'fullname']">
-                        <a-input :maxlength="50" :value="formData.payment.fullname" placeholder="VD: Lê Văn A" />
+                        <a-input :maxlength="50" v-model:value="formData.payment.fullname" placeholder="VD: Lê Văn A" />
                     </a-form-item>
                 </a-col>
                 <a-col :span="12">
                     <a-form-item label="Địa chỉ / Tên Facebook" :name="['payment', 'facebook']">
-                        <a-input :maxlength="50" :value="formData.payment.facebook" placeholder="VD: rinphonevn" />
+                        <a-input :maxlength="50" v-model:value="formData.payment.facebook" placeholder="VD: rinphonevn" />
                     </a-form-item>
                 </a-col>
                 <a-col :span="12">
                     <a-form-item label="Số điện thoại" :name="['payment', 'phone']">
-                        <a-input :maxlength="20" :value="formData.payment.phone" placeholder="VD: 0774475777" />
+                        <a-input :maxlength="20" v-model:value="formData.payment.phone" placeholder="VD: 0774475777" />
                     </a-form-item>
                 </a-col>
                 <a-col :span="12">
                     <a-form-item label="Địa chỉ E-Mail" :name="['payment', 'email']">
-                        <a-input :maxlength="20" :value="formData.payment.email" placeholder="VD: diachi@email.com" />
+                        <a-input :maxlength="20" v-model:value="formData.payment.email" placeholder="VD: diachi@email.com" email />
                     </a-form-item>
                 </a-col>
             </a-row>

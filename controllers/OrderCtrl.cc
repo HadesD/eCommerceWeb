@@ -6,6 +6,7 @@
 #include "models/Users.h"
 
 #include "app_helpers/OrdersMetaData.hpp"
+#include "app_helpers/UsersMetaData.hpp"
 
 using Product = drogon_model::web_rinphone::Products;
 using Order = drogon_model::web_rinphone::Orders;
@@ -25,132 +26,212 @@ void OrderCtrl::getOne(const HttpRequestPtr &req, std::function<void(const HttpR
 
 void OrderCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)
 {
-    const auto& reqJsonPtr = req->getJsonObject();
-    if (!reqJsonPtr)
-    {
-        auto ret = HttpResponse::newHttpResponse();
-        ret->setStatusCode(HttpStatusCode::k406NotAcceptable);
-        callback(ret);
-        return;
-    }
-
-    const auto& reqJson = *reqJsonPtr;
-    const auto& reqItems = reqJson["items"];
-
-    if (!reqItems.isArray())
-    {
-        auto ret = HttpResponse::newHttpResponse();
-        ret->setStatusCode(HttpStatusCode::k406NotAcceptable);
-        callback(ret);
-        return;
-    }
-
     Json::Value resJson;
-    HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
     auto& resMsg = resJson["message"];
+    HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
 
+    try
     {
-        auto dbClient = app().getDbClient()->newTransaction();
-        try
+        // Validate
+        const auto &reqJsonPtr = req->getJsonObject();
+        if (!reqJsonPtr)
         {
-            const auto payMethod = static_cast<PaymentMethod>(reqJson["payment_method"].asUInt());
-            switch (payMethod)
+            throw std::logic_error("Dữ liệu gửi lên không đúng");
+        }
+
+        const auto &reqJson = *reqJsonPtr;
+        const auto &reqItems = reqJson["items"];
+
+        if (!reqItems.isArray())
+        {
+            throw std::logic_error("Không tìm thấy dữ liệu giỏ hàng");
+        }
+
+        const auto &paymentInfo = reqJson["payment"];
+        if (!paymentInfo.isObject())
+        {
+            throw std::logic_error("Không tìm thấy thông tin thanh toán");
+        }
+
+        const auto &paymentMethod = paymentInfo["method"];
+        if (!paymentMethod.isNumeric())
+        {
+            throw std::logic_error("Không tìm thấy phương thức thanh toán");
+        }
+
+        const auto payMethod = static_cast<PaymentMethod>(paymentMethod.asUInt());
+        switch (payMethod)
+        {
+        case PaymentMethod::ONCE:
+        case PaymentMethod::INSTALMENT:
+        break;
+
+        default:
+        {
+            throw std::logic_error("Không tìm thấy phương thức thanh toán");
+        }
+        }
+
+        const auto& phone = paymentInfo["phone"];
+        if (!phone.isString())
+        {
+            throw std::logic_error("Không tìm thấy số điện thoại liên lạc");
+        }
+
+        // Completed valid
+        {
+            auto dbClient = app().getDbClient()->newTransaction();
+            try
             {
-            case PaymentMethod::ONCE:
-            case PaymentMethod::INSTALMENT:
-                break;
+                const auto now = trantor::Date::now();
 
-            default:
-                throw std::logic_error("Hình thức thanh toán không tồn tại");
-            }
-
-            const auto& reqNote = reqJson["note"];
-
-            Order ord;
-            ord.setStatus(static_cast<uint8_t>(OrderStatus::PROCESSING));
-            ord.setCustomerId(0); // TODO: Set current user id
-            if (reqNote.isString())
-            {
-                const auto& noteStr = reqNote.asString();
-                constexpr auto maxNoteSize = 500;
-                if (noteStr.size() > maxNoteSize)
+                orm::Mapper<User> userMap(dbClient);
+                User paymentUser;
+                const auto& puName = paymentInfo["fullname"];
+                if (puName.isString())
                 {
-                    ord.setNote(noteStr.substr(maxNoteSize));
+                    paymentUser.setName(puName.asString());
                 }
                 else
                 {
-                    ord.setNote(noteStr);
+                    paymentUser.setName(utils::genRandomString(1));
                 }
+                paymentUser.setPhone(phone.asString());
+                paymentUser.setPassword(utils::genRandomString(62));
+                paymentUser.setRole(static_cast<uint8_t>(UserRole::USER_NORMAL));
+
+                // SNS Info
+                {
+                    Json::StreamWriterBuilder builder;
+                    builder["commentStyle"] = "None";
+                    builder["indentation"] = "";
+                    Json::Value snsInfo(Json::objectValue);
+
+                    const auto &fb = paymentInfo["facebook"];
+                    if (fb.isString())
+                    {
+                        snsInfo["facebook"] = fb.asString();
+                    }
+
+                    paymentUser.setSnsInfo(Json::writeString(builder, snsInfo));
+                }
+
+                auto emailRandStr = utils::genRandomString(5);
+                const auto& puEmail = paymentInfo["email"];
+                if (puEmail.isString())
+                {
+                    emailRandStr = puEmail.asString() + "@" + emailRandStr;
+                }
+                paymentUser.setEmail(emailRandStr);
+                paymentUser.setCreatedAt(now);
+                paymentUser.setUpdatedAt(now);
+                userMap.insert(paymentUser);
+
+                const auto &reqNote = reqJson["note"];
+
+                Order ord;
+                ord.setStatus(static_cast<uint8_t>(OrderStatus::PROCESSING));
+                // TODO: Logged in user
+                ord.setCustomerId(paymentUser.getValueOfId());
+                if (reqNote.isString())
+                {
+                    const auto &noteStr = reqNote.asString();
+                    constexpr auto maxNoteSize = 500;
+                    if (noteStr.size() > maxNoteSize)
+                    {
+                        ord.setNote(noteStr.substr(maxNoteSize));
+                    }
+                    else
+                    {
+                        ord.setNote(noteStr);
+                    }
+                }
+
+                ord.setDealDate(now);
+                ord.setCreatedAt(now);
+                ord.setUpdatedAt(now);
+
+                orm::Mapper<Order> ordMap(dbClient);
+
+                ordMap.insert(ord);
+
+                orm::Mapper<Product> prdMap(dbClient);
+                orm::Mapper<OrderProduct> ordPrdMap(dbClient);
+
+                for (const auto &item : reqItems)
+                {
+                    const auto &prd = prdMap.findByPrimaryKey(item["product_id"].asUInt64());
+
+                    // OrderProduct
+                    OrderProduct ordPrd;
+                    ordPrd.setOrderId(ord.getValueOfId());
+                    ordPrd.setProductId(prd.getValueOfId());
+                    ordPrd.setQuantity(item["num"].asUInt());
+                    ordPrd.setPaymentMethod(static_cast<uint8_t>(payMethod));
+
+                    ordPrdMap.insert(ordPrd);
+                }
+
+                auto &resData = resJson["data"];
+                resData = ord.toJson();
             }
-
-            const auto now = trantor::Date::now();
-            ord.setDealDate(now);
-            ord.setCreatedAt(now);
-            ord.setUpdatedAt(now);
-
-            orm::Mapper<Order> ordMap(dbClient);
-
-            ordMap.insert(ord);
-
-            orm::Mapper<Product> prdMap(dbClient);
-            orm::Mapper<OrderProduct> ordPrdMap(dbClient);
-
-            for (const auto& item : reqItems)
+            catch (const orm::UnexpectedRows &e)
             {
-                const auto& prd = prdMap.findByPrimaryKey(item["product_id"].asUInt64());
+                dbClient->rollback();
 
-                // OrderProduct
-                OrderProduct ordPrd;
-                ordPrd.setOrderId(ord.getValueOfId());
-                ordPrd.setProductId(prd.getValueOfId());
-                ordPrd.setQuantity(item["num"].asUInt());
-                ordPrd.setPaymentMethod(static_cast<uint8_t>(payMethod));
+                httpRetCode = HttpStatusCode::k500InternalServerError;
 
-                ordPrdMap.insert(ordPrd);
+                resMsg = "Dữ liệu sai hoặc không tìm thấy";
             }
+            catch (const std::logic_error &e)
+            {
+                dbClient->rollback();
 
-            auto& resData = resJson["data"];
-            resData = ord.toJson();
+                httpRetCode = HttpStatusCode::k500InternalServerError;
 
-            // throw std::logic_error("ERR"); // TODO: remove this
-        }
-        catch (const orm::UnexpectedRows& e)
-        {
-            dbClient->rollback();
+                resMsg = e.what();
+            }
+            catch (const std::exception &e)
+            {
+                dbClient->rollback();
 
-            httpRetCode = HttpStatusCode::k500InternalServerError;
+                LOG_ERROR << e.what();
 
-            resMsg = "Dữ liệu sai hoặc không tìm thấy";
-        }
-        catch (const std::logic_error& e)
-        {
-            dbClient->rollback();
+                httpRetCode = HttpStatusCode::k500InternalServerError;
 
-            httpRetCode = HttpStatusCode::k500InternalServerError;
+                resMsg = "Lỗi không xác định";
+            }
+            catch (...)
+            {
+                dbClient->rollback();
 
-            resMsg = e.what();
-        }
-        catch (const std::exception &e)
-        {
-            dbClient->rollback();
+                httpRetCode = HttpStatusCode::k500InternalServerError;
 
-            LOG_ERROR << e.what();
-
-            httpRetCode = HttpStatusCode::k500InternalServerError;
-
-            resMsg = "Lỗi không xác định";
-        }
-        catch (...)
-        {
-            dbClient->rollback();
-
-            httpRetCode = HttpStatusCode::k500InternalServerError;
-
-            resMsg = "Lỗi không xác định";
+                resMsg = "Lỗi không xác định";
+            }
         }
     }
+    catch (const std::logic_error &e)
+    {
+        resMsg = e.what();
+        httpRetCode = HttpStatusCode::k406NotAcceptable;
+    }
+    catch (const std::exception &e)
+    {
+        LOG_ERROR << e.what();
 
-    const auto& httpRet = HttpResponse::newHttpJsonResponse(resJson);
+        resMsg = "Lỗi hệ thống";
+
+        httpRetCode = HttpStatusCode::k500InternalServerError;
+    }
+    catch (...)
+    {
+        resMsg = "Liên tiếp thất bại";
+
+        httpRetCode = HttpStatusCode::k500InternalServerError;
+    }
+
+    const auto &httpRet = HttpResponse::newHttpJsonResponse(resJson);
     httpRet->setStatusCode(httpRetCode);
 
     callback(httpRet);
