@@ -18,8 +18,8 @@
             </a-menu-item>
         </a-menu>
         <a-menu mode="horizontal" theme="dark" style="background-color: blueviolet;position: absolute; right: 0; top: 0; min-width: 245px;">
-            <a-menu-item key="1"><UserOutlined /> Đăng ký</a-menu-item>
-            <a-menu-item key="2"><LockFilled /> Đăng nhập</a-menu-item>
+            <a-menu-item key="1" disabled><UserOutlined /> Đăng ký</a-menu-item>
+            <a-menu-item key="2" disabled><LockFilled /> Đăng nhập</a-menu-item>
         </a-menu>
     </a-layout-header>
     <a-layout-content style="background-color:#FFF;">

@@ -9,7 +9,7 @@ void CsrfTokenCtrl::asyncHandleHttpRequest(const HttpRequestPtr& req, std::funct
     const auto& token = drogon::utils::genRandomString(35);
     req->session()->modify<std::string>(
         csrfTokenSessionKey,
-        [token](auto &curToken)
+        [&token](auto &curToken)
         {
             curToken = token;
         });

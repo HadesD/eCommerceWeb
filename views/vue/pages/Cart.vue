@@ -40,17 +40,47 @@
             </a-typography-title>
         </template>
     </a-table>
-    <a-form style="text-align:right; margin-top: 15px;">
-        <a-form-item label="Hình thức thanh toán">
-            <a-select v-model:value="formData.payment_method">
-                <a-select-option v-for="methodCode in Object.keys(configPaymentMethod)" :key="methodCode" :value="parseInt(methodCode)">{{ configPaymentMethod[methodCode].name }}</a-select-option>
-            </a-select>
-        </a-form-item>
-        <a-form-item>
+    <a-form
+        style="margin-top: 15px;"
+        :labelCol="{span:24}"
+        :model="formData"
+        @finish="onCheckout"
+        :rules="formRules"
+    >
+        <a-card title="Thông tin thanh toán" style="margin-bottom: 15px;" :headStyle="{backgroundColor:'blueviolet',color:'#fff'}">
+            <a-row :gutter="24">
+                <a-col :span="12">
+                    <a-form-item label="Họ và Tên" :name="['payment', 'fullname']">
+                        <a-input :maxlength="50" :value="formData.payment.fullname" placeholder="VD: Lê Văn A" />
+                    </a-form-item>
+                </a-col>
+                <a-col :span="12">
+                    <a-form-item label="Địa chỉ / Tên Facebook" :name="['payment', 'facebook']">
+                        <a-input :maxlength="50" :value="formData.payment.facebook" placeholder="VD: rinphonevn" />
+                    </a-form-item>
+                </a-col>
+                <a-col :span="12">
+                    <a-form-item label="Số điện thoại" :name="['payment', 'phone']">
+                        <a-input :maxlength="20" :value="formData.payment.phone" placeholder="VD: 0774475777" />
+                    </a-form-item>
+                </a-col>
+                <a-col :span="12">
+                    <a-form-item label="Địa chỉ E-Mail" :name="['payment', 'email']">
+                        <a-input :maxlength="20" :value="formData.payment.email" placeholder="VD: diachi@email.com" />
+                    </a-form-item>
+                </a-col>
+            </a-row>
+            <a-form-item label="Hình thức thanh toán" :name="['payment', 'method']" help="Thanh toán trực tuyến sắp được triển khai">
+                <a-select v-model:value="formData.payment.method">
+                    <a-select-option v-for="methodCode in Object.keys(configPaymentMethod)" :key="methodCode" :value="parseInt(methodCode)">{{ configPaymentMethod[methodCode].name }}</a-select-option>
+                </a-select>
+            </a-form-item>
+        </a-card>
+        <a-form-item name="note">
             <a-textarea v-model:value="formData.note" show-count :maxlength="300" placeholder="Ghi chú, yêu cầu cá nhân của quý khách đối với đơn hàng nếu có,..." />
         </a-form-item>
-        <a-form-item>
-            <a-button type="primary" size="large" @click="() => onCheckout()" :disabled="!cartItems.length" :loading="checkingOut">
+        <a-form-item style="text-align:right;">
+            <a-button type="primary" size="large" htmlType="submit" :disabled="!cartItems.length" :loading="checkingOut">
                 <template #icon><DollarOutlined /></template>
                 <span>Thanh toán</span>
             </a-button>
@@ -112,7 +142,24 @@ export default {
         const cartItems = computed(() => store.getters.getCartItems);
         const formData = reactive({
             note: null,
-            payment_method: PaymentMethod.PM_ONCE,
+
+            payment: {
+                phone: null,
+                email: null,
+                fullname: null,
+                facebook: null,
+                method: PaymentMethod.PM_ONCE,
+            },
+        });
+        const formRules = reactive({
+            payment: {
+                phone: {
+                    required: true,
+                },
+                method: {
+                    required: true,
+                },
+            },
         });
 
         const totalPrice = () => {
@@ -130,14 +177,14 @@ export default {
             });
         };
 
-        const onCheckout = () => {
+        const onCheckout = (values) => {
             checkingOut.value = true;
 
             RequestCsrfToken()
                 .then(() => {
                     checkingOut.value = true;
                     RequestRepository.post('/orders', {
-                        ...formData,
+                        ...values,
                         items: cartItems.value.map(v => ({
                             num: v.num,
                             product_id: v.product.id,
@@ -172,6 +219,7 @@ export default {
             cartItems,
             checkingOut,
             formData,
+            formRules,
 
             cartTableColumns,
 
