@@ -1,6 +1,6 @@
 <template>
     <a-row :gutter="16">
-        <a-col :sm="{ span: 24 }" :md="{ span: 12 }" :lg="{ span: 6 }">
+        <a-col :xs="24" :sm="24" :md="12" :lg="6">
             <a-card style="margin-bottom: 10px;">
                 <a-card-meta title="Miễn phí vận chuyển" description="Đơn hàng từ 300k">
                     <template #avatar>
@@ -9,7 +9,7 @@
                 </a-card-meta>
             </a-card>
         </a-col>
-        <a-col :sm="{ span: 24 }" :md="{ span: 12 }" :lg="{ span: 6 }">
+        <a-col :xs="24" :sm="24" :md="12" :lg="6">
             <a-card style="margin-bottom: 10px;">
                 <a-card-meta title="Miễn phí đổi trả" description="Trong vòng 7 ngày">
                     <template #avatar>
@@ -18,7 +18,7 @@
                 </a-card-meta>
             </a-card>
         </a-col>
-        <a-col :sm="{ span: 24 }" :md="{ span: 12 }" :lg="{ span: 6 }">
+        <a-col :xs="24" :sm="24" :md="12" :lg="6">
             <a-card style="margin-bottom: 10px;">
                 <a-card-meta title="Bảo hành dài hạn" description="Lên tới 12 tháng">
                     <template #avatar>
@@ -27,7 +27,7 @@
                 </a-card-meta>
             </a-card>
         </a-col>
-        <a-col :sm="{ span: 24 }" :md="{ span: 12 }" :lg="{ span: 6 }">
+        <a-col :xs="24" :sm="24" :md="12" :lg="6">
             <a-card style="margin-bottom: 10px;">
                 <a-card-meta title="Tặng kèm hấp dẫn" description="Quà tặng đa dạng">
                     <template #avatar>
