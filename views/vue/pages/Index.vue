@@ -143,6 +143,9 @@ export default {
 
         const loadCatsProducts = () => {
             categories.value.forEach(cat => {
+                if (cat.parent_id) {
+                    return;
+                }
                 const cp = catsProducts[cat.slug] = reactive({
                     products: [],
                     loading: true,
