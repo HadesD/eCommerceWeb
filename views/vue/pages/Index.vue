@@ -1,42 +1,4 @@
 <template>
-    <a-row :gutter="16">
-        <a-col :xs="24" :sm="24" :md="12" :lg="6">
-            <a-card style="margin-bottom: 10px;">
-                <a-card-meta title="Miễn phí vận chuyển" description="Đơn hàng từ 300k">
-                    <template #avatar>
-                        <DollarCircleFilled style="font-size: 50px;" />
-                    </template>
-                </a-card-meta>
-            </a-card>
-        </a-col>
-        <a-col :xs="24" :sm="24" :md="12" :lg="6">
-            <a-card style="margin-bottom: 10px;">
-                <a-card-meta title="Miễn phí đổi trả" description="Trong vòng 7 ngày">
-                    <template #avatar>
-                        <TransactionOutlined style="font-size: 50px;" />
-                    </template>
-                </a-card-meta>
-            </a-card>
-        </a-col>
-        <a-col :xs="24" :sm="24" :md="12" :lg="6">
-            <a-card style="margin-bottom: 10px;">
-                <a-card-meta title="Bảo hành dài hạn" description="Lên tới 12 tháng">
-                    <template #avatar>
-                        <ClockCircleOutlined style="font-size: 50px;" />
-                    </template>
-                </a-card-meta>
-            </a-card>
-        </a-col>
-        <a-col :xs="24" :sm="24" :md="12" :lg="6">
-            <a-card style="margin-bottom: 10px;">
-                <a-card-meta title="Tặng kèm hấp dẫn" description="Quà tặng đa dạng">
-                    <template #avatar>
-                        <GiftOutlined style="font-size: 50px;" />
-                    </template>
-                </a-card-meta>
-            </a-card>
-        </a-col>
-    </a-row>
     <div v-for="category in categories" :key="category.id" :id="`index-cat-${category.slug}`">
         <a-card
             v-if="catsProducts[category.slug]?.loading || catsProducts[category.slug]?.products?.length"
@@ -104,6 +66,44 @@
             </a-list>
         </a-card>
     </div>
+    <a-row :gutter="16">
+        <a-col :xs="24" :sm="24" :md="12" :lg="6">
+            <a-card style="margin-bottom: 10px;">
+                <a-card-meta title="Miễn phí vận chuyển" description="Đơn hàng từ 300k">
+                    <template #avatar>
+                        <DollarCircleFilled style="font-size: 50px;" />
+                    </template>
+                </a-card-meta>
+            </a-card>
+        </a-col>
+        <a-col :xs="24" :sm="24" :md="12" :lg="6">
+            <a-card style="margin-bottom: 10px;">
+                <a-card-meta title="Miễn phí đổi trả" description="Trong vòng 7 ngày">
+                    <template #avatar>
+                        <TransactionOutlined style="font-size: 50px;" />
+                    </template>
+                </a-card-meta>
+            </a-card>
+        </a-col>
+        <a-col :xs="24" :sm="24" :md="12" :lg="6">
+            <a-card style="margin-bottom: 10px;">
+                <a-card-meta title="Bảo hành dài hạn" description="Lên tới 12 tháng">
+                    <template #avatar>
+                        <ClockCircleOutlined style="font-size: 50px;" />
+                    </template>
+                </a-card-meta>
+            </a-card>
+        </a-col>
+        <a-col :xs="24" :sm="24" :md="12" :lg="6">
+            <a-card style="margin-bottom: 10px;">
+                <a-card-meta title="Tặng kèm hấp dẫn" description="Quà tặng đa dạng">
+                    <template #avatar>
+                        <GiftOutlined style="font-size: 50px;" />
+                    </template>
+                </a-card-meta>
+            </a-card>
+        </a-col>
+    </a-row>
 </template>
 <script>
 import { useStore } from 'vuex';
