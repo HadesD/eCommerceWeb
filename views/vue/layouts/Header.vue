@@ -26,10 +26,12 @@
         <a-row style="padding: 30px 0 20px;">
             <a-col :sm="{ span: 24 }" :lg="{ span: 16 }">
                 <a-row :gutter="10">
-                    <a-col :xs="{ span: 12 }" :md="{ span: 10 }" :lg="{ span: 6 }" :xl="{ span: 5 }">
-                        <span style="font-size: 30px;"><img src="/favicon.ico" />inPhone</span>
+                    <a-col :xs="{ span: 24 }" :md="{ span: 10 }" :lg="{ span: 8 }" :xl="{ span: 7 }">
+                        <router-link :to="{name:'home'}">
+                            <img src="/logo-blue.png" style="padding-bottom:5px;" />
+                        </router-link>
                     </a-col>
-                    <a-col :xs="{ span: 12 }" :md="{ span: 14 }" :lg="{ span: 18 }" :xl="{ span: 19 }">
+                    <a-col :xs="{ span: 24 }" :md="{ span: 14 }" :lg="{ span: 16 }" :xl="{ span: 17 }">
                         <SearchProductForm />
                     </a-col>
                 </a-row>
