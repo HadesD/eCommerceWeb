@@ -29,7 +29,7 @@ inotifywait -r \
     do
         NOW_TS=$(timestamp)
 
-        echo $base $event $file $LAST_TS $NOW_TS
+        echo 'Begin' $base $event $file $LAST_TS $NOW_TS
 
         if [ $(( $NOW_TS - $LAST_TS )) -lt 1 ]; then
             continue
@@ -41,4 +41,6 @@ inotifywait -r \
         fi
 
         LAST_TS=$(timestamp)
+
+        echo 'End' $base $event $file $LAST_TS $NOW_TS
     done

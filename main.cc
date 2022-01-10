@@ -1,5 +1,6 @@
 #include <drogon/drogon.h>
-#include "filters/CsrfFilter.h"
+
+#include "controllers/CsrfTokenCtrl.h"
 
 int main() {
     //Set HTTP listener address and port
@@ -7,10 +8,32 @@ int main() {
     //Load config file
     drogon::app().loadConfigFile("./config.json");
 
-    // drogon::app().registerPreHandlingAdvice([](auto req){
-    //     LOG_DEBUG << 11;
-    // });
-    // drogon::app().registerFilter(std::make_shared<CsrfFilter>());
+    // CSRF check
+    drogon::app().registerPreRoutingAdvice(
+        [](const auto &req, auto &&fcb, auto &&fccb)
+        {
+            switch (req->getMethod())
+            {
+            case HttpMethod::Post:
+            case HttpMethod::Patch:
+            case HttpMethod::Put:
+            {
+                if (!CsrfTokenCtrl::verify(req))
+                {
+                    //Check failed
+                    auto res = drogon::HttpResponse::newHttpResponse();
+                    res->setStatusCode(k403Forbidden);
+                    res->setBody("CSRF Token Mismatch");
+                    fcb(res);
+                    return;
+                }
+            }
+
+            default:
+                // Passed
+                fccb();
+            }
+        });
 
     //Run HTTP framework,the method will block in the internal event loop
     drogon::app().run();

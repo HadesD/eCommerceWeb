@@ -2,8 +2,6 @@
 
 #include <drogon/HttpController.h>
 
-#include "filters/CsrfFilter.h"
-
 using namespace drogon;
 
 class OrderCtrl : public drogon::HttpController<OrderCtrl>
@@ -17,7 +15,7 @@ class OrderCtrl : public drogon::HttpController<OrderCtrl>
 
     ADD_METHOD_TO(OrderCtrl::get, "/orders", Get);
     ADD_METHOD_TO(OrderCtrl::getOne, "/orders/{1}", Get);
-    ADD_METHOD_TO(OrderCtrl::create, "/orders", Post, CsrfFilter().className());
+    ADD_METHOD_TO(OrderCtrl::create, "/orders");
 
     METHOD_LIST_END
     // your declaration of processing function maybe like this:

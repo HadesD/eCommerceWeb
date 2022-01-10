@@ -13,8 +13,8 @@ namespace app_helpers
     enum class ProductStatus : char
     {
         DRAFT = 0,
-        SELLING,
-        SOLDOUT,
+        SELLING = 1,
+        SOLDOUT = 2,
     };
 
     void productJsonRow(const drogon::orm::DbClientPtr &dbClient, const Product& prd, Json::Value &prdRow)

@@ -1,6 +1,6 @@
 /**
  *
- *  CsrfFilter.h
+ *  AuthFilter.h
  *
  */
 
@@ -10,10 +10,10 @@
 using namespace drogon;
 
 
-class CsrfFilter : public HttpFilter<CsrfFilter>
+class AuthFilter : public HttpFilter<AuthFilter>
 {
   public:
-    CsrfFilter() {}
+    AuthFilter() {}
     virtual void doFilter(const HttpRequestPtr &req,
                           FilterCallback &&fcb,
                           FilterChainCallback &&fccb) override;
