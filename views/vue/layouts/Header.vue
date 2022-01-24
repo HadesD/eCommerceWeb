@@ -83,23 +83,27 @@
     </a-layout-content>
     <a-layout-header style="background-color: #FFF;border-top: solid 1px #f2f2f2;box-shadow: 0px 5px 20px rgb(0 0 0 / 10%);">
         <a-menu mode="horizontal" :selectedKeys="[$route.params?.category_slug || '/']">
-            <a-sub-menu
-                :disabled="!loadingCategories && !(categories.length > 0)"
-                class="header-submenu-category"
-            >
-                <template #icon>
-                    <MenuOutlined v-if="!loadingCategories" />
-                    <LoadingOutlined v-else />
-                </template>
-                <template #title>
-                    <span v-if="!loadingCategories">SẢN PHẨM</span>
-                    <span v-else>XIN CHỜ...</span>
-                </template>
-
-                <TreeMenu :nodeData="categories" />
-            </a-sub-menu>
+            <!-- <TreeMenu :nodeData="categories" /> -->
+            <template v-for="category in categories">
+                <a-menu-item><router-link :to="{name:'category', params:{category_slug:category.slug}}">{{ category.name }}</router-link></a-menu-item>
+            </template>
         </a-menu>
     </a-layout-header>
+
+    <a-layout-content v-if="$route.name === 'home'" style="margin-top: 25px;">
+        <a-row :gutter="16">
+            <a-col :xs="24" :sm="18" :lg="19">
+                <img src="https://i.imgur.com/66IxckB.jpg" style="width: 100%;" />
+            </a-col>
+            <a-col :xs="24" :sm="6" :lg="5">
+                <div class="fb-page" data-href="https://www.facebook.com/rinphonevn" :data-tabs="($grid.breakpoint !== 'xs') ? 'timeline' : ''">
+                    <blockquote cite="https://www.facebook.com/rinphonevn" class="fb-xfbml-parse-ignore">
+                        <a href="https://www.facebook.com/rinphonevn" target="_blank">RinPhoneVN Facebook</a>
+                    </blockquote>
+                </div>
+            </a-col>
+        </a-row>
+    </a-layout-content>
 </template>
 <script>
 import {
@@ -120,6 +124,7 @@ import SearchProductForm from '../components/SearchProductForm';
 import RequestRepository from '../utils/RequestRepository';
 import { list_to_tree, money_format, vietnameseNormalize, } from '../helpers';
 import { useStore } from 'vuex';
+import { useGrid } from 'vue-screen';
 
 const TreeMenu = {
     props: {
