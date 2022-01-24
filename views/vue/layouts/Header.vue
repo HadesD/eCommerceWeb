@@ -109,7 +109,7 @@
 import {
     computed,
     onMounted, ref,
-    h, resolveComponent,
+    h, resolveComponent, onActivated,
 } from 'vue';
 
 import {
@@ -179,10 +179,6 @@ export default {
         onMounted(() => {
             store.dispatch('fetchCartItems');
             store.dispatch('fetchCategories');
-
-            if (window.FB && window.FB.XFBML) {
-                window.FB.XFBML.parse();
-            }
         });
 
         return {

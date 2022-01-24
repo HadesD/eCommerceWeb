@@ -168,16 +168,14 @@ export default {
 
         watch(() => categories.value, () => loadCatsProducts());
 
-        onActivated(() => {
-            document.title = app.title;
-
-            loadCatsProducts();
-        });
-
         onMounted(() => {
             document.title = app.title;
 
             loadCatsProducts();
+
+            if (window.FB && window.FB.XFBML) {
+                window.FB.XFBML.parse();
+            }
         });
 
         return {
