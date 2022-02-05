@@ -44,11 +44,11 @@ export function cloneDeep(data) {
     return _.cloneDeep(data);
 }
 
-export function list_to_tree(list, parentKey = 'parent_id') {
+export function list_to_tree(list, parentKey = 'parent_id', key = 'id') {
     let map = {}, node, roots = [], i;
 
     for (i = 0; i < list.length; i += 1) {
-        map[list[i].id] = i; // initialize the map
+        map[list[i][key]] = i; // initialize the map
         list[i].children = []; // initialize the children
     }
 
@@ -65,25 +65,27 @@ export function list_to_tree(list, parentKey = 'parent_id') {
 }
 
 export function showErrorRequestApi(err) {
-    if (err.response && err.response.data && err.response.data.message) {
-        const key = `error${Date.now()}`;
-        notification.error({
-            message: 'Có iỗi xảy ra',
-            description: err.response.data.message,
-            btn: () => h(
-                Button,
-                {
-                    type: 'primary',
-                    size: 'small',
-                    onClick: () => notification.close(key),
-                },
-                {
-                    default: () => 'OK',
-                }
-            ),
-            key,
-        });
-        return;
+    if (err.response) {
+        if (err.response.data && err.response.data.message) {
+            const key = `error${Date.now()}`;
+            notification.error({
+                message: 'Có iỗi xảy ra',
+                description: err.response.data.message,
+                btn: () => h(
+                    Button,
+                    {
+                        type: 'primary',
+                        size: 'small',
+                        onClick: () => notification.close(key),
+                    },
+                    {
+                        default: () => 'OK',
+                    }
+                ),
+                key,
+            });
+            return;
+        }
     }
 
     message.error(err.message || 'Thất bại');

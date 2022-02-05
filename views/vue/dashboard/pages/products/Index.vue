@@ -140,12 +140,13 @@ import {
 } from '@ant-design/icons-vue';
 
 import ProductStatus, { Config as configProductStatus } from '~/configs/ProductStatus';
-import { number_format, date_format, showErrorRequestApi } from '~/helpers';
+import { number_format, date_format, showErrorRequestApi, list_to_tree } from '~/helpers';
 import RequestRepository from '~/dashboard/utils/RequestRepository';
 
 import ProductEdit from '~/dashboard/pages/products/Edit.vue';
 import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
 import { defineComponent } from '@vue/runtime-core';
+import * as _ from 'lodash';
 
 const productsTableColumns = [
     {
@@ -268,46 +269,19 @@ export default defineComponent({
             return this.onFinishSelect !== undefined;
         },
         categoriesTreeData() {
-            const getParent = (key, tree) => {
-                let parent;
-                for (let i = 0; i < tree.length; i++) {
-                    const node = tree[i];
-                    if (node.key === key) {
-                        parent = node;
-                    } else if (node.children && node.children.length) {
-                        parent = getParent(key, node.children);
-                    }
-                }
-
-                return parent;
-            };
-
-            const sortedCategories = this.categories;
-
-            // Reset
             this.categoriesTreeExpandedKeys = [];
 
-            let data = [];
-            for (let i = 0; i < sortedCategories.length; i++) {
-                const cur = sortedCategories[i];
+            const cats = this.categories.map((v) => {
+                this.categoriesTreeExpandedKeys.push(v.id);
 
-                const newData = {
-                    key: cur.id,
-                    title: cur.name,
-                    children: [],
+                return {
+                    key: v.id,
+                    title: v.name,
+                    parent_id: v.parent_id,
                 };
+            });
 
-                let parent = getParent(cur.parent_id, data);
-                let toNode = parent ? parent.children : data;
-                toNode.push(newData);
-
-                toNode = toNode.sort((a,b) => a.title.toUpperCase() > b.title.toUpperCase() ? 1 : -1);
-
-                // Update key
-                this.categoriesTreeExpandedKeys.push(newData.key);
-            }
-
-            return data;
+            return list_to_tree(cats, 'parent_id', 'key');
         },
         productsTableData(){
             return this.products;
@@ -323,7 +297,7 @@ export default defineComponent({
             this.categoriesTreeLoading = true;
             RequestRepository.get('/categories')
                 .then(res => {
-                    this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
+                    this.categories = res.data.data;
                 })
                 .catch(showErrorRequestApi)
                 .finally(()=>{
@@ -339,8 +313,12 @@ export default defineComponent({
 
             this.loadProducts();
         },
-        onCategoriesTreeExpand() {
-            console.log('Trigger Expand');
+        onCategoriesTreeExpand(keys, e) {
+            if (!e.expanded) {
+                this.categoriesTreeExpandedKeys.splice(this.categoriesTreeExpandedKeys.indexOf(e.node.key), 1);
+            } else {
+                this.categoriesTreeExpandedKeys = keys;
+            }
         },
 
         // Modal
