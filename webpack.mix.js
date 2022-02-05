@@ -87,6 +87,7 @@ if (process.env.RENDER_TARGET === 'server') {
             }
 
             let publicIndex = htmlData
+                .replace('${HOST}', process.env.APP_TITLE)
                 .replace('${HOST}', hostStr)
                 .replace('${HOST}', hostStr)
                 .replace('${APP_JS}', appJs)

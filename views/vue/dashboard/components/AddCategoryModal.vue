@@ -40,7 +40,7 @@
                 </a-form-item>
             </a-form-item>
             <a-form-item>
-                <a-button type="primary" htmlType="submit" size="large" block>Tạo</a-button>
+                <a-button type="primary" htmlType="submit" size="large" block :loading="confirmLoading">Tạo</a-button>
             </a-form-item>
         </a-form>
     </a-modal>
@@ -48,13 +48,13 @@
 <script>
 import { reactive, ref, } from 'vue';
 
+import { message } from 'ant-design-vue';
 import {
     ReloadOutlined,
 } from '@ant-design/icons-vue';
 
-import { vietnameseNormalize,  } from '~/helpers.js';
-import RequestRepository from '~/dashboard/utils/RequestRepository';
-import { showErrorRequestApi } from '../../helpers';
+import { vietnameseNormalize, showErrorRequestApi  } from '~/helpers';
+import RequestApiRepository from '~/utils/RequestApiRepository';
 
 const TREE_ROOT_ID = 0;
 const TREE_NONE_PARENT_ID = -1;
@@ -122,11 +122,11 @@ export default {
         onFinish(e) {
             this.confirmLoading = true;
 
-            RequestRepository.post('/categories', this.formData)
-                .then(res => {
+            RequestApiRepository.post('/categories', this.formData)
+                .then(data => {
                     this.$emit('handleOk');
 
-                    this.$message.success(`Tạo chuyên mục [${res.data.data.name}] thành công`);
+                    message.success(`Tạo chuyên mục [${data.data.name}] thành công`);
 
                     this.formData.name = undefined;
                     this.formData.slug = undefined;
@@ -134,8 +134,7 @@ export default {
 
                     this.reloadCategoriesTree();
                 })
-                .catch(showErrorRequestApi)
-                .then(()=>{
+                .finally(() => {
                     this.confirmLoading = false;
                 });
         },
