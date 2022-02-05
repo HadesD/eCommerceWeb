@@ -29,7 +29,7 @@
                             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
                             :tree-data="categoriesTreeData"
                             placeholder="Chuyên mục cha"
-                            :replaceFields="{ pId:'parent_id',title:'name',value:'id' }"
+                            :fieldNames="{ pId:'parent_id',label:'name',value:'id' }"
                         />
                     </a-spin>
                 </a-form-item>

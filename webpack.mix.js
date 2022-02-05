@@ -87,11 +87,10 @@ if (process.env.RENDER_TARGET === 'server') {
             }
 
             let publicIndex = htmlData
-                .replace('${HOST}', process.env.APP_TITLE)
-                .replace('${HOST}', hostStr)
-                .replace('${HOST}', hostStr)
-                .replace('${APP_JS}', appJs)
-                .replace('${APP_CSS}', appCss);
+                .replaceAll('${APP_TITLE}', process.env.APP_TITLE)
+                .replaceAll('${HOST}', hostStr)
+                .replaceAll('${APP_JS}', appJs)
+                .replaceAll('${APP_CSS}', appCss);
 
             fs.writeFileSync(publicPath + '/index.html', publicIndex);
         });
