@@ -23,5 +23,3 @@ app.use(VueScreen, 'bootstrap');
 app.use(router);
 
 app.mount('#app');
-
-export default app;
