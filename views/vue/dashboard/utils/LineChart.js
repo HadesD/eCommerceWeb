@@ -1,0 +1,19 @@
+// import { Chart, registerables } from "chart.js";
+// Chart.register(...registerables);
+
+// export default {
+//   extends: Line,
+//   mixins: [reactiveProp],
+//   props: ['options'],
+//   mounted () {
+//     // this.chartData is created in the mixin.
+//     // If you want to pass options please create a local options object
+//     this.renderChart(this.chartData, this.options)
+//   }
+// }
+
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
+import { LineChart } from "vue-chart-3";
+
+export default LineChart;

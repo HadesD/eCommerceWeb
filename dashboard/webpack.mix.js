@@ -16,8 +16,12 @@ mix.env('./.env');
  |
  */
 
+const isDashboard = process.env.BUILD_FOR === 'dashboard';
+
+let assetRoot = isDashboard ? '/dashboard' : '';
+
 let output = {
-    chunkFilename: 'assets/js/chunk/' + (mix.inProduction() ? '[name].[chunkhash].js' : '[name].js'),
+    chunkFilename: assetRoot + '/assets/js/chunk/' + (mix.inProduction() ? '[name].[chunkhash].js' : '[name].js'),
 };
 
 let options = {

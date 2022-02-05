@@ -1,0 +1,22 @@
+@import '~ant-design-vue/dist/antd.custom.css';
+
+#slider_sidebar {
+  -webkit-box-shadow: 2px 0 6px rgba(0,21,41,.35);
+  box-shadow: 2px 0 6px rgba(0,21,41,.35);
+}
+
+#slider_sidebar > .ant-layout-sider-children > .ant-menu-root {
+  background-color: #9800ab;
+}
+
+#slider_sidebar .ant-menu-sub{
+  background-color: #680075;
+}
+
+#slider_sidebar .logo {
+  text-align: center;
+}
+
+#slider_sidebar .logo img{
+  max-width: 100%;
+}

@@ -561,9 +561,15 @@ FodyWeavers.xsd
 # End of https://www.toptal.com/developers/gitignore/api/intellij+all,visualstudio,visualstudiocode,cmake,c,c++
 
 !/Makefile
+
 **/public/assets/
 /public/index.html
 /public/hot
+
+**/public/dashboard/assets/
+/public/dashboard/index.html
+/public/dashboard/hot
+
 public.tar.gz
 mix-manifest.json
 .vscode/

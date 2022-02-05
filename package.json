@@ -3,7 +3,9 @@
     "scripts": {
         "less": "lessc $(git rev-parse --show-toplevel)/views/assets/antd-custom.less --js > node_modules/ant-design-vue/dist/antd.custom.css",
         "start": "npm run less && cross-env NODE_ENV=development RENDER_TARGET=client mix watch --hot",
-        "prod": "git clean -xdf public && npm run less && cross-env NODE_ENV=production RENDER_TARGET=client mix && tar zcvf public.tar.gz public/assets"
+        "prod": "git clean -xdf public && npm run less && cross-env NODE_ENV=production RENDER_TARGET=client mix && tar zcvf public.tar.gz public/assets",
+        "dash-start": "npm run less && cross-env NODE_ENV=development RENDER_TARGET=client BUILD_FOR=dashboard mix watch --hot",
+        "dash-prod": "git clean -xdf public && npm run less && cross-env NODE_ENV=production RENDER_TARGET=client BUILD_FOR=dashboard mix && tar zcvf public.tar.gz public/assets"
     },
     "devDependencies": {
         "@vue/compiler-sfc": "^3.2.26",

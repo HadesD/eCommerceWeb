@@ -17,8 +17,12 @@ mix.env('./.env');
  |
  */
 
+const isDashboard = process.env.BUILD_FOR === 'dashboard';
+
+let assetRoot = isDashboard ? '/dashboard' : '';
+
 let output = {
-    chunkFilename: 'assets/js/chunk/' + (mix.inProduction() ? '[name].[chunkhash].js' : '[name].js'),
+    chunkFilename: (assetRoot + '/assets/js/chunk/').slice(1) + (mix.inProduction() ? '[name].[chunkhash].js' : '[name].js'),
 };
 
 let options = {
@@ -54,11 +58,13 @@ if (process.env.RENDER_TARGET === 'server') {
             },
         });
 } else {
-    mix.setPublicPath('public');
+    const publicPath = 'public' + assetRoot;
+    mix.setPublicPath(publicPath);
     mix.setResourceRoot('views');
 
-    mix.js(vueDir + '/app-client.js', 'public/assets/js');
-    mix.sass(vueDir + '/assets/app.scss', 'public/assets/css');
+    const assetPath = publicPath + '/assets';
+    mix.js(vueDir + assetRoot + '/app-client.js', assetPath + '/js');
+    mix.sass(vueDir + assetRoot + '/assets/app.scss', assetPath + '/css');
 
     const indexHtmlDir = 'views/index.html';
     if (fs.existsSync(indexHtmlDir)) {
@@ -68,10 +74,10 @@ if (process.env.RENDER_TARGET === 'server') {
             if (sts.hasErrors()) {
                 return;
             }
-            const hostStr = !mix.inProduction() ? fs.readFileSync('public/hot').toString().trim() : '';
+            const hostStr = !mix.inProduction() ? fs.readFileSync(publicPath + '/hot').toString().trim() : '';
 
             let appJs, appCss;
-            let mixManifest = JSON.parse(fs.readFileSync('public/mix-manifest.json').toString());
+            let mixManifest = JSON.parse(fs.readFileSync(publicPath + '/mix-manifest.json').toString());
             for (const i in mixManifest) {
                 if (i.indexOf('.js') !== -1) {
                     appJs = mixManifest[i];
@@ -86,7 +92,7 @@ if (process.env.RENDER_TARGET === 'server') {
                 .replace('${APP_JS}', appJs)
                 .replace('${APP_CSS}', appCss);
 
-            fs.writeFileSync('public/index.html', publicIndex);
+            fs.writeFileSync(publicPath + '/index.html', publicIndex);
         });
     }
 }
@@ -107,7 +113,7 @@ if (mix.inProduction()) {
         ...options,
         hmrOptions: {
             host: '127.0.0.1',
-            port: 8888,
+            port: isDashboard ? 8889 : 8888,
         },
     }
 }
