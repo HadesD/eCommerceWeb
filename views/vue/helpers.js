@@ -66,8 +66,8 @@ export function list_to_tree(list, parentKey = 'parent_id') {
 
 export function showErrorRequestApi(err) {
     if (err.response && err.response.data && err.response.data.message) {
-        const key = `open${Date.now()}`;
-        notification.open({
+        const key = `error${Date.now()}`;
+        notification.error({
             message: 'Có iỗi xảy ra',
             description: err.response.data.message,
             btn: () => h(

@@ -86,6 +86,10 @@
                 </template>
                 <!-- Block Search: END -->
 
+                <template #id="{ text, record }">
+                    <div :title="`Tạo: ${date_format(record.created_at)}\nUpdate: ${date_format(record.updated_at)}`">{{ text }}</div>
+                </template>
+
                 <template #name="{ text, record }">
                     <div>{{ text }}</div>
                 </template>
@@ -97,10 +101,6 @@
                 </template>
                 <template #categories="{ text }">
                     <a-tag v-for="category in text" :key="category.id">{{ category.name }}</a-tag>
-                </template>
-                <template #time="{ record }">
-                    <div>Tạo: {{ date_format(record.created_at) }}</div>
-                    <div>Update: {{ date_format(record.updated_at) }}</div>
                 </template>
                 <template #action="{ record }">
                     <template v-if="!onFinishSelect">
@@ -150,6 +150,7 @@ const productsTableColumns = [
         title: '#ID',
         dataIndex: 'id',
         slots: {
+            customRender: 'id',
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
         },
@@ -187,13 +188,6 @@ const productsTableColumns = [
         dataIndex: 'categories',
         slots: {
             customRender: 'categories',
-        },
-    },
-    {
-        title: 'Thời gian',
-        key: 'time',
-        slots: {
-            customRender: 'time',
         },
     },
     {
@@ -367,8 +361,6 @@ export default {
 
         // Product
         loadProducts(){
-            const router = useRouter();
-
             this.productsTableLoading = true;
 
             // Reset popup data
@@ -381,7 +373,7 @@ export default {
                 sort_by: this.productsTableSorts,
             };
             if (!this.isModalMode) {
-                router.replace({
+                this.$router.replace({
                     query: params,
                 });
             }

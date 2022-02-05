@@ -5,14 +5,15 @@
 </template>
 <script>
 import locale from 'ant-design-vue/lib/locale-provider/vi_VN';
+import dayjs from 'dayjs';
+import 'dayjs/locale/vi';
+dayjs.locale('vi');
 
 import User from '~/dashboard/utils/User';
 import RequestHttp from '~/utils/RequestHttp';
 import RequestApi from '~/utils/RequestApi';
 
-import dayjs from 'dayjs';
-import 'dayjs/locale/vi';
-dayjs.locale('vi');
+import { showErrorRequestApi } from '~/helpers';
 
 export default {
     data(){
@@ -44,23 +45,18 @@ export default {
                                 User.clear();
                                 return;
                             }
-
-                            if (err.response.data.message) {
-                                this.$message.error(err.response.data.message);
-                                return;
-                            }
                         }
-
-                        this.$message.error(err.message || 'Đồng bộ thông tin người dùng thất bại');
                     }
+
+                    showErrorRequestApi(err);
                 })
                 .finally(() => setTimeout(hide, 1500));
         },
 
         getAppVer(fromDoc) {
             return {
-                css: fromDoc.getElementById('app-css').getAttribute('href').split('?id=')[1],
-                script: fromDoc.getElementById('app-script').getAttribute('src').split('?id=')[1],
+                css: fromDoc.getElementById('app-css')?.getAttribute('href').split('?id=')[1],
+                script: fromDoc.getElementById('app-js')?.getAttribute('src').split('?id=')[1],
             };
         },
 
@@ -91,12 +87,7 @@ export default {
                 })
                 .catch(err => {
                     if (User.info().id) {
-                        if (err.response && err.response.data && err.response.data.message) {
-                            this.$message.error(err.response.data.message);
-                            return;
-                        }
-
-                        this.$message.error(err.message || 'Kiểm tra phiên bản mới thất bại');
+                        showErrorRequestApi(err);
                     }
                 })
                 .finally(() => {

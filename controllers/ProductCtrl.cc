@@ -47,39 +47,60 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
     }
     else
     {
-        const auto & reqCatSlug = req->getParameter("category_slug");
-        if (reqCatSlug.size())
+        Category::PrimaryKeyType catId = 0;
+        orm::Mapper<Category> catMap(dbClient);
+        const auto& reqCatId = req->getParameter("category_id");
+        if (reqCatId.size())
         {
             try
             {
-                orm::Mapper<Category> catMap(dbClient);
-                const auto catId = catMap
-                                       .findOne(orm::Criteria(Category::Cols::_slug, reqCatSlug))
-                                       .getValueOfId();
-
-                std::vector<Category::PrimaryKeyType> catIds{catId};
-
-                std::function<void(const Category::PrimaryKeyType)> findChildCategoryId;
-                findChildCategoryId = [&catIds, &catMap, &findChildCategoryId](const Category::PrimaryKeyType parentId)
+                catId = std::stoul(reqCatId);
+            }
+            catch(...)
+            {
+            }
+        }
+        else
+        {
+            const auto &reqCatSlug = req->getParameter("category_slug");
+            if (reqCatSlug.size())
+            {
+                try
                 {
-                    try
-                    {
-                        auto childCats = catMap.findBy(
-                            orm::Criteria(Category::Cols::_parent_id, parentId));
-                        for (const auto &childCat : childCats)
-                        {
-                            const auto childId = childCat.getValueOfId();
-                            catIds.push_back(childId);
+                    catId = catMap
+                                .findOne(orm::Criteria(Category::Cols::_slug, reqCatSlug))
+                                .getValueOfId();
+                }
+                catch (const orm::UnexpectedRows &e)
+                {
+                }
+                catch (const std::exception &e)
+                {
+                    LOG_ERROR << e.what();
+                }
+            }
+        }
 
-                            findChildCategoryId(childId);
-                        }
-                    }
-                    catch (const std::exception &e)
-                    {
-                        LOG_ERROR << e.what();
-                    }
-                };
+        if (catId)
+        {
+            std::vector<Category::PrimaryKeyType> catIds{catId};
 
+            std::function<void(const Category::PrimaryKeyType)> findChildCategoryId;
+            findChildCategoryId = [&catIds, &catMap, &findChildCategoryId](const Category::PrimaryKeyType parentId)
+            {
+                auto childCats = catMap.findBy(
+                    orm::Criteria(Category::Cols::_parent_id, parentId));
+                for (const auto &childCat : childCats)
+                {
+                    const auto childId = childCat.getValueOfId();
+                    catIds.push_back(childId);
+
+                    findChildCategoryId(childId);
+                }
+            };
+
+            try
+            {
                 findChildCategoryId(catId);
 
                 std::vector<Product::PrimaryKeyType> productIds;
@@ -94,6 +115,7 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
                 {
                     productIds.push_back(0);
                 }
+
                 cnd = cnd && orm::Criteria(Product::Cols::_id, orm::CompareOperator::In, productIds);
             }
             catch (const orm::UnexpectedRows &e)
@@ -106,7 +128,7 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
         }
 
         // Price range: low,high
-        const auto& reqPriceRange = req->getParameter("price_range");
+        const auto &reqPriceRange = req->getParameter("price_range");
         if (reqPriceRange.size())
         {
             auto pos = reqPriceRange.find(',');
@@ -135,10 +157,10 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
         }
 
         // Sort
-        const auto& reqSortBy = req->getParameter("sort_by");
+        const auto &reqSortBy = req->getParameter("sort_by");
         if (reqSortBy.size() >= 2)
         {
-            const auto& tmpSortBy = reqSortBy.substr(1);
+            const auto &tmpSortBy = reqSortBy.substr(1);
             static std::vector<std::string> allowCols{
                 Product::Cols::_created_at,
                 Product::Cols::_price,
@@ -202,17 +224,17 @@ void ProductCtrl::getOne(const HttpRequestPtr &req, std::function<void(const Htt
     try
     {
         auto dbClient = app().getDbClient();
-        const auto& prd = orm::Mapper<Product>(dbClient)
-            .findByPrimaryKey(id);
+        const auto &prd = orm::Mapper<Product>(dbClient)
+                              .findByPrimaryKey(id);
 
         Json::Value ret;
-        auto& retData = ret["data"];
+        auto &retData = ret["data"];
         retData = prd.toJson();
         app_helpers::productJsonRow(dbClient, prd, retData);
 
         callback(HttpResponse::newHttpJsonResponse(ret));
     }
-    catch (const orm::UnexpectedRows& e)
+    catch (const orm::UnexpectedRows &e)
     {
         LOG_ERROR << e.what();
 

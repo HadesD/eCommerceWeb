@@ -235,7 +235,7 @@ export default {
             };
 
             if (!this.isModalMode) {
-                router.replace({
+                this.$router.replace({
                     query: params,
                 });
             }
