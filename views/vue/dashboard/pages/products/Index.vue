@@ -140,9 +140,10 @@ import {
 } from '@ant-design/icons-vue';
 
 import ProductStatus, { Config as configProductStatus } from '~/configs/ProductStatus';
-import { number_format, date_format, defineAsyncComponent, showErrorRequestApi } from '~/helpers';
+import { number_format, date_format, showErrorRequestApi } from '~/helpers';
 import RequestRepository from '~/dashboard/utils/RequestRepository';
 
+import ProductEdit from '~/dashboard/pages/products/Edit.vue';
 import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
 
 const productsTableColumns = [
@@ -206,7 +207,7 @@ export default {
     components: {
         AddCategoryModal,
 
-        ProductEdit: defineAsyncComponent(() => import('~/dashboard/pages/products/Edit.vue')),
+        ProductEdit,
 
         SearchOutlined, DownloadOutlined, PlusOutlined,
         ReloadOutlined, ShoppingCartOutlined, EditOutlined,

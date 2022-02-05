@@ -52,8 +52,9 @@ import {
     ReloadOutlined,
 } from '@ant-design/icons-vue';
 
-import { vietnameseNormalize } from '~/helpers';
+import { vietnameseNormalize,  } from '~/helpers.js';
 import RequestRepository from '~/dashboard/utils/RequestRepository';
+import { showErrorRequestApi } from '../../helpers';
 
 const TREE_ROOT_ID = 0;
 const TREE_NONE_PARENT_ID = -1;
@@ -133,14 +134,7 @@ export default {
 
                     this.reloadCategoriesTree();
                 })
-                .catch(err => {
-                    if (err.response && err.response.data && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || 'Thất bại');
-                })
+                .catch(showErrorRequestApi)
                 .then(()=>{
                     this.confirmLoading = false;
                 });

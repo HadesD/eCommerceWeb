@@ -74,6 +74,8 @@ export default {
         UserOutlined, LockOutlined,
     },
     setup(){
+        const router = useRouter();
+
         const ruleForm = ref();
         const formData = reactive({
             email: undefined,
@@ -81,14 +83,38 @@ export default {
             remember: true,
         });
 
+        const onFinish = () => {
+            this.loggingIn = true;
+
+            // Refresh CSRF
+            RequestApi.get('/csrf-token')
+                .then(async res => {
+                    // Login
+                    await RequestApi.post('/login', this.formData);
+
+                    // Check permission
+                    const userApiRequest = await RequestApi.get('/user');
+                    const userData = userApiRequest.data;
+                    if (userData.role >= UserRole.ROLE_ADMIN_MANAGER) {
+                        User.setInfo(userData);
+
+                        router.push({name: 'top'});
+                    } else {
+                        message.error('Bạn không có quyền hạn truy cập trang này');
+                    }
+                })
+                .catch(showErrorRequestApi)
+                .finally(() => {
+                    this.loggingIn = false;
+                });
+        };
+
         return {
             ruleForm,
             formData,
-        };
-    },
 
-    data() {
-        return {
+            onFinish,
+
             loggingIn: false,
             rules: {
                 email: [
@@ -102,33 +128,6 @@ export default {
     },
 
     methods: {
-        onFinish() {
-            const router = useRouter();
-
-            this.loggingIn = true;
-
-            // Refresh CSRF
-            RequestHttp.get('/api/csrf-token')
-                .then(async res => {
-                    // Login
-                    await RequestHttp.post('/login', this.formData);
-
-                    // Check permission
-                    const userApiRequest = await RequestApi.get('/user');
-                    const userData = userApiRequest.data;
-                    if (userData.role >= UserRole.ROLE_ADMIN_MANAGER) {
-                        User.setInfo(userData);
-
-                        router.push({path: '/'});
-                    } else {
-                        message.error('Bạn không có quyền hạn truy cập trang này');
-                    }
-                })
-                .catch(showErrorRequestApi)
-                .finally(() => {
-                    this.loggingIn = false;
-                });
-        },
     },
 }
 </script>

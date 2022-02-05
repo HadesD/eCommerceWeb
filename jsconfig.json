@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "es2017",
+        "allowSyntheticDefaultImports": false,
+        "baseUrl": "./",
+        "paths" : {
+            "~/*": ["views/vue/*"],
+        }
+    },
+    "include": [
+        "views/vue/*"
+    ],
+    "exclude": ["node_modules", "public"]
+}
