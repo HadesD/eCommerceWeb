@@ -550,7 +550,6 @@ import UploadImage from '~/dashboard/components/UploadImage.vue';
 
 import UserEdit from '~/dashboard/pages/users/Edit.vue';
 import UserIndex from '~/dashboard/pages/users/Index.vue';
-import OrderEdit from '~/dashboard/pages/orders/Edit.vue';
 
 const addon_transactionsTableColumns = [
     {
@@ -597,7 +596,7 @@ export default defineComponent({
 
         UserIndex,
         UserEdit,
-        OrderEdit,
+        OrderEdit: defineAsyncComponent(() => import('~/dashboard/pages/orders/Edit.vue')),
 
         UserOutlined,
         SearchOutlined,

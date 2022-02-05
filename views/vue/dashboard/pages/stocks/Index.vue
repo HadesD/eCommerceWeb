@@ -175,7 +175,7 @@ import RequestRepository from '~/dashboard/utils/RequestRepository';
 import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
 
 import UserEdit from '~/dashboard/pages/users/Edit.vue';
-import StockEdit from '~/dashboard/pages/stocks/Edit.vue';
+;
 import { defineComponent } from '@vue/runtime-core';
 
 const stocksTableColumns = [
@@ -261,7 +261,7 @@ export default defineComponent({
         AddCategoryModal,
 
         UserEdit,
-        StockEdit,
+        StockEdit: defineAsyncComponent(() => import('~/dashboard/pages/stocks/Edit.vue')),
 
         SearchOutlined, DownloadOutlined, PlusOutlined,
         ReloadOutlined, ShoppingCartOutlined, EditOutlined,
