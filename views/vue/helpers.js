@@ -69,7 +69,7 @@ export function showErrorRequestApi(err) {
         if (err.response.data && err.response.data.message) {
             const key = `error${Date.now()}`;
             notification.error({
-                message: 'Có iỗi xảy ra',
+                message: 'Có lỗi xảy ra',
                 description: err.response.data.message,
                 btn: () => h(
                     Button,

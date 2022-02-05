@@ -1,7 +1,9 @@
 #pragma once
 #include <drogon/HttpController.h>
+
 using namespace drogon;
-class AuthCtrl:public drogon::HttpController<AuthCtrl>
+
+class AuthCtrl : public drogon::HttpController<AuthCtrl>
 {
   public:
     METHOD_LIST_BEGIN
