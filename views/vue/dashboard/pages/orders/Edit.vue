@@ -433,7 +433,7 @@
 </template>
 
 <script>
-import { reactive, ref } from 'vue';
+import { defineComponent, reactive, ref } from 'vue';
 import dayjs from 'dayjs';
 
 import {
@@ -449,6 +449,13 @@ import OrderProductStockStatus, { Config as configOrderProductStockStatus } from
 import PaymentMethod, { Config as configPaymentMethod } from '~/configs/PaymentMethod';
 import RequestRepository from '~/dashboard/utils/RequestRepository';
 import User from '~/dashboard/utils/User';
+
+import UserEdit from '~/dashboard/pages/users/Edit.vue';
+import UserIndex from '~/dashboard/pages/users/Index.vue';
+import ProductEdit from '~/dashboard/pages/products/Edit.vue';
+import ProductIndex from '~/dashboard/pages/products/Index.vue';
+import StockEdit from '~/dashboard/pages/stocks/Edit.vue';
+import StockIndex from '~/dashboard/pages/stocks/Index.vue';
 
 const addon_transactionsTableColumns = [
     {
@@ -520,7 +527,7 @@ const product_stockTableColumns = [
     },
 ];
 
-export default {
+export default defineComponent({
     props: {
         orderId: Number,
     },
@@ -530,12 +537,12 @@ export default {
     ],
 
     components: {
-        UserIndex: defineAsyncComponent(() => import('~/dashboard/pages/users/Index.vue')),
-        UserEdit: defineAsyncComponent(() => import('~/dashboard/pages/users/Edit.vue')),
-        ProductIndex: defineAsyncComponent(() => import('~/dashboard/pages/products/Index.vue')),
-        ProductEdit: defineAsyncComponent(() => import('~/dashboard/pages/products/Edit.vue')),
-        StockIndex: defineAsyncComponent(() => import('~/dashboard/pages/stocks/Index.vue')),
-        StockEdit: defineAsyncComponent(() => import('~/dashboard/pages/stocks/Edit.vue')),
+        UserIndex,
+        UserEdit,
+        ProductIndex,
+        ProductEdit,
+        StockIndex,
+        StockEdit,
 
         PrinterOutlined, BankOutlined, ShoppingCartOutlined,
         PlusOutlined, ReloadOutlined, DeleteOutlined,
@@ -873,5 +880,5 @@ export default {
             newWindow.close();
         }
     },
-}
+});
 </script>

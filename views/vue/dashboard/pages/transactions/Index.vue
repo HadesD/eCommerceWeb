@@ -154,6 +154,11 @@ import {
 import { number_format, date_format, defineAsyncComponent, showErrorRequestApi } from '~/helpers';
 import RequestRepository from '~/dashboard/utils/RequestRepository';
 
+import UserEdit from '~/dashboard/pages/users/Edit.vue';
+import StockEdit from '~/dashboard/pages/stocks/Edit.vue';
+import OrderEdit from '~/dashboard/pages/orders/Edit.vue';
+import { defineComponent } from '@vue/runtime-core';
+
 const transactionsTableColumns = [
     {
         title: '#ID',
@@ -201,25 +206,19 @@ const transactionsTableColumns = [
             customRender: 'cashier_id',
         },
     },
-    {
-        title: 'Thời gian',
-        key: 'time',
-        slots: {
-            customRender: 'time',
-        },
-    },
 ];
 
-export default {
+export default defineComponent({
     components: {
-        UserEdit: defineAsyncComponent(() => import('~/dashboard/pages/users/Edit.vue')),
-        StockEdit: defineAsyncComponent(() => import('~/dashboard/pages/stocks/Edit.vue')),
-        OrderEdit: defineAsyncComponent(() => import('~/dashboard/pages/orders/Edit.vue')),
+        UserEdit,
+        StockEdit,
+        OrderEdit,
 
         SearchOutlined, DownloadOutlined, PlusOutlined,
         ReloadOutlined, ShoppingCartOutlined, EditOutlined,
         AccountBookOutlined, BankOutlined,
     },
+
     data() {
         return {
             stockEditPageVisible: false,
@@ -336,5 +335,5 @@ export default {
             window.open(downloadUrl.href, '_blank');
         },
     },
-};
+});
 </script>

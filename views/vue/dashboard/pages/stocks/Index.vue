@@ -174,6 +174,10 @@ import { number_format, date_format, defineAsyncComponent, showErrorRequestApi }
 import RequestRepository from '~/dashboard/utils/RequestRepository';
 import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
 
+import UserEdit from '~/dashboard/pages/users/Edit.vue';
+import StockEdit from '~/dashboard/pages/stocks/Edit.vue';
+import { defineComponent } from '@vue/runtime-core';
+
 const stocksTableColumns = [
     {
         title: '#ID',
@@ -240,13 +244,6 @@ const stocksTableColumns = [
         },
     },
     {
-        title: 'Cập nhật',
-        key: 'update_info',
-        slots: {
-            customRender: 'update_info',
-        },
-    },
-    {
         title: 'Hành động',
         key: 'action',
         slots: {
@@ -255,7 +252,7 @@ const stocksTableColumns = [
     },
 ];
 
-export default {
+export default defineComponent({
     props: {
         onFinishSelect: Function,
     },
@@ -263,8 +260,8 @@ export default {
     components: {
         AddCategoryModal,
 
-        UserEdit: defineAsyncComponent(() => import('~/dashboard/pages/users/Edit.vue')),
-        StockEdit: defineAsyncComponent(() => import('~/dashboard/pages/stocks/Edit.vue')),
+        UserEdit,
+        StockEdit,
 
         SearchOutlined, DownloadOutlined, PlusOutlined,
         ReloadOutlined, ShoppingCartOutlined, EditOutlined,
@@ -478,5 +475,5 @@ export default {
         },
 
     },
-}
+});
 </script>

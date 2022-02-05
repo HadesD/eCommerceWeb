@@ -70,7 +70,7 @@
     </a-spin>
 </template>
 <script>
-import { reactive, ref, } from 'vue';
+import { defineComponent, reactive, ref, } from 'vue';
 
 import {
     ReloadOutlined, DeleteOutlined,
@@ -82,7 +82,7 @@ import UserRole, { Config as configUserRole } from '~/dashboard/configs/UserRole
 import RequestRepository from '~/dashboard/utils/RequestRepository';
 import User from '~/dashboard/utils/User';
 
-export default {
+export default defineComponent({
     props: {
         userId: Number,
     },
@@ -229,5 +229,5 @@ export default {
                 });
         },
     },
-};
+});
 </script>

@@ -528,7 +528,7 @@
 </template>
 
 <script>
-import { reactive, ref } from 'vue';
+import { defineComponent, reactive, ref } from 'vue';
 import dayjs from 'dayjs';
 
 import {
@@ -547,6 +547,10 @@ import RequestRepository from '~/dashboard/utils/RequestRepository';
 
 import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
 import UploadImage from '~/dashboard/components/UploadImage.vue';
+
+import UserEdit from '~/dashboard/pages/users/Edit.vue';
+import UserIndex from '~/dashboard/pages/users/Index.vue';
+import OrderEdit from '~/dashboard/pages/orders/Edit.vue';
 
 const addon_transactionsTableColumns = [
     {
@@ -583,7 +587,7 @@ const addon_transactionsTableColumns = [
     },
 ];
 
-export default {
+export default defineComponent({
     props: {
         stockId: Number,
     },
@@ -591,9 +595,9 @@ export default {
         AddCategoryModal,
         UploadImage,
 
-        UserIndex: defineAsyncComponent(() => import('~/dashboard/pages/users/Index.vue')),
-        UserEdit: defineAsyncComponent(() => import('~/dashboard/pages/users/Edit.vue')),
-        OrderEdit: defineAsyncComponent(() => import('~/dashboard/pages/orders/Edit.vue')),
+        UserIndex,
+        UserEdit,
+        OrderEdit,
 
         UserOutlined,
         SearchOutlined,
@@ -843,5 +847,5 @@ export default {
             this.userIndexPageVisible = false;
         },
     },
-};
+});
 </script>

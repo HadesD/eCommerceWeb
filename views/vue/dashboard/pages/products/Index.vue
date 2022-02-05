@@ -145,6 +145,7 @@ import RequestRepository from '~/dashboard/utils/RequestRepository';
 
 import ProductEdit from '~/dashboard/pages/products/Edit.vue';
 import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
+import { defineComponent } from '@vue/runtime-core';
 
 const productsTableColumns = [
     {
@@ -200,7 +201,7 @@ const productsTableColumns = [
     },
 ];
 
-export default {
+export default defineComponent({
     props: {
         onFinishSelect: Function,
     },
@@ -324,14 +325,7 @@ export default {
                 .then(res => {
                     this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
                 })
-                .catch(err => {
-                    if (err.response && err.response.data && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || 'Thất bại');
-                })
+                .catch(showErrorRequestApi)
                 .finally(()=>{
                     this.categoriesTreeLoading = false;
                 });
@@ -400,5 +394,5 @@ export default {
                 });
         },
     },
-}
+});
 </script>

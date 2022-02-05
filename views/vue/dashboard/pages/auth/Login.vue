@@ -55,7 +55,7 @@
     </div>
 </template>
 <script>
-import { reactive, ref, } from 'vue';
+import { defineComponent, reactive, ref, } from 'vue';
 import { useRouter } from 'vue-router';
 
 import {
@@ -69,7 +69,7 @@ import RequestHttp from '~/utils/RequestHttp';
 import RequestApi from '~/utils/RequestApi';
 import { showErrorRequestApi } from '~/helpers';
 
-export default {
+export default defineComponent({
     components: {
         UserOutlined, LockOutlined,
     },
@@ -129,5 +129,5 @@ export default {
 
     methods: {
     },
-}
+});
 </script>

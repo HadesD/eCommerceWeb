@@ -155,7 +155,7 @@
     </a-spin>
 </template>
 <script>
-import { reactive, ref } from 'vue';
+import { defineComponent, reactive, ref } from 'vue';
 
 import { message } from 'ant-design-vue';
 import {
@@ -169,7 +169,7 @@ import RequestRepository from '~/dashboard/utils/RequestRepository';
 import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
 import UploadImage from '~/dashboard/components/UploadImage.vue';
 
-export default {
+export default defineComponent({
     props: {
         productId: Number,
     },
@@ -347,5 +347,5 @@ export default {
                 });
         },
     },
-};
+});
 </script>

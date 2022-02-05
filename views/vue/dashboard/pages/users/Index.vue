@@ -107,6 +107,9 @@ import UserRole, { Config as configUserRole } from '~/dashboard/configs/UserRole
 import RequestRepository from '~/dashboard/utils/RequestRepository';
 import { date_format, showErrorRequestApi, defineAsyncComponent } from '~/helpers';
 
+import UserEdit from '~/dashboard/pages/users/Edit.vue';
+import { defineComponent } from '@vue/runtime-core';
+
 const usersTableColumns = [
     {
         title: '#ID',
@@ -157,23 +160,18 @@ const usersTableColumns = [
         },
     },
     {
-        title: 'Thời gian',
-        key: 'time',
-        slots: { customRender: 'time' },
-    },
-    {
         title: 'Hành động',
         key: 'action',
         slots: { customRender: 'action' },
     },
 ];
 
-export default {
+export default defineComponent({
     props: {
         onFinishSelect: Function,
     },
     components: {
-        UserEdit: defineAsyncComponent(() => import('~/dashboard/pages/users/Edit.vue')),
+        UserEdit,
 
         FacebookOutlined,
         SearchOutlined, DownloadOutlined, PlusOutlined,
@@ -261,5 +259,5 @@ export default {
                 });
         },
     },
-};
+});
 </script>

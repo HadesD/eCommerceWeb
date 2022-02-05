@@ -240,6 +240,12 @@ import OrderProductStockStatus from '~/configs/OrderProductStockStatus';
 import { number_format, date_format, defineAsyncComponent, showErrorRequestApi } from '~/helpers';
 import RequestRepository from '~/dashboard/utils/RequestRepository';
 
+import UserEdit from '~/dashboard/pages/users/Edit.vue';
+import ProductEdit from '~/dashboard/pages/products/Edit.vue';
+import OrderEdit from '~/dashboard/pages/orders/Edit.vue';
+import StockEdit from '~/dashboard/pages/stocks/Edit.vue';
+import { defineComponent } from '@vue/runtime-core';
+
 const ordersTableColumns = [
     {
         title: '#ID',
@@ -293,13 +299,6 @@ const ordersTableColumns = [
         slots: {
             filterDropdown: 'filterSearchBox',
             filterIcon: 'filterSearchBoxIcon',
-        },
-    },
-    {
-        title: 'Thời gian',
-        key: 'time',
-        slots: {
-            customRender: 'time'
         },
     },
     {
@@ -378,16 +377,16 @@ const orderProductStockTableColumns = [
     },
 ];
 
-export default {
+export default defineComponent({
     props: {
         onFinishSelect: Function,
     },
 
     components: {
-        UserEdit: defineAsyncComponent(() => import('~/dashboard/pages/users/Edit.vue')),
-        ProductEdit: defineAsyncComponent(() => import('~/dashboard/pages/products/Edit.vue')),
-        StockEdit: defineAsyncComponent(() => import('~/dashboard/pages/stocks/Edit.vue')),
-        OrderEdit: defineAsyncComponent(() => import('~/dashboard/pages/orders/Edit.vue')),
+        UserEdit,
+        ProductEdit,
+        StockEdit,
+        OrderEdit,
 
         SearchOutlined, DownloadOutlined, PlusOutlined,
         ReloadOutlined, ShoppingCartOutlined, EditOutlined,
@@ -573,5 +572,5 @@ export default {
             window.open(downloadUrl.href, '_blank');
         },
     },
-}
+});
 </script>
