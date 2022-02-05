@@ -170,7 +170,7 @@ import {
     BankOutlined,
 } from '@ant-design/icons-vue';
 
-import { number_format, date_format, defineAsyncComponent, showErrorRequestApi } from '~/helpers';
+import { number_format, date_format, defineAsyncComponent, showErrorRequestApi, list_to_tree } from '~/helpers';
 import RequestRepository from '~/dashboard/utils/RequestRepository';
 import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
 
@@ -320,47 +320,20 @@ export default defineComponent({
             return this.onFinishSelect !== undefined;
         },
 
-        categoriesTreeData(){
-            const getParent = (key, tree) => {
-                let parent;
-                for (let i = 0; i < tree.length; i++) {
-                    const node = tree[i];
-                    if (node.key === key) {
-                        parent = node;
-                    } else if (node.children && node.children.length) {
-                        parent = getParent(key, node.children);
-                    }
-                }
-
-                return parent;
-            };
-
-            const sortedCategories = this.categories;
-
-            // Reset
+        categoriesTreeData() {
             this.categoriesTreeExpandedKeys = [];
 
-            let data = [];
-            for (let i = 0; i < sortedCategories.length; i++) {
-                const cur = sortedCategories[i];
+            const cats = this.categories.map((v) => {
+                this.categoriesTreeExpandedKeys.push(v.id);
 
-                const newData = {
-                    key: cur.id,
-                    title: cur.name,
-                    children: [],
+                return {
+                    key: v.id,
+                    title: v.name,
+                    parent_id: v.parent_id,
                 };
+            });
 
-                let parent = getParent(cur.parent_id, data);
-                let toNode = parent ? parent.children : data;
-                toNode.push(newData);
-
-                toNode = toNode.sort((a,b) => a.title.toUpperCase() > b.title.toUpperCase() ? 1 : -1);
-
-                // Update key
-                this.categoriesTreeExpandedKeys.push(newData.key);
-            }
-
-            return data;
+            return list_to_tree(cats, 'parent_id', 'key');
         },
 
         stocksTableData(){
@@ -375,7 +348,7 @@ export default defineComponent({
             this.categoriesTreeLoading = true;
             RequestRepository.get('/categories')
                 .then(res => {
-                    this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
+                    this.categories = res.data.data;
                 })
                 .catch(showErrorRequestApi)
                 .finally(()=>{
@@ -391,9 +364,12 @@ export default defineComponent({
 
             this.loadStocks();
         },
-
-        onCategoriesTreeExpand() {
-            console.log('Trigger Expand');
+        onCategoriesTreeExpand(keys, e) {
+            if (!e.expanded) {
+                this.categoriesTreeExpandedKeys.splice(this.categoriesTreeExpandedKeys.indexOf(e.node.key), 1);
+            } else {
+                this.categoriesTreeExpandedKeys = keys;
+            }
         },
 
         // Modal
