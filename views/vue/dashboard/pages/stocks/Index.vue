@@ -162,15 +162,16 @@
 </template>
 
 <script>
+import { useRouter } from 'vue-router';
+
 import {
     SearchOutlined, DownloadOutlined, PlusOutlined,
     ReloadOutlined, ShoppingCartOutlined, EditOutlined,
     BankOutlined,
 } from '@ant-design/icons-vue';
 
-import { number_format, date_format, defineAsyncComponent } from '~/helpers';
+import { number_format, date_format, defineAsyncComponent, showErrorRequestApi } from '~/helpers';
 import RequestRepository from '~/dashboard/utils/RequestRepository';
-
 import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
 
 const stocksTableColumns = [
@@ -379,14 +380,7 @@ export default {
                 .then(res => {
                     this.categories = res.data.data.sort((a, b) => a.parent_id - b.parent_id);
                 })
-                .catch(err => {
-                    if (err.response && err.response.data && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || 'Thất bại');
-                })
+                .catch(showErrorRequestApi)
                 .finally(()=>{
                     this.categoriesTreeLoading = false;
                 });
@@ -417,6 +411,8 @@ export default {
         },
 
         loadStocks() {
+            const router = useRouter();
+
             this.stocksTableLoading = true;
 
             // Reset popup data
@@ -431,7 +427,7 @@ export default {
             };
 
             if (!this.isModalMode) {
-                this.$router.replace({
+                router.replace({
                     query: params,
                 });
             }
@@ -450,19 +446,8 @@ export default {
                         current: resData.current_page,
                         pageSize: resData.per_page,
                     };
-
-                    //   if ((this.$route.query.page != resData.current_page) || (this.$route.query.category_id != category_id)) {
-                    //     this.$router.push('/stocks/index?page='+resData.current_page+'&category_id='+category_id);
-                    //   }
                 })
-                .catch(err => {
-                    if (err.response && err.response.data && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || 'Thất bại');
-                })
+                .catch(showErrorRequestApi)
                 .finally(()=>{
                     this.stocksTableLoading = false;
                 });

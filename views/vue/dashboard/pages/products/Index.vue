@@ -131,6 +131,8 @@
 </template>
 
 <script>
+import { useRouter } from 'vue-router';
+
 import {
     SearchOutlined, DownloadOutlined, PlusOutlined,
     ReloadOutlined, ShoppingCartOutlined, EditOutlined,
@@ -138,7 +140,7 @@ import {
 } from '@ant-design/icons-vue';
 
 import ProductStatus, { Config as configProductStatus } from '~/configs/ProductStatus';
-import { number_format, date_format, defineAsyncComponent } from '~/helpers';
+import { number_format, date_format, defineAsyncComponent, showErrorRequestApi } from '~/helpers';
 import RequestRepository from '~/dashboard/utils/RequestRepository';
 
 import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
@@ -365,6 +367,8 @@ export default {
 
         // Product
         loadProducts(){
+            const router = useRouter();
+
             this.productsTableLoading = true;
 
             // Reset popup data
@@ -377,7 +381,7 @@ export default {
                 sort_by: this.productsTableSorts,
             };
             if (!this.isModalMode) {
-                this.$router.replace({
+                router.replace({
                     query: params,
                 });
             }
@@ -396,19 +400,8 @@ export default {
                         current: resData.current_page,
                         pageSize: resData.per_page,
                     };
-
-                    //   if ((this.$route.query.page != resData.current_page) || (this.$route.query.category_id != category_id)) {
-                    //     this.$router.push('/products/index?page='+resData.current_page+'&category_id='+category_id);
-                    //   }
                 })
-                .catch(err => {
-                    if (err.response && err.response.data && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || 'Load thất bại');
-                })
+                .catch(showErrorRequestApi)
                 .finally(()=>{
                     this.productsTableLoading = false;
                 });

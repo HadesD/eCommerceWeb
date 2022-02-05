@@ -34,7 +34,7 @@
         "chart.js": "^3.7.0",
         "dayjs": "^1.10.7",
         "vue": "^3.2.26",
-        "vue-chart-3": "^0.5.8",
+        "vue-chart-3": "^3.0.9",
         "vue-meta": "^3.0.0-alpha.9",
         "vue-progressbar": "^0.7.5",
         "vue-router": "^4.0.11",

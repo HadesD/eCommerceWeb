@@ -539,7 +539,7 @@ import {
     DeleteOutlined,
 } from '@ant-design/icons-vue';
 
-import { defineAsyncComponent, number_format, date_format } from '~/helpers';
+import { defineAsyncComponent, number_format, date_format, showErrorRequestApi } from '~/helpers';
 import UserRole from '~/dashboard/configs/UserRole';
 import User from '~/dashboard/utils/User';
 import { Config as configOrderStatus } from '~/configs/OrderStatus';
@@ -738,18 +738,7 @@ export default {
                 .then((res) => {
                     this.categories = res.data.data || [];
                 })
-                .catch((err) => {
-                    if (
-                        err.response &&
-                        err.response.data &&
-                        err.response.data.message
-                    ) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || "Thất bại");
-                })
+                .catch(showErrorRequestApi)
                 .finally(() => {
                     this.categoriesTreeLoading = false;
                 });
@@ -802,17 +791,10 @@ export default {
 
                         this.stockInfoLoading = false;
                     })
-                    .catch((err) => {
-                        if (
-                            err.response &&
-                            err.response.data &&
-                            err.response.data.message
-                        ) {
-                            this.$message.error(err.response.data.message);
-                            return;
-                        }
+                    .catch(err => {
+                        this.stockInfoLoading = false;
 
-                        this.$message.error(err.message || "Thất bại");
+                        showErrorRequestApi(err);
                     });
         },
 
@@ -851,17 +833,7 @@ export default {
                 })
                 .catch((err) => {
                     this.stockInfoLoading = false;
-
-                    if (
-                        err.response &&
-                        err.response.data &&
-                        err.response.data.message
-                    ) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || "Thất bại");
+                    showErrorRequestApi(err);
                 });
         },
 

@@ -30,12 +30,16 @@
     </a-layout-header>
 </template>
 <script>
-import User from '~/dashboard/utils/User';
+import { useRouter } from 'vue-router';
 
 import {
     UserOutlined, DownOutlined, LogoutOutlined,
     MenuUnfoldOutlined, MenuFoldOutlined,
 } from '@ant-design/icons-vue';
+
+import User from '~/dashboard/utils/User';
+import { message } from 'ant-design-vue';
+import { showErrorRequestApi } from '../../../../dashboard/resources/vue/helpers';
 
 export default {
     components: {
@@ -62,6 +66,8 @@ export default {
             this.$emit('onSetSidebarCollapsed', !this.sideBarCollapsed);
         },
         logout(){
+            const router = useRouter();
+
             const modal = this.$confirm({
                 content: 'Chắc chắn muốn đăng xuất chứ?',
                 onOk: () => {
@@ -71,18 +77,11 @@ export default {
 
                             modal.destroy();
 
-                            this.$router.push({ path: '/login' });
+                            router.push({ path: '/login' });
 
-                            this.$message.success('Đăng xuất thành công');
+                            message.success('Đăng xuất thành công');
                         })
-                        .catch(err => {
-                            if (err.response && err.response.data && err.response.data.message) {
-                                this.$message.error(err.response.data.message);
-                                return;
-                            }
-
-                            this.$message.error(err.message || 'Thất bại');
-                        })
+                        .catch(showErrorRequestApi)
                 },
             });
         },

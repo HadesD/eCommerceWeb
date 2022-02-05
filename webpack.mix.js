@@ -66,7 +66,7 @@ if (process.env.RENDER_TARGET === 'server') {
     mix.js(vueDir + assetRoot + '/app-client.js', assetPath + '/js');
     mix.sass(vueDir + assetRoot + '/assets/app.scss', assetPath + '/css');
 
-    const indexHtmlDir = 'views/index.html';
+    const indexHtmlDir = 'views/index' + (isDashboard ? '-dashboard' : '') + '.html';
     if (fs.existsSync(indexHtmlDir)) {
         let htmlData = fs.readFileSync(indexHtmlDir).toString();
 

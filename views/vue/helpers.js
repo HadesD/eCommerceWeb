@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import dayjs from 'dayjs';
-import { message } from 'ant-design-vue';
-import { defineAsyncComponent as vueDefineAsyncComponent } from 'vue';
+import { message, notification, Button } from 'ant-design-vue';
+import { defineAsyncComponent as vueDefineAsyncComponent, h } from 'vue';
 
 import LoadingComponent from '~/components/LoadingComponent.vue';
 import ErrorComponent from '~/components/ErrorComponent.vue';
@@ -66,7 +66,23 @@ export function list_to_tree(list, parentKey = 'parent_id') {
 
 export function showErrorRequestApi(err) {
     if (err.response && err.response.data && err.response.data.message) {
-        message.error(err.response.data.message);
+        const key = `open${Date.now()}`;
+        notification.open({
+            message: 'Có iỗi xảy ra',
+            description: err.response.data.message,
+            btn: () => h(
+                Button,
+                {
+                    type: 'primary',
+                    size: 'small',
+                    onClick: () => notification.close(key),
+                },
+                {
+                    default: () => 'OK',
+                }
+            ),
+            key,
+        });
         return;
     }
 

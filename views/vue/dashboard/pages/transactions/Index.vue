@@ -141,6 +141,8 @@
 </template>
 
 <script>
+import { useRouter } from 'vue-router';
+
 import dayjs from 'dayjs';
 
 import {
@@ -149,7 +151,7 @@ import {
     AccountBookOutlined, BankOutlined,
 } from '@ant-design/icons-vue';
 
-import { number_format, date_format, defineAsyncComponent } from '~/helpers';
+import { number_format, date_format, defineAsyncComponent, showErrorRequestApi } from '~/helpers';
 import RequestRepository from '~/dashboard/utils/RequestRepository';
 
 const transactionsTableColumns = [
@@ -271,6 +273,8 @@ export default {
         dayjs,
 
         loadTransactions() {
+            const router = useRouter();
+
             this.transactionsTableLoading = true;
 
             // Reset popup data
@@ -285,7 +289,7 @@ export default {
             };
 
             if (!this.isModalMode) {
-                this.$router.replace({
+                router.replace({
                     query: params,
                 });
             }
@@ -305,14 +309,7 @@ export default {
                         pageSize: resData.per_page,
                     };
                 })
-                .catch(err => {
-                    if (err.response && err.response.data && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || 'Thất bại');
-                })
+                .catch(showErrorRequestApi)
                 .finally(() => {
                     this.transactionsTableLoading = false;
                 });

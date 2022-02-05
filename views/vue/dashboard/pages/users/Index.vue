@@ -94,6 +94,8 @@
 </template>
 
 <script>
+import { useRouter } from 'vue-router';
+
 import {
     FacebookOutlined,
     SearchOutlined, DownloadOutlined, PlusOutlined,
@@ -101,10 +103,9 @@ import {
     UserOutlined,
 } from '@ant-design/icons-vue';
 
-import { date_format, defineAsyncComponent } from '~/helpers';
-
 import UserRole, { Config as configUserRole } from '~/dashboard/configs/UserRole';
 import RequestRepository from '~/dashboard/utils/RequestRepository';
+import { date_format, showErrorRequestApi, defineAsyncComponent } from '~/helpers';
 
 const usersTableColumns = [
     {
@@ -224,6 +225,8 @@ export default {
         date_format,
 
         loadUsers() {
+            const router = useRouter();
+
             this.usersTableLoading = true;
 
             const params = {
@@ -232,7 +235,7 @@ export default {
             };
 
             if (!this.isModalMode) {
-                this.$router.replace({
+                router.replace({
                     query: params,
                 });
             }
@@ -252,14 +255,7 @@ export default {
                         pageSize: resData.per_page,
                     };
                 })
-                .catch(err => {
-                    if (err.response && err.response.data && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || 'Thất bại');
-                })
+                .catch(showErrorRequestApi)
                 .finally(() => {
                     this.usersTableLoading = false;
                 });

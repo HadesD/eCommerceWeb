@@ -226,6 +226,8 @@
 </template>
 
 <script>
+import { useRouter } from 'vue-router';
+
 import dayjs from 'dayjs';
 
 import {
@@ -235,7 +237,7 @@ import {
 
 import OrderStatus, { Config as configOrderStatus } from '~/configs/OrderStatus';
 import OrderProductStockStatus from '~/configs/OrderProductStockStatus';
-import { number_format, date_format, defineAsyncComponent } from '~/helpers';
+import { number_format, date_format, defineAsyncComponent, showErrorRequestApi } from '~/helpers';
 import RequestRepository from '~/dashboard/utils/RequestRepository';
 
 const ordersTableColumns = [
@@ -454,6 +456,8 @@ export default {
         dayjs,
 
         loadOrders(){
+            const router = useRouter();
+
             this.ordersTableLoading = true;
 
             // Reset popup data
@@ -469,7 +473,7 @@ export default {
             };
 
             if (!this.isModalMode) {
-                this.$router.replace({
+                router.replace({
                     query: params,
                 });
             }
@@ -486,21 +490,8 @@ export default {
                         current: resData.current_page,
                         pageSize: resData.per_page,
                     };
-
-                    // const newUrl = new URL(window.location.href);
-                    // console.log(newUrl);
-                    // newUrl.searchParams.append('page', resData.current_page);
-                    // newUrl.searchParams.push('page', resData.current_page);
-                    // this.$router.push(newUrl.pathname.replace(/\/dashboard/, '') + newUrl.search);
                 })
-                .catch(err => {
-                    if (err.response && err.response.data && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || 'Thất bại');
-                })
+                .catch(showErrorRequestApi)
                 .finally(()=>{
                     this.ordersTableLoading = false;
                 });

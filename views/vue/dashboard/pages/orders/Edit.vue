@@ -442,7 +442,7 @@ import {
     UserOutlined, SearchOutlined,
 } from '@ant-design/icons-vue';
 
-import { number_format, cloneDeep, date_format, defineAsyncComponent, } from '~/helpers';
+import { number_format, cloneDeep, date_format, defineAsyncComponent, showErrorRequestApi } from '~/helpers';
 import UserRole from '~/dashboard/configs/UserRole';
 import OrderStatus, { Config as configOrderStatus } from '~/configs/OrderStatus';
 import OrderProductStockStatus, { Config as configOrderProductStockStatus } from '~/configs/OrderProductStockStatus';
@@ -700,14 +700,7 @@ export default {
                         this.stockData.push(Object.assign({}, newOtp));
                     }
                 })
-                .catch(err => {
-                    if (err.response && err.response.data && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || 'Thất bại');
-                })
+                .catch(showErrorRequestApi)
                 .finally(()=>{
                     // this.categoriesTreeLoading = false;
                 });
@@ -760,14 +753,7 @@ export default {
 
                     this.orderInfoLoading = false;
                 })
-                .catch(err => {
-                    if (err.response && err.response.data && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || 'Thất bại');
-                })
+                .catch(showErrorRequestApi)
                 .finally(()=>{
                 });
         },
@@ -821,12 +807,7 @@ export default {
                 .catch(err => {
                     this.orderInfoLoading = false;
 
-                    if (err.response && err.response.data && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || 'Thất bại');
+                    showErrorRequestApi(err);
                 });
         },
 

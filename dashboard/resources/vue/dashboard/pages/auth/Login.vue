@@ -65,6 +65,9 @@ import RequestApi from '../../../utils/RequestApi';
 import {
     UserOutlined, LockOutlined,
 } from '@ant-design/icons-vue';
+import { useRouter } from 'vue-router';
+import { showErrorRequestApi } from '../../../../../../views/vue/helpers';
+import { message } from 'ant-design-vue';
 
 export default {
     components: {
@@ -100,6 +103,7 @@ export default {
 
     methods: {
         onFinish() {
+            const router = useRouter();
             this.loggingIn = true;
 
             // this.$Progress.start();
@@ -116,25 +120,12 @@ export default {
                     if (userData.role >= UserRole.ROLE_ADMIN_MANAGER) {
                         User.setInfo(userData);
 
-                        // this.$Progress.finish();
-
-                        this.$router.push({path: '/'});
+                        router.push({name: 'top'});
                     } else {
-                        this.$message.error('Bạn không có quyền hạn truy cập trang này');
-
-                        // this.$Progress.fail();
+                        message.error('Bạn không có quyền hạn truy cập trang này');
                     }
                 })
-                .catch(err => {
-                    // this.$Progress.fail();
-
-                    if (err.response && err.response.data && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || 'Thất bại');
-                })
+                .catch(showErrorRequestApi)
                 .finally(() => {
                     this.loggingIn = false;
                 });
