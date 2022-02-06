@@ -29,7 +29,7 @@
                 <a-typography-text type="secondary">Mã sản phẩm: <a-tag color="purple">#{{ product.id }}</a-tag></a-typography-text>
                 <div><a-rate :value="4" disabled /></div>
                 <a-divider dashed />
-                <a-typography-paragraph :level="1">{{ product.description }}</a-typography-paragraph>
+                <a-typography-paragraph :level="1" v-html="productDescriptionHtml" />
                 <a-typography-title :level="2">Giá: <a-typography-text type="danger">{{ money_format(product.price) }}</a-typography-text></a-typography-title>
                 <a-space>
                     <span>Số lượng:</span>
@@ -54,18 +54,20 @@
 <script>
 import { computed, onMounted, reactive, ref, watch, } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
+import { useStore } from 'vuex';
 import { useMeta } from 'vue-meta';
 
 import {
     ShoppingCartOutlined,
 } from '@ant-design/icons-vue';
 
+import * as sanitizeHtml from 'sanitize-html';
+
 import RequestRepository from '~/utils/RequestRepository';
 import {
     vietnameseNormalize,
     money_format,
 } from '~/helpers';
-import { useStore } from 'vuex';
 
 export default {
     components: {
@@ -126,6 +128,10 @@ export default {
                 });
         };
 
+        const productDescriptionHtml = computed(() => {
+            return sanitizeHtml(product.value.description)?.replaceAll('\n', '<br />');
+        });
+
         onMounted(() => {
             loadProduct();
         });
@@ -141,6 +147,7 @@ export default {
 
         return {
             product,
+            productDescriptionHtml,
             productAddCount,
             buying,
 
