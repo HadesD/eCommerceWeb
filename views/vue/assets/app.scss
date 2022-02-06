@@ -38,8 +38,11 @@ main.ant-layout-content {
 .product-carousel.ant-carousel .slick-dots {
     height: auto;
 }
+.product-carousel.ant-carousel .slick-slide {
+    text-align: center;
+}
 .product-carousel.ant-carousel .slick-slide img {
-    margin: auto;
+    // margin: auto;
     max-height: 301px;
 }
 .product-carousel.ant-carousel .slick-arrow {

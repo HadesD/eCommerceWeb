@@ -1,14 +1,16 @@
 <template>
     <a-row :gutter="16">
         <a-col :xs="24" :sm="24" :md="24" :lg="12">
-            <a-carousel arrows dots-class="slick-dots slick-thumb" class="product-carousel" dot-position="left">
-                <template #customPaging="props">
-                    <img :src="product.images[props.i]?.url" />
-                </template>
-                <div v-for="image in product.images" :key="image">
-                    <img :src="image.url" :alt="product.name" />
-                </div>
-            </a-carousel>
+            <a-image-preview-group>
+                <a-carousel arrows dots-class="slick-dots slick-thumb" class="product-carousel" dot-position="left">
+                    <template #customPaging="props">
+                        <img :src="product.images[props.i]?.url" />
+                    </template>
+                    <div v-for="image in product.images" :key="image">
+                        <a-image :src="image.url" :alt="product.name" />
+                    </div>
+                </a-carousel>
+            </a-image-preview-group>
         </a-col>
         <a-col :xs="24" :sm="24" :md="24" :lg="12">
             <a-skeleton active :paragraph="{ rows: 6 }" v-if="!product.id" />
