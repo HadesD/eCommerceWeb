@@ -573,3 +573,4 @@ FodyWeavers.xsd
 public.tar.gz
 mix-manifest.json
 .vscode/
+package-lock.json

@@ -19,6 +19,8 @@ mix.env('./.env');
 
 const isDashboard = process.env.BUILD_FOR === 'dashboard';
 
+console.log('Build dashboard: ', isDashboard);
+
 let assetRoot = isDashboard ? '/dashboard' : '';
 
 let output = {

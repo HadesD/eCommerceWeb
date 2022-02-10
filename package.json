@@ -8,11 +8,9 @@
         "dash-prod": "git clean -xdf public && npm run less && cross-env NODE_ENV=production RENDER_TARGET=client BUILD_FOR=dashboard mix && tar zcvf dash-public.tar.gz public/dashboard/assets"
     },
     "devDependencies": {
-        "@vue/compiler-sfc": "^3.2.29",
-        "@vue/server-renderer": "^3.2.29",
+        "@vue/compiler-sfc": "^3.2.30",
+        "@vue/server-renderer": "^3.2.30",
         "babel-plugin-import": "^1.13.3",
-        "browser-sync": "^2.27.7",
-        "browser-sync-webpack-plugin": "^2.3.0",
         "cross-env": "^7.0.3",
         "laravel-mix": "*",
         "less": "^4.1.2",
