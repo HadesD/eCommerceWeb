@@ -2,7 +2,9 @@
     "private": true,
     "scripts": {
         "less": "lessc $(git rev-parse --show-toplevel)/views/assets/antd-custom.less --js > node_modules/ant-design-vue/dist/antd.custom.css",
+        "start-d": "npm run less && cross-env NODE_ENV=development RENDER_TARGET=client mix watch --hot",
         "start": "npm run less && cross-env NODE_ENV=development RENDER_TARGET=client mix watch --hot",
+        "serve": "vue-cli-service serve",
         "prod": "git clean -xdf public && npm run less && cross-env NODE_ENV=production RENDER_TARGET=client mix && tar zcvf public.tar.gz public/assets",
         "dash-start": "npm run less && cross-env NODE_ENV=development RENDER_TARGET=client BUILD_FOR=dashboard mix watch --hot",
         "dash-prod": "git clean -xdf public && npm run less && cross-env NODE_ENV=production RENDER_TARGET=client BUILD_FOR=dashboard mix && tar zcvf dash-public.tar.gz public/dashboard/assets"
@@ -32,7 +34,7 @@
         "chart.js": "^3.7.0",
         "dayjs": "^1.10.7",
         "sanitize-html": "^2.7.0",
-        "vue": "^3.2.26",
+        "vue": "^3.2.30",
         "vue-chart-3": "^3.0.9",
         "vue-meta": "^3.0.0-alpha.9",
         "vue-progressbar": "^0.7.5",

@@ -15,7 +15,7 @@ class OrderCtrl : public drogon::HttpController<OrderCtrl>
 
     ADD_METHOD_TO(OrderCtrl::get, "/orders", Get);
     ADD_METHOD_TO(OrderCtrl::getOne, "/orders/{1}", Get);
-    ADD_METHOD_TO(OrderCtrl::create, "/orders");
+    // ADD_METHOD_TO(OrderCtrl::create, "/orders");
 
     METHOD_LIST_END
     // your declaration of processing function maybe like this:
