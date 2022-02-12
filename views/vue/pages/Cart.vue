@@ -99,7 +99,7 @@ import {
 } from '@ant-design/icons-vue';
 
 import RequestRepository from '~/utils/RequestRepository';
-import RequestCsrfToken from '~/utils/RequestCsrfToken';
+import RequestApiRepository from '~/utils/RequestApiRepository';
 import { money_format, vietnameseNormalize, showErrorRequestApi, } from '../helpers';
 import PaymentMethod, { Config as configPaymentMethod } from '~/configs/PaymentMethod';
 
@@ -180,34 +180,27 @@ export default {
         const onCheckout = (values) => {
             checkingOut.value = true;
 
-            RequestCsrfToken()
-                .then(() => {
-                    checkingOut.value = true;
-                    RequestRepository.post('/orders', {
-                        ...values,
-                        items: cartItems.value.map(v => ({
-                            num: v.num,
-                            product_id: v.product.id,
-                            // TODO: Add variants properties
-                        })),
-                    })
-                        .then(data => {
-                            store.dispatch('clearCartItems');
+            RequestApiRepository.post('/checkout', {
+                ...values,
+                items: cartItems.value.map(v => ({
+                    num: v.num,
+                    product_id: v.product.id,
+                    // TODO: Add variants properties
+                })),
+            })
+                .then(data => {
+                    store.dispatch('clearCartItems');
 
-                            const order = data.data.data;
+                    const order = data.data.data;
 
-                            router.push({
-                                name: 'order',
-                                params: {
-                                    order_id: order.id,
-                                },
-                            });
-                        })
-                        .catch(showErrorRequestApi)
-                        .finally(() => (checkingOut.value = false));
+                    router.push({
+                        name: 'order',
+                        params: {
+                            order_id: order.id,
+                        },
+                    });
                 })
-                .catch(showErrorRequestApi)
-                .finally(() => (checkingOut.value = false));
+            .finally(() => (checkingOut.value = false));
         };
 
         onMounted(() => {

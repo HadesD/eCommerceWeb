@@ -250,3 +250,94 @@ void ProductCtrl::getOne(const HttpRequestPtr &req, std::function<void(const Htt
         callback(res);
     }
 }
+
+void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, uint64_t id)
+{
+    Json::Value resJson;
+    auto& resMsg = resJson["message"];
+    HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
+
+    try
+    {
+        const auto reqJsonPtr = req->getJsonObject();
+        if (!reqJsonPtr)
+        {
+            throw std::logic_error("Dữ liệu gửi lên không đúng");
+        }
+        const auto& reqJson = *reqJsonPtr;
+
+        auto dbClient = app().getDbClient()->newTransaction();
+        orm::Mapper<Product> prdMapper{dbClient};
+        auto prd = prdMapper
+                       .forUpdate()
+                       .findByPrimaryKey(id);
+
+        const auto& name = reqJson["name"];
+        if (name.isString())
+        {
+            prd.setName(name.asString());
+        }
+
+        const auto& price = reqJson["price"];
+        if (price.isInt())
+        {
+            prd.setPrice(price.asInt());
+        }
+
+        const auto& description = reqJson["description"];
+        if (description.isString())
+        {
+            prd.setDescription(description.asString());
+        }
+
+        const auto& detail = reqJson["detail"];
+        if (detail.isString())
+        {
+            prd.setDetail(detail.asString());
+        }
+
+        const auto& specification = reqJson["specification"];
+        if (specification.isString())
+        {
+            prd.setSpecification(specification.asString());
+        }
+
+        const auto& status = reqJson["status"];
+        if (status.isUInt())
+        {
+            prd.setStatus(status.asUInt());
+        }
+
+        // Update
+        prdMapper.update(prd);
+
+        auto &retData = resJson["data"];
+        retData = prd.toJson();
+        app_helpers::productJsonRow(dbClient, prd, retData);
+    }
+    catch (const orm::UnexpectedRows &e)
+    {
+        LOG_ERROR << e.what();
+
+        httpRetCode = HttpStatusCode::k404NotFound;
+    }
+    catch (const std::logic_error &e)
+    {
+        resMsg = e.what();
+
+        httpRetCode = HttpStatusCode::k406NotAcceptable;
+    }
+    catch (const std::exception &e)
+    {
+        LOG_ERROR << e.what();
+
+        httpRetCode = HttpStatusCode::k500InternalServerError;
+
+        resMsg = "Lỗi hệ thống";
+    }
+
+    const auto &httpRet = HttpResponse::newHttpJsonResponse(resJson);
+    httpRet->setStatusCode(httpRetCode);
+
+    callback(httpRet);
+}

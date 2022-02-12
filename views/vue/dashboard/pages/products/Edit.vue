@@ -164,7 +164,8 @@ import {
 
 import ProductStatus, { Config as configProductStatus } from '~/configs/ProductStatus';
 import { number_format, date_format, showErrorRequestApi, list_to_tree, } from '~/helpers';
-import RequestRepository from '~/dashboard/utils/RequestRepository';
+import RequestRepository from '~/utils/RequestRepository';
+import RequestApiRepository from '~/utils/RequestApiRepository';
 
 import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
 import UploadImage from '~/dashboard/components/UploadImage.vue';
@@ -324,7 +325,7 @@ export default defineComponent({
             this.productInfoLoading = true;
 
             const productId = this.id;
-            const request = productId ? RequestRepository.put : RequestRepository.post;
+            const request = productId ? RequestApiRepository.post : RequestApiRepository.post;
             request('/products' + (productId ? `/${productId}` : ''), {
                 ...this.formData,
             })
@@ -341,7 +342,6 @@ export default defineComponent({
 
                     this.loadProduct(this.formData.id);
                 })
-                .catch(showErrorRequestApi)
                 .finally(()=>{
                     this.productInfoLoading = false;
                 });

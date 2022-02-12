@@ -23,4 +23,3 @@ void OrderCtrl::getOne(const HttpRequestPtr &req, std::function<void(const HttpR
 {
     callback(HttpResponse::newNotFoundResponse());
 }
-

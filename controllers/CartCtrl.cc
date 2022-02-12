@@ -15,7 +15,7 @@ using OrderProduct = drogon_model::web_rinphone::OrderProducts;
 using User = drogon_model::web_rinphone::Users;
 using namespace app_helpers;
 
-void CartCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)
+void CartCtrl::checkout(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)
 {
     Json::Value resJson;
     auto& resMsg = resJson["message"];
