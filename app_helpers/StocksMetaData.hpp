@@ -14,9 +14,7 @@ namespace app_helpers
     void stockJsonRow(const drogon::orm::DbClientPtr &dbClient, const Stock& stk, Json::Value &stkRow)
     {
         using Category = drogon_model::web_rinphone::Categories;
-        using ProductCategory = drogon_model::web_rinphone::ProductCategories;
         using Image = drogon_model::web_rinphone::Images;
-        using ProductImage = drogon_model::web_rinphone::ProductImages;
 
         // categories
         {

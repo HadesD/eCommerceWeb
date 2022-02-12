@@ -20,9 +20,7 @@ namespace app_helpers
     void productJsonRow(const drogon::orm::DbClientPtr &dbClient, const Product& prd, Json::Value &prdRow)
     {
         using Category = drogon_model::web_rinphone::Categories;
-        using ProductCategory = drogon_model::web_rinphone::ProductCategories;
         using Image = drogon_model::web_rinphone::Images;
-        using ProductImage = drogon_model::web_rinphone::ProductImages;
 
         // categories
         {

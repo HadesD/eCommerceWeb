@@ -71,7 +71,7 @@
                 "pivot_table": {
                     "table_name": "stock_categories",
                     "original_key": "stock_id",
-                    "target_key": "stock_id"
+                    "target_key": "category_id"
                 },
                 "target_table_name": "categories",
                 "target_table_alias": "category",
