@@ -63,7 +63,7 @@
                                     multiple
                                     treeDefaultExpandAll
                                     treeNodeLabelProp="name"
-                                    v-model:value="formData.categories_id"
+                                    v-model:value="formData.category_ids"
                                     style="width: 100%"
                                     :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
                                     :tree-data="categoriesTreeData"
@@ -188,7 +188,7 @@ export default defineComponent({
         const formData = reactive({
             id: undefined,
             name: undefined,
-            categories_id: [],
+            category_ids: [],
             description: undefined,
             detail: undefined,
             specification: undefined,
@@ -222,7 +222,7 @@ export default defineComponent({
                 status: [
                     { required: true },
                 ],
-                categories_id: [
+                category_ids: [
                     { required: true },
                 ],
             },
@@ -309,7 +309,7 @@ export default defineComponent({
 
                     _.assign(this.formData, _.pick(pData, _.keys(this.formData)));
 
-                    this.formData.categories_id = pData.categories.map((item) => item.id);
+                    this.formData.category_ids = pData.categories.map((item) => item.id);
 
                     this.productInfoLoading = false;
                 })

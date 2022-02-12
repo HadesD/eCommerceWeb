@@ -330,12 +330,15 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
 
                 for (const auto& img : images)
                 {
-                    auto& imgId = img["id"];
-                    if (imgId.isUInt64())
-                    {
-                        // TODO: Check exists
+                    Image::PrimaryKeyType imgId;
 
-                        delPrdImgCnd = delPrdImgCnd && orm::Criteria(ProductImage::Cols::_image_id, orm::CompareOperator::NE, imgId.asUInt64());
+                    auto& imgIdJson = img["id"];
+
+                    if (imgIdJson.isUInt64())
+                    {
+                        // TODO: Check exists then add to ProductImage
+
+                        imgId = imgIdJson.asUInt64();
                     }
                     else
                     {
@@ -349,12 +352,36 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
                         img.setUrl(imgUrl.asString());
                         imgMapper.insert(img);
 
-                        delPrdImgCnd = delPrdImgCnd && orm::Criteria(ProductImage::Cols::_image_id, orm::CompareOperator::NE, img.getValueOfId());
+                        imgId = img.getValueOfId();
+
+                        ProductImage prdImg;
+                        prdImg.setProductId(id);
+                        prdImg.setImageId(imgId);
+                        prdImgMapper.insert(prdImg);
                     }
+
+                    delPrdImgCnd = delPrdImgCnd && orm::Criteria(ProductImage::Cols::_image_id, orm::CompareOperator::NE, imgId);
                 }
 
+                // TODO: Change to NOT IN
                 prdImgMapper.deleteBy(delPrdImgCnd);
-                LOG_DEBUG << delPrdImgCnd.criteriaString();
+            }
+
+            const auto& category_ids = reqJson["category_ids"];
+            if (category_ids.isArray())
+            {
+                orm::Criteria delPrdCatCnd(ProductCategory::Cols::_product_id, id);
+
+                orm::Mapper<ProductCategory> prdCatMapper(dbClient);
+                prdCatMapper.deleteBy(delPrdCatCnd);
+
+                for (const auto& catId : category_ids)
+                {
+                    ProductCategory prdCat;
+                    prdCat.setProductId(id);
+                    prdCat.setCategoryId(catId.asUInt64());
+                    prdCatMapper.insert(prdCat);
+                }
             }
         }
         catch (const std::exception &e)
