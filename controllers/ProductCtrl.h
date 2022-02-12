@@ -15,6 +15,7 @@ class ProductCtrl : public drogon::HttpController<ProductCtrl>
 
     ADD_METHOD_TO(ProductCtrl::get, "/products", Get);
     ADD_METHOD_TO(ProductCtrl::getOne, "/products/{1}", Get);
+    ADD_METHOD_TO(ProductCtrl::create, "/products", Post);
     ADD_METHOD_TO(ProductCtrl::updateOne, "/products/{1}", Post);
 
     METHOD_LIST_END
@@ -24,5 +25,6 @@ class ProductCtrl : public drogon::HttpController<ProductCtrl>
 
     void get(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
     void getOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, uint64_t id);
+    void create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
     void updateOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, uint64_t id);
 };

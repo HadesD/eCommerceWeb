@@ -344,6 +344,7 @@ export default defineComponent({
                 page: this.productsTablePagination.current,
                 ...this.productsTableFilters,
                 sort_by: this.productsTableSorts,
+                is_dashboard: true,
             };
             if (!this.isModalMode) {
                 this.$router.replace({

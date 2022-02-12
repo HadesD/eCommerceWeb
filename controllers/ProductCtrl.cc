@@ -19,11 +19,14 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
     auto dbClient = app().getDbClient();
     orm::Mapper<Product> prdMap(dbClient);
 
-    orm::Criteria cnd(
-        Product::Cols::_status,
-        orm::CompareOperator::NE,
-        static_cast<uint8_t>(app_helpers::ProductStatus::DRAFT));
-    cnd = cnd && orm::Criteria(Product::Cols::_deleted_at, orm::CompareOperator::IsNull);
+    orm::Criteria cnd(Product::Cols::_deleted_at, orm::CompareOperator::IsNull);
+
+    if (!req->parameters().count("is_dashboard"))
+    {
+        cnd = cnd && orm::Criteria(Product::Cols::_status,
+                                   orm::CompareOperator::NE,
+                                   static_cast<uint8_t>(app_helpers::ProductStatus::DRAFT));
+    }
 
     orm::SortOrder orderSort{orm::SortOrder::DESC};
     auto orderBy = Product::Cols::_created_at;
@@ -253,6 +256,176 @@ void ProductCtrl::getOne(const HttpRequestPtr &req, std::function<void(const Htt
     }
 }
 
+void ProductCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)
+{
+    Json::Value resJson;
+    auto& resMsg = resJson["message"];
+    HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
+
+    try
+    {
+        const auto reqJsonPtr = req->getJsonObject();
+        if (!reqJsonPtr)
+        {
+            throw std::logic_error("Dữ liệu gửi lên không đúng");
+        }
+        const auto& reqJson = *reqJsonPtr;
+
+        auto dbClient = app().getDbClient()->newTransaction();
+        orm::Mapper<Product> prdMapper{dbClient};
+        Product prd;
+
+        const auto& name = reqJson["name"];
+        if (!name.isString())
+        {
+            throw std::logic_error("Chưa điền tên");
+        }
+        prd.setName(name.asString());
+
+        const auto& price = reqJson["price"];
+        if (!price.isInt())
+        {
+            throw std::logic_error("Chưa điền giá");
+        }
+        prd.setPrice(price.asInt());
+
+        const auto& status = reqJson["status"];
+        if (!status.isUInt())
+        {
+            throw std::logic_error("Chưa chọn trạng thái");
+        }
+        prd.setStatus(status.asUInt());
+
+        const auto& description = reqJson["description"];
+        if (description.isString())
+        {
+            prd.setDescription(description.asString());
+        }
+
+        const auto& detail = reqJson["detail"];
+        if (detail.isString())
+        {
+            prd.setDetail(detail.asString());
+        }
+
+        const auto& specification = reqJson["specification"];
+        if (specification.isString())
+        {
+            prd.setSpecification(specification.asString());
+        }
+
+        const auto now = trantor::Date::now();
+
+        prd.setCreatedAt(now);
+        prd.setUpdatedAt(now);
+
+        Product::PrimaryKeyType id;
+
+        try
+        {
+            prdMapper.insert(prd);
+
+            id = prd.getValueOfId();
+
+            const auto& images = reqJson["images"];
+            if (images.isArray())
+            {
+                orm::Mapper<ProductImage> prdImgMapper(dbClient);
+
+                orm::Mapper<Image> imgMapper(dbClient);
+
+                for (const auto& img : images)
+                {
+                    Image::PrimaryKeyType imgId;
+
+                    auto& imgIdJson = img["id"];
+
+                    if (imgIdJson.isUInt64())
+                    {
+                        // TODO: Check exists then add to ProductImage
+
+                        imgId = imgIdJson.asUInt64();
+                    }
+                    else
+                    {
+                        const auto &imgUrl = img["url"];
+                        if (!imgUrl.isString())
+                        {
+                            continue;
+                        }
+
+                        Image img;
+                        img.setUrl(imgUrl.asString());
+                        imgMapper.insert(img);
+
+                        imgId = img.getValueOfId();
+                    }
+
+                    ProductImage prdImg;
+                    prdImg.setProductId(id);
+                    prdImg.setImageId(imgId);
+                    prdImgMapper.insert(prdImg);
+                }
+            }
+
+            const auto& category_ids = reqJson["category_ids"];
+            if (category_ids.isArray())
+            {
+                orm::Mapper<ProductCategory> prdCatMapper(dbClient);
+
+                for (const auto& catId : category_ids)
+                {
+                    ProductCategory prdCat;
+                    prdCat.setProductId(id);
+                    prdCat.setCategoryId(catId.asUInt64());
+                    prdCatMapper.insert(prdCat);
+                }
+            }
+        }
+        catch (const std::exception &e)
+        {
+            dbClient->rollback();
+
+            throw e;
+        }
+        catch (...)
+        {
+            dbClient->rollback();
+
+            throw std::runtime_error("Lỗi trong quá trình lưu dữ liệu");
+        }
+
+        auto &retData = resJson["data"];
+        retData = prdMapper.findByPrimaryKey(id).toJson();
+        app_helpers::productJsonRow(dbClient, prd, retData);
+    }
+    catch (const orm::UnexpectedRows &e)
+    {
+        LOG_ERROR << e.what();
+
+        httpRetCode = HttpStatusCode::k404NotFound;
+    }
+    catch (const std::logic_error &e)
+    {
+        resMsg = e.what();
+
+        httpRetCode = HttpStatusCode::k406NotAcceptable;
+    }
+    catch (const std::exception &e)
+    {
+        LOG_ERROR << e.what();
+
+        httpRetCode = HttpStatusCode::k500InternalServerError;
+
+        resMsg = "Lỗi hệ thống";
+    }
+
+    const auto &httpRet = HttpResponse::newHttpJsonResponse(resJson);
+    httpRet->setStatusCode(httpRetCode);
+
+    callback(httpRet);
+}
+
 void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, uint64_t id)
 {
     Json::Value resJson;
@@ -286,6 +459,12 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
             prd.setPrice(price.asInt());
         }
 
+        const auto& status = reqJson["status"];
+        if (status.isUInt())
+        {
+            prd.setStatus(status.asUInt());
+        }
+
         const auto& description = reqJson["description"];
         if (description.isString())
         {
@@ -304,19 +483,12 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
             prd.setSpecification(specification.asString());
         }
 
-        const auto& status = reqJson["status"];
-        if (status.isUInt())
-        {
-            prd.setStatus(status.asUInt());
-        }
-
         const auto now = trantor::Date::now();
 
         prd.setUpdatedAt(now);
 
         try
         {
-            // Update
             prdMapper.update(prd);
 
             const auto& images = reqJson["images"];
