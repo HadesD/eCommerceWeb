@@ -179,7 +179,9 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
         }
     }
 
-    Json::Value ret;
+    Json::Value resJson;
+    auto& resMsg = resJson["message"];
+    HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
 
     try
     {
@@ -200,60 +202,62 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
                                .orderBy(orderBy, orderSort)
                                .paginate(page, limit)
                                .findBy(cnd);
-        auto &retData = ret["data"];
+        auto &retData = resJson["data"];
         retData = Json::Value(Json::arrayValue);
         for (const auto &prd : prds)
         {
             app_helpers::productJsonRow(dbClient, prd, retData.append(prd.toJson()));
         }
 
-        ret["total"] = static_cast<uint>(prdMap.count(cnd));
-        ret["current_page"] = static_cast<uint>(page);
-        ret["per_page"] = static_cast<uint>(limit);
-
-        callback(HttpResponse::newHttpJsonResponse(ret));
+        resJson["total"] = static_cast<uint>(prdMap.count(cnd));
+        resJson["current_page"] = static_cast<uint>(page);
+        resJson["per_page"] = static_cast<uint>(limit);
     }
     catch (const std::exception &e)
     {
         LOG_ERROR << e.what();
 
-        auto res = HttpResponse::newHttpResponse();
-        res->setStatusCode(HttpStatusCode::k500InternalServerError);
-
-        callback(res);
+        httpRetCode = HttpStatusCode::k500InternalServerError;
     }
+
+    auto res = HttpResponse::newHttpJsonResponse(resJson);
+    res->setStatusCode(httpRetCode);
+    callback(res);
 }
 
 void ProductCtrl::getOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, uint64_t id)
 {
+    Json::Value resJson;
+    auto& resMsg = resJson["message"];
+    HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
+
     try
     {
         auto dbClient = app().getDbClient();
         const auto &prd = orm::Mapper<Product>(dbClient)
                               .findByPrimaryKey(id);
 
-        Json::Value ret;
-        auto &retData = ret["data"];
+        auto &retData = resJson["data"];
         retData = prd.toJson();
         app_helpers::productJsonRow(dbClient, prd, retData);
-
-        callback(HttpResponse::newHttpJsonResponse(ret));
     }
     catch (const orm::UnexpectedRows &e)
     {
         LOG_ERROR << e.what();
 
-        callback(HttpResponse::newNotFoundResponse());
+        httpRetCode = HttpStatusCode::k404NotFound;
     }
     catch (const std::exception &e)
     {
         LOG_ERROR << e.what();
 
-        auto res = HttpResponse::newHttpResponse();
-        res->setStatusCode(HttpStatusCode::k500InternalServerError);
-
-        callback(res);
+        httpRetCode = HttpStatusCode::k500InternalServerError;
     }
+
+    auto res = HttpResponse::newHttpResponse();
+    res->setStatusCode(httpRetCode);
+
+    callback(res);
 }
 
 void ProductCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)
