@@ -68,7 +68,7 @@
                                     :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
                                     :tree-data="categoriesTreeData"
                                     placeholder="Chuyên mục"
-                                    :fieldNames="{ pId: 'parent_id', value: 'id' }"
+                                    :fieldNames="{ pId: 'parent_id', value: 'id', label: 'name' }"
                                 />
                             </a-spin>
                         </a-form-item>
@@ -99,30 +99,27 @@
                     </a-card>
                     <a-tabs default-active-key="description" @change="(k) => $refs[k] && $refs[k].focus()">
                         <a-tab-pane key="description" tab="Mô tả ngắn">
-                            <a-form-item label="Mô tả ngắn">
+                            <a-form-item label="Mô tả ngắn" name="description">
                                 <a-textarea
                                     v-model:value="formData.description"
-                                    ref="description"
                                     placeholder="Nhập mô tả"
                                     :auto-size="{ minRows: 3, maxRows: 10 }"
                                 />
                             </a-form-item>
                         </a-tab-pane>
                         <a-tab-pane key="detail" tab="Chi tiết sản phẩm">
-                            <a-form-item label="Mô tả">
+                            <a-form-item label="Mô tả" name="detail">
                                 <a-textarea
                                     v-model:value="formData.detail"
-                                    ref="detail"
                                     placeholder="Nhập mô tả"
                                     :auto-size="{ minRows: 3, maxRows: 10 }"
                                 />
                             </a-form-item>
                         </a-tab-pane>
                         <a-tab-pane key="specification" tab="Thông số sản phẩm">
-                            <a-form-item label="Mô tả">
+                            <a-form-item label="Mô tả" name="specification">
                                 <a-textarea
                                     v-model:value="formData.specification"
-                                    ref="specification"
                                     placeholder="Nhập mô tả"
                                     :auto-size="{ minRows: 3, maxRows: 10 }"
                                 />
@@ -329,8 +326,8 @@ export default defineComponent({
             request('/products' + (productId ? `/${productId}` : ''), {
                 ...this.formData,
             })
-                .then(res => {
-                    this.formData.id = res.data.data.id;
+                .then(data => {
+                    this.formData.id = data.data.id;
 
                     if (!this.formData.id) {
                         throw res;

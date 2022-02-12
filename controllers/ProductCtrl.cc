@@ -9,6 +9,8 @@
 using Product = drogon_model::web_rinphone::Products;
 using Category = drogon_model::web_rinphone::Categories;
 using ProductCategory = drogon_model::web_rinphone::ProductCategories;
+using Image = drogon_model::web_rinphone::Images;
+using ProductImage = drogon_model::web_rinphone::ProductImages;
 
 // add definition of your processing function here
 
@@ -308,11 +310,68 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
             prd.setStatus(status.asUInt());
         }
 
-        // Update
-        prdMapper.update(prd);
+        const auto now = trantor::Date::now();
+
+        prd.setUpdatedAt(now);
+
+        try
+        {
+            // Update
+            prdMapper.update(prd);
+
+            const auto& images = reqJson["images"];
+            if (images.isArray())
+            {
+                orm::Mapper<ProductImage> prdImgMapper(dbClient);
+
+                orm::Mapper<Image> imgMapper(dbClient);
+
+                orm::Criteria delPrdImgCnd(ProductImage::Cols::_product_id, id);
+
+                for (const auto& img : images)
+                {
+                    auto& imgId = img["id"];
+                    if (imgId.isUInt64())
+                    {
+                        // TODO: Check exists
+
+                        delPrdImgCnd = delPrdImgCnd && orm::Criteria(ProductImage::Cols::_image_id, orm::CompareOperator::NE, imgId.asUInt64());
+                    }
+                    else
+                    {
+                        const auto &imgUrl = img["url"];
+                        if (!imgUrl.isString())
+                        {
+                            continue;
+                        }
+
+                        Image img;
+                        img.setUrl(imgUrl.asString());
+                        imgMapper.insert(img);
+
+                        delPrdImgCnd = delPrdImgCnd && orm::Criteria(ProductImage::Cols::_image_id, orm::CompareOperator::NE, img.getValueOfId());
+                    }
+                }
+
+                prdImgMapper.deleteBy(delPrdImgCnd);
+                LOG_DEBUG << delPrdImgCnd.criteriaString();
+            }
+        }
+        catch (const std::exception &e)
+        {
+            dbClient->rollback();
+
+            throw e;
+        }
+        catch (...)
+        {
+            dbClient->rollback();
+
+            throw std::runtime_error("Lỗi trong quá trình lưu dữ liệu");
+        }
 
         auto &retData = resJson["data"];
-        retData = prd.toJson();
+        retData = prdMapper.findByPrimaryKey(id).toJson();
         app_helpers::productJsonRow(dbClient, prd, retData);
     }
     catch (const orm::UnexpectedRows &e)
