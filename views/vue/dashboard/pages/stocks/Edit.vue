@@ -543,7 +543,7 @@ import { defineAsyncComponent, number_format, date_format, showErrorRequestApi }
 import UserRole from '~/dashboard/configs/UserRole';
 import User from '~/dashboard/utils/User';
 import { Config as configOrderStatus } from '~/configs/OrderStatus';
-import RequestRepository from '~/dashboard/utils/RequestRepository';
+import RequestApiRepository from '~/utils/RequestApiRepository';
 
 import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
 import UploadImage from '~/dashboard/components/UploadImage.vue';
@@ -737,11 +737,10 @@ export default defineComponent({
         },
         reloadCategoriesTree() {
             this.categoriesTreeLoading = true;
-            RequestRepository.get("/categories")
-                .then((res) => {
-                    this.categories = res.data.data || [];
+            RequestApiRepository.get("/categories")
+                .then(resData => {
+                    this.categories = resData.data || [];
                 })
-                .catch(showErrorRequestApi)
                 .finally(() => {
                     this.categoriesTreeLoading = false;
                 });
@@ -764,41 +763,38 @@ export default defineComponent({
 
             // Reset popup data
             this.currentUserId = undefined;
-            (this.currentOrderId = undefined),
-                RequestRepository.get(`/stocks/${id}`)
-                    .then((res) => {
-                        const sData = res.data.data;
-                        if (!sData.id) {
-                            throw res;
-                        }
+            this.currentOrderId = undefined;
 
-                        _.assign(
-                            this.formData,
-                            _.pick(sData, _.keys(this.formData))
-                        );
+            RequestApiRepository.get(`/stocks/${id}`)
+                .then(resData => {
+                    const sData = resData.data;
+                    if (!sData.id) {
+                        throw res;
+                    }
 
-                        this.formData.categories_id = sData.categories.map(
-                            (item) => item.id
-                        );
-                        this.formData.inout_date = undefined;
-                        this.formData.transactions =
-                            this.formData.transactions.map((value) => {
-                                return {
-                                    ...value,
-                                    paid_date: dayjs(value.paid_date),
-                                };
-                            });
+                    _.assign(
+                        this.formData,
+                        _.pick(sData, _.keys(this.formData))
+                    );
 
-                        this.stockInfo = sData;
-                        this.prev_quantity = sData.quantity;
+                    this.formData.categories_id = sData.categories.map(
+                        (item) => item.id
+                    );
+                    this.formData.inout_date = undefined;
+                    this.formData.transactions =
+                        this.formData.transactions.map((value) => {
+                            return {
+                                ...value,
+                                paid_date: dayjs(value.paid_date),
+                            };
+                        });
 
-                        this.stockInfoLoading = false;
-                    })
-                    .catch(err => {
-                        this.stockInfoLoading = false;
+                    this.stockInfo = sData;
+                    this.prev_quantity = sData.quantity;
 
-                        showErrorRequestApi(err);
-                    });
+                    this.stockInfoLoading = false;
+                })
+                .finally(() => (this.stockInfoLoading = false));
         },
 
         onFinish() {

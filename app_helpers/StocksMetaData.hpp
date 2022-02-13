@@ -67,5 +67,31 @@ namespace app_helpers
                 });
             fImgRet.get();
         }
+
+        // tester
+        {
+            auto& stkImgRow = stkRow["tester"];
+            stkImgRow = Json::Value(Json::objectValue);
+            std::promise<int> pImgRet;
+            // auto fImgRet = pImgRet.get_future();
+            // stk.getTester(
+            //     dbClient,
+            //     [&stkImgRow, &pImgRet](auto pairRows)
+            //     {
+            //         for (const auto &pairRow : pairRows)
+            //         {
+            //             stkImgRow.append(pairRow.first.toJson());
+            //         }
+
+            //         pImgRet.set_value(0);
+            //     },
+            //     [&pImgRet](const auto &e)
+            //     {
+            //         LOG_ERROR << e.base().what();
+
+            //         pImgRet.set_value(1);
+            //     });
+            // fImgRet.get();
+        }
     }
 }

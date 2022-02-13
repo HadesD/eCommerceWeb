@@ -171,7 +171,7 @@ import {
 } from '@ant-design/icons-vue';
 
 import { number_format, date_format, defineAsyncComponent, showErrorRequestApi, list_to_tree } from '~/helpers';
-import RequestRepository from '~/dashboard/utils/RequestRepository';
+import RequestApiRepository from '~/utils/RequestApiRepository';
 import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
 
 import UserEdit from '~/dashboard/pages/users/Edit.vue';
@@ -346,11 +346,10 @@ export default defineComponent({
         // CategoriesTree
         loadCategoriesTree(){
             this.categoriesTreeLoading = true;
-            RequestRepository.get('/categories')
-                .then(res => {
-                    this.categories = res.data.data;
+            RequestApiRepository.get('/categories')
+                .then(resData => {
+                    this.categories = resData.data;
                 })
-                .catch(showErrorRequestApi)
                 .finally(()=>{
                     this.categoriesTreeLoading = false;
                 });
@@ -405,12 +404,10 @@ export default defineComponent({
                 });
             }
 
-            RequestRepository.get('/stocks', {
+            RequestApiRepository.get('/stocks', {
                 params,
             })
-                .then(res => {
-                    const resData = res.data;
-
+                .then(resData => {
                     this.stocks = resData.data || [];
 
                     this.stocksTablePagination = {
@@ -420,7 +417,6 @@ export default defineComponent({
                         pageSize: resData.per_page,
                     };
                 })
-                .catch(showErrorRequestApi)
                 .finally(()=>{
                     this.stocksTableLoading = false;
                 });

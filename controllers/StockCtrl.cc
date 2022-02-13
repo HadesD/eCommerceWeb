@@ -68,7 +68,37 @@ void StockCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpResp
 
 void StockCtrl::getOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, uint64_t id)
 {
+    Json::Value resJson;
+    auto& resMsg = resJson["message"];
+    HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
 
+    try
+    {
+        auto dbClient = app().getDbClient();
+        const auto &stk = orm::Mapper<Stock>(dbClient)
+                              .findByPrimaryKey(id);
+
+        auto &retData = resJson["data"];
+        retData = stk.toJson();
+        app_helpers::stockJsonRow(dbClient, stk, retData);
+    }
+    catch (const orm::UnexpectedRows &e)
+    {
+        LOG_ERROR << e.what();
+
+        httpRetCode = HttpStatusCode::k404NotFound;
+    }
+    catch (const std::exception &e)
+    {
+        LOG_ERROR << e.what();
+
+        httpRetCode = HttpStatusCode::k500InternalServerError;
+    }
+
+    auto res = HttpResponse::newHttpJsonResponse(resJson);
+    res->setStatusCode(httpRetCode);
+
+    callback(res);
 }
 
 void StockCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)

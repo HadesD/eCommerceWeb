@@ -6,6 +6,8 @@
 
 #include "app_helpers/ProductsMetaData.hpp"
 
+#include "app_helpers/Utils.hpp"
+
 using Product = drogon_model::web_rinphone::Products;
 using Category = drogon_model::web_rinphone::Categories;
 using ProductCategory = drogon_model::web_rinphone::ProductCategories;
@@ -254,7 +256,7 @@ void ProductCtrl::getOne(const HttpRequestPtr &req, std::function<void(const Htt
         httpRetCode = HttpStatusCode::k500InternalServerError;
     }
 
-    auto res = HttpResponse::newHttpResponse();
+    auto res = HttpResponse::newHttpJsonResponse(resJson);
     res->setStatusCode(httpRetCode);
 
     callback(res);
@@ -502,7 +504,8 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
 
                 orm::Mapper<Image> imgMapper(dbClient);
 
-                orm::Criteria delPrdImgCnd(ProductImage::Cols::_product_id, id);
+                std::vector<Image::PrimaryKeyType> imgIds;
+                imgIds.reserve(images.size());
 
                 for (const auto& img : images)
                 {
@@ -510,11 +513,16 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
 
                     auto& imgIdJson = img["id"];
 
+                    bool needToInsertPI = false;
+
                     if (imgIdJson.isUInt64())
                     {
-                        // TODO: Check exists then add to ProductImage
-
                         imgId = imgIdJson.asUInt64();
+
+                        if (!prdImgMapper.count(orm::Criteria(ProductImage::Cols::_image_id, imgId) && orm::Criteria(ProductImage::Cols::_product_id, id)))
+                        {
+                            needToInsertPI = true;
+                        }
                     }
                     else
                     {
@@ -525,31 +533,34 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
                         }
 
                         Image img;
-                        img.setUrl(imgUrl.asString());
+                        img.setUrl(app_helpers::trim(imgUrl.asString()));
                         imgMapper.insert(img);
 
                         imgId = img.getValueOfId();
 
+                        needToInsertPI = true;
+                    }
+
+                    if (needToInsertPI)
+                    {
                         ProductImage prdImg;
                         prdImg.setProductId(id);
                         prdImg.setImageId(imgId);
                         prdImgMapper.insert(prdImg);
                     }
 
-                    delPrdImgCnd = delPrdImgCnd && orm::Criteria(ProductImage::Cols::_image_id, orm::CompareOperator::NE, imgId);
+                    imgIds.push_back(imgId);
                 }
 
-                // TODO: Change to NOT IN
-                prdImgMapper.deleteBy(delPrdImgCnd);
+                prdImgMapper.deleteBy(orm::Criteria(ProductImage::Cols::_product_id, id) &&
+                                      orm::Criteria(ProductImage::Cols::_image_id, orm::CompareOperator::NotIn, imgIds));
             }
 
             const auto& category_ids = reqJson["category_ids"];
             if (category_ids.isArray())
             {
-                orm::Criteria delPrdCatCnd(ProductCategory::Cols::_product_id, id);
-
                 orm::Mapper<ProductCategory> prdCatMapper(dbClient);
-                prdCatMapper.deleteBy(delPrdCatCnd);
+                prdCatMapper.deleteBy(orm::Criteria(ProductCategory::Cols::_product_id, id));
 
                 for (const auto& catId : category_ids)
                 {

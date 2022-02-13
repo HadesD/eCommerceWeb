@@ -64,6 +64,16 @@
             },
             */
             {
+                "type": "has one",
+                "original_table_name": "stocks",
+                "original_table_alias": "stock",
+                "original_key": "id",
+                "target_table_name": "users",
+                "target_table_alias": "tester",
+                "target_key": "id",
+                "enable_reverse": true
+            },
+            {
                 "type": "many to many",
                 "original_table_name": "stocks",
                 "original_table_alias": "stock",
