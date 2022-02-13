@@ -6,6 +6,9 @@
 #include "models/StockCategories.h"
 #include "models/Images.h"
 #include "models/StockImages.h"
+#include "models/Users.h"
+#include "models/Transactions.h"
+#include "models/StockTransactions.h"
 
 namespace app_helpers
 {
@@ -15,16 +18,17 @@ namespace app_helpers
     {
         using Category = drogon_model::web_rinphone::Categories;
         using Image = drogon_model::web_rinphone::Images;
+        using Transaction = drogon_model::web_rinphone::Transactions;
 
         // categories
         {
             auto &stkCatRow = stkRow[Category::tableName];
             stkCatRow = Json::Value(Json::arrayValue);
-            std::promise<int> pCatRet;
+            std::promise<uint8_t> pCatRet;
             auto fCatRet = pCatRet.get_future();
-            stk.getCategory(
+            stk.getCategories(
                 dbClient,
-                [&stkCatRow, &pCatRet](auto pairRows)
+                [&stkCatRow, &pCatRet](const auto& pairRows)
                 {
                     for (const auto &pairRow : pairRows)
                     {
@@ -46,11 +50,11 @@ namespace app_helpers
         {
             auto& stkImgRow = stkRow[Image::tableName];
             stkImgRow = Json::Value(Json::arrayValue);
-            std::promise<int> pImgRet;
+            std::promise<uint8_t> pImgRet;
             auto fImgRet = pImgRet.get_future();
-            stk.getImage(
+            stk.getImages(
                 dbClient,
-                [&stkImgRow, &pImgRet](auto pairRows)
+                [&stkImgRow, &pImgRet](const auto& pairRows)
                 {
                     for (const auto &pairRow : pairRows)
                     {
@@ -68,30 +72,53 @@ namespace app_helpers
             fImgRet.get();
         }
 
+        // images
+        {
+            auto& stkTxnRow = stkRow[Transaction::tableName];
+            stkTxnRow = Json::Value(Json::arrayValue);
+            std::promise<uint8_t> pTxnRet;
+            auto fTxnRet = pTxnRet.get_future();
+            stk.getTransactions(
+                dbClient,
+                [&stkTxnRow, &pTxnRet](const auto& pairRows)
+                {
+                    for (const auto &pairRow : pairRows)
+                    {
+                        stkTxnRow.append(pairRow.first.toJson());
+                    }
+
+                    pTxnRet.set_value(0);
+                },
+                [&pTxnRet](const auto &e)
+                {
+                    LOG_ERROR << e.base().what();
+
+                    pTxnRet.set_value(1);
+                });
+            fTxnRet.get();
+        }
+
         // tester
         {
             auto& stkImgRow = stkRow["tester"];
             stkImgRow = Json::Value(Json::objectValue);
-            std::promise<int> pImgRet;
-            // auto fImgRet = pImgRet.get_future();
-            // stk.getTester(
-            //     dbClient,
-            //     [&stkImgRow, &pImgRet](auto pairRows)
-            //     {
-            //         for (const auto &pairRow : pairRows)
-            //         {
-            //             stkImgRow.append(pairRow.first.toJson());
-            //         }
+            std::promise<uint8_t> pImgRet;
+            auto fImgRet = pImgRet.get_future();
+            stk.getTester(
+                dbClient,
+                [&stkImgRow, &pImgRet](const auto &row)
+                {
+                    stkImgRow = row.toJson();
 
-            //         pImgRet.set_value(0);
-            //     },
-            //     [&pImgRet](const auto &e)
-            //     {
-            //         LOG_ERROR << e.base().what();
+                    pImgRet.set_value(0);
+                },
+                [&pImgRet](const auto &e)
+                {
+                    LOG_ERROR << e.base().what();
 
-            //         pImgRet.set_value(1);
-            //     });
-            // fImgRet.get();
+                    pImgRet.set_value(1);
+                });
+            fImgRet.get();
         }
     }
 }

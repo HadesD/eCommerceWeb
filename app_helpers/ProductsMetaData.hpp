@@ -26,11 +26,11 @@ namespace app_helpers
         {
             auto &prdCatRow = prdRow[Category::tableName];
             prdCatRow = Json::Value(Json::arrayValue);
-            std::promise<int> pCatRet;
+            std::promise<uint8_t> pCatRet;
             auto fCatRet = pCatRet.get_future();
-            prd.getCategory(
+            prd.getCategories(
                 dbClient,
-                [&prdCatRow, &pCatRet](auto pairRows)
+                [&prdCatRow, &pCatRet](const auto& pairRows)
                 {
                     for (const auto &pairRow : pairRows)
                     {
@@ -52,11 +52,11 @@ namespace app_helpers
         {
             auto& prdImgRow = prdRow[Image::tableName];
             prdImgRow = Json::Value(Json::arrayValue);
-            std::promise<int> pImgRet;
+            std::promise<uint8_t> pImgRet;
             auto fImgRet = pImgRet.get_future();
-            prd.getImage(
+            prd.getImages(
                 dbClient,
-                [&prdImgRow, &pImgRet](auto pairRows)
+                [&prdImgRow, &pImgRet](const auto& pairRows)
                 {
                     for (const auto &pairRow : pairRows)
                     {
