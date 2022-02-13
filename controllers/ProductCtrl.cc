@@ -1,6 +1,8 @@
 #include "ProductCtrl.h"
 
 #include "models/Products.h"
+#include "models/Images.h"
+#include "models/ProductImages.h"
 #include "models/Categories.h"
 #include "models/ProductCategories.h"
 
