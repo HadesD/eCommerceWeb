@@ -129,7 +129,7 @@ namespace app_helpers
             auto fRet = p.get_future();
             *dbClient << "SELECT * FROM orders WHERE id IN ("
                          "SELECT order_id FROM order_products WHERE id IN ("
-                         "SELECT order_product_id FROM order_product_stocks WHERE stock_id = $1"
+                         "SELECT order_product_id FROM order_product_stocks WHERE stock_id = ?"
                          ")"
                          ")"
                       << stk.getValueOfId() >>
@@ -158,7 +158,7 @@ namespace app_helpers
             auto fRet = p.get_future();
             *dbClient << "SELECT * FROM products WHERE id IN ("
                          "SELECT product_id FROM order_products WHERE id IN ("
-                         "SELECT order_product_id FROM order_product_stocks WHERE stock_id = $1"
+                         "SELECT order_product_id FROM order_product_stocks WHERE stock_id = ?"
                          ")"
                          ")"
                       << stk.getValueOfId() >>
