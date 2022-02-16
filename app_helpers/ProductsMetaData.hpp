@@ -4,7 +4,7 @@
 
 namespace app_helpers
 {
-    enum class ProductStatus : char
+    enum class ProductStatus : uint8_t
     {
         DRAFT = 0,
         SELLING = 1,

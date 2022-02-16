@@ -1,5 +1,6 @@
 #include "models/Stocks.h"
 #include "models/Products.h"
+#include "models/Orders.h"
 #include "models/Categories.h"
 #include "models/StockCategories.h"
 #include "models/Images.h"
@@ -16,6 +17,7 @@ namespace app_helpers
         using Category = drogon_model::web_rinphone::Categories;
         using Image = drogon_model::web_rinphone::Images;
         using Transaction = drogon_model::web_rinphone::Transactions;
+        using Order = drogon_model::web_rinphone::Orders;
 
         // categories
         {
@@ -116,6 +118,36 @@ namespace app_helpers
                     pImgRet.set_value(1);
                 });
             fImgRet.get();
+        }
+
+
+        // Orders History
+        {
+            auto& stkOrdersRow = stkRow[Order::tableName];
+            stkOrdersRow = Json::Value(Json::arrayValue);
+            std::promise<uint8_t> p;
+            auto fRet = p.get_future();
+            *dbClient << "SELECT * FROM orders WHERE id IN ("
+                         "SELECT order_id FROM order_products WHERE id IN ("
+                         "SELECT order_product_id FROM order_product_stocks WHERE stock_id = $1"
+                         ")"
+                         ")"
+                      << stk.getValueOfId() >>
+                [&p, &stkOrdersRow](const drogon::orm::Result &r)
+            {
+                for (const auto &row : r)
+                {
+                    stkOrdersRow.append(Order(row).toJson());
+                }
+
+                p.set_value(0);
+            } >>
+                [&p](const drogon::orm::DrogonDbException &e)
+            {
+                LOG_ERROR << e.base().what();
+                p.set_value(1);
+            };
+            fRet.get();
         }
     }
 }
