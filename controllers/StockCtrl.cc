@@ -24,6 +24,68 @@ void StockCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpResp
 
     orm::Criteria cnd(Stock::Cols::_deleted_at, orm::CompareOperator::IsNull);
 
+    // Category
+    {
+        Category::PrimaryKeyType catId = 0;
+        orm::Mapper<Category> catMap(dbClient);
+        const auto &reqCatId = req->getParameter("category_id");
+        if (reqCatId.size())
+        {
+            try
+            {
+                catId = std::stoul(reqCatId);
+            }
+            catch (...)
+            {
+            }
+        }
+        if (catId)
+        {
+            std::vector<Category::PrimaryKeyType> catIds{catId};
+
+            std::function<void(const Category::PrimaryKeyType)> findChildCategoryId;
+            findChildCategoryId = [&catIds, &catMap, &findChildCategoryId](const Category::PrimaryKeyType parentId)
+            {
+                auto childCats = catMap.findBy(
+                    orm::Criteria(Category::Cols::_parent_id, parentId));
+                for (const auto &childCat : childCats)
+                {
+                    const auto childId = childCat.getValueOfId();
+                    catIds.push_back(childId);
+
+                    findChildCategoryId(childId);
+                }
+            };
+
+            try
+            {
+                findChildCategoryId(catId);
+
+                std::vector<Stock::PrimaryKeyType> stkIds;
+                const auto stkCats = orm::Mapper<StockCategory>(dbClient)
+                                             .findBy(orm::Criteria(StockCategory::Cols::_category_id, orm::CompareOperator::In, catIds));
+
+                for (const auto &stkCat : stkCats)
+                {
+                    stkIds.push_back(stkCat.getValueOfStockId());
+                }
+                if (!stkIds.size())
+                {
+                    stkIds.push_back(0);
+                }
+
+                cnd = cnd && orm::Criteria(Stock::Cols::_id, orm::CompareOperator::In, stkIds);
+            }
+            catch (const orm::UnexpectedRows &e)
+            {
+            }
+            catch (const std::exception &e)
+            {
+                LOG_ERROR << e.what();
+            }
+        }
+    }
+
     try
     {
         size_t page;
@@ -69,7 +131,7 @@ void StockCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpResp
 void StockCtrl::getOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, uint64_t id)
 {
     Json::Value resJson;
-    auto& resMsg = resJson["message"];
+    auto &resMsg = resJson["message"];
     HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
 
     try
@@ -103,10 +165,8 @@ void StockCtrl::getOne(const HttpRequestPtr &req, std::function<void(const HttpR
 
 void StockCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)
 {
-
 }
 
 void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, uint64_t id)
 {
-
 }
