@@ -165,29 +165,14 @@
                         </a-row>
                     </a-form-item>
                     <a-form-item name="categories_id" label="Chuyên mục cha">
-                        <a-form-item
-                            style="
-                                display: inline-block;
-                                margin-right: 5px;
-                                margin-bottom: 0;
-                            "
-                        >
+                        <a-form-item style=" display: inline-block; margin-right: 5px; margin-bottom: 0;">
                             <a-tooltip title="Thêm chuyên mục">
-                                <a-button
-                                    type="primary"
-                                    @click="showAddCategoryModal"
-                                >
+                                <a-button type="primary" @click="showAddCategoryModal">
                                     <template #icon><PlusOutlined /></template>
                                 </a-button>
                             </a-tooltip>
                         </a-form-item>
-                        <a-form-item
-                            style="
-                                display: inline-block;
-                                width: calc(100% - 80px);
-                                margin-bottom: 0;
-                            "
-                        >
+                        <a-form-item style="display: inline-block; width: calc(100% - 80px); margin-bottom: 0;" >
                             <a-spin :spinning="categoriesTreeLoading">
                                 <a-tree-select
                                     show-search
@@ -208,6 +193,7 @@
                                         pId: 'parent_id',
                                         title: 'name',
                                         value: 'id',
+                                        label: 'name',
                                     }"
                                 />
                             </a-spin>
