@@ -29,13 +29,7 @@
                 >
                     <a-popconfirm
                         title="Xác nhận reset toàn bộ dữ liệu đang nhập?"
-                        @confirm="
-                            () =>
-                                (formData.id =
-                                    formData.id === undefined
-                                        ? null
-                                        : undefined)
-                        "
+                        @confirm="() => (formData.id = formData.id === undefined ? null : undefined)"
                     >
                         <a-button type="primary" danger size="small">
                             <template #icon><DeleteOutlined /></template>
@@ -52,10 +46,7 @@
             layout="vertical"
         >
             <a-row type="flex" :gutter="16">
-                <a-col
-                    :xs="{ order: 2, span: 24 }"
-                    :md="{ order: 1, span: 16 }"
-                >
+                <a-col :xs="{ order: 2, span: 24 }" :md="{ order: 1, span: 16 }">
                     <a-form-item label="Tên sản phẩm" name="name">
                         <a-input v-model:value="formData.name" />
                     </a-form-item>
@@ -65,45 +56,32 @@
                     <a-form-item
                         label="Số lượng"
                         name="quantity"
-                        :help="
-                            id && id > 0
+                        :help="id && (id > 0)
                                 ? formData.quantity !== prev_quantity
                                     ? 'Hệ thống sẽ tự động tạo giao dịch tương ứng với hành động tăng / giảm số lượng'
                                     : false
                                 : 'Hệ thống sẽ tự động tạo giao dịch tương ứng với số lượng nhập vào kho'
                         "
                     >
-                        <a-input-number
-                            v-model:value="formData.quantity"
-                            :min="id ? 0 : 1"
-                        />
+                        <a-input-number v-model:value="formData.quantity" :min="id ? 0 : 1" />
                     </a-form-item>
                     <a-form-item
                         label="Giá nhập (Đơn giá)"
                         name="cost_price"
-                        :help="`Xem trước: ${number_format(
-                            formData.cost_price || 0
-                        )} ₫`"
+                        :help="`Xem trước: ${number_format(formData.cost_price || 0)} ₫`"
                     >
                         <a-input-number
                             v-model:value="formData.cost_price"
                             style="width: 100%"
                             :min="1"
                             :max="2000000000"
-                            :disabled="
-                                disabledField(
-                                    formData,
-                                    UserRole.ROLE_ADMIN_MASTER
-                                )
-                            "
+                            :disabled="disabledField(formData, UserRole.ROLE_ADMIN_MASTER)"
                         />
                     </a-form-item>
                     <a-form-item
                         label="Giá bán dự kiến tối thiểu (Đơn giá)"
                         name="sell_price"
-                        :help="`Xem trước: ${number_format(
-                            formData.sell_price || 0
-                        )} ₫`"
+                        :help="`Xem trước: ${number_format(formData.sell_price || 0)} ₫`"
                     >
                         <a-input-number
                             v-model:value="formData.sell_price"
@@ -130,12 +108,10 @@
                                 <a-input-search
                                     v-model:value="formData.tester_id"
                                     readOnly
-                                    @search="
-                                        () => {
-                                            currentUserId = formData.tester_id;
-                                            userEditPageVisible = true;
-                                        }
-                                    "
+                                    @search="() => {
+                                        currentUserId = formData.tester_id;
+                                        userEditPageVisible = true;
+                                    }"
                                 >
                                     <template #enterButton>
                                         <a-button>
@@ -149,13 +125,7 @@
                             <a-col :span="8">
                                 <a-tooltip
                                     title="Chọn từ danh sách"
-                                    v-if="
-                                        !id ||
-                                        !disabledField(
-                                            stockInfo,
-                                            UserRole.ROLE_ADMIN_MANAGER
-                                        )
-                                    "
+                                    v-if="!id || !disabledField( stockInfo, UserRole.ROLE_ADMIN_MANAGER)"
                                 >
                                     <a-button type="primary" @click="() => (userIndexPageVisible = true)">
                                         <template #icon><UserOutlined /></template>Chọn
@@ -164,7 +134,7 @@
                             </a-col>
                         </a-row>
                     </a-form-item>
-                    <a-form-item name="categories_id" label="Chuyên mục cha">
+                    <a-form-item name="category_ids" label="Chuyên mục cha">
                         <a-form-item style=" display: inline-block; margin-right: 5px; margin-bottom: 0;">
                             <a-tooltip title="Thêm chuyên mục">
                                 <a-button type="primary" @click="showAddCategoryModal">
@@ -181,36 +151,18 @@
                                     tree-data-simple-mode
                                     treeDefaultExpandAll
                                     treeNodeFilterProp="title"
-                                    v-model:value="formData.categories_id"
+                                    v-model:value="formData.category_ids"
                                     style="width: 100%"
-                                    :dropdown-style="{
-                                        maxHeight: '400px',
-                                        overflow: 'auto',
-                                    }"
+                                    :dropdown-style="{ maxHeight: '400px', overflow: 'auto', }"
                                     :tree-data="categoriesTreeData"
                                     placeholder="Chuyên mục"
-                                    :replaceFields="{
-                                        pId: 'parent_id',
-                                        title: 'name',
-                                        value: 'id',
-                                        label: 'name',
-                                    }"
+                                    :replaceFields="{ pId: 'parent_id', title: 'name', value: 'id', label: 'name', }"
                                 />
                             </a-spin>
                         </a-form-item>
-                        <a-form-item
-                            style="
-                                display: inline-block;
-                                margin-left: 5px;
-                                margin-bottom: 0;
-                            "
-                        >
+                        <a-form-item style="display: inline-block; margin-left: 5px; margin-bottom: 0;">
                             <a-tooltip title="Làm mới">
-                                <a-button
-                                    type="primary"
-                                    @click="reloadCategoriesTree"
-                                    :loading="categoriesTreeLoading"
-                                >
+                                <a-button type="primary" @click="reloadCategoriesTree" :loading="categoriesTreeLoading">
                                     <template #icon
                                         ><ReloadOutlined
                                     /></template>
@@ -256,60 +208,40 @@
                 </a-col>
                 <a-col :xs="{ order: 1, span: 24 }" :md="{ order: 2, span: 8 }">
                     <a-card size="small" title="Công bố">
-                        <a-descriptions
-                            size="small"
-                            :column="1"
-                            v-if="stockInfo.id"
-                        >
+                        <a-descriptions size="small" :column="1" v-if="stockInfo.id">
                             <a-descriptions-item label="Ngày tạo">
-                                <span>{{
-                                    date_format(stockInfo.created_at)
-                                }}</span>
+                                <span>{{ date_format(stockInfo.created_at) }}</span>
                             </a-descriptions-item>
                             <a-descriptions-item label="Ngày cập nhật">
-                                <span>{{
-                                    date_format(stockInfo.updated_at)
-                                }}</span>
+                                <span>{{ date_format(stockInfo.updated_at) }}</span>
                             </a-descriptions-item>
-                            <a-descriptions-item
-                                label="Người cập nhật"
-                                v-if="stockInfo.updated_user"
-                            >
+                            <a-descriptions-item label="Người cập nhật" v-if="stockInfo.updated_user">
                                 <span
                                     >{{ stockInfo.updated_user_id }}.
                                     {{ stockInfo.updated_user.name }}
                                 </span>
                                 <a-button
                                     size="small"
-                                    @click="
-                                        () => {
-                                            currentUserId =
-                                                stockInfo.updated_user_id;
-                                            userEditPageVisible = true;
-                                        }
-                                    "
+                                    @click="() => {
+                                        currentUserId =
+                                            stockInfo.updated_user_id;
+                                        userEditPageVisible = true;
+                                    }"
                                 >
-                                    <template #icon
-                                        ><SearchOutlined
-                                    /></template>
+                                    <template #icon><SearchOutlined /></template>
                                 </a-button>
                             </a-descriptions-item>
                             <a-descriptions-item label="Tổng chi phí (VND)">
-                                <span>{{
-                                    number_format(
-                                        stockInfo.transactions.reduce(
-                                            (accumlator, currentValue) =>
-                                                accumlator +
-                                                currentValue.amount,
-                                            0
-                                        )
+                                <span>{{ number_format(
+                                    stockInfo.transactions.reduce(
+                                        ((accumlator, currentValue) => (accumlator + currentValue.amount)), 0
                                     )
-                                }}</span>
+                                )}}</span>
                             </a-descriptions-item>
                         </a-descriptions>
-                        <a-button type="primary" htmlType="submit" block :disabled="formData.images?.find((elm) => (!elm.url)) !== undefined">{{
-                            id ? "Sửa" : "Nhập kho"
-                        }}</a-button>
+                        <a-button type="primary" htmlType="submit" block
+                            :disabled="formData.images?.find((elm) => (!elm.url)) !== undefined"
+                        >{{ id ? "Sửa" : "Nhập kho"}}</a-button>
                     </a-card>
                 </a-col>
             </a-row>
@@ -320,14 +252,7 @@
                 :bodyStyle="{ padding: 0 }"
             >
                 <template #extra>
-                    <a
-                        @click="
-                            () =>
-                                formData.transactions.push(
-                                    Object.assign({}, transaction_obj)
-                                )
-                        "
-                    >
+                    <a @click="() => formData.transactions.push(Object.assign({}, transaction_obj))">
                         <a-tooltip title="Thêm giao dịch">
                             <a-button type="primary">
                                 <template #icon><PlusOutlined /></template>
@@ -336,18 +261,12 @@
                     </a>
                 </template>
                 <a-table
-                    :scroll="
-                        ['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1
-                            ? { x: 1300, y: '85vh' }
-                            : {}
-                    "
+                    :scroll="['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1 ? { x: 1300, y: '85vh' } : {}"
                     size="small"
                     :columns="addon_transactionsTableColumns"
                     :data-source="formData.transactions"
                     :pagination="false"
-                    :row-key="
-                        (record) => `addon-tnx-${record.id || Math.random()}`
-                    "
+                    :row-key="(record) => `addon-tnx-${record.id || Math.random()}`"
                     bordered
                 >
                     <template #description="{ text, record, index }">
@@ -393,21 +312,14 @@
                             ]"
                             :name="['transactions', index, 'amount']"
                             style="margin-bottom: 0"
-                            :help="`Xem trước: ${number_format(
-                                record.amount || 0
-                            )} ₫`"
+                            :help="`Xem trước: ${number_format(record.amount || 0)} ₫`"
                         >
                             <a-input-number
                                 v-model:value="record.amount"
                                 style="width: 100%"
                                 :min="-2000000000"
                                 :max="2000000000"
-                                :disabled="
-                                    disabledField(
-                                        record,
-                                        UserRole.ROLE_ADMIN_MASTER
-                                    )
-                                "
+                                :disabled="disabledField(record, UserRole.ROLE_ADMIN_MASTER)"
                             />
                         </a-form-item>
                     </template>
@@ -432,11 +344,7 @@
                         </a-form-item>
                     </template>
                     <template #action="{ text, record, index }">
-                        <a-popconfirm
-                            v-if="!record.id"
-                            title="Chắc chắn muốn xóa?"
-                            @confirm="() => formData.transactions.splice(index, 1)"
-                        >
+                        <a-popconfirm v-if="!record.id" title="Chắc chắn muốn xóa?" @confirm="() => formData.transactions.splice(index, 1)">
                             <a-button type="primary" danger>
                                 <template #icon><DeleteOutlined /></template>
                             </a-button>
@@ -444,35 +352,17 @@
                     </template>
                 </a-table>
             </a-card>
-            <a-collapse
-                :activeKey="['1']"
-                style="margin-bottom: 15px"
-                v-if="id && id > 0"
-            >
+            <a-collapse :activeKey="['1']" style="margin-bottom: 15px" v-if="id && id > 0">
                 <a-collapse-panel key="1" header="Lịch sử xuất đơn">
-                    <template
-                        v-if="
-                            stockInfo.orders_history &&
-                            stockInfo.orders_history.length > 0
-                        "
-                    >
-                        <div
-                            v-for="order in stockInfo.orders_history"
-                            :key="order.id"
-                        >
-                            <span
-                                >#{{ order.id }} ({{
-                                    configOrderStatus[order.status].name
-                                }})</span
-                            >
+                    <template v-if="stockInfo.orders_history && stockInfo.orders_history.length > 0">
+                        <div v-for="order in stockInfo.orders_history" :key="order.id">
+                            <span>#{{ order.id }} ({{ configOrderStatus[order.status].name }})</span>
                             <a-button
                                 size="small"
-                                @click="
-                                    () => {
-                                        currentOrderId = order.id;
-                                        orderEditPageVisible = true;
-                                    }
-                                "
+                                @click="() => {
+                                    currentOrderId = order.id;
+                                    orderEditPageVisible = true;
+                                }"
                             >
                                 <template #icon><SearchOutlined /></template>
                             </a-button>
@@ -604,7 +494,7 @@ export default defineComponent({
             note: undefined,
             inout_date: undefined,
             transactions: [],
-            categories_id: [],
+            category_ids: [],
             images: [],
         });
 
@@ -640,7 +530,7 @@ export default defineComponent({
                 sell_price: [{ required: true }, { type: "integer" }],
                 tester_id: [{ required: true }],
                 quantity: [{ required: true }],
-                categories_id: [{ required: true }],
+                category_ids: [{ required: true }],
             },
 
             authUser: User.info(),
@@ -763,7 +653,7 @@ export default defineComponent({
                         _.pick(sData, _.keys(this.formData))
                     );
 
-                    this.formData.categories_id = sData.categories.map(
+                    this.formData.category_ids = sData.categories.map(
                         (item) => item.id
                     );
                     this.formData.inout_date = undefined;

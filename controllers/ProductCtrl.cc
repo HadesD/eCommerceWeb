@@ -304,6 +304,12 @@ void ProductCtrl::create(const HttpRequestPtr &req, std::function<void(const Htt
         }
         prd.setStatus(status.asUInt());
 
+        const auto &category_ids = reqJson["category_ids"];
+        if (!category_ids.isArray() || (category_ids.size() < 1))
+        {
+            throw std::logic_error("Chưa chọn chuyên mục");
+        }
+
         const auto& description = reqJson["description"];
         if (description.isString())
         {
@@ -376,18 +382,14 @@ void ProductCtrl::create(const HttpRequestPtr &req, std::function<void(const Htt
                 }
             }
 
-            const auto& category_ids = reqJson["category_ids"];
-            if (category_ids.isArray())
-            {
-                orm::Mapper<ProductCategory> prdCatMapper(dbClient);
+            orm::Mapper<ProductCategory> prdCatMapper(dbClient);
 
-                for (const auto& catId : category_ids)
-                {
-                    ProductCategory prdCat;
-                    prdCat.setProductId(id);
-                    prdCat.setCategoryId(catId.asUInt64());
-                    prdCatMapper.insert(prdCat);
-                }
+            for (const auto& catId : category_ids)
+            {
+                ProductCategory prdCat;
+                prdCat.setProductId(id);
+                prdCat.setCategoryId(catId.asUInt64());
+                prdCatMapper.insert(prdCat);
             }
         }
         catch (const std::exception &e)
@@ -456,37 +458,43 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
                        .findByPrimaryKey(id);
 
         const auto& name = reqJson["name"];
-        if (name.isString())
+        if (!name.isNull() && name.isString())
         {
             prd.setName(name.asString());
         }
 
         const auto& price = reqJson["price"];
-        if (price.isInt())
+        if (!price.isNull() && price.isInt())
         {
             prd.setPrice(price.asInt());
         }
 
         const auto& status = reqJson["status"];
-        if (status.isUInt())
+        if (!status.isNull() && status.isUInt())
         {
             prd.setStatus(status.asUInt());
         }
 
+        const auto &category_ids = reqJson["category_ids"];
+        if (!category_ids.isNull() && (!category_ids.isArray() || category_ids.size() < 1))
+        {
+            throw std::logic_error("Chưa chọn chuyên mục");
+        }
+
         const auto& description = reqJson["description"];
-        if (description.isString())
+        if (!description.isNull() && description.isString())
         {
             prd.setDescription(description.asString());
         }
 
         const auto& detail = reqJson["detail"];
-        if (detail.isString())
+        if (!detail.isNull() && detail.isString())
         {
             prd.setDetail(detail.asString());
         }
 
         const auto& specification = reqJson["specification"];
-        if (specification.isString())
+        if (!specification.isNull() && specification.isString())
         {
             prd.setSpecification(specification.asString());
         }
@@ -500,7 +508,7 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
             prdMapper.update(prd);
 
             const auto& images = reqJson["images"];
-            if (images.isArray())
+            if (images.isArray() && (images.size() > 0))
             {
                 orm::Mapper<ProductImage> prdImgMapper(dbClient);
 
@@ -558,19 +566,15 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
                                       orm::Criteria(ProductImage::Cols::_image_id, orm::CompareOperator::NotIn, imgIds));
             }
 
-            const auto& category_ids = reqJson["category_ids"];
-            if (category_ids.isArray())
-            {
-                orm::Mapper<ProductCategory> prdCatMapper(dbClient);
-                prdCatMapper.deleteBy(orm::Criteria(ProductCategory::Cols::_product_id, id));
+            orm::Mapper<ProductCategory> prdCatMapper(dbClient);
+            prdCatMapper.deleteBy(orm::Criteria(ProductCategory::Cols::_product_id, id));
 
-                for (const auto& catId : category_ids)
-                {
-                    ProductCategory prdCat;
-                    prdCat.setProductId(id);
-                    prdCat.setCategoryId(catId.asUInt64());
-                    prdCatMapper.insert(prdCat);
-                }
+            for (const auto &catId : category_ids)
+            {
+                ProductCategory prdCat;
+                prdCat.setProductId(id);
+                prdCat.setCategoryId(catId.asUInt64());
+                prdCatMapper.insert(prdCat);
             }
         }
         catch (const std::exception &e)
