@@ -185,8 +185,6 @@ void StockCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpR
         }
         const auto& reqJson = *reqJsonPtr;
 
-        auto dbClient = app().getDbClient()->newTransaction();
-        orm::Mapper<Stock> stkMapper{dbClient};
         Stock stk;
 
         const auto& name = reqJson["name"];
@@ -201,7 +199,7 @@ void StockCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpR
         {
             throw std::logic_error("Chưa điền idi");
         }
-        stk.setName(idi.asString());
+        stk.setIdi(idi.asString());
 
         const auto& sell_price = reqJson["sell_price"];
         if (!sell_price.isInt())
@@ -249,8 +247,13 @@ void StockCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpR
             stk.setNote(note.asString());
         }
 
-        const auto& curUser = app_helpers::Auth::user(req);
-        stk.setUpdatedUserId(curUser.getValueOfId());
+        auto dbClient = app().getDbClient()->newTransaction();
+        orm::Mapper<Stock> stkMapper{dbClient};
+
+        // TODO: Fix updated user
+        // const auto& curUser = app_helpers::Auth::user(req, dbClient);
+        // stk.setUpdatedUserId(curUser.getValueOfId());
+        stk.setUpdatedUserId(1);
 
         const auto now = trantor::Date::now();
 
@@ -320,7 +323,8 @@ void StockCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpR
             Transaction transaction;
             transaction.setDescription("Kho #{" + std::to_string(id) + "}: Nhập {"+ std::to_string(stk.getValueOfQuantity()) +"} (VND)");
             transaction.setAmount(-(stk.getValueOfQuantity() * stk.getValueOfCostPrice()));
-            transaction.setCashierId(curUser.getValueOfId());
+            // TODO: Fix updated user
+            // transaction.setCashierId(curUser.getValueOfId());
             transaction.setPaidDate(trantor::Date::fromDbStringLocal(inout_date.asString()));
             orm::Mapper<Transaction>(dbClient).insert(transaction);
 

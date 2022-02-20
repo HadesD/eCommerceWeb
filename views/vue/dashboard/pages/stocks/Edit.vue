@@ -199,7 +199,7 @@
                     >
                         <a-date-picker
                             v-model:value="formData.inout_date"
-                            format="YYYY-MM-DD HH:mm:ss"
+                            value-format="YYYY-MM-DD HH:mm:ss"
                             show-time
                             type="date"
                             :disabledDate="disabledLastMonthAndTomorrow"
@@ -679,8 +679,8 @@ export default defineComponent({
             const stockId = this.id;
 
             const request = stockId
-                ? RequestRepository.put
-                : RequestRepository.post;
+                ? RequestApiRepository.post
+                : RequestApiRepository.post;
             request("/stocks" + (stockId ? `/${stockId}` : ""), {
                 ...this.formData,
                 inout_date: dayjs(this.formData.inout_date).format(
@@ -695,8 +695,8 @@ export default defineComponent({
                     };
                 }),
             })
-                .then((res) => {
-                    const sData = res.data.data;
+                .then(data => {
+                    const sData = data.data;
 
                     this.$message.success(
                         stockId

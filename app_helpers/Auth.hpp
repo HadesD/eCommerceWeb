@@ -16,7 +16,7 @@ namespace app_helpers
 
         bool isLoggedIn(const drogon::HttpRequestPtr& req);
 
-        User user(const drogon::HttpRequestPtr& req);
+        User user(const drogon::HttpRequestPtr& req, const drogon::orm::DbClientPtr dbClient);
 
         void logout(const drogon::HttpRequestPtr& req);
     }

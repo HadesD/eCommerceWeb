@@ -61,9 +61,9 @@ namespace app_helpers
             return (getSessionUserId(req) > 0);
         }
 
-        User user(const drogon::HttpRequestPtr& req)
+        User user(const drogon::HttpRequestPtr& req, const drogon::orm::DbClientPtr dbClient)
         {
-            auto dbClient = drogon::app().getDbClient();
+            // auto dbClient = drogon::app().getDbClient();
 
             return drogon::orm::Mapper<User>(dbClient).findByPrimaryKey(getSessionUserId(req));
         }
