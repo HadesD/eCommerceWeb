@@ -189,49 +189,41 @@ void StockCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpR
         }
         const auto &reqJson = *reqJsonPtr;
 
-        Stock stk;
-
         const auto &name = reqJson[Stock::Cols::_name];
         if (!name.isString())
         {
             throw std::logic_error("Chưa điền tên");
         }
-        stk.setName(name.asString());
 
         const auto &idi = reqJson[Stock::Cols::_idi];
         if (!idi.isString())
         {
             throw std::logic_error("Chưa điền idi");
         }
-        stk.setIdi(idi.asString());
 
         const auto &sell_price = reqJson[Stock::Cols::_sell_price];
         if (!sell_price.isInt())
         {
             throw std::logic_error("Chưa điền giá");
         }
-        stk.setSellPrice(sell_price.asInt());
 
         const auto &cost_price = reqJson[Stock::Cols::_cost_price];
         if (!cost_price.isInt() || (cost_price.asInt() < 0))
         {
             throw std::logic_error("Chưa điền giá");
         }
-        stk.setCostPrice(cost_price.asInt());
 
         const auto &quantity = reqJson[Stock::Cols::_quantity];
         if (!quantity.isInt() || (quantity.asInt() < 1))
         {
             throw std::logic_error("Chưa chọn số lượng");
         }
-        stk.setQuantity(quantity.asInt());
 
         const auto &tester_id = reqJson[Stock::Cols::_tester_id];
         if (!tester_id.isUInt64())
         {
             throw std::logic_error("Chưa chọn người test");
         }
-        stk.setTesterId(quantity.asUInt64());
 
         const auto &category_ids = reqJson["category_ids"];
         if (!category_ids.isArray() || (category_ids.size() < 1))
@@ -244,6 +236,14 @@ void StockCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpR
         {
             throw std::logic_error("Chưa chọn ngày nhập / trả");
         }
+
+        Stock stk;
+        stk.setName(name.asString());
+        stk.setIdi(idi.asString());
+        stk.setSellPrice(sell_price.asInt());
+        stk.setCostPrice(cost_price.asInt());
+        stk.setQuantity(quantity.asInt());
+        stk.setTesterId(quantity.asUInt64());
 
         const auto &note = reqJson[Stock::Cols::_note];
         if (note.isString())
@@ -398,7 +398,7 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
         const auto &reqJson = *reqJsonPtr;
 
         auto dbClient = app().getDbClient()->newTransaction();
-        orm::Mapper<Stock> stkMapper{dbClient};
+        orm::Mapper<Stock> stkMapper(dbClient);
 
         Stock stk = stkMapper.forUpdate().findByPrimaryKey(id);
         auto prevQuantity = stk.getValueOfQuantity();

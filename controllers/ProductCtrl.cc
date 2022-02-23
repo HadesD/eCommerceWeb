@@ -281,36 +281,37 @@ void ProductCtrl::create(const HttpRequestPtr &req, std::function<void(const Htt
         }
         const auto& reqJson = *reqJsonPtr;
 
-        auto dbClient = app().getDbClient()->newTransaction();
-        orm::Mapper<Product> prdMapper{dbClient};
-        Product prd;
-
         const auto& name = reqJson[Product::Cols::_name];
         if (!name.isString())
         {
             throw std::logic_error("Chưa điền tên");
         }
-        prd.setName(name.asString());
 
         const auto& price = reqJson[Product::Cols::_price];
         if (!price.isInt())
         {
             throw std::logic_error("Chưa điền giá");
         }
-        prd.setPrice(price.asInt());
 
         const auto& status = reqJson[Product::Cols::_status];
         if (!status.isUInt())
         {
             throw std::logic_error("Chưa chọn trạng thái");
         }
-        prd.setStatus(status.asUInt());
 
         const auto &category_ids = reqJson["category_ids"];
         if (!category_ids.isArray() || (category_ids.size() < 1))
         {
             throw std::logic_error("Chưa chọn chuyên mục");
         }
+
+        Product prd;
+        prd.setName(name.asString());
+        prd.setPrice(price.asInt());
+        prd.setStatus(status.asUInt());
+
+        auto dbClient = app().getDbClient()->newTransaction();
+        orm::Mapper<Product> prdMapper{dbClient};
 
         const auto& description = reqJson[Product::Cols::_description];
         if (description.isString())
@@ -454,6 +455,12 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
         }
         const auto& reqJson = *reqJsonPtr;
 
+        const auto &category_ids = reqJson["category_ids"];
+        if (!category_ids.isNull() && (!category_ids.isArray() || category_ids.size() < 1))
+        {
+            throw std::logic_error("Chưa chọn chuyên mục");
+        }
+
         auto dbClient = app().getDbClient()->newTransaction();
         orm::Mapper<Product> prdMapper{dbClient};
         auto prd = prdMapper
@@ -476,12 +483,6 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
         if (!status.isNull() && status.isUInt())
         {
             prd.setStatus(status.asUInt());
-        }
-
-        const auto &category_ids = reqJson["category_ids"];
-        if (!category_ids.isNull() && (!category_ids.isArray() || category_ids.size() < 1))
-        {
-            throw std::logic_error("Chưa chọn chuyên mục");
         }
 
         const auto& description = reqJson[Product::Cols::_description];
