@@ -2,13 +2,14 @@
 
 #include "models/Categories.h"
 
-// add definition of your processing function here
+#include "app_helpers/ApiResponse.hpp"
 
 using Category = drogon_model::web_rinphone::Categories;
 
 void CategoryCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)
 {
-    Json::Value ret;
+    app_helpers::ApiResponse apiRes;
+    HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
 
     try
     {
@@ -17,7 +18,7 @@ void CategoryCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpR
         drogon::orm::Mapper<Category> catMap(dbClient);
         auto cats = catMap.orderBy(Category::Cols::_parent_id).orderBy(Category::Cols::_name).findAll();
 
-        auto &retData = ret["data"];
+        auto &retData = apiRes.data();
         retData = Json::Value(Json::arrayValue);
 
         for (const auto &cat : cats)
@@ -29,21 +30,18 @@ void CategoryCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpR
     {
         LOG_ERROR << e.what();
 
-        auto res = HttpResponse::newHttpResponse();
-        res->setStatusCode(HttpStatusCode::k500InternalServerError);
-
-        callback(res);
-
-        return;
+        httpRetCode = HttpStatusCode::k500InternalServerError;
     }
 
-    callback(HttpResponse::newHttpJsonResponse(ret));
+    auto res = HttpResponse::newHttpJsonResponse(apiRes.toJson());
+    res->setStatusCode(httpRetCode);
+    callback(res);
 }
 
 void CategoryCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)
 {
-    Json::Value resJson;
-    auto& resMsg = resJson["message"];
+    app_helpers::ApiResponse apiRes;
+    auto& resMsg = apiRes.message();
     HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
 
     try
@@ -85,7 +83,7 @@ void CategoryCtrl::create(const HttpRequestPtr &req, std::function<void(const Ht
         drogon::orm::Mapper<Category> catMap(dbClient);
         catMap.insert(cat);
 
-        auto &retData = resJson["data"];
+        auto &retData = apiRes.data();
         retData = cat.toJson();
     }
     catch (const std::logic_error &e)
@@ -108,7 +106,7 @@ void CategoryCtrl::create(const HttpRequestPtr &req, std::function<void(const Ht
         httpRetCode = HttpStatusCode::k500InternalServerError;
     }
 
-    const auto &httpRet = HttpResponse::newHttpJsonResponse(resJson);
+    const auto &httpRet = HttpResponse::newHttpJsonResponse(apiRes.toJson());
     httpRet->setStatusCode(httpRetCode);
 
     callback(httpRet);

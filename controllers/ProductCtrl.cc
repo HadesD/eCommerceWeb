@@ -6,8 +6,8 @@
 #include "models/Categories.h"
 #include "models/ProductCategories.h"
 
+#include "app_helpers/ApiResponse.hpp"
 #include "app_helpers/ProductsMetaData.hpp"
-
 #include "app_helpers/Utils.hpp"
 
 using Product = drogon_model::web_rinphone::Products;
@@ -183,8 +183,8 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
         }
     }
 
-    Json::Value resJson;
-    auto& resMsg = resJson["message"];
+    app_helpers::ApiResponse apiRes;
+    auto &resJson = apiRes.json();
     HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
 
     try
@@ -206,7 +206,7 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
                                .orderBy(orderBy, orderSort)
                                .paginate(page, limit)
                                .findBy(cnd);
-        auto &retData = resJson["data"];
+        auto &retData = apiRes.data();
         retData = Json::Value(Json::arrayValue);
         for (const auto &prd : prds)
         {
@@ -224,15 +224,16 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
         httpRetCode = HttpStatusCode::k500InternalServerError;
     }
 
-    auto res = HttpResponse::newHttpJsonResponse(resJson);
-    res->setStatusCode(httpRetCode);
-    callback(res);
+    const auto &httpRet = HttpResponse::newHttpJsonResponse(apiRes.toJson());
+    httpRet->setStatusCode(httpRetCode);
+    callback(httpRet);
 }
 
 void ProductCtrl::getOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, uint64_t id)
 {
-    Json::Value resJson;
-    auto& resMsg = resJson["message"];
+    app_helpers::ApiResponse apiRes;
+    auto &resJson = apiRes.json();
+    auto &resMsg = apiRes.message();
     HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
 
     try
@@ -241,7 +242,7 @@ void ProductCtrl::getOne(const HttpRequestPtr &req, std::function<void(const Htt
         const auto &prd = orm::Mapper<Product>(dbClient)
                               .findByPrimaryKey(id);
 
-        auto &retData = resJson["data"];
+        auto &retData = apiRes.data();
         retData = prd.toJson();
         app_helpers::productJsonRow(dbClient, prd, retData);
     }
@@ -258,16 +259,17 @@ void ProductCtrl::getOne(const HttpRequestPtr &req, std::function<void(const Htt
         httpRetCode = HttpStatusCode::k500InternalServerError;
     }
 
-    auto res = HttpResponse::newHttpJsonResponse(resJson);
-    res->setStatusCode(httpRetCode);
+    const auto &httpRet = HttpResponse::newHttpJsonResponse(apiRes.toJson());
+    httpRet->setStatusCode(httpRetCode);
 
-    callback(res);
+    callback(httpRet);
 }
 
 void ProductCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)
 {
-    Json::Value resJson;
-    auto& resMsg = resJson["message"];
+    app_helpers::ApiResponse apiRes;
+    auto &resJson = apiRes.json();
+    auto &resMsg = apiRes.message();
     HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
 
     try
@@ -405,7 +407,7 @@ void ProductCtrl::create(const HttpRequestPtr &req, std::function<void(const Htt
             throw std::runtime_error("Lỗi trong quá trình lưu dữ liệu");
         }
 
-        auto &retData = resJson["data"];
+        auto &retData = apiRes.data();
         retData = prdMapper.findByPrimaryKey(id).toJson();
         app_helpers::productJsonRow(dbClient, prd, retData);
     }
@@ -430,7 +432,7 @@ void ProductCtrl::create(const HttpRequestPtr &req, std::function<void(const Htt
         resMsg = "Lỗi hệ thống";
     }
 
-    const auto &httpRet = HttpResponse::newHttpJsonResponse(resJson);
+    const auto &httpRet = HttpResponse::newHttpJsonResponse(apiRes.toJson());
     httpRet->setStatusCode(httpRetCode);
 
     callback(httpRet);
@@ -438,8 +440,9 @@ void ProductCtrl::create(const HttpRequestPtr &req, std::function<void(const Htt
 
 void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, uint64_t id)
 {
-    Json::Value resJson;
-    auto& resMsg = resJson["message"];
+    app_helpers::ApiResponse apiRes;
+    auto &resJson = apiRes.json();
+    auto &resMsg = apiRes.message();
     HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
 
     try
@@ -593,7 +596,7 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
             throw std::runtime_error("Lỗi trong quá trình lưu dữ liệu");
         }
 
-        auto &retData = resJson["data"];
+        auto &retData = apiRes.data();
         retData = prdMapper.findByPrimaryKey(id).toJson();
         app_helpers::productJsonRow(dbClient, prd, retData);
     }
@@ -618,7 +621,7 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
         resMsg = "Lỗi hệ thống";
     }
 
-    const auto &httpRet = HttpResponse::newHttpJsonResponse(resJson);
+    const auto &httpRet = HttpResponse::newHttpJsonResponse(apiRes.toJson());
     httpRet->setStatusCode(httpRetCode);
 
     callback(httpRet);

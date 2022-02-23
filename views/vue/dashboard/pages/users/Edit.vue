@@ -72,6 +72,7 @@
 <script>
 import { defineComponent, reactive, ref, } from 'vue';
 
+import { message } from 'ant-design-vue';
 import {
     ReloadOutlined, DeleteOutlined,
     FacebookOutlined,
@@ -79,7 +80,7 @@ import {
 
 import { date_format } from '~/helpers';
 import UserRole, { Config as configUserRole } from '~/dashboard/configs/UserRole';
-import RequestRepository from '~/dashboard/utils/RequestRepository';
+import RequestApiRepository from '~/utils/RequestApiRepository';
 import User from '~/dashboard/utils/User';
 
 export default defineComponent({
@@ -172,9 +173,9 @@ export default defineComponent({
 
         loadUser(id) {
             this.userInfoLoading = true;
-            RequestRepository.get(`/users/${id}`)
-                .then(res => {
-                    const uData = res.data.data;
+            RequestApiRepository.get(`/users/${id}`)
+                .then(data => {
+                    const uData = data.data;
 
                     this.userInfo = uData;
 
@@ -184,17 +185,7 @@ export default defineComponent({
                         ...this.formData.sns_info,
                     };
                 })
-                .catch(err => {
-                    if (err.response && err.response.data && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || 'Thất bại');
-                })
-                .finally(() => {
-                    this.userInfoLoading = false;
-                });
+                .finally(() => this.userInfoLoading = false);
         },
 
         onFinish() {
@@ -202,31 +193,21 @@ export default defineComponent({
 
             const userId = this.id;
 
-            const request = userId ? RequestRepository.put : RequestRepository.post;
+            const request = userId ? RequestApiRepository.post : RequestApiRepository.post;
             request('/users' + (userId ? `/${userId}` : ''), {
                 ...this.formData,
             })
-                .then(res => {
-                    const uData = res.data.data;
+                .then(data => {
+                    const uData = data.data;
                     if (!uData.id) {
                         throw res;
                     }
 
-                    this.$message.success(userId ? 'Đã sửa thành công' : 'Đã thêm thành công');
+                    message.success(userId ? 'Đã sửa thành công' : 'Đã thêm thành công');
 
                     this.loadUser(uData.id);
                 })
-                .catch(err => {
-                    if (err.response && err.response.data && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || 'Thất bại');
-                })
-                .finally(()=>{
-                    this.userInfoLoading = false;
-                });
+                .finally(()=> this.userInfoLoading = false);
         },
     },
 });

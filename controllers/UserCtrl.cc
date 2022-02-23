@@ -4,6 +4,8 @@
 
 #include "models/Users.h"
 
+#include "app_helpers/ApiResponse.hpp"
+
 using User = drogon_model::web_rinphone::Users;
 
 void UserCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)
@@ -11,8 +13,8 @@ void UserCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRespo
     auto dbClient = app().getDbClient();
     orm::Mapper<User> usrMap(dbClient);
 
-    Json::Value resJson;
-    auto& resMsg = resJson["message"];
+    app_helpers::ApiResponse apiRes;
+    auto& resMsg = apiRes.message();
     HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
 
     orm::Criteria cnd(User::Cols::_deleted_at, orm::CompareOperator::IsNull);
@@ -36,13 +38,15 @@ void UserCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRespo
                                .orderBy(User::Cols::_created_at, orm::SortOrder::DESC)
                                .paginate(page, limit)
                                .findBy(cnd);
-        auto &retData = resJson["data"];
+        auto &retData = apiRes.data();
         retData = Json::Value(Json::arrayValue);
         for (const auto &usr : usrs)
         {
         //     app_helpers::stockJsonRow(dbClient, stk, retData.append(stk.toJson()));
             retData.append(usr.toJson());
         }
+
+        auto& resJson = apiRes.json();
 
         resJson["total"] = static_cast<uint>(usrMap.count(cnd));
         resJson["current_page"] = static_cast<uint>(page);
@@ -55,7 +59,7 @@ void UserCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRespo
         httpRetCode = HttpStatusCode::k500InternalServerError;
     }
 
-    auto res = HttpResponse::newHttpJsonResponse(resJson);
+    auto res = HttpResponse::newHttpJsonResponse(apiRes.toJson());
     res->setStatusCode(httpRetCode);
     callback(res);
 }

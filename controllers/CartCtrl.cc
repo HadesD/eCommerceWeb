@@ -6,6 +6,7 @@
 #include "models/OrderProducts.h"
 #include "models/Users.h"
 
+#include "app_helpers/ApiResponse.hpp"
 #include "app_helpers/OrdersMetaData.hpp"
 #include "app_helpers/UsersMetaData.hpp"
 
@@ -17,8 +18,8 @@ using namespace app_helpers;
 
 void CartCtrl::checkout(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)
 {
-    Json::Value resJson;
-    auto& resMsg = resJson["message"];
+    app_helpers::ApiResponse apiRes;
+    auto& resMsg = apiRes.message();
     HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
 
     try
@@ -163,7 +164,7 @@ void CartCtrl::checkout(const HttpRequestPtr &req, std::function<void(const Http
                     ordPrdMap.insert(ordPrd);
                 }
 
-                auto &resData = resJson["data"];
+                auto &resData = apiRes.data();
                 resData = ord.toJson();
             }
             catch (const orm::UnexpectedRows &e)
@@ -222,7 +223,7 @@ void CartCtrl::checkout(const HttpRequestPtr &req, std::function<void(const Http
         httpRetCode = HttpStatusCode::k500InternalServerError;
     }
 
-    const auto &httpRet = HttpResponse::newHttpJsonResponse(resJson);
+    const auto &httpRet = HttpResponse::newHttpJsonResponse(apiRes.toJson());
     httpRet->setStatusCode(httpRetCode);
 
     callback(httpRet);
