@@ -4,6 +4,7 @@
 
 #include "models/Users.h"
 
+#include "app_helpers/UsersMetaData.hpp"
 #include "app_helpers/ApiResponse.hpp"
 
 using User = drogon_model::web_rinphone::Users;
@@ -43,7 +44,9 @@ void UserCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRespo
         for (const auto &usr : usrs)
         {
         //     app_helpers::stockJsonRow(dbClient, stk, retData.append(stk.toJson()));
-            retData.append(usr.toJson());
+            auto usrRow = usr.toJson();
+            app_helpers::userJsonRow(usr, usrRow);
+            retData.append(usrRow);
         }
 
         auto& resJson = apiRes.json();
@@ -66,7 +69,38 @@ void UserCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRespo
 
 void UserCtrl::getOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, uint64_t id)
 {
+    app_helpers::ApiResponse apiRes;
+    auto &resJson = apiRes.json();
+    auto &resMsg = apiRes.message();
+    HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
 
+    try
+    {
+        auto dbClient = app().getDbClient();
+        const auto &usr = orm::Mapper<User>(dbClient)
+                              .findByPrimaryKey(id);
+
+        auto &retData = apiRes.data();
+        retData = usr.toJson();
+        app_helpers::userJsonRow(usr, retData);
+    }
+    catch (const orm::UnexpectedRows &e)
+    {
+        LOG_ERROR << e.what();
+
+        httpRetCode = HttpStatusCode::k404NotFound;
+    }
+    catch (const std::exception &e)
+    {
+        LOG_ERROR << e.what();
+
+        httpRetCode = HttpStatusCode::k500InternalServerError;
+    }
+
+    const auto &httpRet = HttpResponse::newHttpJsonResponse(apiRes.toJson());
+    httpRet->setStatusCode(httpRetCode);
+
+    callback(httpRet);
 }
 
 void UserCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)

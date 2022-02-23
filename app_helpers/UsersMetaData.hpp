@@ -1,5 +1,7 @@
 #pragma once
 
+#include "models/Users.h"
+
 namespace app_helpers
 {
     enum class UserRole
@@ -12,5 +14,7 @@ namespace app_helpers
         ADMIN_SUB_MASTER = 190,
         ADMIN_MASTER = 200,
     };
+
+    void userJsonRow(const drogon_model::web_rinphone::Users& usr, Json::Value& usrRow);
 }
 
