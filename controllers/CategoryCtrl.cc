@@ -55,20 +55,20 @@ void CategoryCtrl::create(const HttpRequestPtr &req, std::function<void(const Ht
 
         const auto &reqJson = *reqJsonPtr;
 
-        const auto& name = reqJson["name"];
+        const auto& name = reqJson[Category::Cols::_name];
         if (!name.isString())
         {
             throw std::logic_error("Chưa nhập tên");
         }
 
-        const auto& slug = reqJson["slug"];
+        const auto& slug = reqJson[Category::Cols::_slug];
         if (!slug.isString())
         {
             throw std::logic_error("Chưa nhập đường dẫn");
         }
 
-        const auto& desc = reqJson["description"];
-        const auto& pId = reqJson["parent_id"];
+        const auto& desc = reqJson[Category::Cols::_description];
+        const auto& pId = reqJson[Category::Cols::_parent_id];
 
         Category cat;
         cat.setName(name.asString());

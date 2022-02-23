@@ -191,42 +191,42 @@ void StockCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpR
 
         Stock stk;
 
-        const auto &name = reqJson["name"];
+        const auto &name = reqJson[Stock::Cols::_name];
         if (!name.isString())
         {
             throw std::logic_error("Chưa điền tên");
         }
         stk.setName(name.asString());
 
-        const auto &idi = reqJson["idi"];
+        const auto &idi = reqJson[Stock::Cols::_idi];
         if (!idi.isString())
         {
             throw std::logic_error("Chưa điền idi");
         }
         stk.setIdi(idi.asString());
 
-        const auto &sell_price = reqJson["sell_price"];
+        const auto &sell_price = reqJson[Stock::Cols::_sell_price];
         if (!sell_price.isInt())
         {
             throw std::logic_error("Chưa điền giá");
         }
         stk.setSellPrice(sell_price.asInt());
 
-        const auto &cost_price = reqJson["cost_price"];
+        const auto &cost_price = reqJson[Stock::Cols::_cost_price];
         if (!cost_price.isInt() || (cost_price.asInt() < 0))
         {
             throw std::logic_error("Chưa điền giá");
         }
         stk.setCostPrice(cost_price.asInt());
 
-        const auto &quantity = reqJson["quantity"];
+        const auto &quantity = reqJson[Stock::Cols::_quantity];
         if (!quantity.isInt() || (quantity.asInt() < 1))
         {
             throw std::logic_error("Chưa chọn số lượng");
         }
         stk.setQuantity(quantity.asInt());
 
-        const auto &tester_id = reqJson["tester_id"];
+        const auto &tester_id = reqJson[Stock::Cols::_tester_id];
         if (!tester_id.isUInt64())
         {
             throw std::logic_error("Chưa chọn người test");
@@ -245,7 +245,7 @@ void StockCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpR
             throw std::logic_error("Chưa chọn ngày nhập / trả");
         }
 
-        const auto &note = reqJson["note"];
+        const auto &note = reqJson[Stock::Cols::_note];
         if (note.isString())
         {
             stk.setNote(note.asString());
@@ -272,7 +272,7 @@ void StockCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpR
 
             id = stk.getValueOfId();
 
-            const auto &images = reqJson["images"];
+            const auto &images = reqJson[Image::tableName];
             if (images.isArray())
             {
                 orm::Mapper<StockImage> stkImgMapper(dbClient);
@@ -283,7 +283,7 @@ void StockCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpR
                 {
                     Image::PrimaryKeyType imgId;
 
-                    auto &imgIdJson = img["id"];
+                    auto &imgIdJson = img[Image::Cols::_id];
 
                     if (imgIdJson.isUInt64())
                     {
@@ -293,7 +293,7 @@ void StockCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpR
                     }
                     else
                     {
-                        const auto &imgUrl = img["url"];
+                        const auto &imgUrl = img[Image::Cols::_id];
                         if (!imgUrl.isString())
                         {
                             continue;
@@ -403,7 +403,7 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
         Stock stk = stkMapper.forUpdate().findByPrimaryKey(id);
         auto prevQuantity = stk.getValueOfQuantity();
 
-        const auto &name = reqJson["name"];
+        const auto &name = reqJson[Stock::Cols::_name];
         if (!name.isNull())
         {
             if (name.isString() && (name.asString().size() > 0))
@@ -416,7 +416,7 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
             }
         }
 
-        const auto &idi = reqJson["idi"];
+        const auto &idi = reqJson[Stock::Cols::_idi];
         if (!idi.isNull())
         {
             if (idi.isString() && (idi.asString().size() > 0))
@@ -425,7 +425,7 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
             }
         }
 
-        const auto &sell_price = reqJson["sell_price"];
+        const auto &sell_price = reqJson[Stock::Cols::_sell_price];
         if (!sell_price.isNull())
         {
             if (sell_price.isInt() && (sell_price.asInt() > 0))
@@ -442,14 +442,14 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
         //     stk.setCostPrice(cost_price.asInt());
         // }
 
-        const auto &quantity = reqJson["quantity"];
+        const auto &quantity = reqJson[Stock::Cols::_quantity];
         if (quantity.isInt() && (quantity.asInt() >= 0))
         {
             stk.setQuantity(quantity.asInt());
         }
 
         // TODO: only master admin
-        const auto &tester_id = reqJson["tester_id"];
+        const auto &tester_id = reqJson[Stock::Cols::_tester_id];
         if (!tester_id.isNull())
         {
             if (tester_id.isUInt64())
@@ -476,7 +476,7 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
             throw std::logic_error("Chưa chọn ngày nhập / trả");
         }
 
-        const auto &note = reqJson["note"];
+        const auto &note = reqJson[Stock::Cols::_note];
         if (note.isString())
         {
             stk.setNote(note.asString());
@@ -495,7 +495,7 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
         {
             stkMapper.update(stk);
 
-            const auto &images = reqJson["images"];
+            const auto &images = reqJson[Image::tableName];
             if (images.isArray())
             {
                 orm::Mapper<StockImage> stkImgMapper(dbClient);
@@ -509,7 +509,7 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
                 {
                     Image::PrimaryKeyType imgId;
 
-                    auto &imgIdJson = img["id"];
+                    auto &imgIdJson = img[Image::Cols::_id];
 
                     if (imgIdJson.isUInt64())
                     {
@@ -519,7 +519,7 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
                     }
                     else
                     {
-                        const auto &imgUrl = img["url"];
+                        const auto &imgUrl = img[Image::Cols::_url];
                         if (!imgUrl.isString())
                         {
                             continue;
@@ -577,7 +577,7 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
                 stkTxnMapper.insert(stkTransaction);
             }
 
-            const auto &transactions = reqJson["transactions"];
+            const auto &transactions = reqJson[Transaction::tableName];
             if (transactions.isArray())
             {
                 for (const auto &_txn : transactions)
@@ -587,14 +587,14 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
                         continue;
                     }
 
-                    const auto &txnIdJson = _txn["id"];
+                    const auto &txnIdJson = _txn[Transaction::Cols::_id];
                     if (!txnIdJson.isUInt64())
                     {
                         continue;
                     }
                     const auto txnId = txnIdJson.asUInt64();
 
-                    const auto &paid_date = _txn["paid_date"];
+                    const auto &paid_date = _txn[Transaction::Cols::_paid_date];
                     if (!paid_date.isString())
                     {
                         continue;

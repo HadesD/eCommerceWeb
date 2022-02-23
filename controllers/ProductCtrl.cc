@@ -285,21 +285,21 @@ void ProductCtrl::create(const HttpRequestPtr &req, std::function<void(const Htt
         orm::Mapper<Product> prdMapper{dbClient};
         Product prd;
 
-        const auto& name = reqJson["name"];
+        const auto& name = reqJson[Product::Cols::_name];
         if (!name.isString())
         {
             throw std::logic_error("Chưa điền tên");
         }
         prd.setName(name.asString());
 
-        const auto& price = reqJson["price"];
+        const auto& price = reqJson[Product::Cols::_price];
         if (!price.isInt())
         {
             throw std::logic_error("Chưa điền giá");
         }
         prd.setPrice(price.asInt());
 
-        const auto& status = reqJson["status"];
+        const auto& status = reqJson[Product::Cols::_status];
         if (!status.isUInt())
         {
             throw std::logic_error("Chưa chọn trạng thái");
@@ -312,19 +312,19 @@ void ProductCtrl::create(const HttpRequestPtr &req, std::function<void(const Htt
             throw std::logic_error("Chưa chọn chuyên mục");
         }
 
-        const auto& description = reqJson["description"];
+        const auto& description = reqJson[Product::Cols::_description];
         if (description.isString())
         {
             prd.setDescription(description.asString());
         }
 
-        const auto& detail = reqJson["detail"];
+        const auto& detail = reqJson[Product::Cols::_detail];
         if (detail.isString())
         {
             prd.setDetail(detail.asString());
         }
 
-        const auto& specification = reqJson["specification"];
+        const auto& specification = reqJson[Product::Cols::_specification];
         if (specification.isString())
         {
             prd.setSpecification(specification.asString());
@@ -343,7 +343,7 @@ void ProductCtrl::create(const HttpRequestPtr &req, std::function<void(const Htt
 
             id = prd.getValueOfId();
 
-            const auto& images = reqJson["images"];
+            const auto& images = reqJson[Image::tableName];
             if (images.isArray())
             {
                 orm::Mapper<ProductImage> prdImgMapper(dbClient);
@@ -354,7 +354,7 @@ void ProductCtrl::create(const HttpRequestPtr &req, std::function<void(const Htt
                 {
                     Image::PrimaryKeyType imgId;
 
-                    auto& imgIdJson = img["id"];
+                    auto& imgIdJson = img[Image::Cols::_id];
 
                     if (imgIdJson.isUInt64())
                     {
@@ -364,7 +364,7 @@ void ProductCtrl::create(const HttpRequestPtr &req, std::function<void(const Htt
                     }
                     else
                     {
-                        const auto &imgUrl = img["url"];
+                        const auto &imgUrl = img[Image::Cols::_url];
                         if (!imgUrl.isString())
                         {
                             continue;
@@ -460,19 +460,19 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
                        .forUpdate()
                        .findByPrimaryKey(id);
 
-        const auto& name = reqJson["name"];
+        const auto& name = reqJson[Product::Cols::_name];
         if (!name.isNull() && name.isString())
         {
             prd.setName(name.asString());
         }
 
-        const auto& price = reqJson["price"];
+        const auto& price = reqJson[Product::Cols::_price];
         if (!price.isNull() && price.isInt())
         {
             prd.setPrice(price.asInt());
         }
 
-        const auto& status = reqJson["status"];
+        const auto& status = reqJson[Product::Cols::_status];
         if (!status.isNull() && status.isUInt())
         {
             prd.setStatus(status.asUInt());
@@ -484,19 +484,19 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
             throw std::logic_error("Chưa chọn chuyên mục");
         }
 
-        const auto& description = reqJson["description"];
+        const auto& description = reqJson[Product::Cols::_description];
         if (!description.isNull() && description.isString())
         {
             prd.setDescription(description.asString());
         }
 
-        const auto& detail = reqJson["detail"];
+        const auto& detail = reqJson[Product::Cols::_detail];
         if (!detail.isNull() && detail.isString())
         {
             prd.setDetail(detail.asString());
         }
 
-        const auto& specification = reqJson["specification"];
+        const auto& specification = reqJson[Product::Cols::_specification];
         if (!specification.isNull() && specification.isString())
         {
             prd.setSpecification(specification.asString());
@@ -510,7 +510,7 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
         {
             prdMapper.update(prd);
 
-            const auto& images = reqJson["images"];
+            const auto& images = reqJson[Image::tableName];
             if (images.isArray() && (images.size() > 0))
             {
                 orm::Mapper<ProductImage> prdImgMapper(dbClient);
@@ -524,7 +524,7 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
                 {
                     Image::PrimaryKeyType imgId;
 
-                    auto& imgIdJson = img["id"];
+                    auto& imgIdJson = img[Image::Cols::_id];
 
                     bool needToInsertPI = false;
 
@@ -539,7 +539,7 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
                     }
                     else
                     {
-                        const auto &imgUrl = img["url"];
+                        const auto &imgUrl = img[Image::Cols::_url];
                         if (!imgUrl.isString())
                         {
                             continue;
