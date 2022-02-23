@@ -246,20 +246,12 @@
                 </a-col>
             </a-row>
             <a-card
-                title="Giao dịch thêm"
+                title="Lịch sử giao dịch"
                 style="margin-bottom: 16px"
+                size="small"
                 :headStyle="{ backgroundColor: '#9800ab', color: '#FFF' }"
                 :bodyStyle="{ padding: 0 }"
             >
-                <template #extra>
-                    <a @click="() => formData.transactions.push(Object.assign({}, transaction_obj))">
-                        <a-tooltip title="Thêm giao dịch">
-                            <a-button type="primary">
-                                <template #icon><PlusOutlined /></template>
-                            </a-button>
-                        </a-tooltip>
-                    </a>
-                </template>
                 <a-table
                     :scroll="['xs', 'sm', 'md'].indexOf($grid.breakpoint) !== -1 ? { x: 1300, y: '85vh' } : {}"
                     size="small"
@@ -270,58 +262,10 @@
                     bordered
                 >
                     <template #description="{ text, record, index }">
-                        <a-form-item
-                            :rules="[
-                                {
-                                    required: true,
-                                    message: 'Không được để trống',
-                                },
-                                {
-                                    min:
-                                        record.id &&
-                                        stockInfo.transactions[
-                                            index
-                                        ].description.indexOf(
-                                            `#${record.id}`
-                                        ) === -1
-                                            ? 0
-                                            : 5,
-                                    message:
-                                        'Yêu cầu ghi nội dung cẩn thận (Tối thiểu 5 ký tự)',
-                                },
-                            ]"
-                            :name="['transactions', index, 'description']"
-                            style="margin-bottom: 0"
-                        >
-                            <a-input
-                                v-model:value="record.description"
-                                placeholder="Mã giảm giá, phí ship, v..v"
-                                type="textarea"
-                                :disabled="disabledField(record)"
-                            />
-                        </a-form-item>
+                        <span>{{ record.description }}</span>
                     </template>
                     <template #amount="{ text, record, index }">
-                        <a-form-item
-                            :rules="[
-                                {
-                                    required: true,
-                                    message: 'Không được để trống',
-                                },
-                                { type: 'integer' },
-                            ]"
-                            :name="['transactions', index, 'amount']"
-                            style="margin-bottom: 0"
-                            :help="`Xem trước: ${number_format(record.amount || 0)} ₫`"
-                        >
-                            <a-input-number
-                                v-model:value="record.amount"
-                                style="width: 100%"
-                                :min="-2000000000"
-                                :max="2000000000"
-                                :disabled="disabledField(record, UserRole.ROLE_ADMIN_MASTER)"
-                            />
-                        </a-form-item>
+                        <span>{{ number_format(record.amount) }}</span>
                     </template>
                     <template #paid_date="{ text, record, index }">
                         <a-form-item
@@ -342,13 +286,6 @@
                                 :disabledDate="disabledLastMonthAndTomorrow"
                             />
                         </a-form-item>
-                    </template>
-                    <template #action="{ text, record, index }">
-                        <a-popconfirm v-if="!record.id" title="Chắc chắn muốn xóa?" @confirm="() => formData.transactions.splice(index, 1)">
-                            <a-button type="primary" danger>
-                                <template #icon><DeleteOutlined /></template>
-                            </a-button>
-                        </a-popconfirm>
                     </template>
                 </a-table>
             </a-card>
@@ -433,14 +370,14 @@ const addon_transactionsTableColumns = [
         dataIndex: "id",
     },
     {
-        title: "* Nội dung",
+        title: "Nội dung",
         dataIndex: "description",
         slots: {
             customRender: "description",
         },
     },
     {
-        title: "* Số tiền",
+        title: "Số tiền",
         dataIndex: "amount",
         slots: {
             customRender: "amount",
@@ -451,13 +388,6 @@ const addon_transactionsTableColumns = [
         dataIndex: "paid_date",
         slots: {
             customRender: "paid_date",
-        },
-    },
-    {
-        title: "Hành động",
-        key: "action",
-        slots: {
-            customRender: "action",
         },
     },
 ];

@@ -321,7 +321,7 @@ void StockCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpR
 
             // Create transaction
             Transaction transaction;
-            transaction.setDescription("Kho #{" + std::to_string(id) + "}: Nhập {"+ std::to_string(stk.getValueOfQuantity()) +"} (VND)");
+            transaction.setDescription("Kho #{" + std::to_string(id) + "}: Nhập ["+ std::to_string(stk.getValueOfQuantity()) +"] cái (VND)");
             transaction.setAmount(-(stk.getValueOfQuantity() * stk.getValueOfCostPrice()));
             // TODO: Fix updated user
             // transaction.setCashierId(curUser.getValueOfId());
@@ -379,4 +379,270 @@ void StockCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpR
 
 void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, uint64_t id)
 {
+    Json::Value resJson;
+    auto& resMsg = resJson["message"];
+    HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
+
+    try
+    {
+        const auto reqJsonPtr = req->getJsonObject();
+        if (!reqJsonPtr)
+        {
+            throw std::logic_error("Dữ liệu gửi lên không đúng");
+        }
+        const auto& reqJson = *reqJsonPtr;
+
+        auto dbClient = app().getDbClient()->newTransaction();
+        orm::Mapper<Stock> stkMapper{dbClient};
+
+        Stock stk = stkMapper.forUpdate().findByPrimaryKey(id);
+        auto prevQuantity = stk.getValueOfQuantity();
+
+        const auto& name = reqJson["name"];
+        if (!name.isNull())
+        {
+            if (name.isString() && (name.asString().size() > 0))
+            {
+                stk.setName(name.asString());
+            }
+            else
+            {
+                throw std::logic_error("Chưa điền tên");
+            }
+        }
+
+        const auto& idi = reqJson["idi"];
+        if (!idi.isNull())
+        {
+            if (idi.isString() && (idi.asString().size() > 0))
+            {
+                stk.setIdi(idi.asString());
+            }
+        }
+
+        const auto& sell_price = reqJson["sell_price"];
+        if (!sell_price.isNull())
+        {
+            if (sell_price.isInt() && (sell_price.asInt() > 0))
+            {
+                stk.setSellPrice(sell_price.asInt());
+            }
+        }
+
+        // // TODO: only master admin
+        //! cost_price must not change-able
+        // const auto& cost_price = reqJson["cost_price"];
+        // if (!cost_price.isNull() && cost_price.isInt() && (cost_price.asInt() >= 0))
+        // {
+        //     stk.setCostPrice(cost_price.asInt());
+        // }
+
+        const auto& quantity = reqJson["quantity"];
+        if (quantity.isInt() && (quantity.asInt() >= 0))
+        {
+            stk.setQuantity(quantity.asInt());
+        }
+
+        // TODO: only master admin
+        const auto& tester_id = reqJson["tester_id"];
+        if (!tester_id.isNull())
+        {
+            if (tester_id.isUInt64())
+            {
+                stk.setTesterId(quantity.asUInt64());
+            }
+            else
+            {
+                throw std::logic_error("Chưa chọn người test");
+            }
+        }
+
+        const auto& category_ids = reqJson["category_ids"];
+        if (!category_ids.isArray() || (category_ids.size() < 1))
+        {
+            throw std::logic_error("Chưa chọn chuyên mục");
+        }
+
+        auto cmpQuantity = prevQuantity - stk.getValueOfQuantity();
+
+        const auto& inout_date = reqJson["inout_date"];
+        if (cmpQuantity && !inout_date.isString())
+        {
+            throw std::logic_error("Chưa chọn ngày nhập / trả");
+        }
+
+        const auto& note = reqJson["note"];
+        if (note.isString())
+        {
+            stk.setNote(note.asString());
+        }
+
+        // TODO: Fix updated user
+        // const auto& curUser = app_helpers::Auth::user(req, dbClient);
+        // stk.setUpdatedUserId(curUser.getValueOfId());
+        stk.setUpdatedUserId(1);
+
+        const auto now = trantor::Date::now();
+
+        stk.setUpdatedAt(now);
+
+        try
+        {
+            stkMapper.update(stk);
+
+            const auto& images = reqJson["images"];
+            if (images.isArray())
+            {
+                orm::Mapper<StockImage> stkImgMapper(dbClient);
+
+                orm::Mapper<Image> imgMapper(dbClient);
+
+                std::vector<Image::PrimaryKeyType> imgIds;
+                imgIds.reserve(images.size());
+
+                for (const auto& img : images)
+                {
+                    Image::PrimaryKeyType imgId;
+
+                    auto& imgIdJson = img["id"];
+
+                    if (imgIdJson.isUInt64())
+                    {
+                        // TODO: Check exists then add to ProductImage
+
+                        imgId = imgIdJson.asUInt64();
+                    }
+                    else
+                    {
+                        const auto &imgUrl = img["url"];
+                        if (!imgUrl.isString())
+                        {
+                            continue;
+                        }
+
+                        Image img;
+                        img.setUrl(imgUrl.asString());
+                        imgMapper.insert(img);
+
+                        imgId = img.getValueOfId();
+                    }
+
+                    StockImage stkImg;
+                    stkImg.setStockId(id);
+                    stkImg.setImageId(imgId);
+                    stkImgMapper.insert(stkImg);
+
+                    imgIds.push_back(imgId);
+                }
+
+                if (imgIds.size())
+                {
+                    stkImgMapper.deleteBy(orm::Criteria(StockImage::Cols::_stock_id, id) &&
+                                          orm::Criteria(StockImage::Cols::_image_id, orm::CompareOperator::NotIn, imgIds));
+                }
+            }
+
+            orm::Mapper<StockCategory> stkCatMapper(dbClient);
+            stkCatMapper.deleteBy(orm::Criteria(StockCategory::Cols::_stock_id, id));
+
+            for (const auto& catId : category_ids)
+            {
+                StockCategory stkCat;
+                stkCat.setStockId(id);
+                stkCat.setCategoryId(catId.asUInt64());
+                stkCatMapper.insert(stkCat);
+            }
+
+            // Create transaction
+            orm::Mapper<Transaction> txnMapper(dbClient);
+            orm::Mapper<StockTransaction> stkTxnMapper(dbClient);
+            if (cmpQuantity)
+            {
+                Transaction transaction;
+                transaction.setDescription("Kho #{" + std::to_string(id) + "}: " + ((cmpQuantity < 0) ? "Nhập" : "Xuất") + " [" + std::to_string(std::abs(cmpQuantity)) + "] cái (VND)");
+                transaction.setAmount(-(stk.getValueOfQuantity() * stk.getValueOfCostPrice()));
+                // TODO: Fix updated user
+                // transaction.setCashierId(curUser.getValueOfId());
+                transaction.setPaidDate(trantor::Date::fromDbStringLocal(inout_date.asString()));
+                txnMapper.insert(transaction);
+
+                StockTransaction stkTransaction;
+                stkTransaction.setStockId(id);
+                stkTransaction.setTransactionId(transaction.getValueOfId());
+                stkTxnMapper.insert(stkTransaction);
+            }
+
+            const auto &transactions = reqJson["transactions"];
+            if (transactions.isArray())
+            {
+                for (const auto& _txn : transactions)
+                {
+                    if (!_txn.isObject())
+                    {
+                        continue;
+                    }
+
+                    const auto& txnIdJson = _txn["id"];
+                    if (!txnIdJson.isUInt64())
+                    {
+                        continue;
+                    }
+                    const auto txnId = txnIdJson.asUInt64();
+
+                    const auto& paid_date = _txn["paid_date"];
+                    if (!paid_date.isString())
+                    {
+                        continue;
+                    }
+
+                    stkTxnMapper.findOne(orm::Criteria(StockTransaction::Cols::_stock_id, id) && orm::Criteria(StockTransaction::Cols::_transaction_id, txnId));
+
+                    auto txn = txnMapper.forUpdate().findByPrimaryKey(txnId);
+                    txn.setPaidDate(trantor::Date::fromDbStringLocal(paid_date.asString()));
+                    txnMapper.update(txn);
+                }
+            }
+        }
+        catch (const std::exception &e)
+        {
+            dbClient->rollback();
+
+            throw e;
+        }
+        catch (...)
+        {
+            dbClient->rollback();
+
+            throw std::runtime_error("Lỗi trong quá trình lưu dữ liệu");
+        }
+
+        auto &retData = resJson["data"];
+        retData = stkMapper.findByPrimaryKey(id).toJson();
+        app_helpers::stockJsonRow(dbClient, stk, retData);
+    }
+    catch (const orm::UnexpectedRows &e)
+    {
+        LOG_ERROR << e.what();
+
+        httpRetCode = HttpStatusCode::k404NotFound;
+    }
+    catch (const std::logic_error &e)
+    {
+        resMsg = e.what();
+
+        httpRetCode = HttpStatusCode::k406NotAcceptable;
+    }
+    catch (const std::exception &e)
+    {
+        LOG_ERROR << e.what();
+
+        httpRetCode = HttpStatusCode::k500InternalServerError;
+
+        resMsg = "Lỗi hệ thống";
+    }
+
+    const auto &httpRet = HttpResponse::newHttpJsonResponse(resJson);
+    httpRet->setStatusCode(httpRetCode);
+
+    callback(httpRet);
 }

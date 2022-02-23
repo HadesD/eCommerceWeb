@@ -562,8 +562,11 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
                     imgIds.push_back(imgId);
                 }
 
-                prdImgMapper.deleteBy(orm::Criteria(ProductImage::Cols::_product_id, id) &&
-                                      orm::Criteria(ProductImage::Cols::_image_id, orm::CompareOperator::NotIn, imgIds));
+                if (imgIds.size())
+                {
+                    prdImgMapper.deleteBy(orm::Criteria(ProductImage::Cols::_product_id, id) &&
+                                          orm::Criteria(ProductImage::Cols::_image_id, orm::CompareOperator::NotIn, imgIds));
+                }
             }
 
             orm::Mapper<ProductCategory> prdCatMapper(dbClient);
