@@ -1,5 +1,7 @@
 #include "Utils.hpp"
 
+#include "bcrypt/bcrypt.hpp"
+
 namespace app_helpers
 {
     constexpr std::string_view WHITESPACE = " \n\r\t\f\v";
@@ -41,11 +43,11 @@ namespace app_helpers
     std::string bcrypt_hash(const std::string& txt)
     {
         //! TODO: Fix this
-        return txt;
+        return bcrypt::generateHash(txt);
     }
 
     bool bcrypt_verify(const std::string& txt, const std::string& hash)
     {
-        return false;
+        return bcrypt::validatePassword(txt, hash);
     }
 }
