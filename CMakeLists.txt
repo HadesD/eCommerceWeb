@@ -7,7 +7,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 aux_source_directory(app_helpers APP_HELPERS_SRC)
-aux_source_directory(app_helpers/bcrypt APP_HELPERS_BCRYPT_SRC)
+# find_library(botan_LIB REQUIRED libbotan-2.a)
 # Developer END
 
 include(CheckIncludeFileCXX)
@@ -29,6 +29,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(${PROJECT_NAME} main.cc)
+
+# Developer START
+target_link_libraries(${PROJECT_NAME} PRIVATE botan-2)
+# Developer END
 
 # ##############################################################################
 # If you include the drogon source code locally in your project, use this method

@@ -167,6 +167,10 @@ void UserCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpRe
         {
             usr.setEmail(email.asString());
         }
+        else
+        {
+            usr.setEmail(drogon::utils::genRandomString(10) + "@rinphone.com");
+        }
 
         const auto& sns_info = reqJson[User::Cols::_sns_info];
         if (sns_info.isObject())
@@ -181,6 +185,11 @@ void UserCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpRe
         if (passwordJson.isString())
         {
             usr.setPassword(app_helpers::bcrypt_hash(passwordJson.asString()));
+        }
+        else
+        {
+            const auto pw = drogon::utils::genRandomString(16);
+            usr.setPassword(app_helpers::bcrypt_hash(pw));
         }
 
         const auto now = trantor::Date::now();

@@ -1,6 +1,8 @@
 #include "Utils.hpp"
 
-#include "bcrypt/bcrypt.hpp"
+#include <botan/bcrypt.h>
+#include <botan/rng.h>
+#include <botan/system_rng.h>
 
 namespace app_helpers
 {
@@ -42,12 +44,11 @@ namespace app_helpers
 
     std::string bcrypt_hash(const std::string& txt)
     {
-        //! TODO: Fix this
-        return bcrypt::generateHash(txt);
+        return Botan::generate_bcrypt(txt, Botan::system_rng(), 10, 'y');
     }
 
     bool bcrypt_verify(const std::string& txt, const std::string& hash)
     {
-        return bcrypt::validatePassword(txt, hash);
+        return Botan::check_bcrypt(txt, hash);
     }
 }
