@@ -213,9 +213,8 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
             app_helpers::productJsonRow(dbClient, prd, retData.append(prd.toJson()));
         }
 
-        resJson["total"] = static_cast<uint>(prdMap.count(cnd));
-        resJson["current_page"] = static_cast<uint>(page);
-        resJson["per_page"] = static_cast<uint>(limit);
+        apiRes.appendPaginate(page, limit, prdMap.count(cnd));
+
     }
     catch (const std::exception &e)
     {

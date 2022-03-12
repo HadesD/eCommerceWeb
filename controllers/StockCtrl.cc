@@ -121,9 +121,7 @@ void StockCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpResp
             app_helpers::stockJsonRow(dbClient, stk, retData.append(stk.toJson()));
         }
 
-        resJson["total"] = static_cast<uint>(stkMap.count(cnd));
-        resJson["current_page"] = static_cast<uint>(page);
-        resJson["per_page"] = static_cast<uint>(limit);
+        apiRes.appendPaginate(page, limit, stkMap.count(cnd));
     }
     catch (const std::exception &e)
     {

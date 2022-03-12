@@ -25,4 +25,11 @@ namespace app_helpers
     {
         return message_;
     }
+
+    void ApiResponse::appendPaginate(const size_t page, const size_t limit, const size_t total)
+    {
+        json_["total"] = static_cast<uint>(total);
+        json_["current_page"] = static_cast<uint>(page);
+        json_["per_page"] = static_cast<uint>(limit);
+    }
 } // namespace app_helpers

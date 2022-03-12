@@ -13,6 +13,7 @@ namespace app_helpers
             Json::Value& json();
             Json::Value& data();
             Json::Value& message();
+            void appendPaginate(const size_t page, const size_t limit, const size_t total);
 
         private:
             Json::Value json_;

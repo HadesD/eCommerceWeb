@@ -53,9 +53,7 @@ void UserCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRespo
 
         auto& resJson = apiRes.json();
 
-        resJson["total"] = static_cast<uint>(usrMap.count(cnd));
-        resJson["current_page"] = static_cast<uint>(page);
-        resJson["per_page"] = static_cast<uint>(limit);
+        apiRes.appendPaginate(page, limit, usrMap.count(cnd));
     }
     catch (const std::exception &e)
     {
