@@ -61,11 +61,16 @@ namespace app_helpers
             return (getSessionUserId(req) > 0);
         }
 
-        User user(const drogon::HttpRequestPtr& req, const drogon::orm::DbClientPtr dbClient)
+        User user(const drogon::HttpRequestPtr& req, const drogon::orm::DbClientPtr& dbClient)
         {
             // auto dbClient = drogon::app().getDbClient();
 
             return drogon::orm::Mapper<User>(dbClient).findByPrimaryKey(getSessionUserId(req));
+        }
+
+        User user(const drogon::HttpRequestPtr& req, const std::shared_ptr<drogon::orm::Transaction>& dbClient)
+        {
+            return drogon::orm::Mapper<User>(dbClient).forUpdate().findByPrimaryKey(getSessionUserId(req));
         }
 
         void logout(const drogon::HttpRequestPtr& req)

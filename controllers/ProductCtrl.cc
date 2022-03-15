@@ -462,31 +462,49 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
 
         auto dbClient = app().getDbClient()->newTransaction();
         orm::Mapper<Product> prdMapper{dbClient};
-        auto prd = prdMapper
-                       .forUpdate()
-                       .findByPrimaryKey(id);
+        auto prd = prdMapper.forUpdate().findByPrimaryKey(id);
 
         const auto& name = reqJson[Product::Cols::_name];
-        if (!name.isNull() && name.isString())
+        if (!name.isNull())
         {
+            if (!name.isString())
+            {
+                throw std::logic_error("Tên sản phẩm không được để trống");
+            }
+
             prd.setName(name.asString());
         }
 
         const auto& price = reqJson[Product::Cols::_price];
-        if (!price.isNull() && price.isInt())
+        if (!price.isNull())
         {
+            if (!price.isInt())
+            {
+                throw std::logic_error("Giá sản phẩm không được để trống");
+            }
+
             prd.setPrice(price.asInt());
         }
 
         const auto& status = reqJson[Product::Cols::_status];
-        if (!status.isNull() && status.isUInt())
+        if (!status.isNull())
         {
-            prd.setStatus(status.asUInt());
+            if (!status.isInt())
+            {
+                throw std::logic_error("Trạng thái sản phẩm không được để trống");
+            }
+
+            prd.setStatus(status.asInt());
         }
 
         const auto& description = reqJson[Product::Cols::_description];
-        if (!description.isNull() && description.isString())
+        if (!description.isNull())
         {
+            if (!description.isString())
+            {
+                throw std::logic_error("Mô tả sản phẩm không được để trống");
+            }
+
             prd.setDescription(description.asString());
         }
 

@@ -4,8 +4,9 @@
 
 #include "models/Users.h"
 
-#include "app_helpers/UsersMetaData.hpp"
 #include "app_helpers/ApiResponse.hpp"
+#include "app_helpers/Auth.hpp"
+#include "app_helpers/UsersMetaData.hpp"
 #include "app_helpers/Utils.hpp"
 
 using User = drogon_model::web_rinphone::Users;
@@ -132,18 +133,36 @@ void UserCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpRe
             throw std::logic_error("Chưa nhập SDT");
         }
 
+        auto dbClient = drogon::app().getDbClient();
+
         auto role = UserRole::USER_NORMAL;
         const auto& roleJson = reqJson[User::Cols::_role];
         if (roleJson.isUInt())
         {
+            const auto authUser = app_helpers::Auth::user(req, dbClient);
+
             role = static_cast<UserRole>(roleJson.asUInt());
             switch (role)
             {
             case UserRole::ADMIN_MASTER:
             case UserRole::ADMIN_SUB_MASTER:
+            {
+                if (!app_helpers::hasRole(authUser, UserRole::ADMIN_MASTER))
+                {
+                    throw std::logic_error("Bạn không đủ quyền hạn");
+                }
+
+                break;
+            }
             case UserRole::ADMIN_MANAGER:
-                // TODO: Check has permission first
-                throw std::logic_error("Bạn không đủ quyền hạn");
+            {
+                if (!app_helpers::hasRole(authUser, UserRole::ADMIN_SUB_MASTER))
+                {
+                    throw std::logic_error("Bạn không đủ quyền hạn");
+                }
+
+                break;
+            }
 
             case UserRole::USER_BLOCKED:
             case UserRole::USER_NORMAL:
@@ -194,7 +213,6 @@ void UserCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpRe
         usr.setCreatedAt(now);
         usr.setUpdatedAt(now);
 
-        auto dbClient = drogon::app().getDbClient();
         drogon::orm::Mapper<User> usrMap(dbClient);
         usrMap.insert(usr);
 
@@ -230,5 +248,150 @@ void UserCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpRe
 
 void UserCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, uint64_t id)
 {
+    app_helpers::ApiResponse apiRes;
+    auto& resMsg = apiRes.message();
+    HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
 
+    try
+    {
+        // Validate
+        const auto &reqJsonPtr = req->getJsonObject();
+        if (!reqJsonPtr)
+        {
+            throw std::logic_error("Dữ liệu gửi lên không đúng");
+        }
+
+        auto dbClient = drogon::app().getDbClient()->newTransaction();
+        drogon::orm::Mapper<User> usrMap(dbClient);
+
+        User usr = usrMap.forUpdate().findByPrimaryKey(id);
+
+        const auto &reqJson = *reqJsonPtr;
+
+        const auto& name = reqJson[User::Cols::_name];
+        if (!name.isNull())
+        {
+            if (!name.isString())
+            {
+                throw std::logic_error("Tên không đúng");
+            }
+
+            usr.setName(name.asString());
+        }
+
+        const auto& phone = reqJson[User::Cols::_phone];
+        if (!phone.isNull())
+        {
+            if (!phone.isString())
+            {
+                throw std::logic_error("Số điện thoại không đúng");
+            }
+
+            usr.setPhone(phone.asString());
+        }
+
+        const auto authUser = app_helpers::Auth::user(req, dbClient);
+
+        const auto userRole = static_cast<UserRole>(usr.getValueOfRole());
+
+        const auto& roleJson = reqJson[User::Cols::_role];
+        if (roleJson.isUInt())
+        {
+            if (!app_helpers::hasRole(authUser, userRole))
+            {
+                throw std::logic_error("Bạn không đủ quyền hạn");
+            }
+
+            auto role = static_cast<UserRole>(roleJson.asUInt());
+
+            switch (role)
+            {
+            case UserRole::ADMIN_MASTER:
+            case UserRole::ADMIN_SUB_MASTER:
+            {
+                if (!app_helpers::hasRole(authUser, UserRole::ADMIN_MASTER))
+                {
+                    throw std::logic_error("Bạn không đủ quyền hạn");
+                }
+
+                break;
+            }
+            case UserRole::ADMIN_MANAGER:
+            {
+                if (!app_helpers::hasRole(authUser, UserRole::ADMIN_SUB_MASTER))
+                {
+                    throw std::logic_error("Bạn không đủ quyền hạn");
+                }
+
+                break;
+            }
+
+            case UserRole::USER_BLOCKED:
+            case UserRole::USER_NORMAL:
+            case UserRole::USER_UNACTIVE:
+                break;
+
+            default:
+                throw std::logic_error("Không tồn tại chức vụ này");
+            }
+
+            usr.setRole(static_cast<uint8_t>(role));
+        }
+
+        const auto& email = reqJson[User::Cols::_email];
+        if (email.isString())
+        {
+            usr.setEmail(email.asString());
+        }
+
+        const auto& sns_info = reqJson[User::Cols::_sns_info];
+        if (sns_info.isObject())
+        {
+            usr.setSnsInfo(app_helpers::json_encode(sns_info));
+        }
+
+        const auto& passwordJson = reqJson[User::Cols::_password];
+        if (passwordJson.isString())
+        {
+            if (!app_helpers::hasRole(authUser, userRole))
+            {
+                throw std::logic_error("Bạn không đủ quyền hạn");
+            }
+
+            usr.setPassword(app_helpers::bcrypt_hash(passwordJson.asString()));
+        }
+
+        const auto now = trantor::Date::now();
+        usr.setUpdatedAt(now);
+
+        usrMap.update(usr);
+
+        auto &retData = apiRes.data();
+        retData = usr.toJson();
+        app_helpers::userJsonRow(usr, retData);
+    }
+    catch (const std::logic_error &e)
+    {
+        resMsg = e.what();
+        httpRetCode = HttpStatusCode::k406NotAcceptable;
+    }
+    catch (const std::exception &e)
+    {
+        LOG_ERROR << e.what();
+
+        httpRetCode = HttpStatusCode::k500InternalServerError;
+
+        resMsg = "Lỗi hệ thống";
+    }
+    catch (...)
+    {
+        resMsg = "Liên tiếp thất bại";
+
+        httpRetCode = HttpStatusCode::k500InternalServerError;
+    }
+
+    const auto &httpRet = HttpResponse::newHttpJsonResponse(apiRes.toJson());
+    httpRet->setStatusCode(httpRetCode);
+
+    callback(httpRet);
 }

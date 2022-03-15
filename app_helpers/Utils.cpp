@@ -51,4 +51,24 @@ namespace app_helpers
     {
         return Botan::check_bcrypt(txt, hash);
     }
+
+    std::string json_encode(const Json::Value& json)
+    {
+        Json::StreamWriterBuilder builder;
+        builder["commentStyle"] = "None";
+        builder["indentation"] = "";
+        return Json::writeString(builder, json);
+    }
+
+    Json::Value json_decode(const std::string& jsonStr)
+    {
+        Json::Value ret;
+
+        Json::CharReaderBuilder builder;
+        builder["collectComments"] = false;
+        JSONCPP_STRING errs;
+        std::stringstream ss(jsonStr);
+
+        return Json::parseFromStream(builder, ss, &ret, &errs) ? ret : Json::nullValue;
+    }
 }

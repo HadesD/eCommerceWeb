@@ -16,5 +16,7 @@ namespace app_helpers
     };
 
     void userJsonRow(const drogon_model::web_rinphone::Users& usr, Json::Value& usrRow);
+
+    bool hasRole(const drogon_model::web_rinphone::Users& usr, const UserRole role);
 }
 

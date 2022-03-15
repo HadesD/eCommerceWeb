@@ -12,12 +12,9 @@ namespace app_helpers
     std::string trim(const std::string &s);
     std::string& trim(std::string &s);
 
-    template<class T>
-    void paginateJson(const drogon::orm::Mapper<T>& mapper)
-    {
-
-    }
-
     std::string bcrypt_hash(const std::string& txt);
     bool bcrypt_verify(const std::string& txt, const std::string& hash);
+
+    std::string json_encode(const Json::Value& json);
+    Json::Value json_decode(const std::string& jsonStr);
 }

@@ -1,4 +1,6 @@
-#include "models/Users.h"
+#include "UsersMetaData.hpp"
+
+#include "Utils.hpp"
 
 namespace app_helpers
 {
@@ -11,12 +13,13 @@ namespace app_helpers
         auto& sns_info = usrRow[User::Cols::_sns_info];
         if (sns_info.isString())
         {
-            Json::CharReaderBuilder builder;
-            builder["collectComments"] = false;
-            JSONCPP_STRING errs;
-            std::stringstream ss(sns_info.asString());
-            bool ok = Json::parseFromStream(builder, ss, &sns_info, &errs);
+            sns_info = json_decode(sns_info.asString());
         }
+    }
+
+    bool hasRole(const drogon_model::web_rinphone::Users& usr, const UserRole role)
+    {
+        return usr.getValueOfRole() >= static_cast<uint8_t>(role);
     }
 }
 

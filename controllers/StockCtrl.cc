@@ -393,6 +393,7 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
         {
             throw std::logic_error("Dữ liệu gửi lên không đúng");
         }
+
         const auto &reqJson = *reqJsonPtr;
 
         auto dbClient = app().getDbClient()->newTransaction();
@@ -404,32 +405,34 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
         const auto &name = reqJson[Stock::Cols::_name];
         if (!name.isNull())
         {
-            if (name.isString() && (name.asString().size() > 0))
-            {
-                stk.setName(name.asString());
-            }
-            else
+            if (!name.isString() || !name.asString().size())
             {
                 throw std::logic_error("Chưa điền tên");
             }
+
+            stk.setName(name.asString());
         }
 
         const auto &idi = reqJson[Stock::Cols::_idi];
         if (!idi.isNull())
         {
-            if (idi.isString() && (idi.asString().size() > 0))
+            if (!idi.isString() || (idi.asString().size() > 0))
             {
-                stk.setIdi(idi.asString());
+                throw std::logic_error("Chưa điền IDI");
             }
+
+            stk.setIdi(idi.asString());
         }
 
         const auto &sell_price = reqJson[Stock::Cols::_sell_price];
         if (!sell_price.isNull())
         {
-            if (sell_price.isInt() && (sell_price.asInt() > 0))
+            if (!sell_price.isInt())
             {
-                stk.setSellPrice(sell_price.asInt());
+                throw std::logic_error("Chưa điền giá bán");
             }
+
+            stk.setSellPrice(sell_price.asInt());
         }
 
         // // TODO: only master admin
@@ -441,8 +444,13 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
         // }
 
         const auto &quantity = reqJson[Stock::Cols::_quantity];
-        if (quantity.isInt() && (quantity.asInt() >= 0))
+        if (!quantity.isNull())
         {
+            if (!quantity.isInt() || (quantity.asInt() < 0))
+            {
+                throw std::logic_error("Chưa điền số lượng");
+            }
+
             stk.setQuantity(quantity.asInt());
         }
 
@@ -450,14 +458,12 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
         const auto &tester_id = reqJson[Stock::Cols::_tester_id];
         if (!tester_id.isNull())
         {
-            if (tester_id.isUInt64())
-            {
-                stk.setTesterId(quantity.asUInt64());
-            }
-            else
+            if (!tester_id.isUInt64())
             {
                 throw std::logic_error("Chưa chọn người test");
             }
+
+            stk.setTesterId(quantity.asUInt64());
         }
 
         const auto &category_ids = reqJson["category_ids"];
