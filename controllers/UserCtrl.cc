@@ -192,10 +192,7 @@ void UserCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpRe
         const auto& sns_info = reqJson[User::Cols::_sns_info];
         if (sns_info.isObject())
         {
-            Json::StreamWriterBuilder builder;
-            builder["commentStyle"] = "None";
-            builder["indentation"] = "";
-            usr.setSnsInfo(Json::writeString(builder, sns_info));
+            usr.setSnsInfo(app_helpers::json_encode(sns_info));
         }
 
         const auto& passwordJson = reqJson[User::Cols::_password];

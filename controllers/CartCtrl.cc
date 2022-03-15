@@ -9,6 +9,7 @@
 #include "app_helpers/ApiResponse.hpp"
 #include "app_helpers/OrdersMetaData.hpp"
 #include "app_helpers/UsersMetaData.hpp"
+#include "app_helpers/Utils.hpp"
 
 using Product = drogon_model::web_rinphone::Products;
 using Order = drogon_model::web_rinphone::Orders;
@@ -94,9 +95,6 @@ void CartCtrl::checkout(const HttpRequestPtr &req, std::function<void(const Http
 
                 // SNS Info
                 {
-                    Json::StreamWriterBuilder builder;
-                    builder["commentStyle"] = "None";
-                    builder["indentation"] = "";
                     Json::Value snsInfo(Json::objectValue);
 
                     const auto &fb = paymentInfo["facebook"];
@@ -105,7 +103,7 @@ void CartCtrl::checkout(const HttpRequestPtr &req, std::function<void(const Http
                         snsInfo["facebook"] = fb.asString();
                     }
 
-                    paymentUser.setSnsInfo(Json::writeString(builder, snsInfo));
+                    paymentUser.setSnsInfo(app_helpers::json_encode(snsInfo));
                 }
 
                 auto emailRandStr = utils::genRandomString(5);
