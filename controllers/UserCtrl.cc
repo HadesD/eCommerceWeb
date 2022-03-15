@@ -39,6 +39,7 @@ void UserCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRespo
         }
 
         const auto &usrs = usrMap
+                               .orderBy(User::Cols::_role, orm::SortOrder::DESC)
                                .orderBy(User::Cols::_created_at, orm::SortOrder::DESC)
                                .paginate(page, limit)
                                .findBy(cnd);
