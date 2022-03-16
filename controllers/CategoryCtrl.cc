@@ -6,7 +6,7 @@
 
 using Category = drogon_model::web_rinphone::Categories;
 
-void CategoryCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)
+Task<> CategoryCtrl::get(const HttpRequestPtr req, std::function<void(const HttpResponsePtr &)> callback)
 {
     app_helpers::ApiResponse apiRes;
     HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
@@ -15,8 +15,8 @@ void CategoryCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpR
     {
         auto dbClient = drogon::app().getDbClient();
 
-        drogon::orm::Mapper<Category> catMap(dbClient);
-        auto cats = catMap.orderBy(Category::Cols::_parent_id).orderBy(Category::Cols::_name).findAll();
+        drogon::orm::CoroMapper<Category> catMap(dbClient);
+        auto cats = co_await catMap.orderBy(Category::Cols::_parent_id).orderBy(Category::Cols::_name).findAll();
 
         auto &retData = apiRes.data();
         retData = Json::Value(Json::arrayValue);
@@ -36,6 +36,8 @@ void CategoryCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpR
     auto res = HttpResponse::newHttpJsonResponse(apiRes.toJson());
     res->setStatusCode(httpRetCode);
     callback(res);
+
+    co_return;
 }
 
 void CategoryCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)

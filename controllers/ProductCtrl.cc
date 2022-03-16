@@ -18,10 +18,10 @@ using ProductImage = drogon_model::web_rinphone::ProductImages;
 
 // add definition of your processing function here
 
-void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)
+Task<> ProductCtrl::get(const HttpRequestPtr req, std::function<void(const HttpResponsePtr &)> callback)
 {
     auto dbClient = app().getDbClient();
-    orm::Mapper<Product> prdMap(dbClient);
+    orm::CoroMapper<Product> prdMap(dbClient);
 
     orm::Criteria cnd(Product::Cols::_deleted_at, orm::CompareOperator::IsNull);
 
@@ -202,10 +202,7 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
             page = 1;
         }
 
-        const auto &prds = prdMap
-                               .orderBy(orderBy, orderSort)
-                               .paginate(page, limit)
-                               .findBy(cnd);
+        const auto &prds = co_await prdMap.orderBy(orderBy, orderSort).paginate(page, limit).findBy(cnd);
         auto &retData = apiRes.data();
         retData = Json::Value(Json::arrayValue);
         for (const auto &prd : prds)
@@ -213,7 +210,7 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
             app_helpers::productJsonRow(dbClient, prd, retData.append(prd.toJson()));
         }
 
-        apiRes.appendPaginate(page, limit, prdMap.count(cnd));
+        apiRes.appendPaginate(page, limit, co_await prdMap.count(cnd));
 
     }
     catch (const std::exception &e)
@@ -226,6 +223,8 @@ void ProductCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRe
     const auto &httpRet = HttpResponse::newHttpJsonResponse(apiRes.toJson());
     httpRet->setStatusCode(httpRetCode);
     callback(httpRet);
+
+    co_return;
 }
 
 void ProductCtrl::getOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, uint64_t id)

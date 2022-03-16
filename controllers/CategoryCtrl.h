@@ -21,6 +21,6 @@ public:
     // void get(const HttpRequestPtr& req,std::function<void (const HttpResponsePtr &)> &&callback,int p1,std::string p2);
     // void your_method_name(const HttpRequestPtr& req,std::function<void (const HttpResponsePtr &)> &&callback,double p1,int p2) const;
 
-    void get(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+    Task<> get(const HttpRequestPtr req, std::function<void(const HttpResponsePtr &)> callback);
     void create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
 };
