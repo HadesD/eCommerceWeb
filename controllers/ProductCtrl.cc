@@ -21,7 +21,6 @@ using ProductImage = drogon_model::web_rinphone::ProductImages;
 Task<> ProductCtrl::get(const HttpRequestPtr req, std::function<void(const HttpResponsePtr &)> callback)
 {
     auto dbClient = app().getDbClient();
-    orm::CoroMapper<Product> prdMap(dbClient);
 
     orm::Criteria cnd(Product::Cols::_deleted_at, orm::CompareOperator::IsNull);
 
@@ -202,7 +201,9 @@ Task<> ProductCtrl::get(const HttpRequestPtr req, std::function<void(const HttpR
             page = 1;
         }
 
-        const auto &prds = co_await prdMap.orderBy(orderBy, orderSort).paginate(page, limit).findBy(cnd);
+        //! TODO: move to CoroMapper
+        orm::Mapper<Product> prdMap(dbClient);
+        const auto &prds = prdMap.orderBy(orderBy, orderSort).paginate(page, limit).findBy(cnd);
         auto &retData = apiRes.data();
         retData = Json::Value(Json::arrayValue);
         for (const auto &prd : prds)
@@ -210,7 +211,7 @@ Task<> ProductCtrl::get(const HttpRequestPtr req, std::function<void(const HttpR
             app_helpers::productJsonRow(dbClient, prd, retData.append(prd.toJson()));
         }
 
-        apiRes.appendPaginate(page, limit, co_await prdMap.count(cnd));
+        apiRes.appendPaginate(page, limit, prdMap.count(cnd));
 
     }
     catch (const std::exception &e)

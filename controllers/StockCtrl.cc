@@ -24,7 +24,6 @@ using StockTransaction = drogon_model::web_rinphone::StockTransactions;
 Task<> StockCtrl::get(const HttpRequestPtr req, std::function<void(const HttpResponsePtr &)> callback)
 {
     auto dbClient = app().getDbClient();
-    orm::CoroMapper<Stock> stkMap(dbClient);
 
     app_helpers::ApiResponse apiRes;
     auto &resJson = apiRes.json();
@@ -36,7 +35,6 @@ Task<> StockCtrl::get(const HttpRequestPtr req, std::function<void(const HttpRes
     // Category
     {
         Category::PrimaryKeyType catId = 0;
-        orm::CoroMapper<Category> catMap(dbClient);
         const auto &reqCatId = req->getParameter("category_id");
         if (reqCatId.size())
         {
@@ -52,7 +50,8 @@ Task<> StockCtrl::get(const HttpRequestPtr req, std::function<void(const HttpRes
         {
             std::vector<Category::PrimaryKeyType> catIds{catId};
 
-            std::function<void(const Category::PrimaryKeyType)> findChildCategoryId;
+            orm::CoroMapper<Category> catMap(dbClient);
+            std::function<Task<>(const Category::PrimaryKeyType)> findChildCategoryId;
             findChildCategoryId = [&catIds, &catMap, &findChildCategoryId](const Category::PrimaryKeyType parentId) -> Task<>
             {
                 auto childCats = co_await catMap.findBy(
@@ -62,13 +61,15 @@ Task<> StockCtrl::get(const HttpRequestPtr req, std::function<void(const HttpRes
                     const auto childId = childCat.getValueOfId();
                     catIds.push_back(childId);
 
-                    findChildCategoryId(childId);
+                    co_await findChildCategoryId(childId);
                 }
+
+                co_return;
             };
 
             try
             {
-                findChildCategoryId(catId);
+                co_await findChildCategoryId(catId);
 
                 std::vector<Stock::PrimaryKeyType> stkIds;
                 const auto stkCats = co_await orm::CoroMapper<StockCategory>(dbClient)
@@ -110,7 +111,9 @@ Task<> StockCtrl::get(const HttpRequestPtr req, std::function<void(const HttpRes
             page = 1;
         }
 
-        const auto &stks = co_await stkMap
+        //! TODO: move to CoroMapper
+        orm::Mapper<Stock> stkMap(dbClient);
+        const auto &stks = stkMap
                                .orderBy(Stock::Cols::_created_at, orm::SortOrder::DESC)
                                .paginate(page, limit)
                                .findBy(cnd);
@@ -121,7 +124,7 @@ Task<> StockCtrl::get(const HttpRequestPtr req, std::function<void(const HttpRes
             app_helpers::stockJsonRow(dbClient, stk, retData.append(stk.toJson()));
         }
 
-        apiRes.appendPaginate(page, limit, co_await stkMap.count(cnd));
+        apiRes.appendPaginate(page, limit, stkMap.count(cnd));
     }
     catch (const std::exception &e)
     {

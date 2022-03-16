@@ -12,10 +12,9 @@
 using User = drogon_model::web_rinphone::Users;
 using UserRole = app_helpers::UserRole;
 
-void UserCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)
+Task<> UserCtrl::get(const HttpRequestPtr req, std::function<void(const HttpResponsePtr &)> callback)
 {
     auto dbClient = app().getDbClient();
-    orm::Mapper<User> usrMap(dbClient);
 
     app_helpers::ApiResponse apiRes;
     auto& resMsg = apiRes.message();
@@ -38,6 +37,7 @@ void UserCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRespo
             page = 1;
         }
 
+        orm::Mapper<User> usrMap(dbClient);
         const auto &usrs = usrMap
                                .orderBy(User::Cols::_role, orm::SortOrder::DESC)
                                .orderBy(User::Cols::_created_at, orm::SortOrder::DESC)
@@ -47,7 +47,6 @@ void UserCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRespo
         retData = Json::Value(Json::arrayValue);
         for (const auto &usr : usrs)
         {
-        //     app_helpers::stockJsonRow(dbClient, stk, retData.append(stk.toJson()));
             auto usrRow = usr.toJson();
             app_helpers::userJsonRow(usr, usrRow);
             retData.append(usrRow);
@@ -67,6 +66,8 @@ void UserCtrl::get(const HttpRequestPtr &req, std::function<void(const HttpRespo
     auto res = HttpResponse::newHttpJsonResponse(apiRes.toJson());
     res->setStatusCode(httpRetCode);
     callback(res);
+
+    co_return;
 }
 
 void UserCtrl::getOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, uint64_t id)

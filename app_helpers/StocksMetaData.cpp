@@ -28,7 +28,7 @@ namespace app_helpers
             auto fCatRet = pCatRet.get_future();
             stk.getCategories(
                 dbClient,
-                [&stkCatRow, &pCatRet](const auto& pairRows)
+                [&stkCatRow, &pCatRet](const auto &pairRows)
                 {
                     for (const auto &pairRow : pairRows)
                     {
@@ -178,6 +178,7 @@ namespace app_helpers
             };
             fRet.get();
         }
+        LOG_DEBUG << __FUNCTION__ << 1000;
     }
 
     void stockJsonRowCostTotal(const drogon::orm::DbClientPtr &dbClient,

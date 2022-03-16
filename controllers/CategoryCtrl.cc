@@ -20,7 +20,6 @@ Task<> CategoryCtrl::get(const HttpRequestPtr req, std::function<void(const Http
 
         auto &retData = apiRes.data();
         retData = Json::Value(Json::arrayValue);
-
         for (const auto &cat : cats)
         {
             retData.append(cat.toJson());
