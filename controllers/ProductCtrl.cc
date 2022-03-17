@@ -56,7 +56,7 @@ Task<> ProductCtrl::get(const HttpRequestPtr req, std::function<void(const HttpR
     else
     {
         Category::PrimaryKeyType catId = 0;
-        orm::Mapper<Category> catMap(dbClient);
+        orm::CoroMapper<Category> catMap(dbClient);
         const auto& reqCatId = req->getParameter("category_id");
         if (reqCatId.size())
         {
@@ -75,8 +75,8 @@ Task<> ProductCtrl::get(const HttpRequestPtr req, std::function<void(const HttpR
             {
                 try
                 {
-                    catId = catMap
-                                .findOne(orm::Criteria(Category::Cols::_slug, reqCatSlug))
+                    catId = (co_await catMap
+                                .findOne(orm::Criteria(Category::Cols::_slug, reqCatSlug)))
                                 .getValueOfId();
                 }
                 catch (const orm::UnexpectedRows &e)
@@ -93,23 +93,25 @@ Task<> ProductCtrl::get(const HttpRequestPtr req, std::function<void(const HttpR
         {
             std::vector<Category::PrimaryKeyType> catIds{catId};
 
-            std::function<void(const Category::PrimaryKeyType)> findChildCategoryId;
-            findChildCategoryId = [&catIds, &catMap, &findChildCategoryId](const Category::PrimaryKeyType parentId)
+            std::function<Task<>(const Category::PrimaryKeyType)> findChildCategoryId;
+            findChildCategoryId = [&catIds, &catMap, &findChildCategoryId ](const Category::PrimaryKeyType parentId) -> Task<>
             {
-                auto childCats = catMap.findBy(
+                auto childCats = co_await catMap.findBy(
                     orm::Criteria(Category::Cols::_parent_id, parentId));
                 for (const auto &childCat : childCats)
                 {
                     const auto childId = childCat.getValueOfId();
                     catIds.push_back(childId);
 
-                    findChildCategoryId(childId);
+                    co_await findChildCategoryId(childId);
                 }
+
+                co_return;
             };
 
             try
             {
-                findChildCategoryId(catId);
+                co_await findChildCategoryId(catId);
 
                 std::vector<Product::PrimaryKeyType> productIds;
                 const auto productCats = orm::Mapper<ProductCategory>(dbClient)

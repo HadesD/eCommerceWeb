@@ -178,7 +178,6 @@ namespace app_helpers
             };
             fRet.get();
         }
-        LOG_DEBUG << __FUNCTION__ << 1000;
     }
 
     void stockJsonRowCostTotal(const drogon::orm::DbClientPtr &dbClient,
