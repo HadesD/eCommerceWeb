@@ -87,9 +87,6 @@ export default defineComponent({
                         message.error('Bạn không có quyền hạn truy cập trang này');
                     }
                 })
-                .catch(err => {
-                    showErrorRequestApi(err);
-                })
                 .finally(() => {
                     loggingIn.value = false;
                 });
