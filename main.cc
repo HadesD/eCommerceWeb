@@ -2,26 +2,31 @@
 
 #include "controllers/CsrfTokenCtrl.h"
 
+#include "app_helpers/Auth.hpp"
+#include "app_helpers/ApiResponse.hpp"
+
 int main() {
     //Set HTTP listener address and port
     // drogon::app().addListener("0.0.0.0",80);
     //Load config file
     drogon::app().loadConfigFile("./config.json");
 
-    // CSRF check
     drogon::app().registerPreRoutingAdvice(
         [](const auto &req, auto &&fcb, auto &&fccb)
         {
-            switch (req->getMethod())
+            using namespace drogon;
+
+            switch (req->method())
             {
             case HttpMethod::Post:
             case HttpMethod::Patch:
             case HttpMethod::Put:
             {
+                // CSRF check
                 if (!CsrfTokenCtrl::verify(req))
                 {
                     //Check failed
-                    auto res = drogon::HttpResponse::newHttpResponse();
+                    auto res = HttpResponse::newHttpResponse();
                     res->setStatusCode(k403Forbidden);
                     res->setBody("CSRF Token Mismatch");
                     fcb(res);

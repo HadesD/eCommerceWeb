@@ -100,7 +100,7 @@ export default defineComponent({
 
             onFinish,
 
-            loggingIn: false,
+            loggingIn,
             rules: {
                 email: [
                     { required: true, trigger: 'blur' },

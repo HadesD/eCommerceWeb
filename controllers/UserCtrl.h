@@ -13,10 +13,10 @@ class UserCtrl : public drogon::HttpController<UserCtrl>
     // METHOD_ADD(UserCtrl::your_method_name, "/{1}/{2}/list", Get); // path is /UserCtrl/{arg1}/{arg2}/list
     // ADD_METHOD_TO(UserCtrl::your_method_name, "/absolute/path/{1}/{2}/list", Get); // path is /absolute/path/{arg1}/{arg2}/list
 
-    ADD_METHOD_TO(UserCtrl::get, "/users", Get);
-    ADD_METHOD_TO(UserCtrl::getOne, "/users/{1}", Get);
-    ADD_METHOD_TO(UserCtrl::create, "/users", Post);
-    ADD_METHOD_TO(UserCtrl::updateOne, "/users/{1}", Post);
+    ADD_METHOD_TO(UserCtrl::get, "/users", Get, "AuthFilter");
+    ADD_METHOD_TO(UserCtrl::getOne, "/users/{1}", Get, "AuthFilter");
+    ADD_METHOD_TO(UserCtrl::create, "/users", Post, "AuthFilter");
+    ADD_METHOD_TO(UserCtrl::updateOne, "/users/{1}", Post, "AuthFilter");
 
     METHOD_LIST_END
     // your declaration of processing function maybe like this:

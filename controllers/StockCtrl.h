@@ -13,10 +13,10 @@ public:
     // METHOD_ADD(StockCtrl::your_method_name,"/{1}/{2}/list",Get);//path is /StockCtrl/{arg1}/{arg2}/list
     // ADD_METHOD_TO(StockCtrl::your_method_name,"/absolute/path/{1}/{2}/list",Get);//path is /absolute/path/{arg1}/{arg2}/list
 
-    ADD_METHOD_TO(StockCtrl::get, "/stocks", Get);
-    ADD_METHOD_TO(StockCtrl::getOne, "/stocks/{1}", Get);
-    ADD_METHOD_TO(StockCtrl::create, "/stocks", Post);
-    ADD_METHOD_TO(StockCtrl::updateOne, "/stocks/{1}", Post);
+    ADD_METHOD_TO(StockCtrl::get, "/stocks", Get, "AuthFilter");
+    ADD_METHOD_TO(StockCtrl::getOne, "/stocks/{1}", Get, "AuthFilter");
+    ADD_METHOD_TO(StockCtrl::create, "/stocks", Post, "AuthFilter");
+    ADD_METHOD_TO(StockCtrl::updateOne, "/stocks/{1}", Post, "AuthFilter");
 
     METHOD_LIST_END
     // your declaration of processing function maybe like this:

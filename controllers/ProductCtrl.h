@@ -15,8 +15,8 @@ class ProductCtrl : public drogon::HttpController<ProductCtrl>
 
     ADD_METHOD_TO(ProductCtrl::get, "/products", Get);
     ADD_METHOD_TO(ProductCtrl::getOne, "/products/{1}", Get);
-    ADD_METHOD_TO(ProductCtrl::create, "/products", Post);
-    ADD_METHOD_TO(ProductCtrl::updateOne, "/products/{1}", Post);
+    ADD_METHOD_TO(ProductCtrl::create, "/products", Post, "AuthFilter");
+    ADD_METHOD_TO(ProductCtrl::updateOne, "/products/{1}", Post, "AuthFilter");
 
     METHOD_LIST_END
     // your declaration of processing function maybe like this:

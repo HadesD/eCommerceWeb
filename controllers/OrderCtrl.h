@@ -13,8 +13,8 @@ class OrderCtrl : public drogon::HttpController<OrderCtrl>
     //METHOD_ADD(OrderCtrl::your_method_name,"/{1}/{2}/list",Get);//path is /OrderCtrl/{arg1}/{arg2}/list
     //ADD_METHOD_TO(OrderCtrl::your_method_name,"/absolute/path/{1}/{2}/list",Get);//path is /absolute/path/{arg1}/{arg2}/list
 
-    ADD_METHOD_TO(OrderCtrl::get, "/orders", Get);
-    ADD_METHOD_TO(OrderCtrl::getOne, "/orders/{1}", Get);
+    ADD_METHOD_TO(OrderCtrl::get, "/orders", Get, "AuthFilter");
+    ADD_METHOD_TO(OrderCtrl::getOne, "/orders/{1}", Get, "AuthFilter");
     // ADD_METHOD_TO(OrderCtrl::create, "/orders");
 
     METHOD_LIST_END

@@ -91,24 +91,9 @@ Task<> AuthCtrl::login(const HttpRequestPtr req, std::function<void(const HttpRe
 
 Task<> AuthCtrl::logout(const HttpRequestPtr req, std::function<void(const HttpResponsePtr &)> callback)
 {
-    app_helpers::ApiResponse apiRes;
-    auto &resMsg = apiRes.message();
-    HttpStatusCode httpRetCode = HttpStatusCode::k200OK;
+    app_helpers::Auth::logout(req);
 
-    if (!app_helpers::Auth::isLoggedIn(req))
-    {
-        resMsg = "Bạn chưa đăng nhập";
-
-        httpRetCode = HttpStatusCode::k401Unauthorized;
-    }
-    else
-    {
-        app_helpers::Auth::logout(req);
-    }
-
-    auto httpRes = HttpResponse::newHttpJsonResponse(apiRes.toJson());
-    httpRes->setStatusCode(httpRetCode);
-    callback(httpRes);
+    callback(HttpResponse::newHttpResponse());
 
     co_return;
 }
@@ -121,11 +106,6 @@ Task<> AuthCtrl::user(const HttpRequestPtr req, std::function<void(const HttpRes
 
     try
     {
-        if (!app_helpers::Auth::isLoggedIn(req))
-        {
-            throw std::logic_error("Chưa đăng nhập");
-        }
-
         auto dbClient = drogon::app().getDbClient();
         const auto &user = orm::Mapper<User>(dbClient)
                                .findOne(
@@ -137,12 +117,6 @@ Task<> AuthCtrl::user(const HttpRequestPtr req, std::function<void(const HttpRes
     catch (const orm::UnexpectedRows &e)
     {
         resMsg = "Chưa đăng nhập";
-
-        httpRetCode = HttpStatusCode::k401Unauthorized;
-    }
-    catch (const std::logic_error &e)
-    {
-        resMsg = e.what();
 
         httpRetCode = HttpStatusCode::k401Unauthorized;
     }
