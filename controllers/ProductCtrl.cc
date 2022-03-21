@@ -241,7 +241,8 @@ void ProductCtrl::getOne(const HttpRequestPtr &req, std::function<void(const Htt
     {
         auto dbClient = app().getDbClient();
         const auto &prd = orm::Mapper<Product>(dbClient)
-                              .findByPrimaryKey(id);
+                              .findOne(orm::Criteria(Product::Cols::_id, id) &&
+                                       orm::Criteria(Product::Cols::_deleted_at, orm::CompareOperator::IsNull));
 
         auto &retData = apiRes.data();
         retData = prd.toJson();

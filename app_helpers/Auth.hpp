@@ -4,21 +4,17 @@
 
 #include "models/Users.h"
 
-namespace app_helpers
+namespace app_helpers::Auth
 {
-    namespace Auth
-    {
-        using User = drogon_model::web_rinphone::Users;
+    using User = drogon_model::web_rinphone::Users;
 
-        bool login(const std::string& email, const std::string& password, const bool remember = true);
+    User::PrimaryKeyType getSessionUserId(const drogon::HttpRequestPtr &req);
+    void setSessionUserId(const drogon::HttpRequestPtr &req, const User::PrimaryKeyType userId);
 
-        void login(const User::PrimaryKeyType id);
+    bool isLoggedIn(const drogon::HttpRequestPtr &req);
 
-        bool isLoggedIn(const drogon::HttpRequestPtr& req);
+    User user(const drogon::HttpRequestPtr &req, const drogon::orm::DbClientPtr &dbClient);
+    User user(const drogon::HttpRequestPtr &req, const std::shared_ptr<drogon::orm::Transaction> &dbClient);
 
-        User user(const drogon::HttpRequestPtr& req, const drogon::orm::DbClientPtr& dbClient);
-        User user(const drogon::HttpRequestPtr& req, const std::shared_ptr<drogon::orm::Transaction>& dbClient);
-
-        void logout(const drogon::HttpRequestPtr& req);
-    }
+    void logout(const drogon::HttpRequestPtr &req);
 }

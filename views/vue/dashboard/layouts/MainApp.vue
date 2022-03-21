@@ -14,64 +14,71 @@ import RequestHttp from '~/utils/RequestHttp';
 import RequestApi from '~/utils/RequestApi';
 
 import { showErrorRequestApi } from '~/helpers';
+import { message, notification } from 'ant-design-vue';
+import { useRoute, useRouter } from 'vue-router';
+import { onMounted } from '@vue/runtime-core';
 
 export default {
-    data(){
-        return {
-            locale,
+    setup() {
+        const route = useRoute();
+        const router = useRouter();
 
-            authUser: User.info(),
-        };
-    },
+        router.isReady().then(v => {
+            if (route.name !== 'login') {
 
-    mounted() {
-        this.reloadUserInfo();
+                const authUser = User.info();
 
-        this.checkUpdate();
-    },
+                const msgKey = 'dashboard.user.info.reload';
+                const hide = message.loading({ content: 'Đang đồng bộ thông tin đăng nhập...', key: msgKey, duration: 0 });
 
-    methods: {
-        reloadUserInfo() {
-            const hide = this.$message.loading('Đang đồng bộ thông tin đăng nhập...', 0);
+                RequestApi.get('/user')
+                    .then(res => {
+                        User.setInfo(res.data);
 
-            RequestApi.get('/user')
-                .then(res => {
-                    User.setInfo(res.data);
-                })
-                .catch(err => {
-                    if (this.authUser.id) {
+                        message.success({ content: 'Đồng bộ thành công', key: msgKey });
+                    })
+                    .catch(err => {
                         if (err.response) {
                             if (err.response.status === 401) {
-                                User.clear();
+                                if (authUser.id) {
+                                    User.clear();
+                                }
+
+                                router.push({name: 'login'});
+
+                                message.error({ content: 'Chưa đăng nhập', key: msgKey });
+
                                 return;
                             }
                         }
-                    }
 
-                    showErrorRequestApi(err);
-                })
-                .finally(() => setTimeout(hide, 1500));
-        },
+                        message.error({ content: 'Có lỗi xảy ra', key: msgKey });
 
-        getAppVer(fromDoc) {
+                        showErrorRequestApi(err);
+                    })
+                    .finally(() => setTimeout(hide, 1500));
+            }
+        });
+
+        const getAppVer = (fromDoc) => {
             return {
                 css: fromDoc.getElementById('app-css')?.getAttribute('href').split('?id=')[1],
                 script: fromDoc.getElementById('app-js')?.getAttribute('src').split('?id=')[1],
             };
-        },
+        };
 
-        checkUpdate() {
+        const checkUpdate = () => {
             let hasNewVer = false;
 
             RequestHttp.get('/dashboard')
                 .then(res => {
                     const newAppDoc = new DOMParser().parseFromString(res.data, 'text/html');
 
-                    const curVer = this.getAppVer(document);
-                    const newVer = this.getAppVer(newAppDoc);
+                    const curVer = getAppVer(document);
+                    const newVer = getAppVer(newAppDoc);
 
                     if ((curVer.css !== newVer.css) || (curVer.script !== newVer.script)) {
-                        this.$notification.info({
+                        notification.info({
                             message: 'Có phiên bản mới của website',
                             description: 'Cần tải lại trang để cập nhật',
                             duration: 0,
@@ -92,10 +99,16 @@ export default {
                 })
                 .finally(() => {
                     if (!hasNewVer) {
-                        setTimeout(this.checkUpdate, 60000);
+                        setTimeout(checkUpdate, 60000);
                     }
                 });
-        },
+        };
+
+        onMounted(() => checkUpdate);
+
+        return {
+            locale,
+        };
     },
 }
 </script>

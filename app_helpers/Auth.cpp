@@ -2,80 +2,42 @@
 
 #include <drogon/drogon.h>
 
-namespace app_helpers
+namespace app_helpers::Auth
 {
-    namespace Auth
+    constexpr auto loggedInSessionKey = "loggedInUserId";
+
+    User::PrimaryKeyType getSessionUserId(const drogon::HttpRequestPtr &req)
     {
-        constexpr auto loggedInSessionKey = "loggedInUserId";
+        return req->session()->get<User::PrimaryKeyType>(loggedInSessionKey);
+    }
 
-        inline User::PrimaryKeyType getSessionUserId(const drogon::HttpRequestPtr &req)
-        {
-            return req->session()->get<User::PrimaryKeyType>(loggedInSessionKey);
-        }
-
-        inline void setSessionUserId(const drogon::HttpRequestPtr& req, const User::PrimaryKeyType userId)
-        {
-            req->session()->modify<User::PrimaryKeyType>(
-                loggedInSessionKey,
-                [userId](auto &uId)
-                {
-                    uId = userId;
-                });
-        }
-
-        bool login(const std::string& email, const std::string& password, const bool remember)
-        {
-            using namespace drogon;
-
-            try
+    void setSessionUserId(const drogon::HttpRequestPtr &req, const User::PrimaryKeyType userId)
+    {
+        req->session()->modify<User::PrimaryKeyType>(
+            loggedInSessionKey,
+            [userId](auto &uId)
             {
-                auto dbClient = app().getDbClient();
-                const auto& user = orm::Mapper<User>(dbClient)
-                    .findBy(
-                        orm::Criteria(User::Cols::_deleted_at, orm::CompareOperator::IsNull) &&
-                        orm::Criteria(User::Cols::_email, email)
-                    );
+                uId = userId;
+            });
+    }
 
-                return true;
-            }
-            catch (const orm::UnexpectedRows&)
-            {
-            }
-            catch (const std::exception &e)
-            {
-                LOG_ERROR << e.what();
-            }
-            catch (...)
-            {
-            }
+    bool isLoggedIn(const drogon::HttpRequestPtr &req)
+    {
+        return (getSessionUserId(req) > 0);
+    }
 
-            return false;
-        }
+    User user(const drogon::HttpRequestPtr &req, const drogon::orm::DbClientPtr &dbClient)
+    {
+        return drogon::orm::Mapper<User>(dbClient).findByPrimaryKey(getSessionUserId(req));
+    }
 
-        void login(const User::PrimaryKeyType id)
-        {
-        }
+    User user(const drogon::HttpRequestPtr &req, const std::shared_ptr<drogon::orm::Transaction> &dbClient)
+    {
+        return drogon::orm::Mapper<User>(dbClient).forUpdate().findByPrimaryKey(getSessionUserId(req));
+    }
 
-        bool isLoggedIn(const drogon::HttpRequestPtr& req)
-        {
-            return (getSessionUserId(req) > 0);
-        }
-
-        User user(const drogon::HttpRequestPtr& req, const drogon::orm::DbClientPtr& dbClient)
-        {
-            // auto dbClient = drogon::app().getDbClient();
-
-            return drogon::orm::Mapper<User>(dbClient).findByPrimaryKey(getSessionUserId(req));
-        }
-
-        User user(const drogon::HttpRequestPtr& req, const std::shared_ptr<drogon::orm::Transaction>& dbClient)
-        {
-            return drogon::orm::Mapper<User>(dbClient).forUpdate().findByPrimaryKey(getSessionUserId(req));
-        }
-
-        void logout(const drogon::HttpRequestPtr& req)
-        {
-            req->session()->erase(loggedInSessionKey);
-        }
+    void logout(const drogon::HttpRequestPtr &req)
+    {
+        req->session()->erase(loggedInSessionKey);
     }
 }

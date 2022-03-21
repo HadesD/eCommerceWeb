@@ -1,23 +1,16 @@
 <template>
     <div style="padding-top: 150px;">
-        <!-- <vue-progress-bar /> -->
         <div style="text-align: center; margin: 15px 0;">
-            <img src="/favicon.ico" /><span style="font-size:25px;font-weight:bold;vertical-align: bottom;">inPhone.vn</span>
+            <img src="/logo-blue.png" />
         </div>
         <a-form
-            ref="ruleForm"
             :model="formData"
             :rules="rules"
             @finish="onFinish"
             style="width: 400px;margin:0 auto;padding: 30px;"
         >
             <a-form-item name="email">
-                <a-input
-                    autoFocus
-                    size="large"
-                    placeholder="E-mail"
-                    v-model:value="formData.email"
-                >
+                <a-input autoFocus size="large" placeholder="E-mail" v-model:value="formData.email">
                     <template #prefix>
                         <UserOutlined />
                     </template>
@@ -25,11 +18,7 @@
             </a-form-item>
 
             <a-form-item name="password">
-                <a-input-password
-                    size="large"
-                    placeholder="Mật khẩu"
-                    v-model:value="formData.password"
-                >
+                <a-input-password size="large" placeholder="Mật khẩu" v-model:value="formData.password">
                     <template #prefix>
                         <LockOutlined />
                     </template>
@@ -46,10 +35,7 @@
             </a-form-item>
 
             <a-form-item style="margin-top:24px">
-                <a-button
-                    size="large" type="primary" htmlType="submit" block class="login-button"
-                    :loading="loggingIn"
-                >Đăng nhập</a-button>
+                <a-button size="large" type="primary" htmlType="submit" block class="login-button" :loading="loggingIn">Đăng nhập</a-button>
             </a-form-item>
         </a-form>
     </div>
@@ -64,53 +50,52 @@ import {
 import { message } from 'ant-design-vue';
 
 import User from '~/dashboard/utils/User';
-import UserRole from '~/dashboard/configs/UserRole';
+import UserRole, { hasPermission } from '~/dashboard/configs/UserRole';
 import RequestHttp from '~/utils/RequestHttp';
-import RequestApi from '~/utils/RequestApi';
+import RequestApiRepository from '~/utils/RequestApiRepository';
 import { showErrorRequestApi } from '~/helpers';
 
 export default defineComponent({
     components: {
         UserOutlined, LockOutlined,
     },
+
     setup(){
+        let loggingIn = ref(false);
         const router = useRouter();
 
-        const ruleForm = ref();
         const formData = reactive({
             email: undefined,
             password: undefined,
             remember: true,
         });
 
-        const onFinish = () => {
-            this.loggingIn = true;
+        const onFinish = (values) => {
+            loggingIn.value = true;
 
-            // Refresh CSRF
-            RequestApi.get('/csrf-token')
-                .then(async res => {
-                    // Login
-                    await RequestApi.post('/login', this.formData);
-
+            RequestApiRepository.post('/login', values)
+                .then(res => {
                     // Check permission
-                    const userApiRequest = await RequestApi.get('/user');
-                    const userData = userApiRequest.data;
-                    if (userData.role >= UserRole.ROLE_ADMIN_MANAGER) {
+                    const userData = res.data;
+                    if (hasPermission(userData.role, UserRole.ROLE_ADMIN_MANAGER)) {
                         User.setInfo(userData);
 
                         router.push({name: 'top'});
+
+                        message.success('Đăng nhập thành công');
                     } else {
                         message.error('Bạn không có quyền hạn truy cập trang này');
                     }
                 })
-                .catch(showErrorRequestApi)
+                .catch(err => {
+                    showErrorRequestApi(err);
+                })
                 .finally(() => {
-                    this.loggingIn = false;
+                    loggingIn.value = false;
                 });
         };
 
         return {
-            ruleForm,
             formData,
 
             onFinish,
@@ -125,9 +110,6 @@ export default defineComponent({
                 ],
             },
         };
-    },
-
-    methods: {
     },
 });
 </script>

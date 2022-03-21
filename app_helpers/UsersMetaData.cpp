@@ -9,6 +9,7 @@ namespace app_helpers
         using User = drogon_model::web_rinphone::Users;
 
         usrRow.removeMember(User::Cols::_password);
+        usrRow.removeMember(User::Cols::_remember_token);
 
         auto& sns_info = usrRow[User::Cols::_sns_info];
         if (sns_info.isString())

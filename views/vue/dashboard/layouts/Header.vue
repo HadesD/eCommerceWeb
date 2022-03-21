@@ -38,8 +38,10 @@ import {
 } from '@ant-design/icons-vue';
 
 import User from '~/dashboard/utils/User';
-import { message } from 'ant-design-vue';
+import { message, Modal } from 'ant-design-vue';
 import { showErrorRequestApi } from '../../../../dashboard/resources/vue/helpers';
+import RequestApiRepository from '~/utils/RequestApiRepository';
+import { computed } from '@vue/runtime-core';
 
 export default {
     components: {
@@ -51,40 +53,37 @@ export default {
             type: Boolean,
         }
     },
-    data() {
-        return {
 
-        };
-    },
-    computed: {
-        userName(){
-            return User.info().name || 'Admin'
-        },
-    },
-    methods: {
-        sideBarCollapse(){
-            this.$emit('onSetSidebarCollapsed', !this.sideBarCollapsed);
-        },
-        logout(){
-            const router = useRouter();
+    setup() {
+        const router = useRouter();
 
-            const modal = this.$confirm({
+        const logout = async () => {
+            const modal = Modal.confirm({
                 content: 'Chắc chắn muốn đăng xuất chứ?',
                 onOk: () => {
-                    return axios.post('/logout')
+                    return RequestApiRepository.post('/logout')
                         .then(res => {
                             User.clear();
 
                             modal.destroy();
 
-                            router.push({ path: '/login' });
+                            router.push({ name: 'login' });
 
                             message.success('Đăng xuất thành công');
                         })
                         .catch(showErrorRequestApi)
                 },
             });
-        },
+        };
+
+        return {
+            userName: computed(() => (User.info().name || 'Admin')),
+            logout,
+
+            sideBarCollapse() {
+                this.$emit('collapse', !this.sideBarCollapsed);
+            },
+        };
     },
 }
 </script>

@@ -151,7 +151,8 @@ void StockCtrl::getOne(const HttpRequestPtr &req, std::function<void(const HttpR
     {
         auto dbClient = app().getDbClient();
         const auto &stk = orm::Mapper<Stock>(dbClient)
-                              .findByPrimaryKey(id);
+                              .findOne(orm::Criteria(Stock::Cols::_id, id) &&
+                                       orm::Criteria(Stock::Cols::_deleted_at, orm::CompareOperator::IsNull));
 
         auto &retData = apiRes.data();
         retData = stk.toJson();
@@ -491,10 +492,8 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
             stk.setNote(note.asString());
         }
 
-        // TODO: Fix updated user
-        // const auto& curUser = app_helpers::Auth::user(req, dbClient);
-        // stk.setUpdatedUserId(curUser.getValueOfId());
-        stk.setUpdatedUserId(1);
+        const auto& curUser = app_helpers::Auth::user(req, dbClient);
+        stk.setUpdatedUserId(curUser.getValueOfId());
 
         const auto now = trantor::Date::now();
 
@@ -575,8 +574,7 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
                 Transaction transaction;
                 transaction.setDescription("Kho #{" + std::to_string(id) + "}: " + ((cmpQuantity < 0) ? "Nhập" : "Xuất") + " [" + std::to_string(std::abs(cmpQuantity)) + "] cái (VND)");
                 transaction.setAmount(-(stk.getValueOfQuantity() * stk.getValueOfCostPrice()));
-                // TODO: Fix updated user
-                // transaction.setCashierId(curUser.getValueOfId());
+                transaction.setCashierId(curUser.getValueOfId());
                 transaction.setPaidDate(trantor::Date::fromDbStringLocal(inout_date.asString()));
                 txnMapper.insert(transaction);
 

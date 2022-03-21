@@ -81,7 +81,8 @@ void UserCtrl::getOne(const HttpRequestPtr &req, std::function<void(const HttpRe
     {
         auto dbClient = app().getDbClient();
         const auto &usr = orm::Mapper<User>(dbClient)
-                              .findByPrimaryKey(id);
+                              .findOne(orm::Criteria(User::Cols::_id, id) &&
+                                       orm::Criteria(User::Cols::_deleted_at, orm::CompareOperator::IsNull));
 
         auto &retData = apiRes.data();
         retData = usr.toJson();
