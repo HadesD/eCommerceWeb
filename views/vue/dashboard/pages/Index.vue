@@ -61,7 +61,7 @@ import {
     ReloadOutlined,
 } from '@ant-design/icons-vue';
 
-import { number_format } from '~/helpers';
+import { number_format, showErrorRequestApi } from '~/helpers';
 import RequestRepository from '~/dashboard/utils/RequestRepository';
 
 export default {
@@ -156,14 +156,7 @@ export default {
                         ]
                     };
                 })
-                .catch(err => {
-                    if (err.response && err.response.data && err.response.data.message) {
-                        this.$message.error(err.response.data.message);
-                        return;
-                    }
-
-                    this.$message.error(err.message || 'Thất bại');
-                })
+                .catch(showErrorRequestApi)
                 .finally(() => {
                     this.loading = false;
                 });
