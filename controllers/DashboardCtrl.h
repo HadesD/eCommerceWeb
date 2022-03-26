@@ -11,7 +11,7 @@ class DashboardCtrl : public drogon::HttpController<DashboardCtrl>
     // use METHOD_ADD to add your custom processing function here;
     // METHOD_ADD(DashboardCtrl::get, "/{2}/{1}", Get); // path is /DashboardCtrl/{arg2}/{arg1}
     // METHOD_ADD(DashboardCtrl::your_method_name, "/{1}/{2}/list", Get); // path is /DashboardCtrl/{arg1}/{arg2}/list
-    ADD_METHOD_TO(DashboardCtrl::statistics, "/statistics", Get);
+    ADD_METHOD_TO(DashboardCtrl::statistics, "/statistics", Get, "AuthFilter");
 
     METHOD_LIST_END
     // your declaration of processing function maybe like this:
