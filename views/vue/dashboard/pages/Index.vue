@@ -56,111 +56,117 @@
 </template>
 
 <script>
-import { defineAsyncComponent } from 'vue';
+import { computed, defineAsyncComponent, onMounted, reactive, ref } from 'vue';
 import {
     ReloadOutlined,
 } from '@ant-design/icons-vue';
 
 import { number_format, showErrorRequestApi } from '~/helpers';
-import RequestRepository from '~/dashboard/utils/RequestRepository';
+import RequestApiRepository from '~/utils/RequestApiRepository';
 
 export default {
     components: {
         LineChart: defineAsyncComponent(() => import('../utils/LineChart')),
         ReloadOutlined,
     },
-    data(){
-        return {
-            loading: false,
 
-            statistics: {
-                order: {},
-                user: {},
-                product: {},
-                stock: {},
-                transaction: {},
-            },
+    setup() {
+        const loading = ref(false);
+        const statistics = reactive({
+            order: {},
+            user: {},
+            product: {},
+            stock: {},
+            transaction: {},
+        });
+        const datacollectionTotal = computed(() => {
+            const chart_total = statistics.transaction?.chart_total;
 
-            datacollectionTotal: {},
-            chartOptionsTotal: null,
-            datacollectionNear30days: {},
-            chartOptionsNear30days: null,
-        };
-    },
-    mounted(){
-        this.chartOptionsTotal = {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-            },
-            tooltips: {
-                callbacks: {
-                    label: function(t, d) {
-                        return number_format(t.yLabel);
+            return {
+                labels: chart_total?.map(value => value.ym),
+                datasets: [
+                    {
+                        label: 'Lãi Tháng',
+                        backgroundColor: '#ffb1c1',
+                        borderColor: '#f87979',
+                        data: chart_total?.map(value => value.amount),
                     },
-                },
-            },
-        };
+                ],
+            };
+        });
+        const datacollectionNear30days = computed(() => {
+            const chart_near_30_days = statistics.transaction?.chart_near_30_days;
 
-        this.chartOptionsNear30days = {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-            },
-            tooltips: {
-                callbacks: {
-                    label: function(t, d) {
-                        return number_format(t.yLabel);
+            return {
+                labels: chart_near_30_days?.map(value => value.ymd),
+                datasets: [
+                    {
+                        label: 'Lãi Ngày',
+                        backgroundColor: '#ffb1c1',
+                        borderColor: '#f87979',
+                        data: chart_near_30_days?.map(value => value.amount),
                     },
-                },
-            },
-        };
+                ],
+            };
+        });
 
-        this.loadStatistic();
-    },
-    methods: {
-        loadStatistic() {
-            this.loading = true;
+        const loadStatistic = () => {
+            loading.value = true;
 
-            RequestRepository.get('/statistics')
+            RequestApiRepository.get('/statistics')
                 .then(res => {
-                    this.statistics = {...res.data};
-
-                    const chart_total = this.statistics.transaction.chart_total;
-                    this.datacollectionTotal = {
-                        labels: chart_total.map(value => value.ym),
-                        datasets: [
-                            {
-                                label: 'Lãi Tháng',
-                                backgroundColor: '#ffb1c1',
-                                borderColor: '#f87979',
-                                data: chart_total.map(value => value.amount),
-                            },
-                        ]
-                    };
-
-                    const chart_near_30_days = this.statistics.transaction.chart_near_30_days;
-                    this.datacollectionNear30days = {
-                        labels: chart_near_30_days.map(value => value.ymd),
-                        datasets: [
-                            {
-                                label: 'Lãi Ngày',
-                                backgroundColor: '#ffb1c1',
-                                borderColor: '#f87979',
-                                data: chart_near_30_days.map(value => value.amount),
-                            },
-                        ]
-                    };
+                    for (let i in res.data) {
+                        statistics[i] = res.data[i];
+                    }
                 })
-                .catch(showErrorRequestApi)
                 .finally(() => {
-                    this.loading = false;
+                    loading.value = false;
                 });
-        },
+        };
+
+        onMounted(() => {
+            loadStatistic();
+        });
+
+        return {
+            loading,
+
+            loadStatistic,
+            statistics,
+
+            datacollectionTotal,
+            chartOptionsTotal: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function(t, d) {
+                            return number_format(t.yLabel);
+                        },
+                    },
+                },
+            },
+            datacollectionNear30days,
+            chartOptionsNear30days: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function(t, d) {
+                            return number_format(t.yLabel);
+                        },
+                    },
+                },
+            },
+        };
     },
 }
 </script>

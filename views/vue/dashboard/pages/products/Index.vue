@@ -141,7 +141,7 @@ import {
 
 import ProductStatus, { Config as configProductStatus } from '~/configs/ProductStatus';
 import { number_format, date_format, showErrorRequestApi, list_to_tree } from '~/helpers';
-import RequestRepository from '~/dashboard/utils/RequestRepository';
+import RequestApiRepository from '~/utils/RequestApiRepository';
 
 import ProductEdit from '~/dashboard/pages/products/Edit.vue';
 import AddCategoryModal from '~/dashboard/components/AddCategoryModal.vue';
@@ -295,12 +295,11 @@ export default defineComponent({
         // CategoriesTree
         loadCategoriesTree() {
             this.categoriesTreeLoading = true;
-            RequestRepository.get('/categories')
+            RequestApiRepository.get('/categories')
                 .then(res => {
-                    this.categories = res.data.data;
+                    this.categories = res.data;
                 })
-                .catch(showErrorRequestApi)
-                .finally(()=>{
+                .finally(() => {
                     this.categoriesTreeLoading = false;
                 });
         },
@@ -352,13 +351,11 @@ export default defineComponent({
                 });
             }
 
-            RequestRepository.get('/products', {
+            RequestApiRepository.get('/products', {
                 params,
             })
                 .then(res => {
-                    const resData = res.data;
-
-                    this.products = resData.data || [];
+                    this.products = res.data || [];
 
                     this.productsTablePagination = {
                         ...this.productsTablePagination,
@@ -367,8 +364,7 @@ export default defineComponent({
                         pageSize: resData.per_page,
                     };
                 })
-                .catch(showErrorRequestApi)
-                .finally(()=>{
+                .finally(() => {
                     this.productsTableLoading = false;
                 });
         },
