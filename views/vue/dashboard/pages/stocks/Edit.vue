@@ -636,9 +636,8 @@ export default defineComponent({
 
                     this.loadStock(sData.id);
                 })
-                .catch((err) => {
+                .finally(() => {
                     this.stockInfoLoading = false;
-                    showErrorRequestApi(err);
                 });
         },
 

@@ -339,7 +339,7 @@ export default defineComponent({
 
                     this.loadProduct(this.formData.id);
                 })
-                .finally(()=>{
+                .finally(() => {
                     this.productInfoLoading = false;
                 });
         },

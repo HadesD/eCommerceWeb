@@ -230,7 +230,7 @@ void StockCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpR
         }
 
         const auto &category_ids = reqJson["category_ids"];
-        if (!category_ids.isArray() || (category_ids.size() < 1))
+        if (!category_ids.isArray() || !category_ids.size())
         {
             throw std::logic_error("Chưa chọn chuyên mục");
         }
@@ -258,10 +258,8 @@ void StockCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpR
         auto dbClient = app().getDbClient()->newTransaction();
         orm::Mapper<Stock> stkMapper{dbClient};
 
-        // TODO: Fix updated user
-        // const auto& curUser = app_helpers::Auth::user(req, dbClient);
-        // stk.setUpdatedUserId(curUser.getValueOfId());
-        stk.setUpdatedUserId(1);
+        const auto& curUser = app_helpers::Auth::user(req, dbClient);
+        stk.setUpdatedUserId(curUser.getValueOfId());
 
         const auto now = trantor::Date::now();
 
@@ -291,8 +289,6 @@ void StockCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpR
 
                     if (imgIdJson.isUInt64())
                     {
-                        // TODO: Check exists then add to ProductImage
-
                         imgId = imgIdJson.asUInt64();
                     }
                     else
@@ -331,8 +327,7 @@ void StockCtrl::create(const HttpRequestPtr &req, std::function<void(const HttpR
             Transaction transaction;
             transaction.setDescription("Kho #{" + std::to_string(id) + "}: Nhập [" + std::to_string(stk.getValueOfQuantity()) + "] cái (VND)");
             transaction.setAmount(-(stk.getValueOfQuantity() * stk.getValueOfCostPrice()));
-            // TODO: Fix updated user
-            // transaction.setCashierId(curUser.getValueOfId());
+            transaction.setCashierId(curUser.getValueOfId());
             transaction.setPaidDate(trantor::Date::fromDbStringLocal(inout_date.asString()));
             orm::Mapper<Transaction>(dbClient).insert(transaction);
 
@@ -422,7 +417,7 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
         const auto &idi = reqJson[Stock::Cols::_idi];
         if (!idi.isNull())
         {
-            if (!idi.isString() || (idi.asString().size() > 0))
+            if (!idi.isString() || !idi.asString().size())
             {
                 throw std::logic_error("Chưa điền IDI");
             }
@@ -473,7 +468,7 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
         }
 
         const auto &category_ids = reqJson["category_ids"];
-        if (!category_ids.isArray() || (category_ids.size() < 1))
+        if (!category_ids.isArray() || !category_ids.size())
         {
             throw std::logic_error("Chưa chọn chuyên mục");
         }
@@ -519,11 +514,14 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
 
                     auto &imgIdJson = img[Image::Cols::_id];
 
+                    bool needToInsertSI = false;
+
                     if (imgIdJson.isUInt64())
                     {
-                        // TODO: Check exists then add to ProductImage
-
                         imgId = imgIdJson.asUInt64();
+
+                        needToInsertSI = !stkImgMapper.count(orm::Criteria(StockImage::Cols::_stock_id, id) &&
+                                               orm::Criteria(StockImage::Cols::_image_id, imgId));
                     }
                     else
                     {
@@ -538,12 +536,17 @@ void StockCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const Ht
                         imgMapper.insert(img);
 
                         imgId = img.getValueOfId();
+
+                        needToInsertSI = true;
                     }
 
-                    StockImage stkImg;
-                    stkImg.setStockId(id);
-                    stkImg.setImageId(imgId);
-                    stkImgMapper.insert(stkImg);
+                    if (needToInsertSI)
+                    {
+                        StockImage stkImg;
+                        stkImg.setStockId(id);
+                        stkImg.setImageId(imgId);
+                        stkImgMapper.insert(stkImg);
+                    }
 
                     imgIds.push_back(imgId);
                 }

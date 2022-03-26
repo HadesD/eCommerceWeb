@@ -361,8 +361,6 @@ void ProductCtrl::create(const HttpRequestPtr &req, std::function<void(const Htt
 
                     if (imgIdJson.isUInt64())
                     {
-                        // TODO: Check exists then add to ProductImage
-
                         imgId = imgIdJson.asUInt64();
                     }
                     else
@@ -553,10 +551,8 @@ void ProductCtrl::updateOne(const HttpRequestPtr &req, std::function<void(const 
                     {
                         imgId = imgIdJson.asUInt64();
 
-                        if (!prdImgMapper.count(orm::Criteria(ProductImage::Cols::_image_id, imgId) && orm::Criteria(ProductImage::Cols::_product_id, id)))
-                        {
-                            needToInsertPI = true;
-                        }
+                        needToInsertPI = !prdImgMapper.count(orm::Criteria(ProductImage::Cols::_image_id, imgId) &&
+                                                             orm::Criteria(ProductImage::Cols::_product_id, id));
                     }
                     else
                     {

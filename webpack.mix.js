@@ -115,7 +115,7 @@ if (mix.inProduction()) {
         ...options,
         hmrOptions: {
             host: '127.0.0.1',
-            port: isDashboard ? 8889 : 8888,
+            port: isDashboard ? 8891 : 8888,
         },
     }
 }
