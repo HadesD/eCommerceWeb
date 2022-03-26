@@ -1,5 +1,4 @@
 import RequestRepository from './RequestRepository';
-import RequestApi from './RequestApi';
 
 import { showErrorRequestApi } from '~/helpers';
 

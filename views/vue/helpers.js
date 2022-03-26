@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import dayjs from 'dayjs';
-import { message, notification, Button } from 'ant-design-vue';
+import { message, notification, Button, Modal, } from 'ant-design-vue';
 import { defineAsyncComponent as vueDefineAsyncComponent, h } from 'vue';
 
 import LoadingComponent from '~/components/LoadingComponent.vue';
@@ -66,11 +66,12 @@ export function list_to_tree(list, parentKey = 'parent_id', key = 'id') {
 
 export function showErrorRequestApi(err) {
     if (err.response) {
-        if (err.response.data && err.response.data.message) {
+        const errRes = err.response;
+        if (errRes.data && errRes.data.message) {
             const key = `error${Date.now()}`;
             notification.error({
                 message: 'Có lỗi xảy ra',
-                description: err.response.data.message,
+                description: errRes.data.message,
                 btn: () => h(
                     Button,
                     {
@@ -84,8 +85,27 @@ export function showErrorRequestApi(err) {
                 ),
                 key,
             });
-            return;
+        } else {
+            Modal.error({
+                title: (() => {
+                    return `${errRes.statusText} (${errRes.status})`;
+                })(),
+                content: (() => {
+                    switch (errRes.status) {
+                        case 401:
+                            return 'Bạn cần đăng nhập trước khi thực hiện thao tác này';
+
+                        case 403:
+                            return 'Bạn không có quyền thực hiện thao tác này';
+
+                        default:
+                            return 'Có lỗi xảy ra';
+                    }
+                })(),
+            });
         }
+
+        return;
     }
 
     message.error(err.message || 'Thất bại');
