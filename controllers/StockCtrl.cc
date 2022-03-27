@@ -10,6 +10,7 @@
 #include "models/StockTransactions.h"
 
 #include "app_helpers/ApiResponse.hpp"
+#include "app_helpers/ApiRequestParse.hpp"
 #include "app_helpers/StocksMetaData.hpp"
 #include "app_helpers/Auth.hpp"
 
@@ -20,6 +21,8 @@ using Image = drogon_model::web_rinphone::Images;
 using StockImage = drogon_model::web_rinphone::StockImages;
 using Transaction = drogon_model::web_rinphone::Transactions;
 using StockTransaction = drogon_model::web_rinphone::StockTransactions;
+
+using namespace app_helpers;
 
 Task<> StockCtrl::get(const HttpRequestPtr req, std::function<void(const HttpResponsePtr &)> callback)
 {
@@ -98,18 +101,8 @@ Task<> StockCtrl::get(const HttpRequestPtr req, std::function<void(const HttpRes
 
     try
     {
-        size_t page;
+        size_t page = getPage(req);
         size_t limit = 24;
-
-        try
-        {
-            page = std::stoul(req->getParameter("page"));
-            page = (page < 1) ? 1 : page;
-        }
-        catch (...)
-        {
-            page = 1;
-        }
 
         //! TODO: move to CoroMapper
         orm::Mapper<Stock> stkMap(dbClient);

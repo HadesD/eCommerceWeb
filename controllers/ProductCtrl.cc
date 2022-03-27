@@ -7,6 +7,7 @@
 #include "models/ProductCategories.h"
 
 #include "app_helpers/ApiResponse.hpp"
+#include "app_helpers/ApiRequestParse.hpp"
 #include "app_helpers/ProductsMetaData.hpp"
 #include "app_helpers/Utils.hpp"
 
@@ -16,7 +17,7 @@ using ProductCategory = drogon_model::web_rinphone::ProductCategories;
 using Image = drogon_model::web_rinphone::Images;
 using ProductImage = drogon_model::web_rinphone::ProductImages;
 
-// add definition of your processing function here
+using namespace app_helpers;
 
 Task<> ProductCtrl::get(const HttpRequestPtr req, std::function<void(const HttpResponsePtr &)> callback)
 {
@@ -190,18 +191,8 @@ Task<> ProductCtrl::get(const HttpRequestPtr req, std::function<void(const HttpR
 
     try
     {
-        size_t page;
+        size_t page = getPage(req);
         size_t limit = 24;
-
-        try
-        {
-            page = std::stoul(req->getParameter("page"));
-            page = (page < 1) ? 1 : page;
-        }
-        catch (...)
-        {
-            page = 1;
-        }
 
         //! TODO: move to CoroMapper
         orm::Mapper<Product> prdMap(dbClient);

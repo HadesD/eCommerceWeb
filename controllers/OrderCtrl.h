@@ -15,14 +15,16 @@ class OrderCtrl : public drogon::HttpController<OrderCtrl>
 
     ADD_METHOD_TO(OrderCtrl::get, "/orders", Get, "AuthFilter");
     ADD_METHOD_TO(OrderCtrl::getOne, "/orders/{1}", Get, "AuthFilter");
-    // ADD_METHOD_TO(OrderCtrl::create, "/orders");
+    ADD_METHOD_TO(OrderCtrl::create, "/orders", Post, "AuthFilter");
+    ADD_METHOD_TO(OrderCtrl::updateOne, "/orders/{1}", Post, "AuthFilter");
 
     METHOD_LIST_END
     // your declaration of processing function maybe like this:
     // void get(const HttpRequestPtr& req,std::function<void (const HttpResponsePtr &)> &&callback,int p1,std::string p2);
     // void your_method_name(const HttpRequestPtr& req,std::function<void (const HttpResponsePtr &)> &&callback,double p1,int p2) const;
 
-    void get(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+    Task<> get(const HttpRequestPtr req, std::function<void(const HttpResponsePtr &)> callback);
     void getOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, uint64_t id);
     void create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
+    void updateOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, uint64_t id);
 };

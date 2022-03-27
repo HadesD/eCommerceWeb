@@ -1,14 +1,17 @@
 {
     "compilerOptions": {
-        "target": "es2017",
+        "module": "commonjs",
         "allowSyntheticDefaultImports": false,
+        "allowJs": true,
         "baseUrl": "./",
+        "rootDir": "views/vue",
         "paths" : {
             "~/*": ["views/vue/*"],
-        }
+        },
+        "outDir": "lib",
     },
     "include": [
         "views/vue/*"
     ],
-    "exclude": ["node_modules", "public"]
+    "exclude": ["node_modules", "public", "types"]
 }

@@ -238,7 +238,7 @@ import {
 import OrderStatus, { Config as configOrderStatus } from '~/configs/OrderStatus';
 import OrderProductStockStatus from '~/configs/OrderProductStockStatus';
 import { number_format, date_format, defineAsyncComponent, showErrorRequestApi } from '~/helpers';
-import RequestRepository from '~/dashboard/utils/RequestRepository';
+import RequestApiRepository from '~/utils/RequestApiRepository';
 
 import UserEdit from '~/dashboard/pages/users/Edit.vue';
 import ProductEdit from '~/dashboard/pages/products/Edit.vue';
@@ -477,9 +477,9 @@ export default defineComponent({
                 });
             }
 
-            RequestRepository.get('/orders', { params })
+            RequestApiRepository.get('/orders', { params })
                 .then(res => {
-                    const resData = res.data;
+                    const resData = res;
 
                     this.orders = resData.data || [];
 
@@ -490,8 +490,7 @@ export default defineComponent({
                         pageSize: resData.per_page,
                     };
                 })
-                .catch(showErrorRequestApi)
-                .finally(()=>{
+                .finally(() => {
                     this.ordersTableLoading = false;
                 });
         },
@@ -557,7 +556,7 @@ export default defineComponent({
         download() {
             const filters = this.ordersTableFilters;
             const downloadUrl = new URL(window.location.href);
-            downloadUrl.pathname = RequestRepository.defaults.baseURL + '/orders';
+            downloadUrl.pathname = RequestApi.defaults.baseURL + '/orders';
             downloadUrl.searchParams.append('download', 'csv');
             Object.keys(filters).forEach(value => {
                 const filterVal = filters[value];

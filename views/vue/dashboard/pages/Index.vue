@@ -77,10 +77,13 @@ export default {
             user: {},
             product: {},
             stock: {},
-            transaction: {},
+            transaction: {
+                chart_total: [],
+                chart_near_30_days: [],
+            },
         });
         const datacollectionTotal = computed(() => {
-            const chart_total = statistics.transaction?.chart_total;
+            const chart_total = statistics.transaction.chart_total;
 
             return {
                 labels: chart_total?.map(value => value.ym),
@@ -95,7 +98,7 @@ export default {
             };
         });
         const datacollectionNear30days = computed(() => {
-            const chart_near_30_days = statistics.transaction?.chart_near_30_days;
+            const chart_near_30_days = statistics.transaction.chart_near_30_days;
 
             return {
                 labels: chart_near_30_days?.map(value => value.ymd),

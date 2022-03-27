@@ -5,12 +5,15 @@
 #include "models/Users.h"
 
 #include "app_helpers/ApiResponse.hpp"
+#include "app_helpers/ApiRequestParse.hpp"
 #include "app_helpers/Auth.hpp"
 #include "app_helpers/UsersMetaData.hpp"
 #include "app_helpers/Utils.hpp"
 
 using User = drogon_model::web_rinphone::Users;
 using UserRole = app_helpers::UserRole;
+
+using namespace app_helpers;
 
 Task<> UserCtrl::get(const HttpRequestPtr req, std::function<void(const HttpResponsePtr &)> callback)
 {
@@ -24,18 +27,8 @@ Task<> UserCtrl::get(const HttpRequestPtr req, std::function<void(const HttpResp
 
     try
     {
-        size_t page;
+        size_t page = getPage(req);
         size_t limit = 24;
-
-        try
-        {
-            page = std::stoul(req->getParameter("page"));
-            page = (page < 1) ? 1 : page;
-        }
-        catch (...)
-        {
-            page = 1;
-        }
 
         orm::Mapper<User> usrMap(dbClient);
         const auto &usrs = usrMap

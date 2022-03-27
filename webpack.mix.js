@@ -37,8 +37,19 @@ mix.webpackConfig({
     resolve: {
         alias: {
             '~': path.join(__dirname, vueDir)
-        }
+        },
+        extensions: ["*", ".js", ".jsx", ".vue", ".ts", ".tsx"],
     },
+    module: {
+        rules: [
+            {
+                test: /\.tsx?$/,
+                loader: "ts-loader",
+                exclude: /node_modules/,
+                options: { appendTsSuffixTo: [/\.vue$/] },
+            },
+        ],
+    }
 });
 
 if (process.env.RENDER_TARGET === 'server') {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "models/Orders.h"
+
 namespace app_helpers
 {
     enum class OrderStatus
@@ -17,4 +19,6 @@ namespace app_helpers
         ONCE = 1,
         INSTALMENT = 2, // Tra gop
     };
+
+    void orderJsonRow(const drogon::orm::DbClientPtr &dbClient, const drogon_model::web_rinphone::Orders &order, Json::Value &row);
 }
