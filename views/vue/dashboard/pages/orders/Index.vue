@@ -100,10 +100,10 @@
                 <div>Phone: {{ record.customer.phone || 'Chưa có' }}</div>
             </div>
         </template>
-        <template #status="{ record }">
+        <template #status="{ text, record }">
             <a-tag v-if="configOrderStatus[record.status]" :color="configOrderStatus[record.status].color">{{ configOrderStatus[record.status].name }}</a-tag>
         </template>
-        <template #total_amount="{ record }">
+        <template #total_amount="{ text, record }">
             <div>
                 <span>Nhập: </span>
                 <span>{{ calcCost(record) }} ₫</span>
@@ -121,7 +121,7 @@
                 <span>{{ calcAdd(record) }} ₫</span>
             </div>
         </template>
-        <template #time="{ record }">
+        <template #time="{ text, record }">
             <div>Tạo: {{ date_format(record.created_at) }}</div>
             <div>Update: {{ date_format(record.updated_at) }}</div>
             <div v-if="record.updated_user">
@@ -133,7 +133,7 @@
                 </a-button>
             </div>
         </template>
-        <template #action="{ record }">
+        <template #action="{ text, record }">
             <template v-if="!onFinishSelect">
                 <a-button type="primary" @click="() => { currentOrderId = record.id; orderEditPageVisible = true; }">
                     <template #icon>
@@ -499,7 +499,7 @@ export default defineComponent({
             return number_format((() => {
                 let cost = 0;
 
-                record.order_products.forEach(op_elm => {
+                record.order_products?.forEach(op_elm => {
                     op_elm.order_product_stocks.forEach(ops_elm => {
                         // stock.cost_amount
                         if (ops_elm.status === OrderProductStockStatus.STS_SOLD) {
@@ -514,7 +514,7 @@ export default defineComponent({
         calcAmount(record) {
             return number_format((() => {
                 let amount = 0;
-                record.order_products.forEach(op_elm => {
+                record.order_products?.forEach(op_elm => {
                     op_elm.order_product_stocks.forEach(ops_elm => {
                         ops_elm.transactions.forEach(tnx_eml => {
                             amount += tnx_eml.amount;
@@ -529,7 +529,7 @@ export default defineComponent({
             return number_format((() => {
                 let sell = 0;
 
-                record.order_products.forEach(op_elm => {
+                record.order_products?.forEach(op_elm => {
                     op_elm.order_product_stocks.forEach(ops_elm => {
                         // stock.cost_amount
                         if (ops_elm.status === OrderProductStockStatus.STS_SOLD) {
@@ -545,7 +545,7 @@ export default defineComponent({
             return number_format((() => {
                 let amount = 0;
                 // addon transactions
-                record.transactions.forEach(r_tnx_elm => {
+                record.transactions?.forEach(r_tnx_elm => {
                     amount += r_tnx_elm.amount;
                 });
 

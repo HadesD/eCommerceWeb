@@ -144,7 +144,22 @@
                     "target_key": "image_id"
                 },
                 "target_table_name": "images",
-                "target_table_alias": "images",
+                "target_table_alias": "image",
+                "target_key": "id",
+                "enable_reverse": true
+            },
+            {
+                "type": "many to many",
+                "original_table_name": "orders",
+                "original_table_alias": "order",
+                "original_key": "id",
+                "pivot_table": {
+                    "table_name": "order_products",
+                    "original_key": "order_id",
+                    "target_key": "product_id"
+                },
+                "target_table_name": "products",
+                "target_table_alias": "product",
                 "target_key": "id",
                 "enable_reverse": true
             }
